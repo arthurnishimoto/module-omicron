@@ -18,22 +18,6 @@ public class WandPointer : OmicronWandUpdater {
 	public bool drawLaser = true;
     public LayerMask wandLayerMask;
 
-	// getReal3D v2.2 Standard ClusterView block
-	getReal3D.ClusterView clusterView;
-	void Awake()
-	{
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		stream.Serialize( ref laserActivated );
-		stream.Serialize( ref wandHit );
-		stream.Serialize( ref laserPosition );
-		stream.Serialize( ref laserDistance );
-	}
-	// -----------------------------------------
-
 	// Use this for initialization
 	new void Start () {
 		InitOmicron();
@@ -56,7 +40,9 @@ public class WandPointer : OmicronWandUpdater {
 		GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
 		// Checking inputs should only be done on master node
-		if( getReal3D.Cluster.isMaster )
+        bool isMaster = true;
+        //isMaster = getReal3D.Cluster.isMaster;
+        if( isMaster )
 		{
 			laserActivated = cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button3);
 			laser.enabled = laserActivated;

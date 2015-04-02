@@ -45,7 +45,10 @@ public class DebugGUIManager : MonoBehaviour {
 		if ( (Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
 			showGUI = !showGUI;
 
-        if( showFPS && ((showOnlyOnMaster && getReal3D.Cluster.isMaster) || !showOnlyOnMaster) )
+        bool isMaster = true;
+        //isMaster = getReal3D.Cluster.isMaster;
+
+        if( showFPS && ((showOnlyOnMaster && isMaster) || !showOnlyOnMaster) )
 		{
 			timeleft -= Time.deltaTime;
 			accum += Time.timeScale/Time.deltaTime;

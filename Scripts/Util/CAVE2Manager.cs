@@ -83,19 +83,6 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public int framerateCap = 60;
 
-	// getReal3D v2.2 Standard ClusterView block
-	protected getReal3D.ClusterView clusterView;
-	void Awake()
-	{
-		clusterView = gameObject.AddComponent<getReal3D.ClusterView>();
-		clusterView.observed = this;
-	}
-	void OnSerializeClusterView(getReal3D.ClusterStream stream)
-	{
-		//stream.Serialize( ref laserActivated );
-	}
-	// -----------------------------------------
-
 	// Use this for initialization
 	new void Start () {
 		base.Start();
@@ -122,11 +109,11 @@ public class CAVE2Manager : OmicronEventClient {
 
 		Application.targetFrameRate = framerateCap;
 
-		if( getReal3D.Cluster.isMaster )
-			clusterView.RPC("SetClusterRandomSeed", Random.seed );
+		//if( getReal3D.Cluster.isMaster )
+		//	clusterView.RPC("SetClusterRandomSeed", Random.seed );
 	}
 
-	[getReal3D.RPC]
+	//[getReal3D.RPC]
 	void SetClusterRandomSeed(int seed)
 	{
 		Random.seed = seed;
@@ -141,7 +128,7 @@ public class CAVE2Manager : OmicronEventClient {
 	// Update is called once per frame
 	void Update () {
 
-		getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
+		//getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
 		
 		//if( getReal3D.Cluster.isClientAndClusterOn )
 		//	CAVE2QuickSettings = true;
@@ -161,17 +148,19 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		else
 		{
-			if( getRealCam && mocapEmulation )
-			{
-				getRealCam.applyHeadPosition = false;
-				getRealCam.applyHeadRotation = false;
-				getRealCam.applyCameraProjection = false;
-				getRealCam.transform.localPosition = Vector3.zero;
-				getRealCam.transform.localRotation = Quaternion.identity;
-			}
+			//if( getRealCam && mocapEmulation )
+			//{
+			//	getRealCam.applyHeadPosition = false;
+			//	getRealCam.applyHeadRotation = false;
+			//	getRealCam.applyCameraProjection = false;
+			//	getRealCam.transform.localPosition = Vector3.zero;
+			//	getRealCam.transform.localRotation = Quaternion.identity;
+			//}
 		}
 
-		if( getReal3D.Cluster.isMaster )
+        bool isMaster = true;
+        //isMaster = getReal3D.Cluster.isMaster;
+        if( isMaster )
 		{
 			UpdateWandState();
 
@@ -265,10 +254,6 @@ public class CAVE2Manager : OmicronEventClient {
 
 			if( mocapEmulation )
 			{
-				//Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
-				//lookAround *= 2;
-				//headEmulatedRotation += lookAround;
-
 				// Update emulated positions/rotations
 				head1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
 
@@ -293,24 +278,6 @@ public class CAVE2Manager : OmicronEventClient {
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
             UpdateMocap(e.sourceId, unityPos, unityRot );
-
-			/*
-			if( e.sourceId == head1.mocapID )
-			{
-				head1.UpdateMocap( unityPos, unityRot );
-			}
-			else if( e.sourceId == head2.mocapID )
-			{
-				head2.UpdateMocap( unityPos, unityRot );
-			}
-			else if( e.sourceId == wand1.mocapID )
-			{
-				wand1.UpdateMocap( unityPos, unityRot );
-			}
-			else if( e.sourceId == wand2.mocapID )
-			{
-				wand2.UpdateMocap( unityPos, unityRot );
-			}*/
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{

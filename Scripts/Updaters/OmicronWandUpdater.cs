@@ -56,7 +56,9 @@ public class OmicronWandUpdater : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
 
-		if( getReal3D.Cluster.isMaster )
+        bool isMaster = true;
+        //isMaster = getReal3D.Cluster.isMaster;
+        if( isMaster )
 		{
 			if( !cave2Manager.wandMousePointerEmulation )
 			{

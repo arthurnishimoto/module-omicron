@@ -150,7 +150,9 @@ class OmicronManager : MonoBehaviour
     public void Start()
     {
         //#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-        if( getReal3D.Cluster.isMaster )
+        bool isMaster = true;
+        //isMaster = getReal3D.Cluster.isMaster;
+        if( isMaster )
         {
         //#endif
         omicronListener = new EventListener(this);
