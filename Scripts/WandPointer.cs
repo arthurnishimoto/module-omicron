@@ -63,14 +63,60 @@ public class WandPointer : OmicronWandUpdater {
 				// If the laser button has just been pressed, tell the hit object
 				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
 				{
-					hit.collider.gameObject.SendMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", CAVE2Manager.Button.Button3, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button2) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", CAVE2Manager.Button.Button2, SendMessageOptions.DontRequireReceiver );
+				}
+
+				if( cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button2) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2Manager.Button.Button2, SendMessageOptions.DontRequireReceiver );
+				}
+
+				// DPad Click
+				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonUp) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", CAVE2Manager.Button.ButtonUp, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonDown) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", CAVE2Manager.Button.ButtonDown, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonLeft) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", CAVE2Manager.Button.ButtonLeft, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonRight) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonClick", CAVE2Manager.Button.ButtonRight, SendMessageOptions.DontRequireReceiver );
+				}
+
+				// DPad Hold
+				if( cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.ButtonUp) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2Manager.Button.ButtonUp, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.ButtonDown) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2Manager.Button.ButtonDown, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.ButtonLeft) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2Manager.Button.ButtonLeft, SendMessageOptions.DontRequireReceiver );
+				}
+				if( cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.ButtonRight) )
+				{
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2Manager.Button.ButtonRight, SendMessageOptions.DontRequireReceiver );
 				}
 
 				// Laser button is held down
 				if( laserActivated )
 				{
 					// Tell hit object laser button is held down
-					hit.collider.gameObject.SendMessage("OnWandButtonHold", SendMessageOptions.DontRequireReceiver );
+					hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2Manager.Button.Button3, SendMessageOptions.DontRequireReceiver );
+
 					Debug.DrawLine(ray.origin, hit.point);
 
 					// Set the laser distance at the collision point
@@ -97,7 +143,10 @@ public class WandPointer : OmicronWandUpdater {
 			}
 			laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
 		}
-
+		else if( !drawLaser )
+		{
+			laser.SetPosition( 1, new Vector3( 0, 0, 0 ) );
+		}
 		GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast
 	}
 }

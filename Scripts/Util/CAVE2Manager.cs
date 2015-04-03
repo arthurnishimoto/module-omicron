@@ -157,10 +157,7 @@ public class CAVE2Manager : OmicronEventClient {
 			//	getRealCam.transform.localRotation = Quaternion.identity;
 			//}
 		}
-
-        bool isMaster = true;
-        //isMaster = getReal3D.Cluster.isMaster;
-        if( isMaster )
+        if( IsMaster() )
 		{
 			UpdateWandState();
 
@@ -385,5 +382,30 @@ public class CAVE2Manager : OmicronEventClient {
 		IJKLkeys = (TrackerEmulated)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 6, 200, 20), (int)IJKLkeys, trackerEmuStrings, 3);
 		IJKLkeyMode = (TrackerEmulationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 7, 200, 20), (int)IJKLkeyMode, trackerEmuModeStrings, 3);
 
+		OmicronPlayerController omgPlayerController = GameObject.FindGameObjectWithTag("PlayerController").GetComponent<OmicronPlayerController>();
+		if( omgPlayerController )
+		{
+			omgPlayerController.showCAVEFloor = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 8, 250, 20), omgPlayerController.showCAVEFloor, "Show CAVE2 Floor");
+			omgPlayerController.showCAVEScreens = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 9, 250, 20), omgPlayerController.showCAVEScreens, "Show CAVE2 Screens");
+			omgPlayerController.showCAVEOnlyOnMaster = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 10, 250, 20), omgPlayerController.showCAVEOnlyOnMaster, "Show CAVE2 Only On Master");
+		}
     }
+
+	public static bool IsMaster()
+	{
+		#if USING_GETREAL3D
+		return getReal3D.Cluster.isMaster;
+		#else
+		return true;
+		#endif
+	}
+
+	public static bool IsGetReal3DEnabled()
+	{
+		#if USING_GETREAL3D
+		return true;
+		#else
+		return false;
+		#endif
+	}
 }
