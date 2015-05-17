@@ -285,11 +285,6 @@ class OmicronManager : MonoBehaviour
     }
 
 	// GUI
-	Rect windowRect = new Rect(0, 0, 250 , 300);
-	string[] navStrings = new string[] {"Walk", "Drive", "Freefly"};
-	string[] horzStrings = new string[] {"Strafe", "Turn"};
-	string[] forwardRefStrings = new string[] {"CAVE", "Head", "Wand"};
-
 	GUIStyle idleStatus = new GUIStyle();
 	GUIStyle activeStatus = new GUIStyle();
 	GUIStyle errorStatus = new GUIStyle();
@@ -300,11 +295,6 @@ class OmicronManager : MonoBehaviour
 	{
 		GUIOffset = offset;
     }
-
-	void OnGUI()
-	{
-		//windowRect = GUI.Window(-1, windowRect, OnWindow, "OmicronManager");			
-	}
 
 	public void OnWindow(int windowID)
 	{

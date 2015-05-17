@@ -16,6 +16,7 @@ public class WandPointer : OmicronWandUpdater {
 	ParticleSystem laserParticle;
 
 	public bool drawLaser = true;
+	public Vector3 forwardVector = Vector3.forward;
 
 	// Use this for initialization
 	new void Start () {
@@ -43,7 +44,7 @@ public class WandPointer : OmicronWandUpdater {
 		laser.enabled = laserActivated;
 
 		// Shoot a ray from the wand
-		Ray ray = new Ray( transform.position, transform.TransformDirection(Vector3.forward) );
+		Ray ray = new Ray( transform.position, transform.TransformDirection(forwardVector) );
 		RaycastHit hit;
 
 		// Get the first collider that was hit by the ray
@@ -89,7 +90,11 @@ public class WandPointer : OmicronWandUpdater {
 				laserParticle.transform.position = laserPosition;
 				laserParticle.Emit(1);
 			}
-			laser.SetPosition( 1, new Vector3( 0, 0, laserDistance ) );
+			laser.SetPosition( 1, forwardVector * laserDistance );
+		}
+		else
+		{
+			laser.SetPosition( 1, Vector3.zero );
 		}
 
 		GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast

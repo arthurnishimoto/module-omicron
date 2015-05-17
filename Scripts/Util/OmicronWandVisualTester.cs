@@ -32,7 +32,7 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	// Update is called once per frame
 	void Update () {
 		
-		if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
+		if( CAVE2Manager.GetButtonDown(1, CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = true;
 				SetButtonState((int)CAVE2Manager.Button.Button3, true);

@@ -4,7 +4,7 @@ using omicron;
 using omicronConnector;
 using System;
 
-public class WandState : MonoBehaviour
+public class WandState
 {
 	public int sourceID;
 	public int mocapID;
@@ -37,10 +37,6 @@ public class WandState : MonoBehaviour
 	ButtonState buttonNull = ButtonState.Idle;
 		
 	public bool RPCButtonEvents = false;
-
-	public void Start()
-	{
-	}
 
 	public WandState( int ID, int mocapID )
 	{

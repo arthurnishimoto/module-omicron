@@ -5,7 +5,7 @@ public class KinectHandGrabber : MonoBehaviour {
 
 	public int handState;
 
-	int lastKnownHandState;
+	//int lastKnownHandState;
 
 	public bool grabbing;
 	public bool holdingObject;
@@ -24,7 +24,7 @@ public class KinectHandGrabber : MonoBehaviour {
 
 		if( handState == (int)OmicronKinectEventClient.KinectHandState.Open )
 		{
-			lastKnownHandState = (int)OmicronKinectEventClient.KinectHandState.Open;
+			//lastKnownHandState = (int)OmicronKinectEventClient.KinectHandState.Open;
 			grabbing = false;
 
 			if( holdingObject )
@@ -34,7 +34,7 @@ public class KinectHandGrabber : MonoBehaviour {
 		}
 		else if( handState == (int)OmicronKinectEventClient.KinectHandState.Closed )
 		{
-			lastKnownHandState = (int)OmicronKinectEventClient.KinectHandState.Closed;
+			//lastKnownHandState = (int)OmicronKinectEventClient.KinectHandState.Closed;
 			grabbing = true;
 		}
 

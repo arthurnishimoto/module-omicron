@@ -61,13 +61,11 @@ public class HeadTrackerState
 }
 
 public class CAVE2Manager : OmicronEventClient {
-
-	public bool CAVE2QuickSettings = false;
-	HeadTrackerState head1;
-	HeadTrackerState head2;
+	static HeadTrackerState head1;
+	static HeadTrackerState head2;
 	
-	public WandState wand1;
-	public WandState wand2;
+	public static WandState wand1;
+	public static WandState wand2;
 	
 	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR,
 		LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTriggerR_Inverted
@@ -121,7 +119,7 @@ public class CAVE2Manager : OmicronEventClient {
 		head1 = new HeadTrackerState(Head1);
 		head2 = new HeadTrackerState(Head2);
 		
-		if( wand1 == null )
+		if (wand1 == null)
 			wand1 = new WandState(Wand1, Wand1Mocap);
 		else
 		{
@@ -157,7 +155,10 @@ public class CAVE2Manager : OmicronEventClient {
 		#if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 		#else
-		return (machineName.Equals("LYRA-WIN") || !machineName.Contains("LYRA") );
+		if( machineName.Contains("LYRA") && !machineName.Equals("LYRA-WIN") )
+			return false;
+		else // Assumes on LYRA-WIN or development machine
+			return true;
 		#endif
 	}
 
@@ -187,20 +188,22 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
-		if( CAVE2QuickSettings )
+	public static bool GetButtonDown(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
 		{
-			keyboardEventEmulation = false;
-			wandMousePointerEmulation = false;
-			mocapEmulation = false;
-			lockWandToHeadTransform = false;
-
-            OmicronManager omgManager = GetComponent<OmicronManager>();
-            if( !omgManager.connectToServer )
-                omgManager.ConnectToServer();
+			return CAVE2Manager.wand1.GetButtonDown(button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButtonDown(button);
 		}
 
+		return false;
+	}
+
+	// Update is called once per frame
+	void Update () {
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 		
@@ -208,8 +211,8 @@ public class CAVE2Manager : OmicronEventClient {
 		{
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
 			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
-			float lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
-            float forward = Input.GetAxis("Forward") * axisSensitivity;
+			float lookHorizontal = 0 * axisSensitivity;
+            float forward = 0 * axisSensitivity;
 
 			uint flags = 0;
 			
@@ -224,10 +227,10 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.ButtonRight;
 			
 			// F -> Wand Button 2 (Circle)
-			if( Input.GetKey( KeyCode.F ) || Input.GetMouseButton(1) )
+			if( Input.GetKey( KeyCode.F ) || Input.GetButton("Fire2") )
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross)
-			if( Input.GetKey( KeyCode.R ) || Input.GetMouseButton(0) )
+			if( Input.GetKey( KeyCode.R ) || Input.GetButton("Fire1") )
 				flags += (int)EventBase.Flags.Button3;
 
 			Vector2 wandAnalog = new Vector2();
