@@ -95,7 +95,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	// Use this for initialization
 	new void Start () {
-		InitOmicron();
 		gameObject.tag = "PlayerController";
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
@@ -132,32 +131,35 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	// Update is called once per frame
 	void Update () {
 
-		wandPosition = cave2Manager.getWand(wandID).GetPosition();
-		wandRotation = cave2Manager.getWand(wandID).GetRotation();
+		wandPosition = CAVE2Manager.GetWandPosition(wandID);
+		wandRotation = CAVE2Manager.GetWandRotation(wandID);
 			
-		headPosition = cave2Manager.getHead(headID).GetPosition();
-		headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
+		headPosition = CAVE2Manager.GetHeadPosition(wandID);
+		headRotation = CAVE2Manager.GetHeadRotation(wandID).eulerAngles;
+
+		if (headPosition.y == 0)
+			Debug.LogWarning ("OmicronPlayerController: Head is at height (Y) 0.0 - This should never happen! Check your tracking system or enable mocap emulation in CAVE2Manager.");
 
 		if( !freezeMovement )
 		{
-			forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
+			forward = CAVE2Manager.GetAxis(wandID, forwardAxis);	
 			forward *= movementScale;
 
-			strafe = cave2Manager.getWand(wandID).GetAxis(strafeAxis);	
+			strafe = CAVE2Manager.GetAxis(wandID, strafeAxis);	
 			strafe *= movementScale;
 
-			lookAround.x = cave2Manager.getWand(wandID).GetAxis(lookUDAxis);
+			lookAround.x = CAVE2Manager.GetAxis(wandID, lookUDAxis);
 			lookAround.x *= movementScale;
-			lookAround.y = cave2Manager.getWand(wandID).GetAxis(lookLRAxis);
+			lookAround.y = CAVE2Manager.GetAxis(wandID, lookLRAxis);
 			lookAround.y *= movementScale;
 
-            vertical = cave2Manager.getWand(wandID).GetAxis(verticalAxis);
+			vertical = CAVE2Manager.GetAxis(wandID, verticalAxis);
             vertical *= movementScale;
 		}
 			
-		freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);
+		freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
 			
-		if( cave2Manager.getWand(wandID).GetButtonDown(freeFlyToggleButton) )
+		if( CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton) )
 		{
 			navMode++;
 			if( (int)navMode > 2 )
@@ -166,7 +168,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			SetNavigationMode((int)navMode);
 		}
 
-		if( cave2Manager.getWand(wandID).GetButtonDown(autoLevelButton) )
+		if( CAVE2Manager.GetButtonDown(wandID, autoLevelButton) )
 		{
 			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
 		}

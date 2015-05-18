@@ -31,19 +31,18 @@ using omicron;
 using omicronConnector;
 
 public class OmicronWandUpdater : MonoBehaviour {
-	public CAVE2Manager cave2Manager;
 	public int wandID = 1;
-	public WandState wand;
-	
+
+	CAVE2Manager cave2Manager;
+
 	public void InitOmicron()
 	{
-		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
-		wand = cave2Manager.getWand(wandID);
+		cave2Manager = GameObject.Find ("CAVE2-InputManager").GetComponent<CAVE2Manager> ();
 	}
-	
+
 	// Use this for initialization
 	public void Start () {
-		InitOmicron();
+		InitOmicron ();
 	}
 	
 	// Update is called once per frame
@@ -53,24 +52,24 @@ public class OmicronWandUpdater : MonoBehaviour {
 			{
 				if( rigidbody )
 				{
-					rigidbody.MovePosition( wand.position );
-					rigidbody.MoveRotation( wand.rotation );
+					rigidbody.MovePosition( CAVE2Manager.GetWandPosition(wandID) );
+					rigidbody.MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
 				}
 				else
 				{
-					transform.localPosition = wand.position;
-					transform.localRotation = wand.rotation;
+					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+					transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
 				}
 			}
 			else // Mouse pointer mode
 			{
 				if( rigidbody )
 				{
-					rigidbody.MovePosition( wand.position );
+					rigidbody.MovePosition( CAVE2Manager.GetWandPosition(wandID) );
 				}
 				else
 				{
-					transform.localPosition = wand.position;
+					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
 				}
 
 				// Mouse pointer ray controls rotation

@@ -188,6 +188,90 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
+	public static Vector3 GetHeadPosition(int ID)
+	{
+		if( ID == 1 )
+		{
+			return CAVE2Manager.head1.GetPosition();
+		}
+		else if( ID == 2 )
+		{
+			return CAVE2Manager.head2.GetPosition();
+		}
+		
+		return Vector3.zero;
+	}
+	
+	public static Quaternion GetHeadRotation(int ID)
+	{
+		if( ID == 1 )
+		{
+			return CAVE2Manager.head1.GetRotation();
+		}
+		else if( ID == 2 )
+		{
+			return CAVE2Manager.head2.GetRotation();
+		}
+		
+		return Quaternion.identity;
+	}
+
+	public static Vector3 GetWandPosition(int wandID)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetPosition();
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetPosition();
+		}
+		
+		return Vector3.zero;
+	}
+
+	public static Quaternion GetWandRotation(int wandID)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetRotation();
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetRotation();
+		}
+		
+		return Quaternion.identity;
+	}
+
+	public static float GetAxis(int wandID, CAVE2Manager.Axis axis)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetAxis(axis);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetAxis(axis);
+		}
+		
+		return 0;
+	}
+
+	public static bool GetButton(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButton(button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButton(button);
+		}
+		
+		return false;
+	}
+
 	public static bool GetButtonDown(int wandID, CAVE2Manager.Button button)
 	{
 		if( wandID == 1 )
@@ -198,12 +282,35 @@ public class CAVE2Manager : OmicronEventClient {
 		{
 			return CAVE2Manager.wand2.GetButtonDown(button);
 		}
+		
+		return false;
+	}
 
+	public static bool GetButtonUp(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButtonUp(button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButtonUp(button);
+		}
+		
 		return false;
 	}
 
 	// Update is called once per frame
 	void Update () {
+
+		if( (OnCAVE2Master() || OnCAVE2Display()) && (Application.platform == RuntimePlatform.WindowsPlayer) )
+		{
+			keyboardEventEmulation = false;
+			wandMousePointerEmulation = false;
+			mocapEmulation = false;
+			lockWandToHeadTransform = false;
+		}
+
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 		

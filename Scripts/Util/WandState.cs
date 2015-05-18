@@ -8,35 +8,32 @@ public class WandState
 {
 	public int sourceID;
 	public int mocapID;
-	public Vector3 position;
-	public Quaternion rotation;
-	public int flags;
-	
-	public Vector2 leftAnalogStick;
-	public Vector2 rightAnalogStick;
-	public Vector2 analogTrigger;
+	Vector3 position;
+	Quaternion rotation;
+
+	Vector2 leftAnalogStick;
+	Vector2 rightAnalogStick;
+	Vector2 analogTrigger;
 	
 	public enum ButtonState { Idle, Down, Held, Up };
 
-	public ButtonState button1 = ButtonState.Idle;
-	public ButtonState button2 = ButtonState.Idle;
-	public ButtonState button3 = ButtonState.Idle;
-	public ButtonState button4 = ButtonState.Idle;
-	public ButtonState button5 = ButtonState.Idle;
-	public ButtonState button6 = ButtonState.Idle;
-	public ButtonState button7 = ButtonState.Idle;
-	public ButtonState button8 = ButtonState.Idle;
-	public ButtonState button9 = ButtonState.Idle;
-	public ButtonState buttonUp = ButtonState.Idle;
-	public ButtonState buttonDown = ButtonState.Idle;
-	public ButtonState buttonLeft = ButtonState.Idle;
-	public ButtonState buttonRight = ButtonState.Idle;
-	public ButtonState buttonSP1 = ButtonState.Idle;
-	public ButtonState buttonSP2 = ButtonState.Idle;
-	public ButtonState buttonSP3 = ButtonState.Idle;
+	ButtonState button1 = ButtonState.Idle;
+	ButtonState button2 = ButtonState.Idle;
+	ButtonState button3 = ButtonState.Idle;
+	ButtonState button4 = ButtonState.Idle;
+	ButtonState button5 = ButtonState.Idle;
+	ButtonState button6 = ButtonState.Idle;
+	ButtonState button7 = ButtonState.Idle;
+	ButtonState button8 = ButtonState.Idle;
+	ButtonState button9 = ButtonState.Idle;
+	ButtonState buttonUp = ButtonState.Idle;
+	ButtonState buttonDown = ButtonState.Idle;
+	ButtonState buttonLeft = ButtonState.Idle;
+	ButtonState buttonRight = ButtonState.Idle;
+	ButtonState buttonSP1 = ButtonState.Idle;
+	ButtonState buttonSP2 = ButtonState.Idle;
+	ButtonState buttonSP3 = ButtonState.Idle;
 	ButtonState buttonNull = ButtonState.Idle;
-		
-	public bool RPCButtonEvents = false;
 
 	public WandState( int ID, int mocapID )
 	{
@@ -45,8 +42,7 @@ public class WandState
 		
 		position = new Vector3();
 		rotation = new Quaternion();
-		
-		flags = 0;
+
 		leftAnalogStick = new Vector2();
 		rightAnalogStick = new Vector2();
 		analogTrigger = new Vector2();
@@ -250,7 +246,6 @@ public class WandState
 		this.leftAnalogStick = leftAnalogStick;
 		this.rightAnalogStick = rightAnalogStick;
 		this.analogTrigger = analogTrigger;
-		this.flags = (int)flags;
 
 		// Update any state changes
 		if( (flags & 1) == 1 && button1 != ButtonState.Held )

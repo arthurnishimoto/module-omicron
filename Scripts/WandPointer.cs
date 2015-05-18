@@ -20,8 +20,6 @@ public class WandPointer : OmicronWandUpdater {
 
 	// Use this for initialization
 	new void Start () {
-		InitOmicron();
-
 		// Laser line
 		laser = gameObject.AddComponent<LineRenderer>();
 		laser.SetWidth( 0.02f, 0.02f );
@@ -40,7 +38,7 @@ public class WandPointer : OmicronWandUpdater {
 		GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
 		// Checking inputs should only be done on master node
-		laserActivated = cave2Manager.getWand(wandID).GetButton(CAVE2Manager.Button.Button3);
+		laserActivated = CAVE2Manager.GetButton(wandID,CAVE2Manager.Button.Button3);
 		laser.enabled = laserActivated;
 
 		// Shoot a ray from the wand
@@ -57,7 +55,7 @@ public class WandPointer : OmicronWandUpdater {
 			hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
 
 			// If the laser button has just been pressed, tell the hit object
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button3) )
+			if( CAVE2Manager.GetButtonDown(wandID, CAVE2Manager.Button.Button3) )
 			{
 				hit.collider.gameObject.SendMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
 			}

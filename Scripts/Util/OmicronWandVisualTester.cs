@@ -26,70 +26,70 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 
 	// Use this for initialization
 	new void Start () {
-		InitOmicron();
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
-		if( CAVE2Manager.GetButtonDown(1, CAVE2Manager.Button.Button3) )
+			if( CAVE2Manager.GetButtonDown(1, CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = true;
 				SetButtonState((int)CAVE2Manager.Button.Button3, true);
 			}
-			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.Button3) )
+			else if( CAVE2Manager.GetButtonUp(1, CAVE2Manager.Button.Button3) )
 			{
 				crossPressed = false;
 				SetButtonState((int)CAVE2Manager.Button.Button3, false);
 			}
 			
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.Button2) )
+			if( CAVE2Manager.GetButtonDown(1,CAVE2Manager.Button.Button2) )
 			{
 				circlePressed = true;
 				SetButtonState((int)CAVE2Manager.Button.Button2, true);
 			}
-			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.Button2) )
+			else if( CAVE2Manager.GetButtonUp(1,CAVE2Manager.Button.Button2) )
 			{
 				circlePressed = false;
 				SetButtonState((int)CAVE2Manager.Button.Button2, false);
 			}
 			
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonUp) )
+			if( CAVE2Manager.GetButtonDown(1,CAVE2Manager.Button.ButtonUp) )
 			{
 				upPressed = true;
 				SetButtonState((int)CAVE2Manager.Button.ButtonUp, true);
 			}
-			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonUp) )
+			else if( CAVE2Manager.GetButtonUp(1,CAVE2Manager.Button.ButtonUp) )
 			{
 				upPressed = false;
 				SetButtonState((int)CAVE2Manager.Button.ButtonUp, false);
 			}
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonDown) )
+			if( CAVE2Manager.GetButtonDown(1,CAVE2Manager.Button.ButtonDown) )
 			{
 				downPressed = true;
 				SetButtonState((int)CAVE2Manager.Button.ButtonDown, true);
 			}
-			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonDown) )
+			else if( CAVE2Manager.GetButtonUp(1,CAVE2Manager.Button.ButtonDown) )
 			{
 				downPressed = false;
 				SetButtonState((int)CAVE2Manager.Button.ButtonDown, false);
 			}
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonLeft) )
+			if( CAVE2Manager.GetButtonDown(1,CAVE2Manager.Button.ButtonLeft) )
 			{
 				leftPressed = true;
 				SetButtonState((int)CAVE2Manager.Button.ButtonLeft, true);
 			}
-			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonLeft) )
+			else if( CAVE2Manager.GetButtonUp(1,CAVE2Manager.Button.ButtonLeft) )
 			{
 				leftPressed = false;
 				SetButtonState((int)CAVE2Manager.Button.ButtonLeft, false);
 			}
-			if( cave2Manager.getWand(wandID).GetButtonDown(CAVE2Manager.Button.ButtonRight) )
+			if( CAVE2Manager.GetButtonDown(1,CAVE2Manager.Button.ButtonRight) )
 			{
 				rightPressed = true;
 				SetButtonState((int)CAVE2Manager.Button.ButtonRight, true);
 			}
-			else if( cave2Manager.getWand(wandID).GetButtonUp(CAVE2Manager.Button.ButtonRight) )
+			else if( CAVE2Manager.GetButtonUp(1,CAVE2Manager.Button.ButtonRight) )
 			{
 				rightPressed = false;
 				SetButtonState((int)CAVE2Manager.Button.ButtonRight, false);
