@@ -3,7 +3,10 @@ using System.Collections;
 
 public class WandPointer : OmicronWandUpdater {
 	
-	public bool laserActivated;
+    public CAVE2Manager.Button pointerButton = CAVE2Manager.Button.Button3;
+    public CAVE2Manager.Button grabButton = CAVE2Manager.Button.Button2;
+
+	bool laserActivated;
 	float laserDistance;
 	bool wandHit;
 	Vector3 laserPosition;
@@ -16,6 +19,9 @@ public class WandPointer : OmicronWandUpdater {
 	ParticleSystem laserParticle;
 
 	public bool drawLaser = true;
+    public bool enableGrab = true;
+    ArrayList grabbedObjects = new ArrayList();
+
 	public Vector3 forwardVector = Vector3.forward;
 
 	// Use this for initialization
@@ -55,22 +61,32 @@ public class WandPointer : OmicronWandUpdater {
 			hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
 
 			// If the laser button has just been pressed, tell the hit object
-			if( CAVE2Manager.GetButtonDown(wandID, CAVE2Manager.Button.Button3) )
+            if( CAVE2Manager.GetButtonDown(wandID, pointerButton) )
 			{
-				hit.collider.gameObject.SendMessage("OnWandButtonClick", SendMessageOptions.DontRequireReceiver );
+                hit.collider.gameObject.SendMessage("OnWandButtonClick", pointerButton, SendMessageOptions.DontRequireReceiver );
 			}
 
 			// Laser button is held down
-			if( laserActivated )
+            if( CAVE2Manager.GetButton(wandID, pointerButton) )
 			{
 				// Tell hit object laser button is held down
-				hit.collider.gameObject.SendMessage("OnWandButtonHold", SendMessageOptions.DontRequireReceiver );
+                hit.collider.gameObject.SendMessage("OnWandButtonHold", pointerButton, SendMessageOptions.DontRequireReceiver );
 				Debug.DrawLine(ray.origin, hit.point);
 
 				// Set the laser distance at the collision point
 				laserDistance = hit.distance;
 				laserPosition = hit.point;
 			}
+
+            if( enableGrab && CAVE2Manager.GetButtonDown(wandID, grabButton) )
+            {
+                GrabbableObject grabbable = hit.collider.GetComponent<GrabbableObject>();
+                if( grabbable != null )
+                {
+                    hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver );
+                    grabbedObjects.Add(grabbable);
+                }
+            }
 		}
 		else if( laserActivated )
 		{
@@ -78,6 +94,15 @@ public class WandPointer : OmicronWandUpdater {
 			// Set laser distance far away
 			laserDistance = 1000;
 		}
+
+        if( enableGrab && CAVE2Manager.GetButtonUp(wandID, grabButton) )
+        {
+            foreach( GrabbableObject g in grabbedObjects )
+            {
+                g.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver );
+            }
+            grabbedObjects.Clear();
+        }
 
 		// Do this on all nodes
 		laser.enabled = laserActivated;

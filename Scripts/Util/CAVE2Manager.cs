@@ -136,6 +136,19 @@ public class CAVE2Manager : OmicronEventClient {
 
 		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
+
+        if ((OnCAVE2Master() || OnCAVE2Display()) && (Application.platform == RuntimePlatform.WindowsPlayer))
+        {
+            keyboardEventEmulation = false;
+            wandMousePointerEmulation = false;
+            mocapEmulation = false;
+            lockWandToHeadTransform = false;
+        } else if (OnCAVE2Display())
+        {
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+        }
 	}
 
 	public static bool UsingGetReal3D()
@@ -302,15 +315,6 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
-
-		if( (OnCAVE2Master() || OnCAVE2Display()) && (Application.platform == RuntimePlatform.WindowsPlayer) )
-		{
-			keyboardEventEmulation = false;
-			wandMousePointerEmulation = false;
-			mocapEmulation = false;
-			lockWandToHeadTransform = false;
-		}
-
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 		
