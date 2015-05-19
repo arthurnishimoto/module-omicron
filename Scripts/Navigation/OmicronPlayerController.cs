@@ -156,7 +156,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			vertical = CAVE2Manager.GetAxis(wandID, verticalAxis);
             vertical *= movementScale;
 		}
-			
+
 		freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
 			
 		if( CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton) )

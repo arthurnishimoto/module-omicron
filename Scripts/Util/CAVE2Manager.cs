@@ -145,9 +145,11 @@ public class CAVE2Manager : OmicronEventClient {
             lockWandToHeadTransform = false;
         } else if (OnCAVE2Display())
         {
+#if USING_GETREAL3D
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
             Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+#endif
         }
 	}
 
