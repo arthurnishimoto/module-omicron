@@ -35,6 +35,8 @@ public class WandState
 	ButtonState buttonSP3 = ButtonState.Idle;
 	ButtonState buttonNull = ButtonState.Idle;
 
+	int lastUpdateEventFrame;
+
 	public WandState( int ID, int mocapID )
 	{
 		sourceID = ID;
@@ -175,20 +177,21 @@ public class WandState
 		
 		// Set buttons held if down on the last frame
 		// Set buttons as idle if up on the last frame
-		
-		for(int i = 0; i < 16; i++ )
+		if( Time.frameCount - lastUpdateEventFrame > 1 )
 		{
-			ButtonState buttonState = GetButtonState(i);
+			for(int i = 0; i < 16; i++ )
+			{
+				ButtonState buttonState = GetButtonState(i);
 
-			if( buttonState == ButtonState.Down )
-				UpdateButton( i, (int)ButtonState.Held );
-			else if( buttonState == ButtonState.Up )
-				UpdateButton( i, (int)ButtonState.Idle );
+				if( buttonState == ButtonState.Down )
+					UpdateButton( i, (int)ButtonState.Held );
+				else if( buttonState == ButtonState.Up )
+					UpdateButton( i, (int)ButtonState.Idle );
+			}
 		}
-		
 	}
 	
-	ButtonState GetButtonState( int buttonID )
+	public ButtonState GetButtonState( int buttonID )
 	{
 		switch(buttonID)
 		{
@@ -243,6 +246,7 @@ public class WandState
 	
 	public void UpdateController( uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
+		lastUpdateEventFrame = Time.frameCount;
 		this.leftAnalogStick = leftAnalogStick;
 		this.rightAnalogStick = rightAnalogStick;
 		this.analogTrigger = analogTrigger;

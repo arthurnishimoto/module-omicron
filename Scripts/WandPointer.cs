@@ -59,6 +59,7 @@ public class WandPointer : OmicronWandUpdater {
 		{
 			// Send a message to the hit object telling it that the wand is hovering over it
 			hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver );
+			Debug.DrawRay(hit.point, hit.normal * 0.1f, Color.yellow, 1, false); // Draws a line in the editor
 
 			// If the laser button has just been pressed, tell the hit object
             if( CAVE2Manager.GetButtonDown(wandID, pointerButton) )

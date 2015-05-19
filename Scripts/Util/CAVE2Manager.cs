@@ -315,6 +315,20 @@ public class CAVE2Manager : OmicronEventClient {
 		return false;
 	}
 
+	public static WandState.ButtonState GetButtonState(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButtonState((int)button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButtonState((int)button);
+		}
+		
+		return 0;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		wand1.UpdateState(Wand1, Wand1Mocap);
@@ -325,10 +339,13 @@ public class CAVE2Manager : OmicronEventClient {
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
 			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
 			float lookHorizontal = 0 * axisSensitivity;
+			float lookVertical = 0 * axisSensitivity;
             float forward = 0 * axisSensitivity;
 
 			uint flags = 0;
-			
+
+			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
+
 			// Arrow keys -> DPad
 			if( Input.GetKey( KeyCode.UpArrow ) )
 				flags += (int)EventBase.Flags.ButtonUp;
@@ -349,10 +366,11 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector2 wandAnalog = new Vector2();
 			Vector2 wandAnalog2 = new Vector2();
             Vector2 wandAnalog3 = new Vector2();
+
 			if( WASDkeys == TrackerEmulated.CAVE )
 			{
 				wandAnalog = new Vector2(horizontal,vertical);
-				wandAnalog2 = new Vector2(lookHorizontal,0);
+				wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
                 wandAnalog3 = new Vector2(forward,0);
 			}
 			else if( WASDkeys == TrackerEmulated.Head )
