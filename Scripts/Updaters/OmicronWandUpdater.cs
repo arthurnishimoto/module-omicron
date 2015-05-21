@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -50,6 +50,10 @@ public class OmicronWandUpdater : MonoBehaviour {
 
 			if( !cave2Manager.wandMousePointerEmulation )
 			{
+				#if USING_GETREAL3D_TRACKING
+				transform.localPosition = getReal3D.Input.head.position;
+				transform.localRotation = getReal3D.Input.head.rotation;
+				#else
 				if( rigidbody )
 				{
 					rigidbody.MovePosition( CAVE2Manager.GetWandPosition(wandID) );
@@ -60,6 +64,7 @@ public class OmicronWandUpdater : MonoBehaviour {
 					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
 					transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
 				}
+				#endif
 			}
 			else // Mouse pointer mode
 			{
