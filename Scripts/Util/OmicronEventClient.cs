@@ -24,13 +24,17 @@
 * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************/
-
+#define USING_GETREAL3D
 using UnityEngine;
 using System.Collections;
 using omicron;
 using omicronConnector;
 
+#if USING_GETREAL3D
+public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
+#else
 public class OmicronEventClient : MonoBehaviour {
+#endif
 	OmicronManager omicronManager;
 
 	bool flagForRemoval = false;

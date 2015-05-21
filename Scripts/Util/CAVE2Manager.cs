@@ -175,6 +175,11 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
+	public static bool UsingOmicronTracking()
+	{
+		return GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<OmicronManager>().connectToServer;
+	}
+
 	public static bool IsMaster()
 	{
 		#if USING_GETREAL3D
@@ -392,8 +397,6 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.SpecialButton2;
 			#endif
 
-
-
 			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
 
 			// Arrow keys -> DPad
@@ -545,7 +548,10 @@ public class CAVE2Manager : OmicronEventClient {
 				rightAnalogStick.x = 0;
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
-			
+
+			#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			#else
 			if( e.sourceId == wand1.sourceID )
 			{
 				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
@@ -554,9 +560,25 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 			}
+			#endif
 		}
 	}
-	
+
+	#if USING_GETREAL3D
+	[getReal3D.RPC]
+	void UpdateControllerRPC( uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
+	{
+		if( wandID == wand1.sourceID )
+		{
+			wand1.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+		}
+		else if( wandID == wand2.sourceID )
+		{
+			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+		}
+	}
+	#endif
+
 	public HeadTrackerState getHead(int ID)
 	{
 		if( ID == 2 )
