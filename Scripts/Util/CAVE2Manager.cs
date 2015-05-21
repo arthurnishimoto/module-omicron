@@ -24,8 +24,8 @@
 * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************/
-#define USING_GETREAL3D
-#define USING_GETREAL3D_TRACKING
+//#define USING_GETREAL3D
+//#define USING_GETREAL3D_TRACKING
 using UnityEngine;
 using System.Collections;
 using omicron;
