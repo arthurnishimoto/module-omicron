@@ -138,7 +138,7 @@ public class CAVE2Manager : OmicronEventClient {
 		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
 
-        if ( OnCAVE2Master() )
+		if ( OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor )
         {
             keyboardEventEmulation = true;
             wandMousePointerEmulation = false;
