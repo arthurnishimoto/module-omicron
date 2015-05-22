@@ -24,7 +24,8 @@
 * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************/
-
+//#define USING_GETREAL3D
+//#define USING_GETREAL3D_TRACKING
 using UnityEngine;
 using System.Collections;
 using omicron;
@@ -141,22 +142,29 @@ public class CAVE2Manager : OmicronEventClient {
 		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
 
-        if ((OnCAVE2Master() || OnCAVE2Display()) && (Application.platform == RuntimePlatform.WindowsPlayer))
+		if ( OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor )
         {
-            keyboardEventEmulation = false;
+            keyboardEventEmulation = true;
             wandMousePointerEmulation = false;
             mocapEmulation = false;
             lockWandToHeadTransform = false;
-        } else if (OnCAVE2Display())
+        }
+		else if (OnCAVE2Display())
         {
-#if USING_GETREAL3D
+			#if USING_GETREAL3D
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
             Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
-#endif
+			#endif
         }
-
-		lastMousePosition = Input.mousePosition;
+		else if( Application.platform == RuntimePlatform.WindowsEditor )
+		{
+			#if USING_GETREAL3D
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+			#endif
+		}
 	}
 
 	public static bool UsingGetReal3D()
@@ -363,6 +371,44 @@ public class CAVE2Manager : OmicronEventClient {
 
 			uint flags = 0;
 
+			#if USING_GETREAL3D
+			vertical += -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
+			horizontal += getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
+			lookHorizontal += getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
+			lookVertical += getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
+
+			// F -> Wand Button 2 (Circle/B)
+			if( getReal3D.Input.GetButton("WandButton") )
+				flags += (int)EventBase.Flags.Button2;
+			// R -> Wand Button 3 (Cross/A)
+			if( getReal3D.Input.GetButton("Reset") )
+				flags += (int)EventBase.Flags.Button3;
+			// Wand Button 1 (Triangle/Y)
+			if( getReal3D.Input.GetButton("Jump") )
+				flags += (int)EventBase.Flags.Button1;
+			// Wand Button 4 (Square/X)
+			if( getReal3D.Input.GetButton("ChangeWand") )
+				flags += (int)EventBase.Flags.Button4;
+			// Wand Button 8 (R1/RB)
+			if( getReal3D.Input.GetButton("WandLook") )
+				flags += (int)EventBase.Flags.Button8;
+			// Wand Button 5 (L1/LB)
+			if( getReal3D.Input.GetButton("NavSpeed") )
+				flags += (int)EventBase.Flags.Button5;
+			// Wand Button 6 (L3)
+			if( getReal3D.Input.GetButton("L3") )
+				flags += (int)EventBase.Flags.Button6;
+			// Wand Button 9 (R3)
+			if( getReal3D.Input.GetButton("R3") )
+				flags += (int)EventBase.Flags.Button9;
+			// Wand Button SP1 (Back)
+			if( getReal3D.Input.GetButton("Back") )
+				flags += (int)EventBase.Flags.SpecialButton1;
+			// Wand Button SP2 (Start)
+			if( getReal3D.Input.GetButton("Start") )
+				flags += (int)EventBase.Flags.SpecialButton2;
+			#endif
+
 			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
 
 			// Arrow keys -> DPad
@@ -470,6 +516,11 @@ public class CAVE2Manager : OmicronEventClient {
 			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
 			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 		}
+
+		#if USING_GETREAL3D_TRACKING
+		head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
+		wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
+		#endif
 	}
 
 	void OnEvent( EventData e )
@@ -517,7 +568,10 @@ public class CAVE2Manager : OmicronEventClient {
 				rightAnalogStick.x = 0;
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
-			
+
+			#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			#else
 			if( e.sourceId == wand1.sourceID )
 			{
 				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
@@ -526,9 +580,25 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 			}
+			#endif
 		}
 	}
-	
+
+	#if USING_GETREAL3D
+	[getReal3D.RPC]
+	void UpdateControllerRPC( uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
+	{
+		if( wandID == wand1.sourceID )
+		{
+			wand1.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+		}
+		else if( wandID == wand2.sourceID )
+		{
+			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+		}
+	}
+	#endif
+
 	public HeadTrackerState getHead(int ID)
 	{
 		if( ID == 2 )
