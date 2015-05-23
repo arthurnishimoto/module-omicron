@@ -119,7 +119,6 @@ class OmicronManager : MonoBehaviour
 {
 	EventListener omicronListener;
 	OmicronConnectorClient omicronManager;
-	CAVE2Manager cave2Manager;
 	public bool connectToServer = false;
 	public string serverIP = "localhost";
 	public int serverMsgPort = 28000;
@@ -142,7 +141,6 @@ class OmicronManager : MonoBehaviour
 	// Initializations
 	public void Start()
 	{
-		cave2Manager = GameObject.Find ("CAVE2-InputManager").GetComponent<CAVE2Manager> ();
 		omicronListener = new EventListener(this);
 		omicronManager = new OmicronConnectorClient(omicronListener);
 		
