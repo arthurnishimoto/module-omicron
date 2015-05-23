@@ -153,9 +153,6 @@ class OmicronManager : MonoBehaviour
 		if( connectToServer )
 		{
 			ConnectToServer();
-
-			cave2Manager.keyboardEventEmulation = false;
-			cave2Manager.wandMousePointerEmulation = false;
 		}
 	}// start
 

@@ -85,12 +85,13 @@ public class OmicronWandUpdater : MonoBehaviour {
 				RaycastHit hit;
 				if (Physics.Raycast(ray, out hit, 100))
 				{
-					transform.LookAt( hit.point );
+					//transform.LookAt( hit.point );
 				}
 				else
 				{
-					transform.LookAt( ray.GetPoint(1000) );
+					//transform.LookAt( ray.GetPoint(1000) );
 				}
+				transform.LookAt( ray.GetPoint(1000) );
 				// Update the wandSate rotation (opposite of normal since this object is determining the rotation)
 				cave2Manager.wandEmulatedRotation = transform.eulerAngles;
 			}

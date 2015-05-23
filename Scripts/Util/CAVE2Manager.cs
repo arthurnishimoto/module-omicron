@@ -152,6 +152,11 @@ public class CAVE2Manager : OmicronEventClient {
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
             Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
 			#endif
+
+			keyboardEventEmulation = true;
+			wandMousePointerEmulation = false;
+			mocapEmulation = false;
+			lockWandToHeadTransform = false;
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
@@ -496,11 +501,13 @@ public class CAVE2Manager : OmicronEventClient {
 			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
 			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 		}
-
-		#if USING_GETREAL3D_TRACKING
-		head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
-		wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
-		#endif
+		else
+		{
+			#if USING_GETREAL3D_TRACKING
+			head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
+			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
+			#endif
+		}
 	}
 
 	void OnEvent( EventData e )
