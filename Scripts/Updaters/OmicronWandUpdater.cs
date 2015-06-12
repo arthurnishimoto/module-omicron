@@ -54,10 +54,10 @@ public class OmicronWandUpdater : MonoBehaviour {
 				transform.localPosition = getReal3D.Input.head.position;
 				transform.localRotation = getReal3D.Input.head.rotation;
 				#else
-				if( rigidbody )
+				if( GetComponent<Rigidbody>() )
 				{
-					rigidbody.MovePosition( CAVE2Manager.GetWandPosition(wandID) );
-					rigidbody.MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
+					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
+					GetComponent<Rigidbody>().MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
 				}
 				else
 				{
@@ -68,9 +68,9 @@ public class OmicronWandUpdater : MonoBehaviour {
 			}
 			else // Mouse pointer mode
 			{
-				if( rigidbody )
+				if( GetComponent<Rigidbody>() )
 				{
-					rigidbody.MovePosition( CAVE2Manager.GetWandPosition(wandID) );
+					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
 				}
 				else
 				{

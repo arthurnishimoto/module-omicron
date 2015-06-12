@@ -73,39 +73,39 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 		{
 			case((int)CAVE2Manager.Button.Button2):
 				if( lit )
-					buttonCircle.renderer.material = litMaterial;
+					buttonCircle.GetComponent<Renderer>().material = litMaterial;
 				else
-					buttonCircle.renderer.material = unlitMaterial;
+					buttonCircle.GetComponent<Renderer>().material = unlitMaterial;
 				break;
 			case((int)CAVE2Manager.Button.Button3):
 				if( lit )
-					buttonCross.renderer.material = litMaterial;
+					buttonCross.GetComponent<Renderer>().material = litMaterial;
 				else
-					buttonCross.renderer.material = unlitMaterial;
+					buttonCross.GetComponent<Renderer>().material = unlitMaterial;
 				break;
 			case((int)CAVE2Manager.Button.ButtonUp):
 				if( lit )
-					buttonUp.renderer.material = litMaterial;
+					buttonUp.GetComponent<Renderer>().material = litMaterial;
 				else
-					buttonUp.renderer.material = unlitMaterial;
+					buttonUp.GetComponent<Renderer>().material = unlitMaterial;
 				break;
 			case((int)CAVE2Manager.Button.ButtonDown):
 				if( lit )
-					buttonDown.renderer.material = litMaterial;
+					buttonDown.GetComponent<Renderer>().material = litMaterial;
 				else
-					buttonDown.renderer.material = unlitMaterial;
+					buttonDown.GetComponent<Renderer>().material = unlitMaterial;
 				break;
 			case((int)CAVE2Manager.Button.ButtonLeft):
 				if( lit )
-					buttonLeft.renderer.material = litMaterial;
+					buttonLeft.GetComponent<Renderer>().material = litMaterial;
 				else
-					buttonLeft.renderer.material = unlitMaterial;
+					buttonLeft.GetComponent<Renderer>().material = unlitMaterial;
 				break;
 			case((int)CAVE2Manager.Button.ButtonRight):
 				if( lit )
-					buttonRight.renderer.material = litMaterial;
+					buttonRight.GetComponent<Renderer>().material = litMaterial;
 				else
-					buttonRight.renderer.material = unlitMaterial;
+					buttonRight.GetComponent<Renderer>().material = unlitMaterial;
 				break;
 		}
 	}
