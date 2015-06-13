@@ -163,9 +163,9 @@ public class CAVE2Manager : OmicronEventClient {
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
 			#if USING_GETREAL3D
-			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
 			#endif
 		}
 	}
@@ -229,7 +229,11 @@ public class CAVE2Manager : OmicronEventClient {
 	{
 		if( ID == 1 )
 		{
+			#if USING_GETREAL3D
+			return getReal3D.Input.head.position;
+			#else
 			return CAVE2Manager.head1.GetPosition();
+			#endif
 		}
 		else if( ID == 2 )
 		{
@@ -243,7 +247,11 @@ public class CAVE2Manager : OmicronEventClient {
 	{
 		if( ID == 1 )
 		{
+			#if USING_GETREAL3D
+			return getReal3D.Input.head.rotation;
+			#else
 			return CAVE2Manager.head1.GetRotation();
+			#endif
 		}
 		else if( ID == 2 )
 		{

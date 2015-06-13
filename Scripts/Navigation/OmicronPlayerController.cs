@@ -133,7 +133,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 		wandPosition = CAVE2Manager.GetWandPosition(wandID);
 		wandRotation = CAVE2Manager.GetWandRotation(wandID);
-			
+
 		headPosition = CAVE2Manager.GetHeadPosition(wandID);
 		headRotation = CAVE2Manager.GetHeadRotation(wandID).eulerAngles;
 
