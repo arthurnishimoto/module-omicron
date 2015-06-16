@@ -229,11 +229,7 @@ public class CAVE2Manager : OmicronEventClient {
 	{
 		if( ID == 1 )
 		{
-			#if USING_GETREAL3D
-			return getReal3D.Input.head.position;
-			#else
 			return CAVE2Manager.head1.GetPosition();
-			#endif
 		}
 		else if( ID == 2 )
 		{
@@ -247,11 +243,7 @@ public class CAVE2Manager : OmicronEventClient {
 	{
 		if( ID == 1 )
 		{
-			#if USING_GETREAL3D
-			return getReal3D.Input.head.rotation;
-			#else
 			return CAVE2Manager.head1.GetRotation();
-			#endif
 		}
 		else if( ID == 2 )
 		{
@@ -529,7 +521,7 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		else
 		{
-			#if USING_GETREAL3D_TRACKING
+			#if USING_GETREAL3D
 			head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
 			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
 			#endif
@@ -545,6 +537,9 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
+			#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
+			#else
 			if( e.sourceId == head1.sourceID )
 			{
 				head1.Update( unityPos, unityRot );
@@ -561,6 +556,8 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateMocap( unityPos, unityRot );
 			}
+			#endif
+
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{
@@ -608,6 +605,27 @@ public class CAVE2Manager : OmicronEventClient {
 		else if( wandID == wand2.sourceID )
 		{
 			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+		}
+	}
+
+	[getReal3D.RPC]
+	void UpdateMocapRPC( uint id, Vector3 unityPos, Quaternion unityRot )
+	{
+		if( id == head1.sourceID )
+		{
+			head1.Update( unityPos, unityRot );
+		}
+		else if( id == head2.sourceID )
+		{
+			head2.Update( unityPos, unityRot );
+		}
+		else if( id == wand1.mocapID )
+		{
+			wand1.UpdateMocap( unityPos, unityRot );
+		}
+		else if( id == wand2.mocapID )
+		{
+			wand2.UpdateMocap( unityPos, unityRot );
 		}
 	}
 	#endif

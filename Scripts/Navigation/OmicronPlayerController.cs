@@ -134,8 +134,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		wandPosition = CAVE2Manager.GetWandPosition(wandID);
 		wandRotation = CAVE2Manager.GetWandRotation(wandID);
 
-		headPosition = CAVE2Manager.GetHeadPosition(wandID);
-		headRotation = CAVE2Manager.GetHeadRotation(wandID).eulerAngles;
+		headPosition = CAVE2Manager.GetHeadPosition(headID);
+		headRotation = CAVE2Manager.GetHeadRotation(headID).eulerAngles;
 
 		if (headPosition.y == 0)
 			Debug.LogWarning ("OmicronPlayerController: Head is at height (Y) 0.0 - This should never happen! Check your tracking system or enable mocap emulation in CAVE2Manager.");
