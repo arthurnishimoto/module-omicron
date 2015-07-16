@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -24,20 +24,47 @@
 * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************/
-
 using UnityEngine;
 using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class CAVE2Manager : OmicronEventClient {
-
-	public bool CAVE2QuickSettings = false;
-	MocapState head1;
-	MocapState head2;
+public class HeadTrackerState
+{
+	public int sourceID;
+	public Vector3 position;
+	public Quaternion rotation;
 	
-	public WandState wand1;
-	public WandState wand2;
+	public HeadTrackerState(int ID)
+	{
+		sourceID = ID;
+		position = new Vector3();
+		rotation = new Quaternion();
+	}
+	
+	public void Update( Vector3 position, Quaternion orientation )
+	{
+		this.position = position;
+		this.rotation = orientation;
+	}
+	
+	public Vector3 GetPosition()
+	{
+		return position;
+	}
+	
+	public Quaternion GetRotation()
+	{
+		return rotation;
+	}
+}
+
+public class CAVE2Manager : OmicronEventClient {
+	static HeadTrackerState head1;
+	static HeadTrackerState head2;
+	
+	public static WandState wand1;
+	public static WandState wand2;
 	
 	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR,
 		LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTriggerR_Inverted
@@ -60,6 +87,8 @@ public class CAVE2Manager : OmicronEventClient {
 	public bool wandMousePointerEmulation = false;
 	public bool mocapEmulation = false;
 	public bool lockWandToHeadTransform = false;
+	public bool mouseHeadLook = false;
+	public static bool mouseUsingGUI = false;
 
 	public Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
 	public Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
@@ -82,17 +111,18 @@ public class CAVE2Manager : OmicronEventClient {
 	public float emulatedRotationSpeed = 0.05f;
 
 	public int framerateCap = 60;
+	public static string machineName;
+
+	Vector3 lastMousePosition = Vector3.zero;
 
 	// Use this for initialization
 	new void Start () {
 		base.Start();
-
-		head1 = gameObject.AddComponent<MocapState>();
-		head2 = gameObject.AddComponent<MocapState>();
-		head1.mocapID = Head1;
-		head2.mocapID = Head2;
 		
-		if( wand1 == null )
+		head1 = new HeadTrackerState(Head1);
+		head2 = new HeadTrackerState(Head2);
+		
+		if (wand1 == null)
 			wand1 = new WandState(Wand1, Wand1Mocap);
 		else
 		{
@@ -108,160 +138,393 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 
 		Application.targetFrameRate = framerateCap;
+		machineName = System.Environment.MachineName;
 
-		//if( getReal3D.Cluster.isMaster )
-		//	clusterView.RPC("SetClusterRandomSeed", Random.seed );
+		if ( OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor )
+        {
+            keyboardEventEmulation = true;
+            wandMousePointerEmulation = false;
+            mocapEmulation = false;
+            lockWandToHeadTransform = false;
+        }
+		else if (OnCAVE2Display())
+        {
+			#if USING_GETREAL3D
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+			#endif
+
+			keyboardEventEmulation = true;
+			wandMousePointerEmulation = false;
+			mocapEmulation = false;
+			lockWandToHeadTransform = false;
+        }
+		else if( Application.platform == RuntimePlatform.WindowsEditor )
+		{
+			#if USING_GETREAL3D
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+			#endif
+		}
 	}
 
-	//[getReal3D.RPC]
-	void SetClusterRandomSeed(int seed)
+	public static bool UsingGetReal3D()
 	{
-		Random.seed = seed;
+		if( Application.HasProLicense() && (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
-	void UpdateWandState()
+	public static bool UsingOmicronServer()
 	{
-		wand1.UpdateState(Wand1, Wand1Mocap);
-		wand2.UpdateState(Wand2, Wand2Mocap);
+		return GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<OmicronManager>().connectToServer;
+	}
+
+	public static bool IsMaster()
+	{
+		#if USING_GETREAL3D
+		return getReal3D.Cluster.isMaster;
+		#else
+		if( machineName.Contains("LYRA") && !machineName.Equals("LYRA-WIN") )
+			return false;
+		else // Assumes on LYRA-WIN or development machine
+			return true;
+		#endif
+	}
+
+	public static bool OnCAVE2Master()
+	{
+		machineName = System.Environment.MachineName;
+		if( machineName.Equals("LYRA-WIN") )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static bool OnCAVE2Display()
+	{
+		machineName = System.Environment.MachineName;
+		if( machineName.Contains("LYRA") && !IsMaster() )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static Vector3 GetHeadPosition(int ID)
+	{
+		if( ID == 1 )
+		{
+			return CAVE2Manager.head1.GetPosition();
+		}
+		else if( ID == 2 )
+		{
+			return CAVE2Manager.head2.GetPosition();
+		}
+		
+		return Vector3.zero;
+	}
+	
+	public static Quaternion GetHeadRotation(int ID)
+	{
+		if( ID == 1 )
+		{
+			return CAVE2Manager.head1.GetRotation();
+		}
+		else if( ID == 2 )
+		{
+			return CAVE2Manager.head2.GetRotation();
+		}
+		
+		return Quaternion.identity;
+	}
+
+	public static Vector3 GetWandPosition(int wandID)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetPosition();
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetPosition();
+		}
+		
+		return Vector3.zero;
+	}
+
+	public static Quaternion GetWandRotation(int wandID)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetRotation();
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetRotation();
+		}
+		
+		return Quaternion.identity;
+	}
+
+	public static float GetAxis(int wandID, CAVE2Manager.Axis axis)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetAxis(axis);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetAxis(axis);
+		}
+		
+		return 0;
+	}
+
+	public static bool GetButton(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButton(button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButton(button);
+		}
+		
+		return false;
+	}
+
+	public static bool GetButtonDown(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButtonDown(button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButtonDown(button);
+		}
+		
+		return false;
+	}
+
+	public static bool GetButtonUp(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButtonUp(button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButtonUp(button);
+		}
+		
+		return false;
+	}
+
+	public static WandState.ButtonState GetButtonState(int wandID, CAVE2Manager.Button button)
+	{
+		if( wandID == 1 )
+		{
+			return CAVE2Manager.wand1.GetButtonState((int)button);
+		}
+		else if( wandID == 2 )
+		{
+			return CAVE2Manager.wand2.GetButtonState((int)button);
+		}
+		
+		return 0;
 	}
 
 	// Update is called once per frame
 	void Update () {
+		wand1.UpdateState(Wand1, Wand1Mocap);
+		wand2.UpdateState(Wand2, Wand2Mocap);
 
-		//getRealCameraUpdater getRealCam = Camera.main.GetComponent<getRealCameraUpdater>();
-		
-		//if( getReal3D.Cluster.isClientAndClusterOn )
-		//	CAVE2QuickSettings = true;
-		
-		if( CAVE2QuickSettings )
+		if( mouseHeadLook)
 		{
-			keyboardEventEmulation = false;
-			wandMousePointerEmulation = false;
-			mocapEmulation = false;
-			lockWandToHeadTransform = false;
+			Vector3 mouseDiff = Input.mousePosition - lastMousePosition;
+			if( !mouseUsingGUI )
+				headEmulatedRotation += new Vector3(-mouseDiff.y, mouseDiff.x, 0) * emulatedRotationSpeed;
+			lastMousePosition = Input.mousePosition;
+			mouseUsingGUI = false;
+		}
+		if( keyboardEventEmulation )
+		{
+			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
+			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
+			float lookHorizontal = 0 * axisSensitivity;
+			float lookVertical = 0 * axisSensitivity;
+            float forward = 0 * axisSensitivity;
+
+			uint flags = 0;
+
+			#if USING_GETREAL3D
+			vertical += -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
+			horizontal += getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
+			lookHorizontal += getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
+			lookVertical += getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
+
+			// F -> Wand Button 2 (Circle/B)
+			if( getReal3D.Input.GetButton("WandButton") )
+				flags += (int)EventBase.Flags.Button2;
+			// R -> Wand Button 3 (Cross/A)
+			if( getReal3D.Input.GetButton("Reset") )
+				flags += (int)EventBase.Flags.Button3;
+			// Wand Button 1 (Triangle/Y)
+			if( getReal3D.Input.GetButton("Jump") )
+				flags += (int)EventBase.Flags.Button1;
+			// Wand Button 4 (Square/X)
+			if( getReal3D.Input.GetButton("ChangeWand") )
+				flags += (int)EventBase.Flags.Button4;
+			// Wand Button 8 (R1/RB)
+			if( getReal3D.Input.GetButton("WandLook") )
+				flags += (int)EventBase.Flags.Button8;
+			// Wand Button 5 (L1/LB)
+			if( getReal3D.Input.GetButton("NavSpeed") )
+				flags += (int)EventBase.Flags.Button5;
+			// Wand Button 6 (L3)
+			if( getReal3D.Input.GetButton("L3") )
+				flags += (int)EventBase.Flags.Button6;
+			// Wand Button 9 (R3)
+			if( getReal3D.Input.GetButton("R3") )
+				flags += (int)EventBase.Flags.Button9;
+			// Wand Button SP1 (Back)
+			if( getReal3D.Input.GetButton("Back") )
+				flags += (int)EventBase.Flags.SpecialButton1;
+			// Wand Button SP2 (Start)
+			if( getReal3D.Input.GetButton("Start") )
+				flags += (int)EventBase.Flags.SpecialButton2;
+			#endif
+
+			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
+
+			// Arrow keys -> DPad
+			if( Input.GetKey( KeyCode.UpArrow ) )
+				flags += (int)EventBase.Flags.ButtonUp;
+			if( Input.GetKey( KeyCode.DownArrow ) )
+				flags += (int)EventBase.Flags.ButtonDown;
+			if( Input.GetKey( KeyCode.LeftArrow ) )
+				flags += (int)EventBase.Flags.ButtonLeft;
+			if( Input.GetKey( KeyCode.RightArrow ) )
+				flags += (int)EventBase.Flags.ButtonRight;
 			
-			OmicronManager omgManager = GetComponent<OmicronManager>();
-			if( !omgManager.connectToServer )
-				omgManager.ConnectToServer();
+			// F -> Wand Button 2 (Circle)
+			if( Input.GetKey( KeyCode.F ) || Input.GetButton("Fire2") )
+				flags += (int)EventBase.Flags.Button2;
+			// R -> Wand Button 3 (Cross)
+			if( Input.GetKey( KeyCode.R ) || Input.GetButton("Fire1") )
+				flags += (int)EventBase.Flags.Button3;
+
+			Vector2 wandAnalog = new Vector2();
+			Vector2 wandAnalog2 = new Vector2();
+            Vector2 wandAnalog3 = new Vector2();
+
+			if( WASDkeys == TrackerEmulated.CAVE )
+			{
+				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				{
+					wandAnalog = new Vector2(horizontal,vertical);
+					wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
+                	wandAnalog3 = new Vector2(forward,0);
+				}
+				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+				{
+					wandAnalog = new Vector2(0,vertical);
+					wandAnalog2 = new Vector2(horizontal,lookVertical);
+					wandAnalog3 = new Vector2(forward,0);
+				}
+			}
+			else if( WASDkeys == TrackerEmulated.Head )
+			{
+				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				{
+					headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+				}
+				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
+			}
+
+            wand1.UpdateController( flags, wandAnalog , wandAnalog2, wandAnalog3 );
+
+			float headForward = 0;
+			float headStrafe = 0;
+			float headVertical = 0;
 			
-			CAVE2QuickSettings = false;
+			float speed = emulatedTranslateSpeed;
+			if( IJKLkeyMode == TrackerEmulationMode.Translate )
+				speed = emulatedTranslateSpeed;
+			else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+				speed = emulatedRotationSpeed;
+			
+			if( Input.GetKey(KeyCode.I) )
+				headForward += speed;
+			else if( Input.GetKey(KeyCode.K) )
+				headForward -= speed;
+			if( Input.GetKey(KeyCode.J) )
+				headStrafe -= speed;
+			else if( Input.GetKey(KeyCode.L) )
+				headStrafe += speed;
+			if( Input.GetKey(KeyCode.U) )
+				headVertical += speed;
+			else if( Input.GetKey(KeyCode.O) )
+				headVertical -= speed;
+
+			if( IJKLkeys == TrackerEmulated.Head )
+			{
+				if( IJKLkeyMode == TrackerEmulationMode.Translate )
+					headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+					headEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+			}
+			else if( IJKLkeys == TrackerEmulated.Wand )
+			{
+				if( IJKLkeyMode == TrackerEmulationMode.Translate )
+					wandEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
+				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
+					wandEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
+			}
+
+
+		}
+
+		if( mocapEmulation )
+		{
+			Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
+			headEmulatedRotation += lookAround * emulatedRotationSpeed;
+
+			// Update emulated positions/rotations
+			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+
+			if( lockWandToHeadTransform )
+				wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+			else
+				wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
+			
+			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
+			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 		}
 		else
 		{
-			//if( getRealCam && mocapEmulation )
-			//{
-			//	getRealCam.applyHeadPosition = false;
-			//	getRealCam.applyHeadRotation = false;
-			//	getRealCam.applyCameraProjection = false;
-			//	getRealCam.transform.localPosition = Vector3.zero;
-			//	getRealCam.transform.localRotation = Quaternion.identity;
-			//}
-		}
-        if( IsMaster() )
-		{
-			UpdateWandState();
-
-			if( keyboardEventEmulation )
-			{
-				float vertical = Input.GetAxis("Vertical") * axisSensitivity;
-				float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
-				float lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
-	            float forward = Input.GetAxis("Forward") * axisSensitivity;
-
-				uint flags = 0;
-				
-				// Arrow keys -> DPad
-				if( Input.GetKey( KeyCode.UpArrow ) )
-					flags += (int)EventBase.Flags.ButtonUp;
-				if( Input.GetKey( KeyCode.DownArrow ) )
-					flags += (int)EventBase.Flags.ButtonDown;
-				if( Input.GetKey( KeyCode.LeftArrow ) )
-					flags += (int)EventBase.Flags.ButtonLeft;
-				if( Input.GetKey( KeyCode.RightArrow ) )
-					flags += (int)EventBase.Flags.ButtonRight;
-				
-				// F -> Wand Button 2 (Circle)
-				if( Input.GetKey( KeyCode.F ) || Input.GetMouseButton(1) )
-					flags += (int)EventBase.Flags.Button2;
-				// R -> Wand Button 3 (Cross)
-				if( Input.GetKey( KeyCode.R ) || Input.GetMouseButton(0) )
-					flags += (int)EventBase.Flags.Button3;
-
-				Vector2 wandAnalog = new Vector2();
-				Vector2 wandAnalog2 = new Vector2();
-	            Vector2 wandAnalog3 = new Vector2();
-				if( WASDkeys == TrackerEmulated.CAVE )
-				{
-					wandAnalog = new Vector2(horizontal,vertical);
-					wandAnalog2 = new Vector2(lookHorizontal,0);
-	                wandAnalog3 = new Vector2(forward,0);
-				}
-				else if( WASDkeys == TrackerEmulated.Head )
-				{
-					if( WASDkeyMode == TrackerEmulationMode.Translate )
-					{
-						headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
-					}
-					else if( WASDkeyMode == TrackerEmulationMode.Rotate )
-						headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
-				}
-
-	            UpdateController(1, flags, wandAnalog , wandAnalog2, wandAnalog3);
-
-				float headForward = 0;
-				float headStrafe = 0;
-				float headVertical = 0;
-				
-				float speed = emulatedTranslateSpeed;
-				if( IJKLkeyMode == TrackerEmulationMode.Translate )
-					speed = emulatedTranslateSpeed;
-				else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
-					speed = emulatedRotationSpeed;
-				
-				if( Input.GetKey(KeyCode.I) )
-					headForward += speed;
-				else if( Input.GetKey(KeyCode.K) )
-					headForward -= speed;
-				if( Input.GetKey(KeyCode.J) )
-					headStrafe -= speed;
-				else if( Input.GetKey(KeyCode.L) )
-					headStrafe += speed;
-				if( Input.GetKey(KeyCode.U) )
-					headVertical += speed;
-				else if( Input.GetKey(KeyCode.O) )
-					headVertical -= speed;
-
-				if( IJKLkeys == TrackerEmulated.Head )
-				{
-					if( IJKLkeyMode == TrackerEmulationMode.Translate )
-						headEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
-					else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
-						headEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
-				}
-				else if( IJKLkeys == TrackerEmulated.Wand )
-				{
-					if( IJKLkeyMode == TrackerEmulationMode.Translate )
-						wandEmulatedPosition += new Vector3( headStrafe, headVertical, headForward );
-					else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
-						wandEmulatedRotation += new Vector3( headForward, headStrafe, headVertical );
-				}
-
-
-			}
-
-			if( mocapEmulation )
-			{
-				// Update emulated positions/rotations
-				head1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
-
-				if( lockWandToHeadTransform )
-					wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
-				else
-					wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
-				
-				GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
-				GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
-			}
+			#if USING_GETREAL3D
+			head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
+			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
+			#endif
 		}
 	}
 
@@ -274,7 +537,27 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
-            UpdateMocap(e.sourceId, unityPos, unityRot );
+			#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
+			#else
+			if( e.sourceId == head1.sourceID )
+			{
+				head1.Update( unityPos, unityRot );
+			}
+			else if( e.sourceId == head2.sourceID )
+			{
+				head2.Update( unityPos, unityRot );
+			}
+			else if( e.sourceId == wand1.mocapID )
+			{
+				wand1.UpdateMocap( unityPos, unityRot );
+			}
+			else if( e.sourceId == wand2.mocapID )
+			{
+				wand2.UpdateMocap( unityPos, unityRot );
+			}
+			#endif
+
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{
@@ -296,43 +579,58 @@ public class CAVE2Manager : OmicronEventClient {
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
 
-            UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+			#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			#else
+			if( e.sourceId == wand1.sourceID )
+			{
+				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			}
+			else if( e.sourceId == wand2.sourceID )
+			{
+				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			}
+			#endif
 		}
 	}
 
-	void UpdateMocap(uint sourceId, Vector3 unityPos, Quaternion unityRot)
+	#if USING_GETREAL3D
+	[getReal3D.RPC]
+	void UpdateControllerRPC( uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
-		if( sourceId == head1.mocapID )
-		{
-			head1.UpdateMocap( unityPos, unityRot );
-		}
-		else if( sourceId == head2.mocapID )
-		{
-			head2.UpdateMocap( unityPos, unityRot );
-		}
-		else if( sourceId == wand1.mocapID )
-		{
-			wand1.UpdateMocap( unityPos, unityRot );
-		}
-		else if( sourceId == wand2.mocapID )
-		{
-			wand2.UpdateMocap( unityPos, unityRot );
-		}
-	}
-
-	void UpdateController(uint sourceId, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger)
-	{
-		if( sourceId == wand1.sourceID )
+		if( wandID == wand1.sourceID )
 		{
 			wand1.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 		}
-		else if( sourceId == wand2.sourceID )
+		else if( wandID == wand2.sourceID )
 		{
 			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 		}
 	}
 
-	public MocapState getHead(int ID)
+	[getReal3D.RPC]
+	void UpdateMocapRPC( uint id, Vector3 unityPos, Quaternion unityRot )
+	{
+		if( id == head1.sourceID )
+		{
+			head1.Update( unityPos, unityRot );
+		}
+		else if( id == head2.sourceID )
+		{
+			head2.Update( unityPos, unityRot );
+		}
+		else if( id == wand1.mocapID )
+		{
+			wand1.UpdateMocap( unityPos, unityRot );
+		}
+		else if( id == wand2.mocapID )
+		{
+			wand2.UpdateMocap( unityPos, unityRot );
+		}
+	}
+	#endif
+
+	public HeadTrackerState getHead(int ID)
 	{
 		if( ID == 2 )
 			return head2;
@@ -382,30 +680,5 @@ public class CAVE2Manager : OmicronEventClient {
 		IJKLkeys = (TrackerEmulated)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 6, 200, 20), (int)IJKLkeys, trackerEmuStrings, 3);
 		IJKLkeyMode = (TrackerEmulationMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 100, GUIOffset.y + rowHeight * 7, 200, 20), (int)IJKLkeyMode, trackerEmuModeStrings, 3);
 
-		OmicronPlayerController omgPlayerController = GameObject.FindGameObjectWithTag("PlayerController").GetComponent<OmicronPlayerController>();
-		if( omgPlayerController )
-		{
-			omgPlayerController.showCAVEFloor = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 8, 250, 20), omgPlayerController.showCAVEFloor, "Show CAVE2 Floor");
-			omgPlayerController.showCAVEScreens = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 9, 250, 20), omgPlayerController.showCAVEScreens, "Show CAVE2 Screens");
-			omgPlayerController.showCAVEOnlyOnMaster = GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 10, 250, 20), omgPlayerController.showCAVEOnlyOnMaster, "Show CAVE2 Only On Master");
-		}
     }
-
-	public static bool IsMaster()
-	{
-		#if USING_GETREAL3D
-		return getReal3D.Cluster.isMaster;
-		#else
-		return true;
-		#endif
-	}
-
-	public static bool IsGetReal3DEnabled()
-	{
-		#if USING_GETREAL3D
-		return true;
-		#else
-		return false;
-		#endif
-	}
 }

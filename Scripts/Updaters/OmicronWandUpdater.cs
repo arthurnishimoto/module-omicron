@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -31,57 +31,45 @@ using omicron;
 using omicronConnector;
 
 public class OmicronWandUpdater : MonoBehaviour {
-
-	public CAVE2Manager cave2Manager;
 	public int wandID = 1;
-	public WandState wand;
-    public LayerMask wandPointerLayerMask;
+
+	CAVE2Manager cave2Manager;
 
 	public void InitOmicron()
 	{
-		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
-		wand = cave2Manager.getWand(wandID);
-
-		// Ignore physics collisions with player controller and player objects (head/wand)
-		GameObject playerController = GameObject.FindGameObjectWithTag("PlayerController");
-        if( playerController != gameObject && gameObject.GetComponent<Collider>() ) // OmicronPlayerController is a derived class of OmicronWandUpdater
-			Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), playerController.GetComponent<Collider>() );
+		cave2Manager = GameObject.Find ("CAVE2-InputManager").GetComponent<CAVE2Manager> ();
 	}
-	
+
 	// Use this for initialization
 	public void Start () {
-		InitOmicron();
+		InitOmicron ();
 	}
 	
 	// Update is called once per frame
 	void Update() {
 
-        bool isMaster = true;
-        //isMaster = getReal3D.Cluster.isMaster;
-        if( isMaster )
-		{
 			if( !cave2Manager.wandMousePointerEmulation )
 			{
-				if( rigidbody )
+				if( GetComponent<Rigidbody>() )
 				{
-					rigidbody.MovePosition( wand.position );
-					rigidbody.MoveRotation( wand.rotation );
+					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
+					GetComponent<Rigidbody>().MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
 				}
 				else
 				{
-					transform.localPosition = wand.position;
-					transform.localRotation = wand.rotation;
+					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+					transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
 				}
 			}
 			else // Mouse pointer mode
 			{
-				if( rigidbody )
+				if( GetComponent<Rigidbody>() )
 				{
-					rigidbody.MovePosition( wand.position );
+					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
 				}
 				else
 				{
-					transform.localPosition = wand.position;
+					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
 				}
 
 				// Mouse pointer ray controls rotation
@@ -90,17 +78,17 @@ public class OmicronWandUpdater : MonoBehaviour {
 				// Ray extending from main camera into screen from touch point
 				Ray ray = Camera.main.ScreenPointToRay(position);
 				RaycastHit hit;
-                if (Physics.Raycast(ray, out hit, 100, wandPointerLayerMask))
+				if (Physics.Raycast(ray, out hit, 100))
 				{
-					transform.LookAt( hit.point );
+					//transform.LookAt( hit.point );
 				}
 				else
 				{
-					transform.LookAt( ray.GetPoint(1000) );
+					//transform.LookAt( ray.GetPoint(1000) );
 				}
+				transform.LookAt( ray.GetPoint(1000) );
 				// Update the wandSate rotation (opposite of normal since this object is determining the rotation)
 				cave2Manager.wandEmulatedRotation = transform.eulerAngles;
 			}
-		}
 	}
 }

@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2014             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2014, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -30,7 +30,7 @@ using System.Collections;
 
 public class OmicronPlayerController : OmicronWandUpdater {
 
-	string version = "v1.0-alpha6";
+	string version = "v2.0-alpha1";
 
 	public CAVE2Manager.Axis forwardAxis = CAVE2Manager.Axis.LeftAnalogStickUD;
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
@@ -74,13 +74,10 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	Vector3 headPosition;
 	Vector3 headRotation;
-
-	public bool showCAVEFloor = true;
-	public bool showCAVEScreens = true;
-	public bool showCAVEOnlyOnMaster = true;
-	public GameObject CAVE2Floor;
-	public GameObject CAVE2Screen;
-
+	
+	public bool showCAVEFloorOnlyOnMaster = true;
+	public GameObject CAVEFloor;
+	
 	Vector3 wandPosition;
 	Quaternion wandRotation;
 
@@ -98,7 +95,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	// Use this for initialization
 	new void Start () {
-		InitOmicron();
 		gameObject.tag = "PlayerController";
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
@@ -108,9 +104,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	// Should be used with dealing with RigidBodies
 	void FixedUpdate()
 	{
-		if( !CAVE2Manager.IsMaster() )
-			return;
-
 		playerCollider.height = headPosition.y - 0.25f; // Player height - head size
 
 		if( colliderMode == ColliderMode.Head )
@@ -137,51 +130,36 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	// Update is called once per frame
 	void Update () {
-		if (CAVE2Floor && CAVE2Screen)
-		{
-			if( (CAVE2Manager.IsMaster() && showCAVEOnlyOnMaster) || !showCAVEOnlyOnMaster )
-			{
-				CAVE2Floor.SetActive(showCAVEFloor);
-				CAVE2Screen.SetActive(showCAVEScreens);
-			}
-		}
 
-        if( !CAVE2Manager.IsMaster() )
-			return;
+		wandPosition = CAVE2Manager.GetWandPosition(wandID);
+		wandRotation = CAVE2Manager.GetWandRotation(wandID);
 
-		wandPosition = cave2Manager.getWand(wandID).GetPosition();
-		wandRotation = cave2Manager.getWand(wandID).GetRotation();
-			
-		headPosition = cave2Manager.getHead(headID).GetPosition();
-		headRotation = cave2Manager.getHead(headID).GetRotation().eulerAngles;
+		headPosition = CAVE2Manager.GetHeadPosition(headID);
+		headRotation = CAVE2Manager.GetHeadRotation(headID).eulerAngles;
+
+		if (headPosition.y == 0)
+			Debug.LogWarning ("OmicronPlayerController: Head is at height (Y) 0.0 - This should never happen! Check your tracking system or enable mocap emulation in CAVE2Manager.");
 
 		if( !freezeMovement )
 		{
-			forward = cave2Manager.getWand(wandID).GetAxis(forwardAxis);	
+			forward = CAVE2Manager.GetAxis(wandID, forwardAxis);	
 			forward *= movementScale;
 
-			strafe = cave2Manager.getWand(wandID).GetAxis(strafeAxis);	
+			strafe = CAVE2Manager.GetAxis(wandID, strafeAxis);	
 			strafe *= movementScale;
 
-			lookAround.x = cave2Manager.getWand(wandID).GetAxis(lookUDAxis);
+			lookAround.x = CAVE2Manager.GetAxis(wandID, lookUDAxis);
 			lookAround.x *= movementScale;
-			lookAround.y = cave2Manager.getWand(wandID).GetAxis(lookLRAxis);
+			lookAround.y = CAVE2Manager.GetAxis(wandID, lookLRAxis);
 			lookAround.y *= movementScale;
 
-			// Only enable in emulator mode, otherwise conflicts with normal wand 6DOF navigation
-			if( GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>().keyboardEventEmulation )
-			{
-           		vertical = cave2Manager.getWand(wandID).GetAxis(verticalAxis);
-            	vertical *= movementScale;
-
-				forwardReference = ForwardRef.CAVEFront;
-				horizontalMovementMode = HorizonalMovementMode.Strafe;
-			}
+			vertical = CAVE2Manager.GetAxis(wandID, verticalAxis);
+            vertical *= movementScale;
 		}
+
+		freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
 			
-		freeflyButtonDown = cave2Manager.getWand(wandID).GetButton(freeFlyButton);
-			
-		if( cave2Manager.getWand(wandID).GetButtonDown(freeFlyToggleButton) )
+		if( CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton) )
 		{
 			navMode++;
 			if( (int)navMode > 2 )
@@ -190,34 +168,24 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			SetNavigationMode((int)navMode);
 		}
 
-		if( cave2Manager.getWand(wandID).GetButtonDown(autoLevelButton) )
+		if( CAVE2Manager.GetButtonDown(wandID, autoLevelButton) )
 		{
 			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
 		}
-	}
+		
+        if (CAVEFloor && !CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(true);
 
-	void UpdatePlayerControllerTransform( Vector3 pos, Quaternion rot )
-	{
-		transform.position = pos;
-		transform.rotation = rot;
+        if (CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(false);
+        else if (CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(true);
 	}
-
-	void UpdatePlayerControllerHeadTransform( Vector3 pos, Vector3 rot )
-	{
-		headPosition = pos;
-		headRotation = rot;
-	}
-
-	void UpdatePlayerControllerWandTransform( Vector3 pos, Quaternion rot )
-	{
-		wandPosition = pos;
-		wandRotation = rot;
-	}
-
+	
 	void UpdateFreeflyMovement()
 	{
-		rigidbody.useGravity = false;
-		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+		GetComponent<Rigidbody>().useGravity = false;
+		GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		playerCollider.enabled = false;
 		
 		if( freeflyButtonDown && !freeflyInitVectorSet )
@@ -299,8 +267,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	void UpdateWalkMovement()
 	{
-		rigidbody.useGravity = true;
-		rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+		GetComponent<Rigidbody>().useGravity = true;
+		GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 		playerCollider.enabled = true;
 
 		Vector3 nextPos = transform.position;
@@ -327,7 +295,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			transform.position = nextPos;
+			//transform.position = nextPos;
 
 			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * Time.deltaTime * turnSpeed);
 
@@ -380,15 +348,16 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 6, 200, 20), "Forward Reference: ");
 		forwardReference = (ForwardRef)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 7, 200, 20), (int)forwardReference, forwardRefStrings, 3);
 
+
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 8, 200, 20), "Left Analog LR Mode: ");
 		horizontalMovementMode = (HorizonalMovementMode)GUI.SelectionGrid(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 9, 200, 20), (int)horizontalMovementMode, horzStrings, 3);
-
+		
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 10 + 5, 120, 20), "Walk Nav Scale: ");
 		movementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 10 + 5, 75, 20), movementScale.ToString(), 25));
-
+		
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 11 + 10, 120, 20), "Drive/Fly Nav Scale: ");
 		flyMovementScale = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 11 + 10, 75, 20), flyMovementScale.ToString(), 25));
-
+			
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + 20 * 12 + 15, 120, 20), "Rotate Scale: ");
 		turnSpeed = float.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + 20 * 12 + 15, 75, 20), turnSpeed.ToString(), 25));
 
@@ -396,79 +365,5 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			autoLevelMode = AutoLevelMode.OnGroundCollision;
 		else
 			autoLevelMode = AutoLevelMode.Disabled;
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetNavMode", navMode);
-		//#endif
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetForwardReference", forwardReference);
-		//#endif
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetHorizontalMovementMode", horizontalMovementMode);
-		//#endif
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetMovementScale", movementScale);
-		//#endif
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetFlyMovementScale", flyMovementScale);
-		//#endif
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetTurnSpeed", turnSpeed);
-		//#endif
-
-		//#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-		//getReal3D.RpcManager.call ("SetAutoLevelMode", autoLevelMode);
-		//#endif
 	}
-	/*
-	#if UNITY_PRO_LICENSE && (UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN)
-	[getReal3D.RPC]
-	void SetNavMode( NavigationMode val )
-	{
-		navMode = val;
-	}
-
-	[getReal3D.RPC]
-	void SetForwardReference( ForwardRef val )
-	{
-		forwardReference = val;
-	}
-
-	[getReal3D.RPC]
-	void SetHorizontalMovementMode( HorizonalMovementMode val )
-	{
-		horizontalMovementMode = val;
-	}
-
-	[getReal3D.RPC]
-	void SetMovementScale( float val )
-	{
-		movementScale = val;
-	}
-
-	[getReal3D.RPC]
-	void SetFlyMovementScale( float val )
-	{
-		flyMovementScale = val;
-	}
-
-	[getReal3D.RPC]
-	void SetTurnSpeed( float val )
-	{
-		turnSpeed = val;
-	}
-
-	[getReal3D.RPC]
-	void SetAutoLevelMode( AutoLevelMode val )
-	{
-		autoLevelMode = val;
-	}
-
-	#endif
-	*/
 }

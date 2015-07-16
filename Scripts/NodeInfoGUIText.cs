@@ -10,7 +10,7 @@ public class NodeInfoGUIText : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		guiText.text = "Node: "+System.Environment.MachineName;
-		guiText.text += "\nMain Camera Count: "+GameObject.FindGameObjectsWithTag("MainCamera").Length;
+		GetComponent<GUIText>().text = "Node: "+System.Environment.MachineName;
+		GetComponent<GUIText>().text += "\nMain Camera Count: "+GameObject.FindGameObjectsWithTag("MainCamera").Length;
 	}
 }

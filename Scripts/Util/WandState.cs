@@ -4,51 +4,66 @@ using omicron;
 using omicronConnector;
 using System;
 
-public class WandState : MocapState
+public class WandState
 {
 	public int sourceID;
-	public int flags;
-	
-	public Vector2 leftAnalogStick;
-	public Vector2 rightAnalogStick;
-	public Vector2 analogTrigger;
+	public int mocapID;
+	Vector3 position;
+	Quaternion rotation;
+
+	Vector2 leftAnalogStick;
+	Vector2 rightAnalogStick;
+	Vector2 analogTrigger;
 	
 	public enum ButtonState { Idle, Down, Held, Up };
 
-	public ButtonState button1 = ButtonState.Idle;
-	public ButtonState button2 = ButtonState.Idle;
-	public ButtonState button3 = ButtonState.Idle;
-	public ButtonState button4 = ButtonState.Idle;
-	public ButtonState button5 = ButtonState.Idle;
-	public ButtonState button6 = ButtonState.Idle;
-	public ButtonState button7 = ButtonState.Idle;
-	public ButtonState button8 = ButtonState.Idle;
-	public ButtonState button9 = ButtonState.Idle;
-	public ButtonState buttonUp = ButtonState.Idle;
-	public ButtonState buttonDown = ButtonState.Idle;
-	public ButtonState buttonLeft = ButtonState.Idle;
-	public ButtonState buttonRight = ButtonState.Idle;
-	public ButtonState buttonSP1 = ButtonState.Idle;
-	public ButtonState buttonSP2 = ButtonState.Idle;
-	public ButtonState buttonSP3 = ButtonState.Idle;
+	ButtonState button1 = ButtonState.Idle;
+	ButtonState button2 = ButtonState.Idle;
+	ButtonState button3 = ButtonState.Idle;
+	ButtonState button4 = ButtonState.Idle;
+	ButtonState button5 = ButtonState.Idle;
+	ButtonState button6 = ButtonState.Idle;
+	ButtonState button7 = ButtonState.Idle;
+	ButtonState button8 = ButtonState.Idle;
+	ButtonState button9 = ButtonState.Idle;
+	ButtonState buttonUp = ButtonState.Idle;
+	ButtonState buttonDown = ButtonState.Idle;
+	ButtonState buttonLeft = ButtonState.Idle;
+	ButtonState buttonRight = ButtonState.Idle;
+	ButtonState buttonSP1 = ButtonState.Idle;
+	ButtonState buttonSP2 = ButtonState.Idle;
+	ButtonState buttonSP3 = ButtonState.Idle;
 	ButtonState buttonNull = ButtonState.Idle;
-		
-	public bool RPCButtonEvents = false;
 
-	public WandState( int ID, int mocapID ) : base (mocapID)
+	int lastUpdateEventFrame;
+
+	public WandState( int ID, int mocapID )
 	{
-
 		sourceID = ID;
 		this.mocapID = mocapID;
 		
 		position = new Vector3();
 		rotation = new Quaternion();
-		
-		flags = 0;
+
 		leftAnalogStick = new Vector2();
 		rightAnalogStick = new Vector2();
 		analogTrigger = new Vector2();
 	}
+	/*
+	void OnGUI() {
+
+		GUI.Box(new Rect(0, 0, 250 , 250 ), "Dynamic Tile Generator");
+			
+		GUI.Label(new Rect(25, 20 * 12, 200, 20), "B1: " + button1);
+		GUI.Label(new Rect(25, 20 * 13, 200, 20), "B2: " + button2);
+		GUI.Label(new Rect(25, 20 * 14, 200, 20), "B3: " + button3);
+		GUI.Label(new Rect(25, 20 * 15, 200, 20), "B4: " + button4);
+		GUI.Label(new Rect(25, 20 * 16, 200, 20), "B5: " + button5);
+		GUI.Label(new Rect(25, 20 * 17, 200, 20), "B6: " + button6);
+		GUI.Label(new Rect(25, 20 * 18, 200, 20), "B6: " + button7);
+		GUI.Label(new Rect(25, 20 * 19, 200, 20), "B7: " + button8);
+    }
+    */
 
 	public Vector3 GetPosition()
 	{
@@ -162,20 +177,23 @@ public class WandState : MocapState
 		
 		// Set buttons held if down on the last frame
 		// Set buttons as idle if up on the last frame
-		
-		for(int i = 0; i < 16; i++ )
+		// We only check if frame time if input is coming from an external async
+		// source like an Omicron oinputserver
+		if( Time.frameCount - lastUpdateEventFrame > 1 || !CAVE2Manager.UsingOmicronServer() )
 		{
-			ButtonState buttonState = GetButtonState(i);
+			for(int i = 0; i < 16; i++ )
+			{
+				ButtonState buttonState = GetButtonState(i);
 
-			if( buttonState == ButtonState.Down )
-				UpdateButton( i, (int)ButtonState.Held );
-			else if( buttonState == ButtonState.Up )
-				UpdateButton( i, (int)ButtonState.Idle );
+				if( buttonState == ButtonState.Down )
+					UpdateButton( i, (int)ButtonState.Held );
+				else if( buttonState == ButtonState.Up )
+					UpdateButton( i, (int)ButtonState.Idle );
+			}
 		}
-		
 	}
 	
-	ButtonState GetButtonState( int buttonID )
+	public ButtonState GetButtonState( int buttonID )
 	{
 		switch(buttonID)
 		{
@@ -197,6 +215,12 @@ public class WandState : MocapState
 			case((int)CAVE2Manager.Button.ButtonRight): return buttonRight;
 			default: return buttonNull;
 		}
+	}
+	
+	public void UpdateMocap( Vector3 position, Quaternion orientation )
+	{
+		this.position = position;
+		this.rotation = orientation;
 	}
 
 	public void UpdateButton( int buttonID, int buttonState )
@@ -224,10 +248,10 @@ public class WandState : MocapState
 
 	public void UpdateController( uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
+		lastUpdateEventFrame = Time.frameCount;
 		this.leftAnalogStick = leftAnalogStick;
 		this.rightAnalogStick = rightAnalogStick;
 		this.analogTrigger = analogTrigger;
-		this.flags = (int)flags;
 
 		// Update any state changes
 		if( (flags & 1) == 1 && button1 != ButtonState.Held )
