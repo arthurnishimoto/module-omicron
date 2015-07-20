@@ -41,14 +41,8 @@ public class OmicronHeadUpdater : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		#if USING_GETREAL3D_TRACKING
-		transform.localPosition = getReal3D.Input.head.position;
-		transform.localRotation = getReal3D.Input.head.rotation;
-		#else
 		transform.localPosition = cave2Manager.getHead(headID).position;
 		transform.localRotation = cave2Manager.getHead(headID).rotation;
-		#endif
-
 	}
 
 	void FixedUpdate()

@@ -45,7 +45,9 @@ public class DebugGUIManager : MonoBehaviour {
 		if ( (Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
 			showGUI = !showGUI;
 
-		if( showFPS )
+        bool isMaster = CAVE2Manager.IsMaster();
+
+        if( showFPS && ((showOnlyOnMaster && isMaster) || !showOnlyOnMaster) )
 		{
 			timeleft -= Time.deltaTime;
 			accum += Time.timeScale/Time.deltaTime;

@@ -24,8 +24,6 @@
 * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************/
-//#define USING_GETREAL3D
-//#define USING_GETREAL3D_TRACKING
 using UnityEngine;
 using System.Collections;
 using omicron;
@@ -89,6 +87,8 @@ public class CAVE2Manager : OmicronEventClient {
 	public bool wandMousePointerEmulation = false;
 	public bool mocapEmulation = false;
 	public bool lockWandToHeadTransform = false;
+	public bool mouseHeadLook = false;
+	public static bool mouseUsingGUI = false;
 
 	public Vector3 headEmulatedPosition = new Vector3(0, 1.5f, 0);
 	public Vector3 headEmulatedRotation = new Vector3(0, 0, 0);
@@ -112,6 +112,8 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public int framerateCap = 60;
 	public static string machineName;
+
+	Vector3 lastMousePosition = Vector3.zero;
 
 	// Use this for initialization
 	new void Start () {
@@ -138,7 +140,7 @@ public class CAVE2Manager : OmicronEventClient {
 		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
 
-        if ( OnCAVE2Master() )
+		if ( OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor )
         {
             keyboardEventEmulation = true;
             wandMousePointerEmulation = false;
@@ -152,13 +154,18 @@ public class CAVE2Manager : OmicronEventClient {
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
             Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
 			#endif
+
+			keyboardEventEmulation = true;
+			wandMousePointerEmulation = false;
+			mocapEmulation = false;
+			lockWandToHeadTransform = false;
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
 			#if USING_GETREAL3D
-			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
 			#endif
 		}
 	}
@@ -175,7 +182,7 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
-	public static bool UsingOmicronTracking()
+	public static bool UsingOmicronServer()
 	{
 		return GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<OmicronManager>().connectToServer;
 	}
@@ -352,6 +359,14 @@ public class CAVE2Manager : OmicronEventClient {
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 
+		if( mouseHeadLook)
+		{
+			Vector3 mouseDiff = Input.mousePosition - lastMousePosition;
+			if( !mouseUsingGUI )
+				headEmulatedRotation += new Vector3(-mouseDiff.y, mouseDiff.x, 0) * emulatedRotationSpeed;
+			lastMousePosition = Input.mousePosition;
+			mouseUsingGUI = false;
+		}
 		if( keyboardEventEmulation )
 		{
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
@@ -425,9 +440,18 @@ public class CAVE2Manager : OmicronEventClient {
 
 			if( WASDkeys == TrackerEmulated.CAVE )
 			{
-				wandAnalog = new Vector2(horizontal,vertical);
-				wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
-                wandAnalog3 = new Vector2(forward,0);
+				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				{
+					wandAnalog = new Vector2(horizontal,vertical);
+					wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
+                	wandAnalog3 = new Vector2(forward,0);
+				}
+				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+				{
+					wandAnalog = new Vector2(0,vertical);
+					wandAnalog2 = new Vector2(horizontal,lookVertical);
+					wandAnalog3 = new Vector2(forward,0);
+				}
 			}
 			else if( WASDkeys == TrackerEmulated.Head )
 			{
@@ -484,9 +508,8 @@ public class CAVE2Manager : OmicronEventClient {
 
 		if( mocapEmulation )
 		{
-			//Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
-			//lookAround *= 2;
-			//headEmulatedRotation += lookAround;
+			Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
+			headEmulatedRotation += lookAround * emulatedRotationSpeed;
 
 			// Update emulated positions/rotations
 			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
@@ -499,11 +522,13 @@ public class CAVE2Manager : OmicronEventClient {
 			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
 			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
 		}
-
-		#if USING_GETREAL3D_TRACKING
-		head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
-		wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
-		#endif
+		else
+		{
+			#if USING_GETREAL3D
+			head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
+			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
+			#endif
+		}
 	}
 
 	void OnEvent( EventData e )
@@ -515,6 +540,9 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
+			#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
+			#else
 			if( e.sourceId == head1.sourceID )
 			{
 				head1.Update( unityPos, unityRot );
@@ -531,6 +559,8 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateMocap( unityPos, unityRot );
 			}
+			#endif
+
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{
@@ -578,6 +608,27 @@ public class CAVE2Manager : OmicronEventClient {
 		else if( wandID == wand2.sourceID )
 		{
 			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+		}
+	}
+
+	[getReal3D.RPC]
+	void UpdateMocapRPC( uint id, Vector3 unityPos, Quaternion unityRot )
+	{
+		if( id == head1.sourceID )
+		{
+			head1.Update( unityPos, unityRot );
+		}
+		else if( id == head2.sourceID )
+		{
+			head2.Update( unityPos, unityRot );
+		}
+		else if( id == wand1.mocapID )
+		{
+			wand1.UpdateMocap( unityPos, unityRot );
+		}
+		else if( id == wand2.mocapID )
+		{
+			wand2.UpdateMocap( unityPos, unityRot );
 		}
 	}
 	#endif
