@@ -50,10 +50,6 @@ public class OmicronWandUpdater : MonoBehaviour {
 
 			if( !cave2Manager.wandMousePointerEmulation )
 			{
-				#if USING_GETREAL3D_TRACKING
-				transform.localPosition = getReal3D.Input.head.position;
-				transform.localRotation = getReal3D.Input.head.rotation;
-				#else
 				if( GetComponent<Rigidbody>() )
 				{
 					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
