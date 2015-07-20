@@ -22,7 +22,7 @@ public class GravityField : MonoBehaviour {
 
 	void OnTriggerStay( Collider other )
 	{
-		other.rigidbody.AddForce( (transform.position - other.transform.position) * force );
+		other.GetComponent<Rigidbody>().AddForce( (transform.position - other.transform.position) * force );
 	}
 
 	void OnWandButtonHold()

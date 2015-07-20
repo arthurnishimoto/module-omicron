@@ -9,12 +9,12 @@ public class GrabbableObject : MonoBehaviour {
     void OnWandGrab(Transform grabber)
     {
         transform.parent = grabber;
-        if (rigidbody)
+        if (GetComponent<Rigidbody>())
         {
-            usedGravity = rigidbody.useGravity;
-            rigidbody.useGravity = false;
-            constraints = rigidbody.constraints;
-            rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+            usedGravity = GetComponent<Rigidbody>().useGravity;
+            GetComponent<Rigidbody>().useGravity = false;
+            constraints = GetComponent<Rigidbody>().constraints;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
         }
     }
@@ -22,10 +22,10 @@ public class GrabbableObject : MonoBehaviour {
     void OnWandGrabRelease()
     {
         transform.parent = null;
-        if (rigidbody)
+        if (GetComponent<Rigidbody>())
         {
-            rigidbody.constraints = constraints;
-            rigidbody.useGravity = usedGravity;
+            GetComponent<Rigidbody>().constraints = constraints;
+            GetComponent<Rigidbody>().useGravity = usedGravity;
         }
     }
 }

@@ -344,6 +344,9 @@ public class CAVE2Manager : OmicronEventClient {
 		return 0;
 	}
 
+    public float lookHorizontal;
+    public float lookVertical;
+
 	// Update is called once per frame
 	void Update () {
 		wand1.UpdateState(Wand1, Wand1Mocap);
@@ -353,8 +356,8 @@ public class CAVE2Manager : OmicronEventClient {
 		{
 			float vertical = Input.GetAxis("Vertical") * axisSensitivity;
 			float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
-			float lookHorizontal = 0 * axisSensitivity;
-			float lookVertical = 0 * axisSensitivity;
+            lookHorizontal = Input.GetAxis("Horizontal2") * axisSensitivity;
+            lookVertical = Input.GetAxis("Vertical2") * axisSensitivity;
             float forward = 0 * axisSensitivity;
 
 			uint flags = 0;

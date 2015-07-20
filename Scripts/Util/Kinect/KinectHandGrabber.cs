@@ -53,7 +53,7 @@ public class KinectHandGrabber : MonoBehaviour {
 	void GrabObject()
 	{
 		originalParent = grabableObject.transform.parent;
-		grabableObject.rigidbody.isKinematic = true;
+		grabableObject.GetComponent<Rigidbody>().isKinematic = true;
 		
 		grabableObject.transform.parent = transform;
 		
@@ -67,7 +67,7 @@ public class KinectHandGrabber : MonoBehaviour {
 
 	void ReleaseObject()
 	{
-		grabableObject.rigidbody.isKinematic = false;
+		grabableObject.GetComponent<Rigidbody>().isKinematic = false;
 		if( originalParent != transform )
 			grabableObject.transform.parent = originalParent;
 		else

@@ -20,6 +20,6 @@ public class CubeDrop : MonoBehaviour {
 
 	void Drop()
 	{
-		rigidbody.useGravity = true;
+		GetComponent<Rigidbody>().useGravity = true;
 	}
 }

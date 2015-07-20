@@ -184,8 +184,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	void UpdateFreeflyMovement()
 	{
-		rigidbody.useGravity = false;
-		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+		GetComponent<Rigidbody>().useGravity = false;
+		GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		playerCollider.enabled = false;
 		
 		if( freeflyButtonDown && !freeflyInitVectorSet )
@@ -267,8 +267,8 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	void UpdateWalkMovement()
 	{
-		rigidbody.useGravity = true;
-		rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+		GetComponent<Rigidbody>().useGravity = true;
+		GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 		playerCollider.enabled = true;
 
 		Vector3 nextPos = transform.position;

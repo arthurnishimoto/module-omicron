@@ -6,7 +6,7 @@ public class InitialForce : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		rigidbody.AddForce( intialForce );
+		GetComponent<Rigidbody>().AddForce( intialForce );
 	}
 	
 	// Update is called once per frame

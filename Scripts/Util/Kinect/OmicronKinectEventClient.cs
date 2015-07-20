@@ -95,7 +95,7 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 	void SetJointVisible(int jointID, bool value)
 	{
-		joints[jointID].renderer.enabled = value;
+		joints[jointID].GetComponent<Renderer>().enabled = value;
 	}
 
 	// Update is called once per frame
@@ -107,23 +107,28 @@ public class OmicronKinectEventClient : OmicronEventClient {
         HandState_Closed	= 3,
         HandState_Lasso	= 4
 		*/
-
-		switch(leftHandState)
+		if( leftHandStateMarker )
 		{
-		//case(0): leftHandStateMarker.renderer.material = materials [0]; break;
-		case(1): leftHandStateMarker.renderer.material = materials [1]; break;
-		case(2): leftHandStateMarker.renderer.material = materials [2]; break;
-		case(3): leftHandStateMarker.renderer.material = materials [3]; break;
-		case(4): leftHandStateMarker.renderer.material = materials [4]; break;
+			switch(leftHandState)
+			{
+			//case(0): leftHandStateMarker.renderer.material = materials [0]; break;
+			case(1): leftHandStateMarker.GetComponent<Renderer>().material = materials [1]; break;
+			case(2): leftHandStateMarker.GetComponent<Renderer>().material = materials [2]; break;
+			case(3): leftHandStateMarker.GetComponent<Renderer>().material = materials [3]; break;
+			case(4): leftHandStateMarker.GetComponent<Renderer>().material = materials [4]; break;
+			}
 		}
 
-		switch(rightHandState)
+		if( rightHandStateMarker )
 		{
-		//case(0): rightHandStateMarker.renderer.material = materials [0]; break;
-		case(1): rightHandStateMarker.renderer.material = materials [1]; break;
-		case(2): rightHandStateMarker.renderer.material = materials [2]; break;
-		case(3): rightHandStateMarker.renderer.material = materials [3]; break;
-		case(4): rightHandStateMarker.renderer.material = materials [4]; break;
+			switch(rightHandState)
+			{
+			//case(0): rightHandStateMarker.renderer.material = materials [0]; break;
+			case(1): rightHandStateMarker.GetComponent<Renderer>().material = materials [1]; break;
+			case(2): rightHandStateMarker.GetComponent<Renderer>().material = materials [2]; break;
+			case(3): rightHandStateMarker.GetComponent<Renderer>().material = materials [3]; break;
+			case(4): rightHandStateMarker.GetComponent<Renderer>().material = materials [4]; break;
+			}
 		}
 
 		if( leftHandStateMarker && leftHandStateMarker.GetComponent<KinectHandGrabber>() )
@@ -175,7 +180,7 @@ public class OmicronKinectEventClient : OmicronEventClient {
 				{
 					SetJointVisible(i, false);
 				}
-				else if( !joints[i].renderer.enabled )
+				else if( !joints[i].GetComponent<Renderer>().enabled )
 				{
 					SetJointVisible(i, true);
 				}
