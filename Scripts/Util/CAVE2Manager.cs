@@ -155,7 +155,7 @@ public class CAVE2Manager : OmicronEventClient {
             Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
 			#endif
 
-			keyboardEventEmulation = true;
+			keyboardEventEmulation = false;
 			wandMousePointerEmulation = false;
 			mocapEmulation = false;
 			lockWandToHeadTransform = false;
@@ -369,71 +369,67 @@ public class CAVE2Manager : OmicronEventClient {
 		uint flags = 0;
 		
 		#if USING_GETREAL3D
-		vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
-		horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
-		lookHorizontal = getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
-		lookVertical = getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
-		
-		// F -> Wand Button 2 (Circle/B)
-		if( getReal3D.Input.GetButton("Reset") )
-			flags += (int)EventBase.Flags.Button2;
-		// R -> Wand Button 3 (Cross/A)
-		if( getReal3D.Input.GetButton("ChangeWand") )
-			flags += (int)EventBase.Flags.Button3;
-		// Wand Button 1 (Triangle/Y)
-		if( getReal3D.Input.GetButton("Jump") )
-			flags += (int)EventBase.Flags.Button1;
-		// Wand Button 4 (Square/X)
-		if( getReal3D.Input.GetButton("WandButton") )
-			flags += (int)EventBase.Flags.Button4;
-		// Wand Button 8 (R1/RB)
-		if( getReal3D.Input.GetButton("NavSpeed") )
-			flags += (int)EventBase.Flags.Button8;
-		// Wand Button 5 (L1/LB)
-		if( getReal3D.Input.GetButton("WandLook") )
-			flags += (int)EventBase.Flags.Button5;
-		// Wand Button 6 (L3)
-		if( getReal3D.Input.GetButton("L3") )
-			flags += (int)EventBase.Flags.Button6;
-		// Wand Button 9 (R3)
-		if( getReal3D.Input.GetButton("R3") )
-			flags += (int)EventBase.Flags.Button9;
-		// Wand Button SP1 (Back)
-		if( getReal3D.Input.GetButton("Back") )
-			flags += (int)EventBase.Flags.SpecialButton1;
-		// Wand Button SP2 (Start)
-		if( getReal3D.Input.GetButton("Start") )
-			flags += (int)EventBase.Flags.SpecialButton2;
+		// If using Omicron, make sure button events don't conflict
+		if( !UsingOmicronServer() )
+		{
+			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
+			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
+			lookHorizontal = getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
+			lookVertical = getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
+
+			float DPadUD = getReal3D.Input.GetAxis("DPadUD");
+			float DPadLR = getReal3D.Input.GetAxis("DPadLR");
+			if( DPadUD > 0 )
+				flags += (int)EventBase.Flags.ButtonUp;
+			else if( DPadUD < 0 )
+				flags += (int)EventBase.Flags.ButtonDown;
+			if( DPadLR > 0 )
+				flags += (int)EventBase.Flags.ButtonLeft;
+			else if( DPadLR < 0 )
+				flags += (int)EventBase.Flags.ButtonRight;
+
+			// Wand Button 1 (Triangle/Y)
+			if( getReal3D.Input.GetButton("Jump") )
+				flags += (int)EventBase.Flags.Button1;
+			// F -> Wand Button 2 (Circle/B)
+			if( getReal3D.Input.GetButton("Reset") )
+				flags += (int)EventBase.Flags.Button2;
+			// R -> Wand Button 3 (Cross/A)
+			if( getReal3D.Input.GetButton("ChangeWand") )
+				flags += (int)EventBase.Flags.Button3;
+			// Wand Button 4 (Square/X)
+			if( getReal3D.Input.GetButton("WandButton") )
+				flags += (int)EventBase.Flags.Button4;
+			// Wand Button 8 (R1/RB)
+			if( getReal3D.Input.GetButton("NavSpeed") )
+				flags += (int)EventBase.Flags.Button8;
+			// Wand Button 5 (L1/LB)
+			if( getReal3D.Input.GetButton("WandLook") )
+				flags += (int)EventBase.Flags.Button5;
+			// Wand Button 6 (L3)
+			if( getReal3D.Input.GetButton("L3") )
+				flags += (int)EventBase.Flags.Button6;
+			// Wand Button 7 (L2)
+			if( getReal3D.Input.GetButton("LT") )
+				flags += (int)EventBase.Flags.Button7;
+			// Wand Button 8 (R2)
+			if( getReal3D.Input.GetButton("RT") )
+				flags += (int)EventBase.Flags.Button8;
+			// Wand Button 9 (R3)
+			if( getReal3D.Input.GetButton("R3") )
+				flags += (int)EventBase.Flags.Button9;
+			// Wand Button SP1 (Back)
+			if( getReal3D.Input.GetButton("Back") )
+				flags += (int)EventBase.Flags.SpecialButton1;
+			// Wand Button SP2 (Start)
+			if( getReal3D.Input.GetButton("Start") )
+				flags += (int)EventBase.Flags.SpecialButton2;
+		}
 		#endif
 
-		Vector2 wandAnalog = new Vector2();
-		Vector2 wandAnalog2 = new Vector2();
-		Vector2 wandAnalog3 = new Vector2();
-
-		if( WASDkeys == TrackerEmulated.CAVE )
-		{
-			if( WASDkeyMode == TrackerEmulationMode.Translate )
-			{
-				wandAnalog = new Vector2(horizontal,vertical);
-				wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
-				wandAnalog3 = new Vector2(forward,0);
-			}
-			else if( WASDkeyMode == TrackerEmulationMode.Rotate )
-			{
-				wandAnalog = new Vector2(0,vertical);
-				wandAnalog2 = new Vector2(horizontal,lookVertical);
-				wandAnalog3 = new Vector2(forward,0);
-			}
-		}
-		else if( WASDkeys == TrackerEmulated.Head )
-		{
-			if( WASDkeyMode == TrackerEmulationMode.Translate )
-			{
-				headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
-			}
-			else if( WASDkeyMode == TrackerEmulationMode.Rotate )
-				headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
-		}
+		Vector2 wandAnalog = new Vector2(horizontal,vertical);
+		Vector2 wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
+		Vector2 wandAnalog3 = new Vector2(forward,0);
 
 		if( mouseHeadLook)
 		{
@@ -445,6 +441,31 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		if( keyboardEventEmulation )
 		{
+			if( WASDkeys == TrackerEmulated.CAVE )
+			{
+				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				{
+					wandAnalog = new Vector2(horizontal,vertical);
+					wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
+					wandAnalog3 = new Vector2(forward,0);
+				}
+				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+				{
+					wandAnalog = new Vector2(0,vertical);
+					wandAnalog2 = new Vector2(horizontal,lookVertical);
+					wandAnalog3 = new Vector2(forward,0);
+				}
+			}
+			else if( WASDkeys == TrackerEmulated.Head )
+			{
+				if( WASDkeyMode == TrackerEmulationMode.Translate )
+				{
+					headEmulatedPosition += new Vector3( horizontal, 0, vertical ) * Time.deltaTime;
+				}
+				else if( WASDkeyMode == TrackerEmulationMode.Rotate )
+					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
+			}
+
 			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
 
 			// Arrow keys -> DPad
@@ -505,7 +526,10 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		wand1.UpdateController( flags, wandAnalog , wandAnalog2, wandAnalog3 );
+		if( !UsingOmicronServer() || (keyboardEventEmulation && Input.anyKey) )
+		{
+			wand1.UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
+		}
 
 		if( mocapEmulation )
 		{
