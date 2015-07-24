@@ -378,8 +378,16 @@ public class CAVE2Manager : OmicronEventClient {
 		float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
 		float forward = 0 * axisSensitivity;
 
-		lookHorizontal = Input.GetAxis("Horizontal2") * axisSensitivity;
-		//lookVertical = Input.GetAxis("Vertical2") * axisSensitivity;
+        // Horizontal2, Vertical 2 are not a standard Input axis
+        // catch exception to prevent console spamming if not set
+        try
+        {
+            lookHorizontal = Input.GetAxis("Horizontal2") * axisSensitivity;
+            lookVertical = Input.GetAxis("Vertical2") * axisSensitivity;
+        }
+        catch
+        {
+        }
 
 		uint flags = 0;
 		
