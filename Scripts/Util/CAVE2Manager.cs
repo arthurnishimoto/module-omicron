@@ -378,7 +378,7 @@ public class CAVE2Manager : OmicronEventClient {
 		float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
 		float forward = 0 * axisSensitivity;
 
-		lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
+		lookHorizontal = Input.GetAxis("Horizontal2") * axisSensitivity;
 		//lookVertical = Input.GetAxis("Vertical2") * axisSensitivity;
 
 		uint flags = 0;

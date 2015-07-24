@@ -17,7 +17,7 @@ public class WandPointer : OmicronWandUpdater
     ParticleSystem laserParticle;
 
     public bool drawLaser = true;
-    public LayerMask wandLayerMask = LayerMask.NameToLayer("Everything");
+    public LayerMask wandLayerMask = -1;
 
     // Use this for initialization
     new void Start()
