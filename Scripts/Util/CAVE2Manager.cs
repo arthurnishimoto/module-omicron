@@ -62,7 +62,9 @@ public class HeadTrackerState
 public class CAVE2Manager : OmicronEventClient {
 	static HeadTrackerState head1;
 	static HeadTrackerState head2;
-	
+
+    public bool simulatorMode = false;
+
 	public static WandState wand1;
 	public static WandState wand2;
 	
@@ -356,6 +358,19 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
+        if (simulatorMode)
+        {
+#if USING_GETREAL3D
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+#endif
+
+            keyboardEventEmulation = true;
+            wandMousePointerEmulation = true;
+            mocapEmulation = true;
+        }
+
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 
@@ -363,14 +378,14 @@ public class CAVE2Manager : OmicronEventClient {
 		float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
 		float forward = 0 * axisSensitivity;
 
-		//lookHorizontal = Input.GetAxis("Horizontal2") * axisSensitivity;
+		lookHorizontal = Input.GetAxis("LookHorizontal") * axisSensitivity;
 		//lookVertical = Input.GetAxis("Vertical2") * axisSensitivity;
 
 		uint flags = 0;
 		
 		#if USING_GETREAL3D
 		// If using Omicron, make sure button events don't conflict
-		if( !UsingOmicronServer() )
+        if (!UsingOmicronServer() && !simulatorMode)
 		{
 			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
 			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
