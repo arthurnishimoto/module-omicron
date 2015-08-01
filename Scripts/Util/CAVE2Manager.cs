@@ -38,7 +38,7 @@ public class HeadTrackerState
 	public HeadTrackerState(int ID)
 	{
 		sourceID = ID;
-		position = new Vector3();
+		position = new Vector3(0,1.6f,0);
 		rotation = new Quaternion();
 	}
 	
