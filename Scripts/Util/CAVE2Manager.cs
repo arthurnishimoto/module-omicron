@@ -59,6 +59,18 @@ public class HeadTrackerState
 	}
 }
 
+public class WandEvent
+{
+	public int wandID;
+	public CAVE2Manager.Button button;
+
+	public WandEvent(int ID, CAVE2Manager.Button button)
+	{
+		wandID = ID;
+		this.button = button;
+	}
+}
+
 public class CAVE2Manager : OmicronEventClient {
 	static HeadTrackerState head1;
 	static HeadTrackerState head2;
@@ -161,6 +173,8 @@ public class CAVE2Manager : OmicronEventClient {
 			wandMousePointerEmulation = false;
 			mocapEmulation = false;
 			lockWandToHeadTransform = false;
+
+			simulatorMode = false;
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{

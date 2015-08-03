@@ -38,8 +38,8 @@ public class DebugGUIManager : MonoBehaviour {
 
         if (GetComponent<GUIText>() == null)
             gameObject.AddComponent<GUIText>();
-
-        transform.position = new Vector3(0.01f, 0.04f, 0);
+		if (GetComponent<TextMesh>() == null)
+        	transform.position = new Vector3(0.01f, 0.04f, 0);
 	}
 
 	void Update()
@@ -61,15 +61,32 @@ public class DebugGUIManager : MonoBehaviour {
 				// display two fractional digits (f2 format)
 				float fps = accum/frames;
 				string format = System.String.Format("{0:F2} FPS",fps);
-				GetComponent<GUIText>().text = format;
-				
-				if(fps < 30)
-					GetComponent<GUIText>().material.color = Color.yellow;
-				else 
-					if(fps < 10)
-						GetComponent<GUIText>().material.color = Color.red;
-				else
-					GetComponent<GUIText>().material.color = Color.green;
+
+				if( GetComponent<GUIText>() )
+				{
+					GetComponent<GUIText>().text = format;
+					
+					if(fps < 30)
+						GetComponent<GUIText>().material.color = Color.yellow;
+					else 
+						if(fps < 10)
+							GetComponent<GUIText>().material.color = Color.red;
+					else
+						GetComponent<GUIText>().material.color = Color.green;
+				}
+				if( GetComponent<TextMesh>() )
+				{
+					GetComponent<TextMesh>().text = format;
+					
+					if(fps < 30)
+						GetComponent<TextMesh>().color = Color.yellow;
+					else 
+						if(fps < 10)
+							GetComponent<TextMesh>().color = Color.red;
+					else
+						GetComponent<TextMesh>().color = Color.green;
+				}
+
 				//	DebugConsole.Log(format,level);
 				timeleft = FPS_updateInterval;
 				accum = 0.0F;
@@ -80,6 +97,8 @@ public class DebugGUIManager : MonoBehaviour {
 		{
             if( GetComponent<GUIText>() )
 			    GetComponent<GUIText>().text = "";
+			if( GetComponent<TextMesh>() )
+				GetComponent<TextMesh>().text = "";
 		}
 	}
 

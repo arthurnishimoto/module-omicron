@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CubeDrop : MonoBehaviour {
 
+	public CAVE2Manager.Button dropButton;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -13,9 +15,10 @@ public class CubeDrop : MonoBehaviour {
 	
 	}
 
-	void OnWandButtonClick()
+	void OnWandButtonDown(CAVE2Manager.Button clickButton)
 	{
-		Drop();
+		if( clickButton == dropButton )
+			Drop();
 	}
 
 	void Drop()

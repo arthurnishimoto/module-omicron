@@ -15,7 +15,6 @@ public class GrabbableObject : MonoBehaviour {
             GetComponent<Rigidbody>().useGravity = false;
             constraints = GetComponent<Rigidbody>().constraints;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-
         }
     }
 
