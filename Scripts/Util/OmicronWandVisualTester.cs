@@ -16,8 +16,6 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	public GameObject buttonL1;
 	public GameObject buttonL2;
 	public GameObject buttonL3;
-
-	//public bool useRPC = false;
 	
 	public WandState.ButtonState cross;
 	public WandState.ButtonState circle;
@@ -31,6 +29,23 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	public WandState.ButtonState L3;
 
 	public Vector2 leftAnalogStick;
+    public Vector2 analogTriggers;
+
+    // Gamepad
+    public GameObject buttonTriangle;
+    public GameObject buttonSquare;
+
+    public GameObject buttonR1;
+    public GameObject buttonR2;
+    public GameObject buttonR3;
+
+    public WandState.ButtonState triangle;
+    public WandState.ButtonState square;
+
+    public WandState.ButtonState R1;
+    public WandState.ButtonState R2;
+    public WandState.ButtonState R3;
+
 	public Vector2 rightAnalogStick;
 
 	// Use this for initialization
@@ -42,10 +57,13 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	void Update () {
 		leftAnalogStick = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.LeftAnalogStickLR), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.LeftAnalogStickUD) );
 		rightAnalogStick = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.RightAnalogStickLR), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.RightAnalogStickUD) );
+        analogTriggers = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.AnalogTriggerL), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.AnalogTriggerR));
 
 		// Tests if hold state is working properly (public state varibles should change)
 		cross = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button3);
 		circle = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button2);
+        triangle = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button1);
+        square = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button4);
 
 		up = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.ButtonUp);
 		down = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.ButtonDown);
@@ -56,46 +74,41 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 		L2 = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button7);
 		L3 = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button6);
 
+        R1 = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button8);
+        //R2 = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button9);
+        R3 = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button9);
+
 		// Tests if up/down is working (visual buttons should change)
-		if( cross == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.Button3, true);
-		else if( cross == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.Button3, false);
-		if( circle == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.Button2, true);
-		else if( circle == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.Button2, false);
+        CheckButtonState((int)CAVE2Manager.Button.Button3, cross);
+        CheckButtonState((int)CAVE2Manager.Button.Button2, circle);
+        CheckButtonState((int)CAVE2Manager.Button.Button1, triangle);
+        CheckButtonState((int)CAVE2Manager.Button.Button4, square);
 
-		if( up == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.ButtonUp, true);
-		else if( up == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.ButtonUp, false);
-		if( down == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.ButtonDown, true);
-		else if( down == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.ButtonDown, false);
-		if( left == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.ButtonLeft, true);
-		else if( left == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.ButtonLeft, false);
-		if( right == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.ButtonRight, true);
-		else if( right == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.ButtonRight, false);
+        CheckButtonState((int)CAVE2Manager.Button.ButtonUp, up);
+        CheckButtonState((int)CAVE2Manager.Button.ButtonDown, down);
+        CheckButtonState((int)CAVE2Manager.Button.ButtonLeft, left);
+        CheckButtonState((int)CAVE2Manager.Button.ButtonRight, right);
 
-		if( L1 == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.Button5, true);
-		else if( L1 == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.Button5, false);
-		if( L2 == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.Button7, true);
-		else if( L2 == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.Button7, false);
-		if( L3 == WandState.ButtonState.Down )
-			SetButtonState((int)CAVE2Manager.Button.Button6, true);
-		else if( L3 == WandState.ButtonState.Up )
-			SetButtonState((int)CAVE2Manager.Button.Button6, false);
+        CheckButtonState((int)CAVE2Manager.Button.Button5, L1);
+        CheckButtonState((int)CAVE2Manager.Button.Button7, L2);
+        CheckButtonState((int)CAVE2Manager.Button.Button6, L3);
+
+        CheckButtonState((int)CAVE2Manager.Button.Button8, R1);
+        //CheckButtonState((int)CAVE2Manager.Button.Button9, R2);
+        CheckButtonState((int)CAVE2Manager.Button.Button9, R3);
 	}
+
+    void CheckButtonState(int buttonID, WandState.ButtonState currentState)
+    {
+        if (currentState == WandState.ButtonState.Down)
+        {
+            SetButtonState(buttonID, true);
+        }
+        else if (currentState == WandState.ButtonState.Up)
+        {
+            SetButtonState(buttonID, false);
+        }
+    }
 
 	void SetButtonState( int buttonID, bool lit )
 	{
@@ -128,14 +141,29 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 			case((int)CAVE2Manager.Button.Button6):
 				SetLit(buttonL3, lit);
 				break;
+            case ((int)CAVE2Manager.Button.Button1):
+                SetLit(buttonTriangle, lit);
+                break;
+            case ((int)CAVE2Manager.Button.Button4):
+                SetLit(buttonSquare, lit);
+                break;
+            case ((int)CAVE2Manager.Button.Button8):
+                SetLit(buttonR1, lit);
+                break;
+            case ((int)CAVE2Manager.Button.Button9):
+                SetLit(buttonR3, lit);
+                break;
 		}
 	}
 
 	void SetLit(GameObject g, bool lit)
 	{
-		if( lit )
-			g.GetComponent<Renderer>().material = litMaterial;
-		else
-			g.GetComponent<Renderer>().material = unlitMaterial;
+        if (g)
+        {
+            if (lit)
+                g.GetComponent<Renderer>().material = litMaterial;
+            else
+                g.GetComponent<Renderer>().material = unlitMaterial;
+        }
 	}
 }

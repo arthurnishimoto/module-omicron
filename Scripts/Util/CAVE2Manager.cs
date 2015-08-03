@@ -566,9 +566,12 @@ public class CAVE2Manager : OmicronEventClient {
 				wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
 			else
 				wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
-			
-			GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
-			GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
+
+            if (GameObject.FindGameObjectWithTag("CameraController"))
+            {
+                GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
+                GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
+            }
 		}
 		else
 		{

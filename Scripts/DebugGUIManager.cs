@@ -32,7 +32,9 @@ public class DebugGUIManager : MonoBehaviour {
 	{
 		omgManager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<OmicronManager> ();
 		cave2manager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<CAVE2Manager> ();
-		playerController = GameObject.FindGameObjectWithTag ("PlayerController").GetComponent<OmicronPlayerController> ();
+
+        if( GameObject.FindGameObjectWithTag ("PlayerController") )
+		    playerController = GameObject.FindGameObjectWithTag ("PlayerController").GetComponent<OmicronPlayerController> ();
 
         if (GetComponent<GUIText>() == null)
             gameObject.AddComponent<GUIText>();
@@ -76,7 +78,8 @@ public class DebugGUIManager : MonoBehaviour {
 		}
 		else
 		{
-			GetComponent<GUIText>().text = "";
+            if( GetComponent<GUIText>() )
+			    GetComponent<GUIText>().text = "";
 		}
 	}
 
