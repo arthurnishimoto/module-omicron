@@ -144,7 +144,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 		if ( OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor )
         {
-            keyboardEventEmulation = true;
+            keyboardEventEmulation = false;
             wandMousePointerEmulation = false;
             mocapEmulation = false;
             lockWandToHeadTransform = false;
@@ -164,11 +164,11 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-			#if USING_GETREAL3D
-			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
-			Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
-			Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
-			#endif
+			//#if USING_GETREAL3D
+			//Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+			////Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+			//Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+			//ssh #endif
 		}
 	}
 
@@ -621,7 +621,7 @@ public class CAVE2Manager : OmicronEventClient {
 			
 			// Flip Up/Down analog stick values
 			Vector2 leftAnalogStick = new Vector2( e.getExtraDataFloat(0), -e.getExtraDataFloat(1) ) * axisSensitivity;
-			Vector2 rightAnalogStick = new Vector2( e.getExtraDataFloat(2), -e.getExtraDataFloat(3) ) * axisSensitivity;
+			Vector2 rightAnalogStick = new Vector2( e.getExtraDataFloat(2), e.getExtraDataFloat(3) ) * axisSensitivity;
 			Vector2 analogTrigger = new Vector2( e.getExtraDataFloat(4), e.getExtraDataFloat(5) );
 			
 			if( Mathf.Abs(leftAnalogStick.x) < axisDeadzone )

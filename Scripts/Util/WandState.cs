@@ -331,7 +331,7 @@ public class WandState
 		
 		if( (flags & (int)EventBase.Flags.Button9) == (int)EventBase.Flags.Button9 && button9 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button9, (int)ButtonState.Down );
-		else if( (flags & (int)EventBase.Flags.Button9) == 0 && button8 != ButtonState.Idle)
+		else if( (flags & (int)EventBase.Flags.Button9) == 0 && button9 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button9, (int)ButtonState.Up );
 			
 	}

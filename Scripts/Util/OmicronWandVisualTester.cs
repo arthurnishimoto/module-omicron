@@ -59,6 +59,16 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 		rightAnalogStick = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.RightAnalogStickLR), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.RightAnalogStickUD) );
         analogTriggers = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.AnalogTriggerL), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.AnalogTriggerR));
 
+		if( buttonL3 )
+			buttonL3.transform.eulerAngles = new Vector3( leftAnalogStick.y, 0, -leftAnalogStick.x ) * 30;
+		if( buttonR3 )
+			buttonR3.transform.eulerAngles = new Vector3( rightAnalogStick.y, 0, -rightAnalogStick.x ) * 30;
+
+		if( buttonL2 )
+			buttonL2.transform.eulerAngles = new Vector3( 0, 90, analogTriggers.x * 20 );
+		if( buttonR2 )
+			buttonR2.transform.eulerAngles = new Vector3( 0, 90, analogTriggers.y * 20 );
+
 		// Tests if hold state is working properly (public state varibles should change)
 		cross = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button3);
 		circle = CAVE2Manager.GetButtonState(wandID, CAVE2Manager.Button.Button2);
