@@ -488,7 +488,8 @@ namespace omicronConnector
 
                 //#define OI_READBUF(type, buf, offset, val) val = *((type*)&buf[offset]); offset += sizeof(type);
 				//getReal3D.RpcManager.call("GenerateEventData",receiveBytes);
-				listener.onEvent( ByteArrayToEventData(receiveBytes) );
+
+                listener.onEvent(ByteArrayToEventData(receiveBytes));
             }
         }// Listen()
 
@@ -496,7 +497,7 @@ namespace omicronConnector
 		{
 			MemoryStream ms = new MemoryStream();
 			ms.Write(receiveBytes, 0, receiveBytes.Length);
-			
+
 			BinaryReader reader = new BinaryReader(ms);
 			omicronConnector.EventData ed = new omicronConnector.EventData();
 			reader.BaseStream.Position = 0;
@@ -507,7 +508,7 @@ namespace omicronConnector
 			ed.serviceType = (EventBase.ServiceType)reader.ReadUInt32();
 			ed.type = reader.ReadUInt32();
 			ed.flags = reader.ReadUInt32();
-			
+
 			if (ed.type != 3)
 			{
 				Console.WriteLine(ed.type);
@@ -532,17 +533,16 @@ namespace omicronConnector
 			return ed;
 		}
 
-		static void EventDataToByteArray(EventData ed)
+        static byte[] EventDataToByteArray(EventData ed)
 		{
-			int arrayLength = 1024;
-			byte[] dataArray = new byte[arrayLength];
-
-			BinaryWriter bw = new BinaryWriter(new MemoryStream());
+            MemoryStream ms = new MemoryStream();
+			BinaryWriter bw = new BinaryWriter(ms);
 
 			bw.Write(ed.timestamp);
+            bw.Write(ed.sourceId);
 			bw.Write(ed.serviceId);
-			bw.Write(ed.serviceType);
-			bw.Write((uint)ed.type);
+            bw.Write((uint)ed.serviceType);
+			bw.Write(ed.type);
 			bw.Write(ed.flags);
 
 			bw.Write(ed.posx);
@@ -558,6 +558,11 @@ namespace omicronConnector
 			bw.Write(ed.extraDataMask);
 
 			bw.Write(ed.extraData);
+
+            bw.Close();
+            byte[] dataArray = ms.GetBuffer();
+            ms.Close();
+
 
 			return dataArray;
 		}
