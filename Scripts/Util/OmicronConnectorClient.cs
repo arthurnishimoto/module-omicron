@@ -380,7 +380,7 @@ namespace omicronConnector
 		public abstract void onEvent(EventData e);
 	};
 
-    class OmicronConnectorClient 
+	class OmicronConnectorClient
     {
         // TCP Connection
         TcpClient client;
@@ -484,47 +484,83 @@ namespace omicronConnector
                 // Blocks until a message returns on this socket from a remote host.
                 Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
                 //Console.WriteLine("receiveBytes length: " + receiveBytes.Length);
+				//Debug.Log("receiveBytes length: " + receiveBytes.Length);
 
                 //#define OI_READBUF(type, buf, offset, val) val = *((type*)&buf[offset]); offset += sizeof(type);
-
-                MemoryStream ms = new MemoryStream();
-                ms.Write(receiveBytes, 0, receiveBytes.Length);
-
-                BinaryReader reader = new BinaryReader(ms);
-                omicronConnector.EventData ed = new omicronConnector.EventData();
-                reader.BaseStream.Position = 0;
-
-                ed.timestamp = reader.ReadUInt32();
-                ed.sourceId = reader.ReadUInt32();
-                ed.serviceId = reader.ReadInt32();
-                ed.serviceType = (EventBase.ServiceType)reader.ReadUInt32();
-                ed.type = reader.ReadUInt32();
-                ed.flags = reader.ReadUInt32();
-
-                if (ed.type != 3)
-                {
-                    Console.WriteLine(ed.type);
-                    Console.WriteLine(ed.flags);
-                    Console.WriteLine("---");
-                }
-                
-                ed.posx = reader.ReadSingle();
-                ed.posy = reader.ReadSingle();
-                ed.posz = reader.ReadSingle();
-                ed.orw = reader.ReadSingle();
-                ed.orx = reader.ReadSingle();
-                ed.ory = reader.ReadSingle();
-                ed.orz = reader.ReadSingle();
-
-                ed.extraDataType = (omicron.EventBase.ExtraDataType)reader.ReadUInt32();
-                ed.extraDataItems = reader.ReadUInt32();
-                ed.extraDataMask = reader.ReadUInt32();
-
-                ed.extraData = reader.ReadBytes(EventData.ExtraDataSize);
-
-                listener.onEvent(ed);      
+				//getReal3D.RpcManager.call("GenerateEventData",receiveBytes);
+				listener.onEvent( ByteArrayToEventData(receiveBytes) );
             }
         }// Listen()
+
+		private static EventData ByteArrayToEventData(byte[] receiveBytes)
+		{
+			MemoryStream ms = new MemoryStream();
+			ms.Write(receiveBytes, 0, receiveBytes.Length);
+			
+			BinaryReader reader = new BinaryReader(ms);
+			omicronConnector.EventData ed = new omicronConnector.EventData();
+			reader.BaseStream.Position = 0;
+			
+			ed.timestamp = reader.ReadUInt32();
+			ed.sourceId = reader.ReadUInt32();
+			ed.serviceId = reader.ReadInt32();
+			ed.serviceType = (EventBase.ServiceType)reader.ReadUInt32();
+			ed.type = reader.ReadUInt32();
+			ed.flags = reader.ReadUInt32();
+			
+			if (ed.type != 3)
+			{
+				Console.WriteLine(ed.type);
+				Console.WriteLine(ed.flags);
+				Console.WriteLine("---");
+			}
+			
+			ed.posx = reader.ReadSingle();
+			ed.posy = reader.ReadSingle();
+			ed.posz = reader.ReadSingle();
+			ed.orw = reader.ReadSingle();
+			ed.orx = reader.ReadSingle();
+			ed.ory = reader.ReadSingle();
+			ed.orz = reader.ReadSingle();
+			
+			ed.extraDataType = (omicron.EventBase.ExtraDataType)reader.ReadUInt32();
+			ed.extraDataItems = reader.ReadUInt32();
+			ed.extraDataMask = reader.ReadUInt32();
+			
+			ed.extraData = reader.ReadBytes(EventData.ExtraDataSize);
+
+			return ed;
+		}
+
+		static void EventDataToByteArray(EventData ed)
+		{
+			int arrayLength = 1024;
+			byte[] dataArray = new byte[arrayLength];
+
+			BinaryWriter bw = new BinaryWriter(new MemoryStream());
+
+			bw.Write(ed.timestamp);
+			bw.Write(ed.serviceId);
+			bw.Write(ed.serviceType);
+			bw.Write((uint)ed.type);
+			bw.Write(ed.flags);
+
+			bw.Write(ed.posx);
+			bw.Write(ed.posy);
+			bw.Write(ed.posz);
+			bw.Write(ed.orw);
+			bw.Write(ed.orx);
+			bw.Write(ed.ory);
+			bw.Write(ed.orz);
+
+			bw.Write((uint)ed.extraDataType);
+			bw.Write(ed.extraDataItems);
+			bw.Write(ed.extraDataMask);
+
+			bw.Write(ed.extraData);
+
+			return dataArray;
+		}
 
         void Update()
         {

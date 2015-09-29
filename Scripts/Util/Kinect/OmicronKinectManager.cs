@@ -94,6 +94,7 @@ public class OmicronKinectManager : OmicronEventClient {
 		body.transform.localRotation = Quaternion.identity;
 		body.GetComponent<OmicronKinectEventClient>().bodyID = sourceID;
 		body.GetComponent<OmicronKinectEventClient>().kinectManager = this;
+		body.layer = gameObject.layer;
 		trackedBodies.Add( sourceID, body );
 	}
 

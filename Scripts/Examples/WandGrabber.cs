@@ -7,6 +7,7 @@ public class WandGrabber : OmicronWandUpdater
 	public LayerMask wandLayerMask = -1;
 
 	public bool wandHit;
+	public bool overGrabbable;
 
 	ArrayList grabbedObjects;
 
@@ -18,7 +19,7 @@ public class WandGrabber : OmicronWandUpdater
 	// Update is called once per frame
 	void Update()
 	{
-		//GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
+		GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
 		// Shoot a ray from the wand
 		Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
@@ -33,6 +34,7 @@ public class WandGrabber : OmicronWandUpdater
 			// Send a message to the hit object telling it that the wand is hovering over it
 			hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver);
 
+			overGrabbable = (hit.transform.GetComponent<GrabbableObject>() != null);
 			if (CAVE2Manager.GetButtonDown(wandID,grabButton))
 			{
 				hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
@@ -42,6 +44,10 @@ public class WandGrabber : OmicronWandUpdater
 				
 
 		}
+		else
+		{
+			overGrabbable = false;
+		}
 		if (CAVE2Manager.GetButtonUp(wandID,grabButton))
 		{
 			foreach( Transform t in grabbedObjects )
@@ -50,6 +56,6 @@ public class WandGrabber : OmicronWandUpdater
 			}
 			grabbedObjects.Clear();
 		}
-		//GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast
+		GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast
 	}
 }

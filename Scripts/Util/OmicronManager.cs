@@ -115,7 +115,11 @@ class EventListener : IOmicronConnectorClientListener
 }// EventListener
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if USING_GETREAL3D
+class OmicronManager : getReal3D.MonoBehaviourWithRpc
+#else
 class OmicronManager : MonoBehaviour
+#endif
 {
 	EventListener omicronListener;
 	OmicronConnectorClient omicronManager;
@@ -186,7 +190,7 @@ class OmicronManager : MonoBehaviour
 			omicronClients.Add(c);
 		}
 	}
-	
+
 	public void AddEvent( EventData e )
 	{
 		lock(eventList.SyncRoot)
@@ -197,9 +201,9 @@ class OmicronManager : MonoBehaviour
 				Debug.Log("OmicronInputScript: New event ID: " + e.sourceId);
 				Debug.Log("   type" + e.serviceType);
 			}
-		}
+		};
 	}
-	
+
 	public void Update()
 	{
 		if( mouseTouchEmulation )
@@ -239,33 +243,6 @@ class OmicronManager : MonoBehaviour
 						}
 					}
 					omicronClients = activeClients;
-					/*
-					if( (EventBase.ServiceType)e.serviceType == EventBase.ServiceType.ServiceTypePointer )
-					{
-						// 2D position of the touch, flipping y-coordinates
-						Vector2 position = new Vector3( e.posx * Screen.width, Screen.height - e.posy * Screen.height );
-						
-						// Ray extending from main camera into screen from touch point
-						Ray touchRay = Camera.main.ScreenPointToRay(position);
-						Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
-						
-						TouchPoint touch = new TouchPoint(position, (int)e.sourceId);
-						touch.SetGesture( (EventBase.Type)e.type ); 
-						
-						//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-						//foreach (GameObject touchObj in touchObjects) {
-						//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
-						//}
-					}
-					
-					else
-					{
-						//GameObject[] omicronObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-						//foreach (GameObject obj in omicronObjects) {
-						//	obj.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
-						//}
-					}
-					*/
 				}
 				
 				// Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)

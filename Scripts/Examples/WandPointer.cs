@@ -44,7 +44,7 @@ public class WandPointer : OmicronWandUpdater
     {
         GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
-        laserActivated = CAVE2Manager.GetButton(wandID,CAVE2Manager.Button.Button3);
+		laserActivated = CAVE2Manager.GetButton(wandID,laserButton);
         laser.enabled = laserActivated;
 
         // Shoot a ray from the wand
