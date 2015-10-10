@@ -152,7 +152,7 @@ class OmicronManager : MonoBehaviour
 		
 		gameObject.tag = "OmicronManager";
 		
-		if( connectToServer )
+		if( connectToServer && CAVE2Manager.IsMaster() )
 		{
 			ConnectToServer();
 		}
@@ -193,6 +193,10 @@ class OmicronManager : MonoBehaviour
 
 	public void AddEvent( EventData e )
 	{
+		string evtString = OmicronConnectorClient.EventDataToString(e);
+
+		e = OmicronConnectorClient.StringToEventData(evtString);
+
 		lock(eventList.SyncRoot)
 		{
 			eventList.Add(e);
@@ -203,6 +207,18 @@ class OmicronManager : MonoBehaviour
 			}
 		};
 	}
+
+#if USING_GETREAL3D
+	[getReal3D.RPC]
+	public void AddStringEvent( string evtString )
+	{
+		EventData e = OmicronConnectorClient.StringToEventData(evtString);
+		if(!getReal3D.Cluster.isMaster)
+		{
+			AddEvent(e);
+		}
+	}
+#endif
 
 	public void Update()
 	{
@@ -243,6 +259,13 @@ class OmicronManager : MonoBehaviour
 						}
 					}
 					omicronClients = activeClients;
+					
+					#if USING_GETREAL3D
+					if(getReal3D.Cluster.isMaster)
+					{
+						//getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
+					}
+					#endif
 				}
 				
 				// Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)

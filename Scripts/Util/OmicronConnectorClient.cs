@@ -487,13 +487,16 @@ namespace omicronConnector
 				//Debug.Log("receiveBytes length: " + receiveBytes.Length);
 
                 //#define OI_READBUF(type, buf, offset, val) val = *((type*)&buf[offset]); offset += sizeof(type);
-				//getReal3D.RpcManager.call("GenerateEventData",receiveBytes);
-
                 listener.onEvent(ByteArrayToEventData(receiveBytes));
             }
         }// Listen()
 
-		private static EventData ByteArrayToEventData(byte[] receiveBytes)
+		void GenerateEventData(string eventString)
+		{
+			listener.onEvent(ByteArrayToEventData(GetBytesFromString(eventString)));
+		}
+
+		public static EventData ByteArrayToEventData(byte[] receiveBytes)
 		{
 			MemoryStream ms = new MemoryStream();
 			ms.Write(receiveBytes, 0, receiveBytes.Length);
@@ -533,7 +536,7 @@ namespace omicronConnector
 			return ed;
 		}
 
-        static byte[] EventDataToByteArray(EventData ed)
+		public static byte[] EventDataToByteArray(EventData ed)
 		{
             MemoryStream ms = new MemoryStream();
 			BinaryWriter bw = new BinaryWriter(ms);
@@ -567,9 +570,34 @@ namespace omicronConnector
 			return dataArray;
 		}
 
-        void Update()
-        {
+		public static string EventDataToString( EventData e )
+		{
+			byte[] b = EventDataToByteArray(e);
+			return GetStringFromBytes(b);
+		}
 
-        }// Update()
+		public static EventData StringToEventData( string s )
+		{
+			byte[] b = GetBytesFromString(s);
+			return ByteArrayToEventData(b);
+		}
+
+		static byte[] GetBytesFromString(string str)
+		{
+			return System.Convert.FromBase64String(str);
+			//return System.Text.Encoding.UTF8.GetBytes(str);
+			//byte[] bytes = new byte[str.Length * sizeof(char)];
+			//System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+			//return bytes;
+		}
+		
+		static string GetStringFromBytes(byte[] bytes)
+		{
+			return System.Convert.ToBase64String(bytes);
+			//return System.Text.Encoding.UTF8.GetString(bytes);
+			//char[] chars = new char[bytes.Length / sizeof(char)];
+			//System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
+			//return new string(chars);
+		}
     }
 }

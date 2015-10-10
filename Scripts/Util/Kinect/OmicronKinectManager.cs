@@ -58,9 +58,20 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	void OnEvent( EventData e )
 	{
+		getReal3D.RpcManager.call ("ProcessEventData", OmicronConnectorClient.EventDataToString(e));
+	}
+
+	[getReal3D.RPC]
+	void ProcessEventData(string eventString)
+	{
+		//Debug.Log ("Received Event String");
+		EventData e = OmicronConnectorClient.StringToEventData(eventString);
+		//Debug.Log ("   Event Type: " + e.serviceType);
+
 		if (enableBodyTracking && e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{
 			int sourceID = (int)e.sourceId;
+			//Debug.Log ("   Event SourceID: " + sourceID);
 			if( !trackedBodies.ContainsKey( sourceID ) )
 			{
 				CreateBody(sourceID);
@@ -70,9 +81,9 @@ public class OmicronKinectManager : OmicronEventClient {
 		{
 			string speechString = e.getExtraDataString();
 			float speechConfidence = e.posx;
-
+			
 			//Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
-
+			
 			if( speechConfidence >= minimumSpeechConfidence )
 			{
 				foreach( GameObject voiceListeners in voiceCommandListeners )

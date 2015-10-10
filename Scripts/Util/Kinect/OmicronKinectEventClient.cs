@@ -145,9 +145,17 @@ public class OmicronKinectEventClient : OmicronEventClient {
 			RemoveBody();
 		}
 	}
-	
+
 	void OnEvent( EventData e )
 	{
+		getReal3D.RpcManager.call ("ProcessKinectEventData", OmicronConnectorClient.EventDataToString(e));
+	}
+	
+	[getReal3D.RPC]
+	void ProcessKinectEventData(string eventString)
+	{
+		EventData e = OmicronConnectorClient.StringToEventData(eventString);
+
 		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{
 			int sourceID = (int)e.sourceId;
