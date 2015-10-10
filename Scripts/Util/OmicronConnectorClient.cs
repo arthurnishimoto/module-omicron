@@ -491,11 +491,6 @@ namespace omicronConnector
             }
         }// Listen()
 
-		void GenerateEventData(string eventString)
-		{
-			listener.onEvent(ByteArrayToEventData(GetBytesFromString(eventString)));
-		}
-
 		public static EventData ByteArrayToEventData(byte[] receiveBytes)
 		{
 			MemoryStream ms = new MemoryStream();

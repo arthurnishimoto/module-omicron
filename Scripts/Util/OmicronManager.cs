@@ -193,10 +193,6 @@ class OmicronManager : MonoBehaviour
 
 	public void AddEvent( EventData e )
 	{
-		string evtString = OmicronConnectorClient.EventDataToString(e);
-
-		e = OmicronConnectorClient.StringToEventData(evtString);
-
 		lock(eventList.SyncRoot)
 		{
 			eventList.Add(e);
@@ -263,7 +259,7 @@ class OmicronManager : MonoBehaviour
 					#if USING_GETREAL3D
 					if(getReal3D.Cluster.isMaster)
 					{
-						//getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
+						getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
 					}
 					#endif
 				}
