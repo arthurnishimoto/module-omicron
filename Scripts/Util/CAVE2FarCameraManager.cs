@@ -11,7 +11,7 @@ public class CAVE2FarCameraManager : MonoBehaviour {
 	public GameObject CAVE2SkyBox;
     public GameObject skyBox;
 
-    LayerMask skyboxDefaultLayer;
+    //LayerMask skyboxDefaultLayer;
 
     bool enable = false;
 
@@ -23,7 +23,7 @@ public class CAVE2FarCameraManager : MonoBehaviour {
             enableCAVE2FarCamera = false;
             enable = true;
         }
-        skyboxDefaultLayer = skyBox.layer;
+        //skyboxDefaultLayer = skyBox.layer;
     }
 
 	// Use this for initialization

@@ -11,7 +11,7 @@ public class WandGrabber : OmicronWandUpdater
 
 	ArrayList grabbedObjects;
 
-	void Start()
+	new void Start()
 	{
 		grabbedObjects = new ArrayList();
 	}

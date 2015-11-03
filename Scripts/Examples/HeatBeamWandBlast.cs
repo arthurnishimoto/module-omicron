@@ -10,11 +10,6 @@ public class HeatBeamWandBlast : OmicronWandUpdater
 
 	public GameObject blastPrefab;
 
-	void Start()
-	{
-
-	}
-	
 	// Update is called once per frame
 	void Update()
 	{

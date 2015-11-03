@@ -32,7 +32,7 @@ public class WandPointer : OmicronWandUpdater
         laser.useWorldSpace = false;
         laser.material = laserMaterial;
         laser.SetColors(laserColor, laserColor);
-        laser.castShadows = false;
+		laser.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         laser.receiveShadows = false;
 
         // Laser impact glow
