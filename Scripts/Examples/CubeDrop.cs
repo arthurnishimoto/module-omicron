@@ -24,5 +24,11 @@ public class CubeDrop : MonoBehaviour {
 	void Drop()
 	{
 		GetComponent<Rigidbody>().useGravity = true;
+
+		if( GetComponent<FighterAIMovementScript>() )
+		{
+			GetComponent<FighterAIMovementScript>().forwardSpeed = 0;
+			Destroy(transform.root.gameObject, 10);
+		}
 	}
 }
