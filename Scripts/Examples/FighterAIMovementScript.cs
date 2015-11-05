@@ -34,8 +34,6 @@ public class FighterAIMovementScript : FighterMovementScript {
 	public float strafingTimer = 0;
 
 	public float collisionDistance = 4;
-	
-	Vector3 randomInput = Vector3.zero;
 
 	public bool targetByTag = false;
 	public string targetTag;
@@ -50,7 +48,7 @@ public class FighterAIMovementScript : FighterMovementScript {
     public bool followingWaypoint = false;
 
 	// Use this for initialization
-	new void Start() {
+	void Start() {
 		if( enableRandomMods )
 		{
 			turningAngleMod = Random.Range(-50,50) / 100.0f;
@@ -232,8 +230,6 @@ public class FighterAIMovementScript : FighterMovementScript {
 			{
 				Vector3 position = transform.position;
 				Vector3 otherPos = otherAI.transform.position;
-
-				float distance = Mathf.Sqrt( Mathf.Pow( Mathf.Abs( otherPos.x - position.x ), 2.0f) + Mathf.Pow( Mathf.Abs( otherPos.z - position.z ), 2.0f) );
 
 				Vector3 relativePos = otherPos - position;
 				Quaternion targetRotation = Quaternion.LookRotation(relativePos);
