@@ -132,7 +132,9 @@ public class CAVE2Manager : OmicronEventClient {
 	// Use this for initialization
 	new void Start () {
 		base.Start();
-		
+
+		Random.seed = 1138;
+
 		head1 = new HeadTrackerState(Head1);
 		head2 = new HeadTrackerState(Head2);
 		
