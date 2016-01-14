@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2016             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2016, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -30,7 +30,7 @@ using System.Collections;
 
 public class OmicronPlayerController : OmicronWandUpdater {
 
-	string version = "v2.0-alpha1";
+	string version = "v2.0-alpha2";
 
 	public CAVE2Manager.Axis forwardAxis = CAVE2Manager.Axis.LeftAnalogStickUD;
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
@@ -95,7 +95,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	// Use this for initialization
 	new void Start () {
-		gameObject.tag = "PlayerController";
+        CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().AddPlayerController(gameObject);
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
 	}

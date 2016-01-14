@@ -37,9 +37,12 @@ public class WandGrabber : OmicronWandUpdater
 			overGrabbable = (hit.transform.GetComponent<GrabbableObject>() != null);
 			if (CAVE2Manager.GetButtonDown(wandID,grabButton))
 			{
-				hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
-				if( hit.transform.GetComponent<GrabbableObject>() )
-					grabbedObjects.Add(hit.transform);
+                if (hit.transform.GetComponent<GrabbableObject>())
+                {
+                    hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
+                    grabbedObjects.Add(hit.collider.transform);
+                    
+                }
 			}
 				
 
@@ -52,7 +55,7 @@ public class WandGrabber : OmicronWandUpdater
 		{
 			foreach( Transform t in grabbedObjects )
 			{
-				t.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver);
+                t.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver);
 			}
 			grabbedObjects.Clear();
 		}

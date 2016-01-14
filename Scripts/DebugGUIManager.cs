@@ -30,16 +30,17 @@ public class DebugGUIManager : MonoBehaviour {
 
 	void Start()
 	{
-		omgManager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<OmicronManager> ();
-		cave2manager = GameObject.FindGameObjectWithTag ("OmicronManager").GetComponent<CAVE2Manager> ();
+        GameObject cave2ManagerObj = GameObject.Find("CAVE2-Manager");
+        if (cave2ManagerObj)
+        {
+            omgManager = cave2ManagerObj.GetComponent<OmicronManager>();
+            cave2manager = cave2ManagerObj.GetComponent<CAVE2Manager>();
 
-        if( GameObject.FindGameObjectWithTag ("PlayerController") )
-		    playerController = GameObject.FindGameObjectWithTag ("PlayerController").GetComponent<OmicronPlayerController> ();
-
-        if (GetComponent<GUIText>() == null)
-            gameObject.AddComponent<GUIText>();
-		if (GetComponent<TextMesh>() == null)
-        	transform.position = new Vector3(0.01f, 0.04f, 0);
+            if (GetComponent<GUIText>() == null)
+                gameObject.AddComponent<GUIText>();
+            if (GetComponent<TextMesh>() == null)
+                transform.position = new Vector3(0.01f, 0.04f, 0);
+        }
 	}
 
 	void Update()

@@ -1,11 +1,11 @@
 /**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2015		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2016		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2016, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -138,7 +138,6 @@ class OmicronManager : MonoBehaviour
 	private ArrayList eventList;
 	
 	private ArrayList omicronClients;
-
 	
 	int connectStatus = 0;
 
@@ -149,8 +148,6 @@ class OmicronManager : MonoBehaviour
 		omicronManager = new OmicronConnectorClient(omicronListener);
 		
 		eventList = new ArrayList();
-		
-		gameObject.tag = "OmicronManager";
 		
 		if( connectToServer && CAVE2Manager.IsMaster() )
 		{

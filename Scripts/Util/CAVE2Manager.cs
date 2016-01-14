@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2016             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2016, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -79,7 +79,9 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public static WandState wand1;
 	public static WandState wand2;
-	
+
+    public static string ERROR_MANAGERNOTFOUND = "CAVE2-Manager GameObject expected, but not found in the current scene. Creating Default.";
+
 	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR,
 		LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTriggerR_Inverted
 	};
@@ -111,9 +113,17 @@ public class CAVE2Manager : OmicronEventClient {
 	public Vector3 wandEmulatedRotation = new Vector3(0, 0, 0);
 
 	public enum TrackerEmulated { CAVE, Head, Wand };
-	public enum TrackerEmulationMode { Translate, Rotate };
+	public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotatePitchRoll };
 	string[] trackerEmuStrings = {"CAVE", "Head", "Wand1"};
 	string[] trackerEmuModeStrings = {"Translate", "Rotate" };
+
+    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.TranslateVertical;
+    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.Pointer;
+    public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
+    public KeyCode toggleWandModeKey = KeyCode.LeftShift;
+
+    Vector3 mouseLastPos;
+    public Vector3 mouseDeltaPos;
 
 	public TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
 	public TrackerEmulationMode WASDkeyMode = TrackerEmulationMode.Translate;
@@ -128,6 +138,9 @@ public class CAVE2Manager : OmicronEventClient {
 	public static string machineName;
 
 	Vector3 lastMousePosition = Vector3.zero;
+
+    private ArrayList playerControllers;
+    public GameObject cameraController;
 
 	// Use this for initialization
 	new void Start () {
@@ -180,30 +193,57 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-			//#if USING_GETREAL3D
-			//Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
-			////Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
-			//Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
-			//ssh #endif
-		}
-	}
 
-	public static bool UsingGetReal3D()
-	{
-		if( Application.HasProLicense() && (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) )
-		{
-			return true;
-		}
-		else
-		{
-			return false;
 		}
 	}
 
 	public static bool UsingOmicronServer()
 	{
-		return GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<OmicronManager>().connectToServer;
+        if (GetCAVE2Manager())
+		{
+			return GameObject.Find ("CAVE2-Manager").GetComponent<OmicronManager> ().connectToServer;
+		}
+        else
+        {
+            return false;
+        }
 	}
+
+    public static GameObject GetCAVE2Manager()
+    {
+        if (GameObject.Find("CAVE2-Manager"))
+        {
+            return GameObject.Find("CAVE2-Manager");
+        }
+        else
+        {
+            GameObject cave2Manager = new GameObject("CAVE2-Manager");
+            cave2Manager.AddComponent<CAVE2Manager>();
+            cave2Manager.AddComponent<OmicronManager>();
+            cave2Manager.AddComponent<DebugGUIManager>();
+            cave2Manager.GetComponent<CAVE2Manager>().simulatorMode = true;
+            Debug.LogWarning(CAVE2Manager.ERROR_MANAGERNOTFOUND);
+            return cave2Manager;
+        }
+    }
+
+    public void AddPlayerController(GameObject c)
+    {
+        if (playerControllers != null)
+            playerControllers.Add(c);
+        else
+        {
+            // First run case since client may attempt to connect before
+            // OmicronManager Start() is called
+            playerControllers = new ArrayList();
+            playerControllers.Add(c);
+        }
+    }
+
+    public void AddCameraController(GameObject c)
+    {
+        cameraController = c;
+    }
 
 	public static bool IsMaster()
 	{
@@ -385,6 +425,17 @@ public class CAVE2Manager : OmicronEventClient {
             keyboardEventEmulation = true;
             wandMousePointerEmulation = true;
             mocapEmulation = true;
+
+            if (Input.GetKey(toggleWandModeKey))
+            {
+                wandEmulationMode = toggleWandEmulationMode;
+            }
+            else
+            {
+                wandEmulationMode = defaultWandEmulationMode;
+            }
+            mouseDeltaPos = Input.mousePosition - mouseLastPos;
+            mouseLastPos = Input.mousePosition;
         }
 
 		wand1.UpdateState(Wand1, Wand1Mocap);
@@ -583,10 +634,10 @@ public class CAVE2Manager : OmicronEventClient {
 			else
 				wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
 
-            if (GameObject.FindGameObjectWithTag("CameraController"))
+            if (cameraController != null)
             {
-                GameObject.FindGameObjectWithTag("CameraController").transform.localPosition = headEmulatedPosition;
-                GameObject.FindGameObjectWithTag("CameraController").transform.localEulerAngles = headEmulatedRotation;
+                cameraController.transform.localPosition = headEmulatedPosition;
+                cameraController.transform.localEulerAngles = headEmulatedRotation;
             }
 		}
 		else

@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2016             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2016, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -36,7 +36,7 @@ public class OmicronHeadUpdater : MonoBehaviour {
 
 	// Use this for initialization
 	public void Start () {
-		cave2Manager = GameObject.FindGameObjectWithTag("OmicronManager").GetComponent<CAVE2Manager>();
+		cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
 	}
 	
 	// Update is called once per frame
