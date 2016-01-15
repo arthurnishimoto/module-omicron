@@ -178,7 +178,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
         if (CAVEFloor && !CAVEFloor.activeSelf)
             CAVEFloor.SetActive(true);
 
-        if (CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf)
+        if (CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf && !CAVE2Manager.IsMaster())
             CAVEFloor.SetActive(false);
         else if (CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf)
             CAVEFloor.SetActive(true);
