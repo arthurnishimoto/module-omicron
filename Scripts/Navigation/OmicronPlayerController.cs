@@ -261,9 +261,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			transform.position = nextPos;
 			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * Time.deltaTime * turnSpeed);
-
-			//transform.Translate( new Vector3(0, 0, forward) * Time.deltaTime );
-			//transform.Rotate( new Vector3( 0, strafe, 0) * Time.deltaTime * turnSpeed );
 		}
 	}
 	
@@ -291,23 +288,18 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 			transform.position = nextPos;
 			transform.Rotate( new Vector3( 0, lookAround.y, 0) * Time.deltaTime * turnSpeed );
-			//transform.Translate( new Vector3(strafe, 0, forward) * Time.deltaTime );
 		}
 		else if( horizontalMovementMode == HorizonalMovementMode.Turn )
 		{
 			nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad*forwardAngle);
 			nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad*forwardAngle);
-			//transform.position = nextPos;
+			transform.position = nextPos;
 
 			transform.RotateAround( headObject.transform.position, Vector3.up, strafe * Time.deltaTime * turnSpeed);
-
-			//transform.Translate( new Vector3(0, 0, forward) * Time.deltaTime );
 			transform.Rotate( new Vector3( 0, strafe, 0) * Time.deltaTime * turnSpeed );
 		}
 
-		//transform.Rotate( new Vector3( 0, lookAround.y, 0) * Time.deltaTime * turnSpeed );
-
-		if( autoLevelMode == AutoLevelMode.OnGroundCollision )
+        if( autoLevelMode == AutoLevelMode.OnGroundCollision )
 		{
 			transform.eulerAngles = new Vector3( 0, transform.eulerAngles.y, 0 );
 		}
