@@ -172,19 +172,19 @@ public class CAVE2Manager : OmicronEventClient {
 		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
 
-		if ( OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor )
-        {
-            keyboardEventEmulation = false;
-            wandMousePointerEmulation = false;
-            mocapEmulation = false;
-            lockWandToHeadTransform = false;
-        }
-		else if (OnCAVE2Display())
+		if ((OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor) || OnCAVE2Display())
         {
 			#if USING_GETREAL3D
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+			if( Camera.main.GetComponent<getRealCameraUpdater>() )
+			{
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+			}
+			else
+			{
+				Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
+			}
 			#endif
 
 			keyboardEventEmulation = false;
@@ -434,9 +434,12 @@ public class CAVE2Manager : OmicronEventClient {
         if (simulatorMode)
         {
 #if USING_GETREAL3D
+			if( Camera.main.GetComponent<getRealCameraUpdater>() )
+			{
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
             Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
             Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+			}
 #endif
 
             keyboardEventEmulation = true;

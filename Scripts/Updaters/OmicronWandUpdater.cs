@@ -31,13 +31,24 @@ using omicron;
 using omicronConnector;
 
 public class OmicronWandUpdater : MonoBehaviour {
-public int wandID = 1;
+	public int wandID = 1;
+
+	// The wand's center position is likely not the center of the physical wand,
+	// but the center of the tracking markers.
+	// The WandUpdater will handle the offset between the wand center and the tracking
+	// center so that the virtual and physical wand align
+	public Transform virtualWand;
 
 CAVE2Manager cave2Manager;
 
 public void InitOmicron()
 {
 	cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+	if( virtualWand && !cave2Manager.simulatorMode )
+	{
+		virtualWand.transform.localPosition = CAVE2Manager.GetWandTrackingOffset(1);
+	}
 }
 
 // Use this for initialization
