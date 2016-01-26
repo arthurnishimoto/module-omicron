@@ -112,5 +112,12 @@ void Update() {
             transform.Rotate(new Vector3(-mouseDeltaPos.y, mouseDeltaPos.x, 0));
             cave2Manager.wandEmulatedRotation = transform.eulerAngles;
         }
+        else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.RotateRoll) // Wand mouse mode
+        {
+            // Translate wand based on mouse position
+            Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos;
+            transform.Rotate(new Vector3(0, 0, -mouseDeltaPos.x));
+            cave2Manager.wandEmulatedRotation = transform.eulerAngles;
+        }
     }
 }

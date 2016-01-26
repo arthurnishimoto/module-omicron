@@ -116,7 +116,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public Vector3 wandEmulatedRotation = new Vector3(0, 0, 0);
 
 	public enum TrackerEmulated { CAVE, Head, Wand };
-	public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotatePitchRoll };
+	public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
 	string[] trackerEmuStrings = {"CAVE", "Head", "Wand1"};
 	string[] trackerEmuModeStrings = {"Translate", "Rotate" };
 
