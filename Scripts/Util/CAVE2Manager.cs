@@ -99,6 +99,9 @@ public class CAVE2Manager : OmicronEventClient {
 	public float axisSensitivity = 1f;
 	public float axisDeadzone = 0.2f;
 
+    // Distance in meters the wand marker center is offset from the controller center
+    public Vector3 wand1TrackingOffset = new Vector3(-0.007781088f, -0.04959464f, -0.07368752f);
+
 	public bool keyboardEventEmulation = false;
 	public bool wandMousePointerEmulation = false;
 	public bool mocapEmulation = false;
@@ -408,6 +411,20 @@ public class CAVE2Manager : OmicronEventClient {
 		
 		return 0;
 	}
+
+    public static Vector3 GetWandTrackingOffset(int wandID)
+    {
+        if (wandID == 1)
+        {
+            return GetCAVE2Manager().GetComponent<CAVE2Manager>().wand1TrackingOffset;
+        }
+        else if (wandID == 2)
+        {
+            
+        }
+
+        return Vector3.zero;
+    }
 
     public float lookHorizontal;
     public float lookVertical;

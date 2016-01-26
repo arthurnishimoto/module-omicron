@@ -31,90 +31,86 @@ using omicron;
 using omicronConnector;
 
 public class OmicronWandUpdater : MonoBehaviour {
-	public int wandID = 1;
+public int wandID = 1;
 
-	CAVE2Manager cave2Manager;
+CAVE2Manager cave2Manager;
 
-	public void InitOmicron()
-	{
-		cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
-	}
+public void InitOmicron()
+{
+	cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+}
 
-	// Use this for initialization
-	public void Start () {
-		InitOmicron ();
-	}
+// Use this for initialization
+public void Start () {
+	InitOmicron ();
+}
 	
-	// Update is called once per frame
-	void Update() {
-
-			if( !cave2Manager.wandMousePointerEmulation )
+// Update is called once per frame
+void Update() {
+		if( !cave2Manager.wandMousePointerEmulation )
+		{
+			if( GetComponent<Rigidbody>() )
 			{
-				if( GetComponent<Rigidbody>() )
-				{
-					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
-					GetComponent<Rigidbody>().MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
-				}
-				else
-				{
-					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
-					transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
-				}
+				GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
+				GetComponent<Rigidbody>().MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
 			}
-            else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.Pointer) // Mouse pointer mode
+			else
 			{
-				if( GetComponent<Rigidbody>() )
-				{
-					GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
-				}
-				else
-				{
-					transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
-				}
+				transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+				transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
+			}
+		}
+        else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.Pointer) // Mouse pointer mode
+		{
+			if( GetComponent<Rigidbody>() )
+			{
+				GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
+			}
+			else
+			{
+				transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+			}
 
-				// Mouse pointer ray controls rotation
-				Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
+			// Mouse pointer ray controls rotation
+			Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
 				
-				// Ray extending from main camera into screen from touch point
-				Ray ray = Camera.main.ScreenPointToRay(position);
-				RaycastHit hit;
-				if (Physics.Raycast(ray, out hit, 100))
-				{
-					//transform.LookAt( hit.point );
-				}
-				else
-				{
-					//transform.LookAt( ray.GetPoint(1000) );
-				}
-				transform.LookAt( ray.GetPoint(1000) );
-				// Update the wandState rotation (opposite of normal since this object is determining the rotation)
-				cave2Manager.wandEmulatedRotation = transform.eulerAngles;
+			// Ray extending from main camera into screen from touch point
+			Ray ray = Camera.main.ScreenPointToRay(position);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit, 100))
+			{
+				//transform.LookAt( hit.point );
 			}
-            else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.TranslateVertical) // Mouse pointer mode
-            {
-                // Mouse pointer ray controls rotation
-                Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
-                float maxRange = 0.5f; // meters
-                //Vector3 initialOffset = CAVE2Manager.GetWandPosition(wandID);
-                Vector3 initialOffset = new Vector3(0.1f, 1.43f, 0.4f);
-                transform.localPosition = new Vector3(positionNormalized.x * maxRange - maxRange / 2, initialOffset.y + positionNormalized.y * maxRange - maxRange / 2, initialOffset.z);
-                cave2Manager.wandEmulatedPosition = transform.localPosition;
-            }
-            else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.TranslateForward) // Mouse pointer mode
-            {
-                // Mouse pointer ray controls rotation
-                Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
-                float maxRange = 0.5f; // meters
-                //Vector3 initialOffset = CAVE2Manager.GetWandPosition(wandID);
-                Vector3 initialOffset = new Vector3(0.1f, 1.43f, 0.4f);
-                transform.localPosition = new Vector3(positionNormalized.x * maxRange - maxRange / 2, initialOffset.y, initialOffset.z + positionNormalized.y * maxRange - maxRange / 2);
-                cave2Manager.wandEmulatedPosition = transform.localPosition;
-            }
-            else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.RotatePitchYaw) // Mouse pointer mode
-            {
-                Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos;
-                transform.Rotate(new Vector3(-mouseDeltaPos.y, mouseDeltaPos.x, 0));
-                cave2Manager.wandEmulatedRotation = transform.eulerAngles;
-            }
-	}
+			else
+			{
+				//transform.LookAt( ray.GetPoint(1000) );
+			}
+			transform.LookAt( ray.GetPoint(1000) );
+			// Update the wandState rotation (opposite of normal since this object is determining the rotation)
+			cave2Manager.wandEmulatedRotation = transform.eulerAngles;
+		}
+        else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.TranslateVertical) // Mouse pointer mode
+        {
+            // Translate wand based on mouse position
+            Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos * Time.deltaTime * 0.05f;
+            Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
+            transform.localPosition += mouseDeltaPos;
+            cave2Manager.wandEmulatedPosition = transform.localPosition;
+        }
+        else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.TranslateForward) // Wand mouse mode
+        {
+            // Translate wand based on mouse position
+            Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos * Time.deltaTime * 0.05f;
+            Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
+            transform.localPosition += new Vector3(mouseDeltaPos.x, 0, mouseDeltaPos.y);
+            cave2Manager.wandEmulatedPosition = transform.localPosition;
+        }
+        else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.RotatePitchYaw) // Wand mouse mode
+        {
+            // Translate wand based on mouse position
+            Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos;
+            transform.Rotate(new Vector3(-mouseDeltaPos.y, mouseDeltaPos.x, 0));
+            cave2Manager.wandEmulatedRotation = transform.eulerAngles;
+        }
+    }
 }
