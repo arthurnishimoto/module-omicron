@@ -104,7 +104,6 @@ void Update() {
         {
             // Translate wand based on mouse position
             Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos * Time.deltaTime * 0.05f;
-            Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
             transform.localPosition += mouseDeltaPos;
             cave2Manager.wandEmulatedPosition = transform.localPosition;
         }
@@ -112,7 +111,6 @@ void Update() {
         {
             // Translate wand based on mouse position
             Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos * Time.deltaTime * 0.05f;
-            Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
             float mouseScroll = Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * 2.0f;
             transform.localPosition += new Vector3(mouseDeltaPos.x, mouseScroll, mouseDeltaPos.y);
             cave2Manager.wandEmulatedPosition = transform.localPosition;

@@ -257,6 +257,11 @@ public class CAVE2Manager : OmicronEventClient {
         }
     }
 
+    public GameObject GetPlayerController(int value)
+    {
+        return playerControllers[value] as GameObject;
+    }
+
     public void AddCameraController(GameObject c)
     {
         cameraController = c;
@@ -621,6 +626,10 @@ public class CAVE2Manager : OmicronEventClient {
             // Wand (L1 Trigger)
             if (Input.GetKey(wandSimulatorButton5))
                 flags += (int)EventBase.Flags.Button5;
+
+            // Wand (L3 Trigger)
+            if (Input.GetButton(wandSimulatorButton6))
+                flags += (int)EventBase.Flags.Button6;
 
 			float headForward = 0;
 			float headStrafe = 0;
