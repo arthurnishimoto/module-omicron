@@ -273,6 +273,12 @@ class OmicronManager : MonoBehaviour
 		}
     }
 
+	void OnDestroy() {
+		if( connectToServer ){
+			DisconnectServer();
+		}
+	}
+
 	// GUI
 	GUIStyle idleStatus = new GUIStyle();
 	GUIStyle activeStatus = new GUIStyle();

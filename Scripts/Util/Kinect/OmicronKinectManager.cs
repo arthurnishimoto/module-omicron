@@ -45,6 +45,8 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	public GameObject[] voiceCommandListeners;
 
+	public UnityEngine.UI.Text debugText;
+
 	// Use this for initialization
 	new void Start () {
 		trackedBodies = new Hashtable ();
@@ -71,8 +73,12 @@ public class OmicronKinectManager : OmicronEventClient {
 			string speechString = e.getExtraDataString();
 			float speechConfidence = e.posx;
 
+			string debugText = "Received Speech: '" + speechString + "' at " +speechConfidence.ToString("F2")+ " confidence";
+			debugText += "\nMin confidence: "+minimumSpeechConfidence.ToString("F2");
 			//Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
-
+#if USING_GETREAL3D
+			getReal3D.RpcManager.call("SetHUDSpeechDebugText",debugText);
+#endif
 			if( speechConfidence >= minimumSpeechConfidence )
 			{
 				foreach( GameObject voiceListeners in voiceCommandListeners )
@@ -83,6 +89,13 @@ public class OmicronKinectManager : OmicronEventClient {
 		}
 	}
 
+#if USING_GETREAL3D
+	[getReal3D.RPC]
+	void SetHUDSpeechDebugText(string s)
+	{
+		debugText.text = s;
+	}
+#endif
 	void CreateBody( int sourceID )
 	{
 		GameObject body;

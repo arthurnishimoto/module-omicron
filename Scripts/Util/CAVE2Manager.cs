@@ -714,9 +714,9 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
-			//#if USING_GETREAL3D
+			#if USING_GETREAL3D
 			//getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
-			//#else
+			#else
 			if( e.sourceId == head1.sourceID )
 			{
 				head1.Update( unityPos, unityRot );
@@ -733,7 +733,7 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateMocap( unityPos, unityRot );
 			}
-			//#endif
+			#endif
 
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
@@ -756,9 +756,9 @@ public class CAVE2Manager : OmicronEventClient {
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
 
-			//#if USING_GETREAL3D
+			#if USING_GETREAL3D
 			//getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			//#else
+			#else
 			if( e.sourceId == wand1.sourceID )
 			{
 				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
@@ -767,7 +767,7 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 			}
-			//#endif
+			#endif
 		}
 	}
 
