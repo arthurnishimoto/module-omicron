@@ -179,7 +179,7 @@ public class WandState
 		// Set buttons as idle if up on the last frame
 		// We only check if frame time if input is coming from an external async
 		// source like an Omicron oinputserver
-		if( Time.frameCount - lastUpdateEventFrame > 1 || !CAVE2Manager.UsingOmicronServer() )
+		if( Time.frameCount - lastUpdateEventFrame > 1 || !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) )
 		{
 			for(int i = 0; i < 16; i++ )
 			{

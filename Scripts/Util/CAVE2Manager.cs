@@ -226,6 +226,15 @@ public class CAVE2Manager : OmicronEventClient {
         }
 	}
 
+	public static bool UsingGetReal3D()
+	{
+#if USING_GETREAL3D
+		return true;
+#else
+		return false;
+#endif
+	}
+
     public static GameObject GetCAVE2Manager()
     {
         if (GameObject.Find("CAVE2-Manager"))
@@ -504,7 +513,7 @@ public class CAVE2Manager : OmicronEventClient {
 		
 		#if USING_GETREAL3D
 		// If using Omicron, make sure button events don't conflict
-        if (!UsingOmicronServer() && !simulatorMode)
+        if (!simulatorMode)
 		{
 			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
 			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
@@ -672,7 +681,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		if( !UsingOmicronServer() || (keyboardEventEmulation && Input.anyKey) )
+		if( !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
 		{
 			wand1.UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
 		}
