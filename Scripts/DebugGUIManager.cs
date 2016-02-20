@@ -45,7 +45,7 @@ public class DebugGUIManager : MonoBehaviour {
 
 	void Update()
 	{
-        if (playerController == null)
+		if (playerController == null && cave2manager.GetPlayerController(0) != null )
         {
             playerController = cave2manager.GetPlayerController(0).GetComponent<OmicronPlayerController>();
         }

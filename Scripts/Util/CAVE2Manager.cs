@@ -210,7 +210,16 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-
+			if( Camera.main == null )
+			{
+				Debug.LogError("CAVE2Manager: No Camera tagged 'MainCamera' was found. Will not display properly in CAVE2!");
+			}
+			#if USING_GETREAL3D
+			else if( !simulatorMode && !Camera.main.GetComponent<getRealCameraUpdater>() )
+			{
+				Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
+			}
+			#endif
 		}
 	}
 
@@ -268,7 +277,15 @@ public class CAVE2Manager : OmicronEventClient {
 
     public GameObject GetPlayerController(int value)
     {
-        return playerControllers[value] as GameObject;
+		if (playerControllers != null && playerControllers.Count > value)
+		{
+        	return playerControllers[value] as GameObject;
+		}
+		else if (playerControllers == null)
+		{
+			playerControllers = new ArrayList();
+		}
+		return null;
     }
 
     public void AddCameraController(GameObject c)
@@ -462,11 +479,11 @@ public class CAVE2Manager : OmicronEventClient {
         if (simulatorMode)
         {
 #if USING_GETREAL3D
-			if( Camera.main.GetComponent<getRealCameraUpdater>() )
+			if( Camera.main != null && Camera.main.GetComponent<getRealCameraUpdater>() )
 			{
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
+           		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
 			}
 #endif
 
@@ -704,6 +721,10 @@ public class CAVE2Manager : OmicronEventClient {
                 cameraController.transform.localPosition = headEmulatedPosition;
                 cameraController.transform.localEulerAngles = headEmulatedRotation;
             }
+			else
+			{
+				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+			}
 		}
 		else
 		{
