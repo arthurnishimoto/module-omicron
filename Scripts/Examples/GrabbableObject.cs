@@ -4,18 +4,20 @@ using System.Collections;
 public class GrabbableObject : MonoBehaviour {
 
     bool usedGravity;
-    RigidbodyConstraints constraints;
+    public RigidbodyConstraints constraints;
 
     void OnWandGrab(Transform grabber)
     {
-        transform.parent = grabber;
-        if (GetComponent<Rigidbody>())
+
+        if (GetComponent<Rigidbody>() && transform.parent != grabber )
         {
             usedGravity = GetComponent<Rigidbody>().useGravity;
             GetComponent<Rigidbody>().useGravity = false;
             constraints = GetComponent<Rigidbody>().constraints;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            transform.parent = grabber;
         }
+        
     }
 
     void OnWandGrabRelease()

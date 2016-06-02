@@ -123,13 +123,14 @@ public class CAVE2Manager : OmicronEventClient {
     public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.Pointer;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
-    public KeyCode toggleWandModeKey = KeyCode.LeftShift;
+    public KeyCode toggleWandModeKey = KeyCode.Tab;
+    public bool wandModeToggled = false;
 
     Vector3 mouseLastPos;
     public Vector3 mouseDeltaPos;
 
-	public TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
-	public TrackerEmulationMode WASDkeyMode = TrackerEmulationMode.Translate;
+	TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
+	TrackerEmulationMode WASDkeyMode = TrackerEmulationMode.Translate;
 
 	public TrackerEmulated IJKLkeys = TrackerEmulated.Head;
 	public TrackerEmulationMode IJKLkeyMode = TrackerEmulationMode.Translate;
@@ -144,6 +145,19 @@ public class CAVE2Manager : OmicronEventClient {
 
     private ArrayList playerControllers;
     public GameObject cameraController;
+
+    // CAVE2 Simulator to Wand button bindings
+    public string wandSimulatorAnalogUD = "Vertical";
+    public string wandSimulatorAnalogLR = "Horizontal";
+    public string wandSimulatorButton3 = "Fire1"; // PS3 Navigation Cross
+    public string wandSimulatorButton2 = "Fire2"; // PS3 Navigation Circle
+    public KeyCode wandSimulatorDPadUp = KeyCode.UpArrow;
+    public KeyCode wandSimulatorDPadDown = KeyCode.DownArrow;
+    public KeyCode wandSimulatorDPadLeft = KeyCode.LeftArrow;
+    public KeyCode wandSimulatorDPadRight = KeyCode.RightArrow;
+    public KeyCode wandSimulatorButton5 = KeyCode.Space; // PS3 Navigation L1
+    public string wandSimulatorButton6 = "Fire3"; // PS3 Navigation L3
+    public KeyCode wandSimulatorButton7 = KeyCode.LeftShift; // PS3 Navigation L2
 
 	// Use this for initialization
 	new void Start () {
@@ -196,7 +210,16 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-
+			if( Camera.main == null )
+			{
+				Debug.LogError("CAVE2Manager: No Camera tagged 'MainCamera' was found. Will not display properly in CAVE2!");
+			}
+			#if USING_GETREAL3D
+			else if( !simulatorMode && !Camera.main.GetComponent<getRealCameraUpdater>() )
+			{
+				Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
+			}
+			#endif
 		}
 	}
 
@@ -210,6 +233,15 @@ public class CAVE2Manager : OmicronEventClient {
         {
             return false;
         }
+	}
+
+	public static bool UsingGetReal3D()
+	{
+#if USING_GETREAL3D
+		return true;
+#else
+		return false;
+#endif
 	}
 
     public static GameObject GetCAVE2Manager()
@@ -241,6 +273,19 @@ public class CAVE2Manager : OmicronEventClient {
             playerControllers = new ArrayList();
             playerControllers.Add(c);
         }
+    }
+
+    public GameObject GetPlayerController(int value)
+    {
+		if (playerControllers != null && playerControllers.Count > value)
+		{
+        	return playerControllers[value] as GameObject;
+		}
+		else if (playerControllers == null)
+		{
+			playerControllers = new ArrayList();
+		}
+		return null;
     }
 
     public void AddCameraController(GameObject c)
@@ -446,11 +491,12 @@ public class CAVE2Manager : OmicronEventClient {
         if (simulatorMode)
         {
 #if USING_GETREAL3D
-			if( Camera.main.GetComponent<getRealCameraUpdater>() )
+			if( Camera.main != null && Camera.main.GetComponent<getRealCameraUpdater>() )
 			{
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
+           		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+			}
 			}
 #endif
 
@@ -458,7 +504,12 @@ public class CAVE2Manager : OmicronEventClient {
             wandMousePointerEmulation = true;
             mocapEmulation = true;
 
-            if (Input.GetKey(toggleWandModeKey))
+            if (Input.GetKeyDown(toggleWandModeKey))
+            {
+                wandModeToggled = !wandModeToggled;
+            }
+
+            if(wandModeToggled)
             {
                 wandEmulationMode = toggleWandEmulationMode;
             }
@@ -473,8 +524,8 @@ public class CAVE2Manager : OmicronEventClient {
 		wand1.UpdateState(Wand1, Wand1Mocap);
 		wand2.UpdateState(Wand2, Wand2Mocap);
 
-		float vertical = Input.GetAxis("Vertical") * axisSensitivity;
-		float horizontal = Input.GetAxis("Horizontal") * axisSensitivity;
+		float vertical = Input.GetAxis(wandSimulatorAnalogUD) * axisSensitivity;
+        float horizontal = Input.GetAxis(wandSimulatorAnalogLR) * axisSensitivity;
 		float forward = 0 * axisSensitivity;
 
         // Horizontal2, Vertical 2 are not a standard Input axis
@@ -492,7 +543,7 @@ public class CAVE2Manager : OmicronEventClient {
 		
 		#if USING_GETREAL3D
 		// If using Omicron, make sure button events don't conflict
-        if (!UsingOmicronServer() && !simulatorMode)
+        if (!simulatorMode)
 		{
 			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
 			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
@@ -591,21 +642,33 @@ public class CAVE2Manager : OmicronEventClient {
 			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
 
 			// Arrow keys -> DPad
-			if( Input.GetKey( KeyCode.UpArrow ) )
+			if( Input.GetKey( wandSimulatorDPadUp ) )
 				flags += (int)EventBase.Flags.ButtonUp;
-			if( Input.GetKey( KeyCode.DownArrow ) )
+            if (Input.GetKey(wandSimulatorDPadDown))
 				flags += (int)EventBase.Flags.ButtonDown;
-			if( Input.GetKey( KeyCode.LeftArrow ) )
+            if (Input.GetKey(wandSimulatorDPadLeft))
 				flags += (int)EventBase.Flags.ButtonLeft;
-			if( Input.GetKey( KeyCode.RightArrow ) )
+            if (Input.GetKey(wandSimulatorDPadRight))
 				flags += (int)EventBase.Flags.ButtonRight;
 			
 			// F -> Wand Button 2 (Circle)
-			if( Input.GetKey( KeyCode.F ) || Input.GetButton("Fire2") )
+            if (Input.GetKey(KeyCode.F) || Input.GetButton(wandSimulatorButton2))
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross)
-			if( Input.GetKey( KeyCode.R ) || Input.GetButton("Fire1") )
+            if (Input.GetKey(KeyCode.R) || Input.GetButton(wandSimulatorButton3))
 				flags += (int)EventBase.Flags.Button3;
+
+            // Wand (L2 Trigger)
+            if (Input.GetKey(wandSimulatorButton7))
+                flags += (int)EventBase.Flags.Button7;
+
+            // Wand (L1 Trigger)
+            if (Input.GetKey(wandSimulatorButton5))
+                flags += (int)EventBase.Flags.Button5;
+
+            // Wand (L3 Trigger)
+            if (Input.GetButton(wandSimulatorButton6))
+                flags += (int)EventBase.Flags.Button6;
 
 			float headForward = 0;
 			float headStrafe = 0;
@@ -616,19 +679,19 @@ public class CAVE2Manager : OmicronEventClient {
 				speed = emulatedTranslateSpeed;
 			else if( IJKLkeyMode == TrackerEmulationMode.Rotate )
 				speed = emulatedRotationSpeed;
-			
-			if( Input.GetKey(KeyCode.I) )
-				headForward += speed;
-			else if( Input.GetKey(KeyCode.K) )
-				headForward -= speed;
+
+            if (Input.GetKey(KeyCode.I))
+                headForward += speed * Time.deltaTime;
+            else if (Input.GetKey(KeyCode.K))
+                headForward -= speed * Time.deltaTime;
 			if( Input.GetKey(KeyCode.J) )
-				headStrafe -= speed;
+                headStrafe -= speed * Time.deltaTime;
 			else if( Input.GetKey(KeyCode.L) )
-				headStrafe += speed;
+                headStrafe += speed * Time.deltaTime;
 			if( Input.GetKey(KeyCode.U) )
-				headVertical += speed;
+                headVertical += speed * Time.deltaTime;
 			else if( Input.GetKey(KeyCode.O) )
-				headVertical -= speed;
+                headVertical -= speed * Time.deltaTime;
 
 			if( IJKLkeys == TrackerEmulated.Head )
 			{
@@ -648,7 +711,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		if( !UsingOmicronServer() || (keyboardEventEmulation && Input.anyKey) )
+		if( !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
 		{
 			wand1.UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
 		}
@@ -671,6 +734,10 @@ public class CAVE2Manager : OmicronEventClient {
                 cameraController.transform.localPosition = headEmulatedPosition;
                 cameraController.transform.localEulerAngles = headEmulatedRotation;
             }
+			else
+			{
+				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+			}
 		}
 		else
 		{
@@ -690,9 +757,9 @@ public class CAVE2Manager : OmicronEventClient {
 			Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
-			//#if USING_GETREAL3D
+			#if USING_GETREAL3D
 			//getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
-			//#else
+			#else
 			if( e.sourceId == head1.sourceID )
 			{
 				head1.Update( unityPos, unityRot );
@@ -709,7 +776,7 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateMocap( unityPos, unityRot );
 			}
-			//#endif
+			#endif
 
 		}
 		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
@@ -732,9 +799,9 @@ public class CAVE2Manager : OmicronEventClient {
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
 
-			//#if USING_GETREAL3D
+			#if USING_GETREAL3D
 			//getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			//#else
+			#else
 			if( e.sourceId == wand1.sourceID )
 			{
 				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
@@ -743,7 +810,7 @@ public class CAVE2Manager : OmicronEventClient {
 			{
 				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
 			}
-			//#endif
+			#endif
 		}
 	}
 

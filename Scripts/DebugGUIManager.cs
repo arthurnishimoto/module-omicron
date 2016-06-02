@@ -47,6 +47,10 @@ public class DebugGUIManager : MonoBehaviour {
 
 	void Update()
 	{
+		if (playerController == null && cave2manager.GetPlayerController(0) != null )
+        {
+            playerController = cave2manager.GetPlayerController(0).GetComponent<OmicronPlayerController>();
+        }
 		if ( (Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
 			showGUI = !showGUI;
 

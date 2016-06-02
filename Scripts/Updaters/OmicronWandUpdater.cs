@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
 *-------------------------------------------------------------------------------------------------
-* Copyright 2010-2015             Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright 2010-2016             Electronic Visualization Laboratory, University of Illinois at Chicago
 * Authors:                                                                                
 * Arthur Nishimoto                anishimoto42@gmail.com
 *-------------------------------------------------------------------------------------------------
-* Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
+* Copyright (c) 2010-2016, Electronic Visualization Laboratory, University of Illinois at Chicago
 * All rights reserved.
 * Redistribution and use in source and binary forms, with or without modification, are permitted
 * provided that the following conditions are met:
@@ -104,7 +104,6 @@ void Update() {
         {
             // Translate wand based on mouse position
             Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos * Time.deltaTime * 0.05f;
-            Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
             transform.localPosition += mouseDeltaPos;
             cave2Manager.wandEmulatedPosition = transform.localPosition;
         }
@@ -112,8 +111,8 @@ void Update() {
         {
             // Translate wand based on mouse position
             Vector3 mouseDeltaPos = cave2Manager.mouseDeltaPos * Time.deltaTime * 0.05f;
-            Vector2 positionNormalized = new Vector3(Input.mousePosition.x / (float)Screen.width, Input.mousePosition.y / (float)Screen.height);
-            transform.localPosition += new Vector3(mouseDeltaPos.x, 0, mouseDeltaPos.y);
+            float mouseScroll = Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * 2.0f;
+            transform.localPosition += new Vector3(mouseDeltaPos.x, mouseScroll, mouseDeltaPos.y);
             cave2Manager.wandEmulatedPosition = transform.localPosition;
         }
         else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.RotatePitchYaw) // Wand mouse mode

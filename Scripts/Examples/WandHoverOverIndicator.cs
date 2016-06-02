@@ -10,7 +10,7 @@ public class WandHoverOverIndicator : MonoBehaviour {
 	public Mesh defaultMesh;
 	public Material hoverOverMaterial;
 	GameObject wandOverHighlight;
-	MeshRenderer renderer;
+	new MeshRenderer renderer;
 
 	// Use this for initialization
 	void Start () {
