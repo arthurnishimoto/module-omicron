@@ -126,8 +126,17 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			UpdateWalkMovement();
 		}
+
+		if( CAVE2Manager.IsMaster() )
+			CAVE2Manager.BroadcastMessage(gameObject.name, "SyncPosition", transform.position);
 	}
-	
+
+	public void SyncPosition(Vector3 position)
+	{
+		if( !CAVE2Manager.IsMaster() )
+			transform.position = position;
+	}
+
 	// Update is called once per frame
 	void Update () {
 

@@ -260,6 +260,18 @@ public class CAVE2Manager : OmicronEventClient {
 		#endif
 	}
 
+    public static bool IsSimulatorMode()
+    {
+        if (GetCAVE2Manager())
+        {
+            return GameObject.Find("CAVE2-Manager").GetComponent<CAVE2Manager>().simulatorMode;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 	public static bool OnCAVE2Master()
 	{
 		machineName = System.Environment.MachineName;
@@ -796,6 +808,68 @@ public class CAVE2Manager : OmicronEventClient {
 			return wand1;
 		}
 	}
+
+	public static void BroadcastMessage(string targetObjectName, string methodName, object param)
+	{
+#if USING_GETREAL3D
+		if( getReal3D.Cluster.isMaster )
+			getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
+#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
+#endif
+	}
+
+	public static void BroadcastMessage(string targetObjectName, string methodName)
+	{
+		BroadcastMessage(targetObjectName, methodName, 0);
+	}
+
+	public static void Destroy(string targetObjectName)
+	{
+		#if USING_GETREAL3D
+		if( getReal3D.Cluster.isMaster )
+			getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
+		#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            Destroy(targetObject);
+        }
+		#endif
+	}
+
+#if USING_GETREAL3D
+	[getReal3D.RPC]
+	public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
+	{
+		//Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
+
+		GameObject targetObject = GameObject.Find(targetObjectName);
+		if( targetObject != null )
+		{
+			//Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+			targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+		}
+	}
+
+	[getReal3D.RPC]
+	public void CAVE2DestroyRPC(string targetObjectName)
+	{
+		//Debug.Log ("SendCAVE2RPC: call 'Destroy' on "+targetObjectName);
+		
+		GameObject targetObject = GameObject.Find(targetObjectName);
+		if( targetObject != null )
+		{
+			Destroy(targetObject);
+		}
+	}
+#endif
+
 
 	Vector2 GUIOffset;
 	
