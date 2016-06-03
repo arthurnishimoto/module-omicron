@@ -76,8 +76,9 @@ public class CAVE2Manager : OmicronEventClient {
 	static HeadTrackerState head2;
 
     public bool simulatorMode = false;
+    public bool kinectSimulatorMode = false;
 
-	public static WandState wand1;
+    public static WandState wand1;
 	public static WandState wand2;
 
     public static string ERROR_MANAGERNOTFOUND = "CAVE2-Manager GameObject expected, but not found in the current scene. Creating Default.";
@@ -309,7 +310,8 @@ public class CAVE2Manager : OmicronEventClient {
     {
         if (GetCAVE2Manager())
         {
-            return GameObject.Find("CAVE2-Manager").GetComponent<CAVE2Manager>().simulatorMode;
+            CAVE2Manager manager = GameObject.Find("CAVE2-Manager").GetComponent<CAVE2Manager>();
+            return (manager.simulatorMode || manager.kinectSimulatorMode);
         }
         else
         {
@@ -746,6 +748,19 @@ public class CAVE2Manager : OmicronEventClient {
 			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
 			#endif
 		}
+
+        if( kinectSimulatorMode )
+        {
+            if (cameraController != null)
+            {
+                cameraController.transform.localPosition = head1.position;
+                cameraController.transform.localEulerAngles = head1.rotation.eulerAngles;
+            }
+            else
+            {
+                Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+            }
+        }
 	}
 
 	void OnEvent( EventData e )
