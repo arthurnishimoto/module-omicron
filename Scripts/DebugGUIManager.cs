@@ -28,6 +28,8 @@ public class DebugGUIManager : MonoBehaviour {
 	private int   frames  = 0; // Frames drawn over the interval
 	private float timeleft; // Left time for current interval
 
+	public TextMesh fpsGUITextMesh;
+
 	void Start()
 	{
         GameObject cave2ManagerObj = GameObject.Find("CAVE2-Manager");
@@ -79,17 +81,17 @@ public class DebugGUIManager : MonoBehaviour {
 					else
 						GetComponent<GUIText>().material.color = Color.green;
 				}
-				if( GetComponent<TextMesh>() )
+				if( fpsGUITextMesh )
 				{
-					GetComponent<TextMesh>().text = format;
+					fpsGUITextMesh.text = format;
 					
 					if(fps < 30)
-						GetComponent<TextMesh>().color = Color.yellow;
+						fpsGUITextMesh.color = Color.yellow;
 					else 
 						if(fps < 10)
-							GetComponent<TextMesh>().color = Color.red;
+							fpsGUITextMesh.color = Color.red;
 					else
-						GetComponent<TextMesh>().color = Color.green;
+						fpsGUITextMesh.color = Color.green;
 				}
 
 				//	DebugConsole.Log(format,level);
@@ -102,8 +104,8 @@ public class DebugGUIManager : MonoBehaviour {
 		{
             if( GetComponent<GUIText>() )
 			    GetComponent<GUIText>().text = "";
-			if( GetComponent<TextMesh>() )
-				GetComponent<TextMesh>().text = "";
+			if( fpsGUITextMesh )
+				fpsGUITextMesh.text = "";
 		}
 	}
 
