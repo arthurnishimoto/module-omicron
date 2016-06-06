@@ -532,7 +532,7 @@ public class CAVE2Manager : OmicronEventClient {
 		// If using Omicron, make sure button events don't conflict
         if (!simulatorMode)
 		{
-			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
+			vertical = getReal3D.Input.GetAxis("Forward") * axisSensitivity;
 			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
 			lookHorizontal = getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
 			lookVertical = getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
@@ -552,16 +552,16 @@ public class CAVE2Manager : OmicronEventClient {
 			if( getReal3D.Input.GetButton("Jump") )
 				flags += (int)EventBase.Flags.Button1;
 			// F -> Wand Button 2 (Circle/B)
-			if( getReal3D.Input.GetButton("Reset") )
+			if( getReal3D.Input.GetButton("ChangeWand") )
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross/A)
-			if( getReal3D.Input.GetButton("ChangeWand") )
+			if( getReal3D.Input.GetButton("WandButton") )
 				flags += (int)EventBase.Flags.Button3;
 			// Wand Button 4 (Square/X)
-			if( getReal3D.Input.GetButton("WandButton") )
+			if( getReal3D.Input.GetButton("NavSpeed") )
 				flags += (int)EventBase.Flags.Button4;
 			// Wand Button 8 (R1/RB)
-			if( getReal3D.Input.GetButton("NavSpeed") )
+			if( getReal3D.Input.GetButton("Reset") )
 				flags += (int)EventBase.Flags.Button8;
 			// Wand Button 5 (L1/LB)
 			if( getReal3D.Input.GetButton("WandLook") )
@@ -570,7 +570,7 @@ public class CAVE2Manager : OmicronEventClient {
 			if( getReal3D.Input.GetButton("L3") )
 				flags += (int)EventBase.Flags.Button6;
 			// Wand Button 7 (L2)
-			if( getReal3D.Input.GetButton("LT") )
+			if( getReal3D.Input.GetButton("WandDrive") )
 				flags += (int)EventBase.Flags.Button7;
 			// Wand Button 8 (R2)
 			if( getReal3D.Input.GetButton("RT") )
