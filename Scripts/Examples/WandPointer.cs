@@ -62,13 +62,13 @@ public class WandPointer : OmicronWandUpdater
             hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver);
 
             // If the laser button has just been pressed, tell the hit object
-            if (CAVE2Manager.GetButtonDown(wandID,CAVE2Manager.Button.Button3))
+            if (CAVE2Manager.GetButtonDown(wandID, laserButton))
             {
 				hit.collider.gameObject.SendMessage("OnWandButtonDown", laserButton, SendMessageOptions.DontRequireReceiver);
             }
 
 			// If the laser button has just been pressed, tell the hit object
-			if (CAVE2Manager.GetButtonUp(wandID,CAVE2Manager.Button.Button3))
+			if (CAVE2Manager.GetButtonUp(wandID, laserButton))
 			{
 				hit.collider.gameObject.SendMessage("OnWandButtonUp", laserButton, SendMessageOptions.DontRequireReceiver);
 			}

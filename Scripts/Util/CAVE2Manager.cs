@@ -276,7 +276,7 @@ public class CAVE2Manager : OmicronEventClient {
         }
     }
 
-    public GameObject GetPlayerController(int value)
+    public GameObject GetPlayerControllerByIndex(int value)
     {
 		if (playerControllers != null && playerControllers.Count > value)
 		{
@@ -289,9 +289,24 @@ public class CAVE2Manager : OmicronEventClient {
 		return null;
     }
 
+    public static GameObject GetPlayer()
+    {
+        return GetCAVE2Manager().GetComponent<CAVE2Manager>().GetPlayerControllerByIndex(0);
+    }
+
     public void AddCameraController(GameObject c)
     {
         cameraController = c;
+    }
+
+    public GameObject GetCameraController()
+    {
+        return cameraController;
+    }
+
+    public static GameObject GetMainCameraController()
+    {
+        return GetCAVE2Manager().GetComponent<CAVE2Manager>().GetCameraController();
     }
 
 	public static bool IsMaster()
@@ -498,7 +513,6 @@ public class CAVE2Manager : OmicronEventClient {
             	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
             	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
            		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
-			}
 			}
 #endif
 
@@ -738,7 +752,7 @@ public class CAVE2Manager : OmicronEventClient {
             }
 			else
 			{
-				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2! Make sure the parent GameObject of the Main Camera contains an OmicronCameraController script.");
 			}
 		}
 		else

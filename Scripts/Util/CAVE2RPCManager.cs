@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+#if USING_GETREAL3D
 public class CAVE2RPCManager : getReal3D.MonoBehaviourWithRpc {
 
 	public void DestroyByName( string name )
@@ -41,3 +42,4 @@ public class CAVE2RPCManager : getReal3D.MonoBehaviourWithRpc {
 	}
 
 }
+#endif
