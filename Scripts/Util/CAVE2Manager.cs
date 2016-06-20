@@ -499,7 +499,6 @@ public class CAVE2Manager : OmicronEventClient {
             	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
            		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
 			}
-			}
 #endif
 
             keyboardEventEmulation = true;
