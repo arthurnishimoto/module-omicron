@@ -276,7 +276,7 @@ public class CAVE2Manager : OmicronEventClient {
         }
     }
 
-    public GameObject GetPlayerController(int value)
+    public GameObject GetPlayerControllerByIndex(int value)
     {
 		if (playerControllers != null && playerControllers.Count > value)
 		{
@@ -289,9 +289,24 @@ public class CAVE2Manager : OmicronEventClient {
 		return null;
     }
 
+    public static GameObject GetPlayer()
+    {
+        return GetCAVE2Manager().GetComponent<CAVE2Manager>().GetPlayerControllerByIndex(0);
+    }
+
     public void AddCameraController(GameObject c)
     {
         cameraController = c;
+    }
+
+    public GameObject GetCameraController()
+    {
+        return cameraController;
+    }
+
+    public static GameObject GetMainCameraController()
+    {
+        return GetCAVE2Manager().GetComponent<CAVE2Manager>().GetCameraController();
     }
 
 	public static bool IsMaster()
@@ -546,7 +561,7 @@ public class CAVE2Manager : OmicronEventClient {
 		// If using Omicron, make sure button events don't conflict
         if (!simulatorMode)
 		{
-			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
+			vertical = getReal3D.Input.GetAxis("Forward") * axisSensitivity;
 			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
 			lookHorizontal = getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
 			lookVertical = getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
@@ -566,16 +581,16 @@ public class CAVE2Manager : OmicronEventClient {
 			if( getReal3D.Input.GetButton("Jump") )
 				flags += (int)EventBase.Flags.Button1;
 			// F -> Wand Button 2 (Circle/B)
-			if( getReal3D.Input.GetButton("Reset") )
+			if( getReal3D.Input.GetButton("ChangeWand") )
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross/A)
-			if( getReal3D.Input.GetButton("ChangeWand") )
+			if( getReal3D.Input.GetButton("WandButton") )
 				flags += (int)EventBase.Flags.Button3;
 			// Wand Button 4 (Square/X)
-			if( getReal3D.Input.GetButton("WandButton") )
+			if( getReal3D.Input.GetButton("NavSpeed") )
 				flags += (int)EventBase.Flags.Button4;
 			// Wand Button 8 (R1/RB)
-			if( getReal3D.Input.GetButton("NavSpeed") )
+			if( getReal3D.Input.GetButton("Reset") )
 				flags += (int)EventBase.Flags.Button8;
 			// Wand Button 5 (L1/LB)
 			if( getReal3D.Input.GetButton("WandLook") )
@@ -584,7 +599,7 @@ public class CAVE2Manager : OmicronEventClient {
 			if( getReal3D.Input.GetButton("L3") )
 				flags += (int)EventBase.Flags.Button6;
 			// Wand Button 7 (L2)
-			if( getReal3D.Input.GetButton("LT") )
+			if( getReal3D.Input.GetButton("WandDrive") )
 				flags += (int)EventBase.Flags.Button7;
 			// Wand Button 8 (R2)
 			if( getReal3D.Input.GetButton("RT") )
@@ -737,7 +752,7 @@ public class CAVE2Manager : OmicronEventClient {
             }
 			else
 			{
-				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2! Make sure the parent GameObject of the Main Camera contains an OmicronCameraController script.");
 			}
 		}
 		else
