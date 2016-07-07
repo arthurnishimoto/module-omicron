@@ -203,9 +203,9 @@ public class WandState
 				ButtonState buttonState = GetButtonState(i);
                 int nextButtonState = GetNextButtonState(i);
 
-                if (nextButtonState == 4 && buttonState == ButtonState.Idle)
+                if (nextButtonState != 0 && buttonState == ButtonState.Idle)
                     UpdateButton(i, (int)ButtonState.Down);
-                else if (nextButtonState == 4 && buttonState == ButtonState.Down)
+                else if (nextButtonState != 0 && buttonState == ButtonState.Down)
                     UpdateButton(i, (int)ButtonState.Held);
                 else if (nextButtonState == 0 && buttonState == ButtonState.Held)
                     UpdateButton(i, (int)ButtonState.Up);
