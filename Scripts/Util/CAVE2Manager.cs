@@ -460,24 +460,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public static bool GetButton(int wandID, CAVE2Manager.Button button)
 	{
         CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
-
-        if (wandID == 1)
-        {
-            wandID = c2m.Wand1MocapID;
-        }
-        else if (wandID == 2)
-        {
-            wandID = c2m.Wand2MocapID;
-        }
-        else if (wandID == 3)
-        {
-            wandID = c2m.Wand3MocapID;
-        }
-        else if (wandID == 4)
-        {
-            wandID = c2m.Wand4MocapID;
-        }
-
+        
         if (c2m.wandStates.ContainsKey(wandID))
         {
             WandState state = (WandState)c2m.wandStates[wandID];
@@ -490,24 +473,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public static bool GetButtonDown(int wandID, CAVE2Manager.Button button)
 	{
         CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
-
-        if (wandID == 1)
-        {
-            wandID = c2m.Wand1MocapID;
-        }
-        else if (wandID == 2)
-        {
-            wandID = c2m.Wand2MocapID;
-        }
-        else if (wandID == 3)
-        {
-            wandID = c2m.Wand3MocapID;
-        }
-        else if (wandID == 4)
-        {
-            wandID = c2m.Wand4MocapID;
-        }
-
+        
         if (c2m.wandStates.ContainsKey(wandID))
         {
             WandState state = (WandState)c2m.wandStates[wandID];
@@ -521,23 +487,6 @@ public class CAVE2Manager : OmicronEventClient {
 	{
         CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
 
-        if (wandID == 1)
-        {
-            wandID = c2m.Wand1MocapID;
-        }
-        else if (wandID == 2)
-        {
-            wandID = c2m.Wand2MocapID;
-        }
-        else if (wandID == 3)
-        {
-            wandID = c2m.Wand3MocapID;
-        }
-        else if (wandID == 4)
-        {
-            wandID = c2m.Wand4MocapID;
-        }
-
         if (c2m.wandStates.ContainsKey(wandID))
         {
             WandState state = (WandState)c2m.wandStates[wandID];
@@ -550,23 +499,6 @@ public class CAVE2Manager : OmicronEventClient {
 	public static WandState.ButtonState GetButtonState(int wandID, CAVE2Manager.Button button)
 	{
         CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
-
-        if (wandID == 1)
-        {
-            wandID = c2m.Wand1MocapID;
-        }
-        else if (wandID == 2)
-        {
-            wandID = c2m.Wand2MocapID;
-        }
-        else if (wandID == 3)
-        {
-            wandID = c2m.Wand3MocapID;
-        }
-        else if (wandID == 4)
-        {
-            wandID = c2m.Wand4MocapID;
-        }
 
         if (c2m.wandStates.ContainsKey(wandID))
         {
@@ -902,7 +834,24 @@ public class CAVE2Manager : OmicronEventClient {
             }
             else
             {
-                WandState newWandState = new WandState((int)e.sourceId, 0);
+                int mocapID = (int)e.sourceId;
+                if ((int)e.sourceId == 1)
+                {
+                    mocapID = Wand1MocapID;
+                }
+                else if ((int)e.sourceId == 2)
+                {
+                    mocapID = Wand2MocapID;
+                }
+                else if ((int)e.sourceId == 3)
+                {
+                    mocapID = Wand3MocapID;
+                }
+                else if ((int)e.sourceId == 4)
+                {
+                    mocapID = Wand4MocapID;
+                }
+                WandState newWandState = new WandState((int)e.sourceId, mocapID);
                 newWandState.UpdateMocap(unityPos, unityRot);
                 wandStates.Add((int)e.sourceId, newWandState);
             }
@@ -938,7 +887,24 @@ public class CAVE2Manager : OmicronEventClient {
             }
             else
             {
-                WandState newWandState = new WandState((int)e.sourceId, 0);
+                int mocapID = (int)e.sourceId;
+                if ((int)e.sourceId == 1)
+                {
+                    mocapID = Wand1MocapID;
+                }
+                else if ((int)e.sourceId == 2)
+                {
+                    mocapID = Wand2MocapID;
+                }
+                else if ((int)e.sourceId == 3)
+                {
+                    mocapID = Wand3MocapID;
+                }
+                else if ((int)e.sourceId == 4)
+                {
+                    mocapID = Wand4MocapID;
+                }
+                WandState newWandState = new WandState((int)e.sourceId, mocapID);
                 newWandState.UpdateController(e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
                 wandStates.Add((int)e.sourceId, newWandState);
             }

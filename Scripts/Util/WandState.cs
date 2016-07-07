@@ -116,7 +116,7 @@ public class WandState
 	
 	public bool GetButton( CAVE2Manager.Button button )
 	{
-		switch(button)
+        switch (button)
 		{
 			case(CAVE2Manager.Button.Button1): return button1 == ButtonState.Held;
 			case(CAVE2Manager.Button.Button2): return button2 == ButtonState.Held;
@@ -189,8 +189,8 @@ public class WandState
 	public void UpdateState( int sourceID, int mocapID )
 	{	
 		// Just in case we want to change controllers at runtime
-		this.sourceID = sourceID;
-		this.mocapID = mocapID;
+		//this.sourceID = sourceID;
+		//this.mocapID = mocapID;
 
         // Set buttons held if down on the last frame
         // Set buttons as idle if up on the last frame
@@ -213,13 +213,7 @@ public class WandState
                     UpdateButton(i, (int)ButtonState.Idle);
                 else if (nextButtonState == 0 && buttonState == ButtonState.Down)
                     UpdateButton(i, (int)ButtonState.Up);
-
-                //if ( buttonState == ButtonState.Down )
-                //	UpdateButton( i, (int)ButtonState.Held );
-                //else if( buttonState == ButtonState.Up )
-                //	UpdateButton( i, (int)ButtonState.Idle );
             }
-            //lastUpdateEventFrame = Time.frameCount;
         }
         
     }
