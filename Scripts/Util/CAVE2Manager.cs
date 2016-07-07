@@ -90,9 +90,12 @@ public class CAVE2Manager : OmicronEventClient {
 	
 	// Note these represent Omicron sourceIDs
 	public int Head1MocapID = 0; 
-	public int Wand1MocapID = 3; // 3 = Xbox
+	public int Wand1MocapID = 1; // 1 = Batman/Kirk
+    public int Wand2MocapID = 2; // 2 = Robin/Spock
+    public int Wand3MocapID = 3; // 3 = Xbox
+    public int Wand4MocapID = 5; // 5 = Scotty
 
-	public float axisSensitivity = 1f;
+    public float axisSensitivity = 1f;
 	public float axisDeadzone = 0.2f;
 
     // Distance in meters the wand marker center is offset from the controller center
@@ -172,7 +175,6 @@ public class CAVE2Manager : OmicronEventClient {
         // Default wand state
         wandStates.Add(1, new WandState(1, Wand1MocapID));
 
-		Application.targetFrameRate = framerateCap;
 		machineName = System.Environment.MachineName;
 
 		if ((OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor) || OnCAVE2Display())
@@ -357,6 +359,7 @@ public class CAVE2Manager : OmicronEventClient {
             ID = c2m.Head1MocapID;
 
         }
+
         if (c2m.mocapStates.ContainsKey(ID))
         {
             return (MocapState)c2m.mocapStates[ID];
@@ -364,9 +367,26 @@ public class CAVE2Manager : OmicronEventClient {
         return nullMocapState;
     }
 
-	public static Vector3 GetWandPosition(int wandID)
+    public static Vector3 GetWandPosition(int wandID)
 	{
         CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+        if (wandID == 1)
+        {
+            wandID = c2m.Wand1MocapID;
+        }
+        else if (wandID == 2)
+        {
+            wandID = c2m.Wand2MocapID;
+        }
+        else if (wandID == 3)
+        {
+            wandID = c2m.Wand3MocapID;
+        }
+        else if (wandID == 4)
+        {
+            wandID = c2m.Wand4MocapID;
+        }
 
         if (c2m.wandStates.ContainsKey(wandID))
         {
@@ -472,6 +492,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
+        Application.targetFrameRate = framerateCap;
         if (simulatorMode)
         {
 #if USING_GETREAL3D
