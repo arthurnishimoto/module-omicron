@@ -35,15 +35,12 @@ public class OmicronMocapUpdater : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        transform.localPosition = CAVE2Manager.GetMocapState(mocapID).position;
-        transform.localRotation = CAVE2Manager.GetMocapState(mocapID).rotation;
+        
 	}
 
 	void FixedUpdate()
 	{
-		//if( getReal3D.Cluster.isMaster )
-		//{
-		//	rigidbody.MovePosition(cave2Manager.getHead(headID).position);
-		//}
-	}
+        transform.localPosition = CAVE2Manager.GetMocapState(mocapID).position;
+        transform.localRotation = CAVE2Manager.GetMocapState(mocapID).rotation;
+    }
 }
