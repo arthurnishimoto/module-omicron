@@ -754,7 +754,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		if( !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
+		if( !CAVE2Manager.UsingOmicronServer() || (!CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
 		{
 			GetWand(1).UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
 		}
@@ -786,9 +786,9 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		else
 		{
-			#if USING_GETREAL3D
-			head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
-			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
+            #if USING_GETREAL3D
+            GetHead(1).Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
+            GetWand(1).UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
 			#endif
 		}
 
@@ -816,49 +816,13 @@ public class CAVE2Manager : OmicronEventClient {
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
 			#if USING_GETREAL3D
-			//getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
-			#else
-            if(mocapStates.ContainsKey((int)e.sourceId))
-            {
-                ((MocapState)mocapStates[(int)e.sourceId]).Update(unityPos, unityRot);
-            }
-            else
-            {
-                MocapState newMocapState = new MocapState((int)e.sourceId);
-                newMocapState.Update(unityPos, unityRot);
-                mocapStates.Add((int)e.sourceId, newMocapState);
-            }
-            if (wandStates.ContainsKey((int)e.sourceId))
-            {
-                ((WandState)wandStates[(int)e.sourceId]).UpdateMocap(unityPos, unityRot);
-            }
-            else
-            {
-                int mocapID = (int)e.sourceId;
-                if ((int)e.sourceId == 1)
-                {
-                    mocapID = Wand1MocapID;
-                }
-                else if ((int)e.sourceId == 2)
-                {
-                    mocapID = Wand2MocapID;
-                }
-                else if ((int)e.sourceId == 3)
-                {
-                    mocapID = Wand3MocapID;
-                }
-                else if ((int)e.sourceId == 4)
-                {
-                    mocapID = Wand4MocapID;
-                }
-                WandState newWandState = new WandState((int)e.sourceId, mocapID);
-                newWandState.UpdateMocap(unityPos, unityRot);
-                wandStates.Add((int)e.sourceId, newWandState);
-            }
-#endif
+			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
+            #else
+            UpdateMocapRPC(e.sourceId, unityPos, unityRot);
+            #endif
 
         }
-		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
+        else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{
 			// -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
 			//Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
@@ -879,73 +843,98 @@ public class CAVE2Manager : OmicronEventClient {
 				rightAnalogStick.y = 0;
 
 #if USING_GETREAL3D
-			//getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
 #else
-            if (wandStates.ContainsKey((int)e.sourceId))
-            {
-                ((WandState)wandStates[(int)e.sourceId]).UpdateController(e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-            }
-            else
-            {
-                int mocapID = (int)e.sourceId;
-                if ((int)e.sourceId == 1)
-                {
-                    mocapID = Wand1MocapID;
-                }
-                else if ((int)e.sourceId == 2)
-                {
-                    mocapID = Wand2MocapID;
-                }
-                else if ((int)e.sourceId == 3)
-                {
-                    mocapID = Wand3MocapID;
-                }
-                else if ((int)e.sourceId == 4)
-                {
-                    mocapID = Wand4MocapID;
-                }
-                WandState newWandState = new WandState((int)e.sourceId, mocapID);
-                newWandState.UpdateController(e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-                wandStates.Add((int)e.sourceId, newWandState);
-            }
+            UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
 #endif
         }
-	}
+    }
 
-	#if USING_GETREAL3D
-	[getReal3D.RPC]
+    void UpdateController(uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger)
+    {
+        if (wandStates.ContainsKey((int)wandID))
+        {
+            ((WandState)wandStates[(int)wandID]).UpdateController(flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+        }
+        else
+        {
+            int mocapID = (int)wandID;
+            if ((int)wandID == 1)
+            {
+                mocapID = Wand1MocapID;
+            }
+            else if ((int)wandID == 2)
+            {
+                mocapID = Wand2MocapID;
+            }
+            else if ((int)wandID == 3)
+            {
+                mocapID = Wand3MocapID;
+            }
+            else if ((int)wandID == 4)
+            {
+                mocapID = Wand4MocapID;
+            }
+            WandState newWandState = new WandState((int)wandID, mocapID);
+            newWandState.UpdateController(flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+            wandStates.Add((int)wandID, newWandState);
+        }
+    }
+
+    void UpdateMocap(uint sourceId, Vector3 unityPos, Quaternion unityRot)
+    {
+        if (mocapStates.ContainsKey((int)sourceId))
+        {
+            ((MocapState)mocapStates[(int)sourceId]).Update(unityPos, unityRot);
+        }
+        else
+        {
+            MocapState newMocapState = new MocapState((int)sourceId);
+            newMocapState.Update(unityPos, unityRot);
+            mocapStates.Add((int)sourceId, newMocapState);
+        }
+        if (wandStates.ContainsKey((int)sourceId))
+        {
+            ((WandState)wandStates[(int)sourceId]).UpdateMocap(unityPos, unityRot);
+        }
+        else
+        {
+            int mocapID = (int)sourceId;
+            if ((int)sourceId == 1)
+            {
+                mocapID = Wand1MocapID;
+            }
+            else if ((int)sourceId == 2)
+            {
+                mocapID = Wand2MocapID;
+            }
+            else if ((int)sourceId == 3)
+            {
+                mocapID = Wand3MocapID;
+            }
+            else if ((int)sourceId == 4)
+            {
+                mocapID = Wand4MocapID;
+            }
+            WandState newWandState = new WandState((int)sourceId, mocapID);
+            newWandState.UpdateMocap(unityPos, unityRot);
+            wandStates.Add((int)sourceId, newWandState);
+        }
+    }
+
+#if USING_GETREAL3D
+    [getReal3D.RPC]
 	void UpdateControllerRPC( uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
-		if( wandID == wand1.sourceID )
-		{
-			wand1.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-		}
-		else if( wandID == wand2.sourceID )
-		{
-			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-		}
-	}
+        UpdateController(wandID, flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+    }
 
 	[getReal3D.RPC]
-	void UpdateMocapRPC( uint id, Vector3 unityPos, Quaternion unityRot )
+	void UpdateMocapRPC( uint sourceId, Vector3 unityPos, Quaternion unityRot )
 	{
-		if( id == head1.sourceID )
-		{
-			head1.Update( unityPos, unityRot );
-		}
-		else if( id == head2.sourceID )
-		{
-			head2.Update( unityPos, unityRot );
-		}
-		else if( id == wand1.mocapID )
-		{
-			wand1.UpdateMocap( unityPos, unityRot );
-		}
-		else if( id == wand2.mocapID )
-		{
-			wand2.UpdateMocap( unityPos, unityRot );
-		}
-	}
+        UpdateMocap(sourceId, unityPos, unityRot);
+
+    }
 	#endif
 
     public static MocapState GetMocapState(int ID)

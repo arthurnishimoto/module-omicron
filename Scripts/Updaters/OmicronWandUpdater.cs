@@ -39,38 +39,58 @@ public class OmicronWandUpdater : MonoBehaviour {
 	// center so that the virtual and physical wand align
 	public Transform virtualWand;
 
-CAVE2Manager cave2Manager;
+    Joint wandJoint;
 
-public void InitOmicron()
-{
-	cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+    CAVE2Manager cave2Manager;
 
-	if( virtualWand && !cave2Manager.simulatorMode )
-	{
-		virtualWand.transform.localPosition = CAVE2Manager.GetWandTrackingOffset(wandID);
-	}
-}
+    public void InitOmicron()
+    {
+	    cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
 
-// Use this for initialization
-public void Start () {
-	InitOmicron ();
-}
+	    if( virtualWand && !cave2Manager.simulatorMode )
+	    {
+		    //virtualWand.transform.localPosition = CAVE2Manager.GetWandTrackingOffset(wandID);
+	    }
+    }
+
+    // Use this for initialization
+    public void Start () {
+	    InitOmicron ();
+    }
 	
-// Update is called once per frame
-void Update() {
+    void FixedUpdate()
+    {
+        if (!cave2Manager.wandMousePointerEmulation && virtualWand && virtualWand.GetComponent<Rigidbody>() )
+        {
+            transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+            transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
+        }
+    }
+
+    // Update is called once per frame
+    void Update() {
 		if( !cave2Manager.wandMousePointerEmulation )
 		{
-			if( GetComponent<Rigidbody>() )
-			{
-				GetComponent<Rigidbody>().MovePosition( CAVE2Manager.GetWandPosition(wandID) );
-				GetComponent<Rigidbody>().MoveRotation( CAVE2Manager.GetWandRotation(wandID) );
-			}
-			else
-			{
-				transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
-				transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
-			}
-		}
+            if (virtualWand && !cave2Manager.simulatorMode)
+            {
+                //virtualWand.transform.localPosition = CAVE2Manager.GetWandTrackingOffset(wandID);
+                if(virtualWand.GetComponent<Rigidbody>() && wandJoint == null)
+                {
+                    Rigidbody rb = gameObject.AddComponent<Rigidbody>();
+                    rb.useGravity = false;
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+
+                    wandJoint = virtualWand.gameObject.AddComponent<FixedJoint>();
+                    wandJoint.connectedBody = rb;
+                }
+                else if (virtualWand == null || virtualWand.GetComponent<Rigidbody>() == null )
+                {
+                    transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+                    transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
+                }
+            }
+            
+        }
         else if (cave2Manager.wandEmulationMode == CAVE2Manager.TrackerEmulationMode.Pointer) // Mouse pointer mode
 		{
 			if( GetComponent<Rigidbody>() )
