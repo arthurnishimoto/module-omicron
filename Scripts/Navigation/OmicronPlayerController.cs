@@ -181,7 +181,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		if (headPosition.y == 0)
 		{
 			Debug.LogWarning ("OmicronPlayerController: Head is at height (Y) 0.0 - This should never happen! Check your tracking system or enable mocap emulation in CAVE2Manager.");
-		}
+        }
 
 		if( !freezeMovement )
 		{
