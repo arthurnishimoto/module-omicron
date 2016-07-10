@@ -100,6 +100,11 @@ public class OmicronPlayerController : OmicronWandUpdater {
         CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().AddPlayerController(gameObject);
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
+
+        if( CAVE2Manager.IsSimulatorMode() )
+        {
+            forwardReference = ForwardRef.Head;
+        }
 	}
 	
 	// FixedUpdate is called every fixed framerate frame
@@ -167,8 +172,11 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		wandPosition = CAVE2Manager.GetWandPosition(wandID);
 		wandRotation = CAVE2Manager.GetWandRotation(wandID);
 
-		headPosition = CAVE2Manager.GetHeadPosition(headID);
-		headRotation = CAVE2Manager.GetHeadRotation(headID).eulerAngles;
+		headPosition = CAVE2Manager.GetHead(headID).GetPosition();
+		headRotation = CAVE2Manager.GetHead(headID).GetRotation().eulerAngles;
+
+        headObject.transform.localPosition = headPosition;
+        headObject.transform.localEulerAngles = headRotation;
 
 		if (headPosition.y == 0)
 		{

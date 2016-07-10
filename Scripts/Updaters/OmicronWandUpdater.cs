@@ -47,7 +47,7 @@ public void InitOmicron()
 
 	if( virtualWand && !cave2Manager.simulatorMode )
 	{
-		virtualWand.transform.localPosition = CAVE2Manager.GetWandTrackingOffset(1);
+		virtualWand.transform.localPosition = CAVE2Manager.GetWandTrackingOffset(wandID);
 	}
 }
 
