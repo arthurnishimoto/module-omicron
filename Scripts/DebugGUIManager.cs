@@ -29,8 +29,9 @@ public class DebugGUIManager : MonoBehaviour {
 	private float timeleft; // Left time for current interval
 
 	public TextMesh fpsGUITextMesh;
+    public UnityEngine.UI.Text fpsUIText;
 
-	void Start()
+    void Start()
 	{
         GameObject cave2ManagerObj = GameObject.Find("CAVE2-Manager");
         if (cave2ManagerObj)
@@ -93,7 +94,18 @@ public class DebugGUIManager : MonoBehaviour {
 					else
 						fpsGUITextMesh.color = Color.green;
 				}
+                if(fpsUIText)
+                {
+                    fpsUIText.text = format;
 
+                    if (fps < 30)
+                        fpsUIText.color = Color.yellow;
+                    else
+                        if (fps < 10)
+                        fpsUIText.color = Color.red;
+                    else
+                        fpsUIText.color = Color.green;
+                }
 				//	DebugConsole.Log(format,level);
 				timeleft = FPS_updateInterval;
 				accum = 0.0F;
@@ -106,7 +118,9 @@ public class DebugGUIManager : MonoBehaviour {
 			    GetComponent<GUIText>().text = "";
 			if( fpsGUITextMesh )
 				fpsGUITextMesh.text = "";
-		}
+            if (fpsUIText)
+                fpsUIText.text = "";
+        }
 	}
 
 	void OnGUI() {
@@ -116,7 +130,17 @@ public class DebugGUIManager : MonoBehaviour {
 		}
 	}
 
-	void OnMainWindow(int windowID) {
+    public void UpdateShowFPS(bool show)
+    {
+        showFPS = show;
+    }
+
+    public void UpdateShowFPSOnMaster(bool show)
+    {
+        showOnlyOnMaster = show;
+    }
+
+    void OnMainWindow(int windowID) {
 		GUI.DragWindow (new Rect (0, 0, 10000, 20));
 
 		currentWindow = (DebugWindow)GUI.SelectionGrid(new Rect(10, 20, 480, 24), (int)currentWindow, windowStrings, 4);
@@ -132,7 +156,10 @@ public class DebugGUIManager : MonoBehaviour {
 
                 showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
                 showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
-	        }
+
+                //CAVE2Manager.BroadcastMessage(gameObject.name, "UpdateShowFPS", showFPS);
+                //CAVE2Manager.BroadcastMessage(gameObject.name, "UpdateShowFPSOnMaster", showOnlyOnMaster);
+            }
 	        else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
 		}

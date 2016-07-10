@@ -129,11 +129,33 @@ public class OmicronPlayerController : OmicronWandUpdater {
 			UpdateWalkMovement();
 		}
 
-		if( CAVE2Manager.IsMaster() )
-			CAVE2Manager.BroadcastMessage(gameObject.name, "SyncPosition", transform.position);
-	}
+        SyncPlayerPosition();
+    }
 
-	public void SyncPosition(Vector3 position)
+    public float syncUpdateDelaySeconds = 0.2f;
+    public float minimumUpdateDistance = 0.05f;
+    float updateTimer;
+    int updateCount;
+    Vector3 lastPosition;
+    void SyncPlayerPosition()
+    {
+        if (CAVE2Manager.IsMaster())
+        {
+            if (updateTimer >= syncUpdateDelaySeconds && Vector3.Distance(lastPosition, transform.position) >= minimumUpdateDistance)
+            {
+                CAVE2Manager.BroadcastMessage(gameObject.name, "SyncPosition", transform.position);
+                lastPosition = transform.position;
+                updateTimer = 0;
+            }
+            else
+            {
+                updateTimer += Time.deltaTime;
+            }
+        }
+       
+    }
+
+    public void SyncPosition(Vector3 position)
 	{
 		if( !CAVE2Manager.IsMaster() )
 			transform.position = position;

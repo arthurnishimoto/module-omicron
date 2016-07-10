@@ -499,7 +499,6 @@ public class CAVE2Manager : OmicronEventClient {
             	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
            		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
 			}
-			}
 #endif
 
             keyboardEventEmulation = true;
@@ -558,9 +557,9 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.ButtonUp;
 			else if( DPadUD < 0 )
 				flags += (int)EventBase.Flags.ButtonDown;
-			if( DPadLR > 0 )
+			if( DPadLR < 0 )
 				flags += (int)EventBase.Flags.ButtonLeft;
-			else if( DPadLR < 0 )
+			else if( DPadLR > 0 )
 				flags += (int)EventBase.Flags.ButtonRight;
 
 			// Wand Button 1 (Triangle/Y)
