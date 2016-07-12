@@ -74,8 +74,9 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	Vector3 headPosition;
 	Vector3 headRotation;
-	
-	public bool showCAVEFloorOnlyOnMaster = true;
+
+    public enum CAVEFloorMode { AlwaysHide, MasterOnly, AlwaysShow }
+    public CAVEFloorMode showCAVEFloorOnlyOnMaster = CAVEFloorMode.MasterOnly;
 	public GameObject CAVEFloor;
 	
 	Vector3 wandPosition;
@@ -92,12 +93,18 @@ public class OmicronPlayerController : OmicronWandUpdater {
 	
 	public bool showGUI = true;
 	public bool freezeMovement = false;
+    public bool disableControls = false;
 
 	// Use this for initialization
 	new void Start () {
         CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().AddPlayerController(gameObject);
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
+
+        if( CAVE2Manager.IsSimulatorMode() )
+        {
+            forwardReference = ForwardRef.Head;
+        }
 	}
 	
 	// FixedUpdate is called every fixed framerate frame
@@ -126,21 +133,33 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			UpdateWalkMovement();
 		}
+
+		if( CAVE2Manager.IsMaster() )
+			CAVE2Manager.BroadcastMessage(gameObject.name, "SyncPosition", transform.position);
 	}
-	
+
+	public void SyncPosition(Vector3 position)
+	{
+		if( !CAVE2Manager.IsMaster() )
+			transform.position = position;
+	}
+
 	// Update is called once per frame
 	void Update () {
 
 		wandPosition = CAVE2Manager.GetWandPosition(wandID);
 		wandRotation = CAVE2Manager.GetWandRotation(wandID);
 
-		headPosition = CAVE2Manager.GetHeadPosition(headID);
-		headRotation = CAVE2Manager.GetHeadRotation(headID).eulerAngles;
+		headPosition = CAVE2Manager.GetHead(headID).GetPosition();
+		headRotation = CAVE2Manager.GetHead(headID).GetRotation().eulerAngles;
+
+        headObject.transform.localPosition = headPosition;
+        headObject.transform.localEulerAngles = headRotation;
 
 		if (headPosition.y == 0)
 		{
 			Debug.LogWarning ("OmicronPlayerController: Head is at height (Y) 0.0 - This should never happen! Check your tracking system or enable mocap emulation in CAVE2Manager.");
-		}
+        }
 
 		if( !freezeMovement )
 		{
@@ -157,31 +176,37 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 			vertical = CAVE2Manager.GetAxis(wandID, verticalAxis);
             vertical *= movementScale;
+
+            freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
 		}
 
-		freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
-			
-		if( CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton) )
-		{
-			navMode++;
-			if( (int)navMode > 2 )
-				navMode = 0;
+        if (!disableControls)
+        {
+            if (CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton))
+            {
+                navMode++;
+                if ((int)navMode > 2)
+                    navMode = 0;
 
-			SetNavigationMode((int)navMode);
-		}
+                SetNavigationMode((int)navMode);
+            }
 
-		if( CAVE2Manager.GetButtonDown(wandID, autoLevelButton) )
-		{
-			transform.localEulerAngles = new Vector3( 0, transform.localEulerAngles.y, 0 );
-		}
-		
+            if (CAVE2Manager.GetButtonDown(wandID, autoLevelButton))
+            {
+                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
+            }
+        }
+
         if (CAVEFloor && !CAVEFloor.activeSelf)
             CAVEFloor.SetActive(true);
 
-        if (CAVEFloor && showCAVEFloorOnlyOnMaster && CAVEFloor.activeSelf && !CAVE2Manager.IsMaster())
+
+        if (CAVEFloor && CAVEFloor.activeSelf && showCAVEFloorOnlyOnMaster == CAVEFloorMode.MasterOnly && !CAVE2Manager.IsMaster())
             CAVEFloor.SetActive(false);
-        else if (CAVEFloor && !showCAVEFloorOnlyOnMaster && !CAVEFloor.activeSelf)
+        else if (CAVEFloor && showCAVEFloorOnlyOnMaster != CAVEFloorMode.AlwaysHide && !CAVEFloor.activeSelf)
             CAVEFloor.SetActive(true);
+        else if (CAVEFloor && showCAVEFloorOnlyOnMaster == CAVEFloorMode.AlwaysHide && CAVEFloor.activeSelf)
+            CAVEFloor.SetActive(false);
 	}
 	
 	void UpdateFreeflyMovement()

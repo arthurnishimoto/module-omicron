@@ -35,7 +35,24 @@ public class WandState
 	ButtonState buttonSP3 = ButtonState.Idle;
 	ButtonState buttonNull = ButtonState.Idle;
 
-	int lastUpdateEventFrame;
+    int button1_nextState = 0;
+    int button2_nextState = 0;
+    int button3_nextState = 0;
+    int button4_nextState = 0;
+    int button5_nextState = 0;
+    int button6_nextState = 0;
+    int button7_nextState = 0;
+    int button8_nextState = 0;
+    int button9_nextState = 0;
+    int buttonUp_nextState = 0;
+    int buttonDown_nextState = 0;
+    int buttonLeft_nextState = 0;
+    int buttonRight_nextState = 0;
+    int buttonSP1_nextState = 0;
+    int buttonSP2_nextState = 0;
+    int buttonSP3_nextState = 0;
+
+    int lastUpdateEventFrame;
 
 	public WandState( int ID, int mocapID )
 	{
@@ -99,7 +116,7 @@ public class WandState
 	
 	public bool GetButton( CAVE2Manager.Button button )
 	{
-		switch(button)
+        switch (button)
 		{
 			case(CAVE2Manager.Button.Button1): return button1 == ButtonState.Held;
 			case(CAVE2Manager.Button.Button2): return button2 == ButtonState.Held;
@@ -172,26 +189,34 @@ public class WandState
 	public void UpdateState( int sourceID, int mocapID )
 	{	
 		// Just in case we want to change controllers at runtime
-		this.sourceID = sourceID;
-		this.mocapID = mocapID;
-		
-		// Set buttons held if down on the last frame
-		// Set buttons as idle if up on the last frame
-		// We only check if frame time if input is coming from an external async
-		// source like an Omicron oinputserver
-		if( Time.frameCount - lastUpdateEventFrame > 1 || !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) )
+		//this.sourceID = sourceID;
+		//this.mocapID = mocapID;
+
+        // Set buttons held if down on the last frame
+        // Set buttons as idle if up on the last frame
+        // We only check if frame time if input is coming from an external async
+        // source like an Omicron oinputserver
+		if( Time.frameCount - lastUpdateEventFrame >= 1 || !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) )
 		{
 			for(int i = 0; i < 16; i++ )
 			{
 				ButtonState buttonState = GetButtonState(i);
+                int nextButtonState = GetNextButtonState(i);
 
-				if( buttonState == ButtonState.Down )
-					UpdateButton( i, (int)ButtonState.Held );
-				else if( buttonState == ButtonState.Up )
-					UpdateButton( i, (int)ButtonState.Idle );
-			}
-		}
-	}
+                if (nextButtonState != 0 && buttonState == ButtonState.Idle)
+                    UpdateButton(i, (int)ButtonState.Down);
+                else if (nextButtonState != 0 && buttonState == ButtonState.Down)
+                    UpdateButton(i, (int)ButtonState.Held);
+                else if (nextButtonState == 0 && buttonState == ButtonState.Held)
+                    UpdateButton(i, (int)ButtonState.Up);
+                else if (nextButtonState == 0 && buttonState == ButtonState.Up)
+                    UpdateButton(i, (int)ButtonState.Idle);
+                else if (nextButtonState == 0 && buttonState == ButtonState.Down)
+                    UpdateButton(i, (int)ButtonState.Up);
+            }
+        }
+        
+    }
 	
 	public ButtonState GetButtonState( int buttonID )
 	{
@@ -216,8 +241,32 @@ public class WandState
 			default: return buttonNull;
 		}
 	}
-	
-	public void UpdateMocap( Vector3 position, Quaternion orientation )
+
+    public int GetNextButtonState(int buttonID)
+    {
+        switch (buttonID)
+        {
+            case ((int)CAVE2Manager.Button.Button1): return button1_nextState;
+            case ((int)CAVE2Manager.Button.Button2): return button2_nextState;
+            case ((int)CAVE2Manager.Button.Button3): return button3_nextState;
+            case ((int)CAVE2Manager.Button.Button4): return button4_nextState;
+            case ((int)CAVE2Manager.Button.Button5): return button5_nextState;
+            case ((int)CAVE2Manager.Button.Button6): return button6_nextState;
+            case ((int)CAVE2Manager.Button.Button7): return button7_nextState;
+            case ((int)CAVE2Manager.Button.Button8): return button8_nextState;
+            case ((int)CAVE2Manager.Button.Button9): return button9_nextState;
+            case ((int)CAVE2Manager.Button.SpecialButton1): return buttonSP1_nextState;
+            case ((int)CAVE2Manager.Button.SpecialButton2): return buttonSP2_nextState;
+            case ((int)CAVE2Manager.Button.SpecialButton3): return buttonSP3_nextState;
+            case ((int)CAVE2Manager.Button.ButtonUp): return buttonUp_nextState;
+            case ((int)CAVE2Manager.Button.ButtonDown): return buttonDown_nextState;
+            case ((int)CAVE2Manager.Button.ButtonLeft): return buttonLeft_nextState;
+            case ((int)CAVE2Manager.Button.ButtonRight): return buttonRight_nextState;
+            default: return 0;
+        }
+    }
+
+    public void UpdateMocap( Vector3 position, Quaternion orientation )
 	{
 		this.position = position;
 		this.rotation = orientation;
@@ -227,34 +276,56 @@ public class WandState
 	{		
 		switch(buttonID)
 		{
-		case((int)CAVE2Manager.Button.Button1): button1 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button2): button2 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button3): button3 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button4): button4 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button5): button5 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button6): button6 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button7): button7 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button8): button8 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.Button9): button9 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.SpecialButton1): buttonSP1 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.SpecialButton2): buttonSP2 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.SpecialButton3): buttonSP3 = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.ButtonUp): buttonUp = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.ButtonDown): buttonDown = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.ButtonLeft): buttonLeft = (ButtonState)buttonState; break;
-		case((int)CAVE2Manager.Button.ButtonRight): buttonRight = (ButtonState)buttonState; break;
-		}
+		    case((int)CAVE2Manager.Button.Button1): button1 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button2): button2 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button3): button3 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button4): button4 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button5): button5 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button6): button6 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button7): button7 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button8): button8 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.Button9): button9 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.SpecialButton1): buttonSP1 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.SpecialButton2): buttonSP2 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.SpecialButton3): buttonSP3 = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.ButtonUp): buttonUp = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.ButtonDown): buttonDown = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.ButtonLeft): buttonLeft = (ButtonState)buttonState; break;
+		    case((int)CAVE2Manager.Button.ButtonRight): buttonRight = (ButtonState)buttonState; break;
+        }
 	}
 
 	public void UpdateController( uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
-		lastUpdateEventFrame = Time.frameCount;
-		this.leftAnalogStick = leftAnalogStick;
+        lastUpdateEventFrame = Time.frameCount;
+        this.leftAnalogStick = leftAnalogStick;
 		this.rightAnalogStick = rightAnalogStick;
 		this.analogTrigger = analogTrigger;
 
-		// Update any state changes
-		if( (flags & 1) == 1 && button1 != ButtonState.Held )
+        // Update any state changes
+        button1_nextState = (int)(flags & (int)EventBase.Flags.Button1);
+        button2_nextState = (int)(flags & (int)EventBase.Flags.Button2);
+        button3_nextState = (int)(flags & (int)EventBase.Flags.Button3);
+
+        buttonSP1_nextState = (int)(flags & (int)EventBase.Flags.SpecialButton1);
+        buttonSP2_nextState = (int)(flags & (int)EventBase.Flags.SpecialButton2);
+        buttonSP3_nextState = (int)(flags & (int)EventBase.Flags.SpecialButton3);
+
+        button4_nextState = (int)(flags & (int)EventBase.Flags.Button4);
+        button5_nextState = (int)(flags & (int)EventBase.Flags.Button5);
+        button6_nextState = (int)(flags & (int)EventBase.Flags.Button6);
+        button7_nextState = (int)(flags & (int)EventBase.Flags.Button7);
+
+        buttonUp_nextState = (int)(flags & (int)EventBase.Flags.ButtonUp);
+        buttonDown_nextState = (int)(flags & (int)EventBase.Flags.ButtonDown);
+        buttonLeft_nextState = (int)(flags & (int)EventBase.Flags.ButtonLeft);
+        buttonRight_nextState = (int)(flags & (int)EventBase.Flags.ButtonRight);
+
+        button8_nextState = (int)(flags & (int)EventBase.Flags.Button8);
+        button9_nextState = (int)(flags & (int)EventBase.Flags.Button9);
+
+        /*
+        if ( (flags & 1) == 1 && button1 != ButtonState.Held )
 			UpdateButton( (int)CAVE2Manager.Button.Button1, (int)ButtonState.Down );
 		else if( (flags & 1) == 0 && button1 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button1, (int)ButtonState.Up );
@@ -333,6 +404,6 @@ public class WandState
 			UpdateButton( (int)CAVE2Manager.Button.Button9, (int)ButtonState.Down );
 		else if( (flags & (int)EventBase.Flags.Button9) == 0 && button9 != ButtonState.Idle)
 			UpdateButton( (int)CAVE2Manager.Button.Button9, (int)ButtonState.Up );
-			
-	}
+		*/
+    }
 }

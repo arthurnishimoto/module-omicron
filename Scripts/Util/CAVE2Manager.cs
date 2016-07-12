@@ -29,16 +29,16 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class HeadTrackerState
+public class MocapState
 {
 	public int sourceID;
 	public Vector3 position;
 	public Quaternion rotation;
 	
-	public HeadTrackerState(int ID)
+	public MocapState(int ID)
 	{
 		sourceID = ID;
-		position = new Vector3(0,1.6f,0);
+		position = new Vector3(0,0,0);
 		rotation = new Quaternion();
 	}
 	
@@ -72,13 +72,14 @@ public class WandEvent
 }
 
 public class CAVE2Manager : OmicronEventClient {
-	static HeadTrackerState head1;
-	static HeadTrackerState head2;
+    static MocapState nullMocapState;
+    static WandState nullWandState;
 
     public bool simulatorMode = false;
+    public bool kinectSimulatorMode = false;
 
-	public static WandState wand1;
-	public static WandState wand2;
+    public Hashtable wandStates;
+    public Hashtable mocapStates;
 
     public static string ERROR_MANAGERNOTFOUND = "CAVE2-Manager GameObject expected, but not found in the current scene. Creating Default.";
 
@@ -88,15 +89,13 @@ public class CAVE2Manager : OmicronEventClient {
 	public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
 	
 	// Note these represent Omicron sourceIDs
-	public int Head1 = 0; 
-	public int Wand1 = 1; // Controller ID
-	public int Wand1Mocap = 3; // 3 = Xbox
-	
-	public int Head2 = 4; // 4 = Head_Tracker2
-	public int Wand2 = 2;
-	public int Wand2Mocap = 5;
+	public int Head1MocapID = 0; 
+	public int Wand1MocapID = 1; // 1 = Batman/Kirk
+    public int Wand2MocapID = 2; // 2 = Robin/Spock
+    public int Wand3MocapID = 3; // 3 = Xbox
+    public int Wand4MocapID = 5; // 5 = Scotty
 
-	public float axisSensitivity = 1f;
+    public float axisSensitivity = 1f;
 	public float axisDeadzone = 0.2f;
 
     // Distance in meters the wand marker center is offset from the controller center
@@ -162,28 +161,22 @@ public class CAVE2Manager : OmicronEventClient {
 	// Use this for initialization
 	new void Start () {
 		base.Start();
+        Random.seed = 1138;
 
-		Random.seed = 1138;
+        mocapStates = new Hashtable();
+        wandStates = new Hashtable();
 
-		head1 = new HeadTrackerState(Head1);
-		head2 = new HeadTrackerState(Head2);
-		
-		if (wand1 == null)
-			wand1 = new WandState(Wand1, Wand1Mocap);
-		else
-		{
-			wand1.sourceID = Wand1;
-			wand1.mocapID = Wand1Mocap;
-		}
-		if( wand2 == null )
-			wand2 = new WandState(Wand2, Wand2Mocap);
-		else
-		{
-			wand2.sourceID = Wand2;
-			wand2.mocapID = Wand2Mocap;
-		}
+        nullMocapState = new MocapState(-1);
+        nullWandState = new WandState(-1,-1);
 
-		Application.targetFrameRate = framerateCap;
+        // Default head state
+        MocapState head1 = new MocapState(Head1MocapID);
+        head1.Update(new Vector3(0, 1.6f, 0), Quaternion.identity);
+        mocapStates.Add(Head1MocapID, head1);
+
+        // Default wand state
+        wandStates.Add(1, new WandState(1, Wand1MocapID));
+
 		machineName = System.Environment.MachineName;
 
 		if ((OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor) || OnCAVE2Display())
@@ -210,7 +203,16 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-
+			if( Camera.main == null )
+			{
+				Debug.LogError("CAVE2Manager: No Camera tagged 'MainCamera' was found. Will not display properly in CAVE2!");
+			}
+			#if USING_GETREAL3D
+			else if( !simulatorMode && !Camera.main.GetComponent<getRealCameraUpdater>() )
+			{
+				Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
+			}
+			#endif
 		}
 	}
 
@@ -266,14 +268,37 @@ public class CAVE2Manager : OmicronEventClient {
         }
     }
 
-    public GameObject GetPlayerController(int value)
+    public GameObject GetPlayerControllerByIndex(int value)
     {
-        return playerControllers[value] as GameObject;
+		if (playerControllers != null && playerControllers.Count > value)
+		{
+        	return playerControllers[value] as GameObject;
+		}
+		else if (playerControllers == null)
+		{
+			playerControllers = new ArrayList();
+		}
+		return null;
+    }
+
+    public static GameObject GetPlayer()
+    {
+        return GetCAVE2Manager().GetComponent<CAVE2Manager>().GetPlayerControllerByIndex(0);
     }
 
     public void AddCameraController(GameObject c)
     {
         cameraController = c;
+    }
+
+    public GameObject GetCameraController()
+    {
+        return cameraController;
+    }
+
+    public static GameObject GetMainCameraController()
+    {
+        return GetCAVE2Manager().GetComponent<CAVE2Manager>().GetCameraController();
     }
 
 	public static bool IsMaster()
@@ -287,6 +312,19 @@ public class CAVE2Manager : OmicronEventClient {
 			return true;
 		#endif
 	}
+
+    public static bool IsSimulatorMode()
+    {
+        if (GetCAVE2Manager())
+        {
+            CAVE2Manager manager = GameObject.Find("CAVE2-Manager").GetComponent<CAVE2Manager>();
+            return (manager.simulatorMode || manager.kinectSimulatorMode);
+        }
+        else
+        {
+            return false;
+        }
+    }
 
 	public static bool OnCAVE2Master()
 	{
@@ -314,130 +352,161 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
-	public static Vector3 GetHeadPosition(int ID)
-	{
-		if( ID == 1 )
-		{
-			return CAVE2Manager.head1.GetPosition();
-		}
-		else if( ID == 2 )
-		{
-			return CAVE2Manager.head2.GetPosition();
-		}
-		
-		return Vector3.zero;
-	}
-	
-	public static Quaternion GetHeadRotation(int ID)
-	{
-		if( ID == 1 )
-		{
-			return CAVE2Manager.head1.GetRotation();
-		}
-		else if( ID == 2 )
-		{
-			return CAVE2Manager.head2.GetRotation();
-		}
-		
-		return Quaternion.identity;
-	}
+    public static MocapState GetHead(int ID)
+    {
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
 
-	public static Vector3 GetWandPosition(int wandID)
+        if( ID == 1 )
+        {
+            ID = c2m.Head1MocapID;
+
+        }
+
+        if (c2m.mocapStates.ContainsKey(ID))
+        {
+            return (MocapState)c2m.mocapStates[ID];
+        }
+        return nullMocapState;
+    }
+
+    public static Vector3 GetWandPosition(int wandID)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetPosition();
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetPosition();
-		}
-		
-		return Vector3.zero;
-	}
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+        if (wandID == 1)
+        {
+            wandID = c2m.Wand1MocapID;
+        }
+        else if (wandID == 2)
+        {
+            wandID = c2m.Wand2MocapID;
+        }
+        else if (wandID == 3)
+        {
+            wandID = c2m.Wand3MocapID;
+        }
+        else if (wandID == 4)
+        {
+            wandID = c2m.Wand4MocapID;
+        }
+
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetPosition();
+        }
+        return Vector3.zero;
+    }
 
 	public static Quaternion GetWandRotation(int wandID)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetRotation();
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetRotation();
-		}
-		
-		return Quaternion.identity;
-	}
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+        if (wandID == 1)
+        {
+            wandID = c2m.Wand1MocapID;
+        }
+        else if (wandID == 2)
+        {
+            wandID = c2m.Wand2MocapID;
+        }
+        else if (wandID == 3)
+        {
+            wandID = c2m.Wand3MocapID;
+        }
+        else if (wandID == 4)
+        {
+            wandID = c2m.Wand4MocapID;
+        }
+
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetRotation();
+        }
+        return Quaternion.identity;
+    }
 
 	public static float GetAxis(int wandID, CAVE2Manager.Axis axis)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetAxis(axis);
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetAxis(axis);
-		}
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+        if (wandID == 1)
+        {
+            wandID = c2m.Wand1MocapID;
+        }
+        else if (wandID == 2)
+        {
+            wandID = c2m.Wand2MocapID;
+        }
+        else if (wandID == 3)
+        {
+            wandID = c2m.Wand3MocapID;
+        }
+        else if (wandID == 4)
+        {
+            wandID = c2m.Wand4MocapID;
+        }
+
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetAxis(axis);
+        }
 		
 		return 0;
 	}
 
 	public static bool GetButton(int wandID, CAVE2Manager.Button button)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetButton(button);
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetButton(button);
-		}
-		
-		return false;
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+        
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetButton(button);
+        }
+
+        return false;
 	}
 
 	public static bool GetButtonDown(int wandID, CAVE2Manager.Button button)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetButtonDown(button);
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetButtonDown(button);
-		}
-		
-		return false;
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+        
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetButtonDown(button);
+        }
+
+        return false;
 	}
 
 	public static bool GetButtonUp(int wandID, CAVE2Manager.Button button)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetButtonUp(button);
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetButtonUp(button);
-		}
-		
-		return false;
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetButtonUp(button);
+        }
+
+        return false;
 	}
 
 	public static WandState.ButtonState GetButtonState(int wandID, CAVE2Manager.Button button)
 	{
-		if( wandID == 1 )
-		{
-			return CAVE2Manager.wand1.GetButtonState((int)button);
-		}
-		else if( wandID == 2 )
-		{
-			return CAVE2Manager.wand2.GetButtonState((int)button);
-		}
-		
-		return 0;
+        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+
+        if (c2m.wandStates.ContainsKey(wandID))
+        {
+            WandState state = (WandState)c2m.wandStates[wandID];
+            return state.GetButtonState((int)button);
+        }
+
+        return 0;
 	}
 
     public static Vector3 GetWandTrackingOffset(int wandID)
@@ -459,14 +528,15 @@ public class CAVE2Manager : OmicronEventClient {
 
 	// Update is called once per frame
 	void Update () {
+        Application.targetFrameRate = framerateCap;
         if (simulatorMode)
         {
 #if USING_GETREAL3D
-			if( Camera.main.GetComponent<getRealCameraUpdater>() )
+			if( Camera.main != null && Camera.main.GetComponent<getRealCameraUpdater>() )
 			{
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
+            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
+           		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
 			}
 #endif
 
@@ -491,10 +561,13 @@ public class CAVE2Manager : OmicronEventClient {
             mouseLastPos = Input.mousePosition;
         }
 
-		wand1.UpdateState(Wand1, Wand1Mocap);
-		wand2.UpdateState(Wand2, Wand2Mocap);
+        foreach (DictionaryEntry pair in wandStates)
+        {
+            WandState curWandState = (WandState)wandStates[pair.Key];
+            curWandState.UpdateState((int)pair.Key, 0);
+        }
 
-		float vertical = Input.GetAxis(wandSimulatorAnalogUD) * axisSensitivity;
+        float vertical = Input.GetAxis(wandSimulatorAnalogUD) * axisSensitivity;
         float horizontal = Input.GetAxis(wandSimulatorAnalogLR) * axisSensitivity;
 		float forward = 0 * axisSensitivity;
 
@@ -515,7 +588,7 @@ public class CAVE2Manager : OmicronEventClient {
 		// If using Omicron, make sure button events don't conflict
         if (!simulatorMode)
 		{
-			vertical = -getReal3D.Input.GetAxis("Forward") * axisSensitivity;
+			vertical = getReal3D.Input.GetAxis("Forward") * axisSensitivity;
 			horizontal = getReal3D.Input.GetAxis("Yaw") * axisSensitivity;
 			lookHorizontal = getReal3D.Input.GetAxis("Strafe") * axisSensitivity;
 			lookVertical = getReal3D.Input.GetAxis("Pitch") * axisSensitivity;
@@ -535,16 +608,16 @@ public class CAVE2Manager : OmicronEventClient {
 			if( getReal3D.Input.GetButton("Jump") )
 				flags += (int)EventBase.Flags.Button1;
 			// F -> Wand Button 2 (Circle/B)
-			if( getReal3D.Input.GetButton("Reset") )
+			if( getReal3D.Input.GetButton("ChangeWand") )
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross/A)
-			if( getReal3D.Input.GetButton("ChangeWand") )
+			if( getReal3D.Input.GetButton("WandButton") )
 				flags += (int)EventBase.Flags.Button3;
 			// Wand Button 4 (Square/X)
-			if( getReal3D.Input.GetButton("WandButton") )
+			if( getReal3D.Input.GetButton("NavSpeed") )
 				flags += (int)EventBase.Flags.Button4;
 			// Wand Button 8 (R1/RB)
-			if( getReal3D.Input.GetButton("NavSpeed") )
+			if( getReal3D.Input.GetButton("Reset") )
 				flags += (int)EventBase.Flags.Button8;
 			// Wand Button 5 (L1/LB)
 			if( getReal3D.Input.GetButton("WandLook") )
@@ -553,7 +626,7 @@ public class CAVE2Manager : OmicronEventClient {
 			if( getReal3D.Input.GetButton("L3") )
 				flags += (int)EventBase.Flags.Button6;
 			// Wand Button 7 (L2)
-			if( getReal3D.Input.GetButton("LT") )
+			if( getReal3D.Input.GetButton("WandDrive") )
 				flags += (int)EventBase.Flags.Button7;
 			// Wand Button 8 (R2)
 			if( getReal3D.Input.GetButton("RT") )
@@ -681,37 +754,56 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		if( !CAVE2Manager.UsingOmicronServer() || (CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
+		if( !CAVE2Manager.UsingOmicronServer() || (!CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
 		{
-			wand1.UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
+			GetWand(1).UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
 		}
 
 		if( mocapEmulation )
 		{
-			Vector3 lookAround = new Vector3( -wand1.GetAxis(Axis.RightAnalogStickUD), wand1.GetAxis(Axis.RightAnalogStickLR), 0 );
+            Vector3 lookAround = new Vector3(-GetWand(1).GetAxis(Axis.RightAnalogStickUD), GetWand(1).GetAxis(Axis.RightAnalogStickLR), 0);
 			headEmulatedRotation += lookAround * emulatedRotationSpeed;
 
 			// Update emulated positions/rotations
-			head1.Update( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+            GetHead(1).Update(headEmulatedPosition, Quaternion.Euler(headEmulatedRotation));
 
 			if( lockWandToHeadTransform )
-				wand1.UpdateMocap( headEmulatedPosition , Quaternion.Euler(headEmulatedRotation) );
+                GetWand(1).UpdateMocap(headEmulatedPosition, Quaternion.Euler(headEmulatedRotation));
 			else
-				wand1.UpdateMocap( wandEmulatedPosition , Quaternion.Euler(wandEmulatedRotation) );
+                GetWand(1).UpdateMocap(wandEmulatedPosition, Quaternion.Euler(wandEmulatedRotation));
 
             if (cameraController != null)
             {
-                cameraController.transform.localPosition = headEmulatedPosition;
-                cameraController.transform.localEulerAngles = headEmulatedRotation;
+                Camera.main.transform.localPosition = headEmulatedPosition;
+                Camera.main.transform.localEulerAngles = headEmulatedRotation;
+                //cameraController.transform.localPosition = headEmulatedPosition;
+                //cameraController.transform.localEulerAngles = headEmulatedRotation;
             }
+			else
+			{
+				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2! Make sure the parent GameObject of the Main Camera contains an OmicronCameraController script.");
+			}
 		}
 		else
 		{
-			#if USING_GETREAL3D
-			head1.Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
-			wand1.UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
+            #if USING_GETREAL3D
+            GetHead(1).Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
+            GetWand(1).UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
 			#endif
 		}
+
+        if( kinectSimulatorMode )
+        {
+            if (cameraController != null)
+            {
+                cameraController.transform.localPosition = GetHead(1).position;
+                cameraController.transform.localEulerAngles = GetHead(1).rotation.eulerAngles;
+            }
+            else
+            {
+                Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+            }
+        }
 	}
 
 	void OnEvent( EventData e )
@@ -724,28 +816,13 @@ public class CAVE2Manager : OmicronEventClient {
 			Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
 
 			#if USING_GETREAL3D
-			//getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
-			#else
-			if( e.sourceId == head1.sourceID )
-			{
-				head1.Update( unityPos, unityRot );
-			}
-			else if( e.sourceId == head2.sourceID )
-			{
-				head2.Update( unityPos, unityRot );
-			}
-			else if( e.sourceId == wand1.mocapID )
-			{
-				wand1.UpdateMocap( unityPos, unityRot );
-			}
-			else if( e.sourceId == wand2.mocapID )
-			{
-				wand2.UpdateMocap( unityPos, unityRot );
-			}
-			#endif
+			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
+            #else
+            UpdateMocapRPC(e.sourceId, unityPos, unityRot);
+            #endif
 
-		}
-		else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
+        }
+        else if( e.serviceType == EventBase.ServiceType.ServiceTypeWand )
 		{
 			// -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
 			//Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
@@ -765,82 +842,190 @@ public class CAVE2Manager : OmicronEventClient {
 			if( Mathf.Abs(rightAnalogStick.y) < axisDeadzone )
 				rightAnalogStick.y = 0;
 
-			#if USING_GETREAL3D
-			//getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			#else
-			if( e.sourceId == wand1.sourceID )
-			{
-				wand1.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			}
-			else if( e.sourceId == wand2.sourceID )
-			{
-				wand2.UpdateController( e.flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-			}
-			#endif
-		}
-	}
+#if USING_GETREAL3D
+			getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+#else
+            UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+#endif
+        }
+    }
 
-	#if USING_GETREAL3D
-	[getReal3D.RPC]
+    void UpdateController(uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger)
+    {
+        if (wandStates.ContainsKey((int)wandID))
+        {
+            ((WandState)wandStates[(int)wandID]).UpdateController(flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+        }
+        else
+        {
+            int mocapID = (int)wandID;
+            if ((int)wandID == 1)
+            {
+                mocapID = Wand1MocapID;
+            }
+            else if ((int)wandID == 2)
+            {
+                mocapID = Wand2MocapID;
+            }
+            else if ((int)wandID == 3)
+            {
+                mocapID = Wand3MocapID;
+            }
+            else if ((int)wandID == 4)
+            {
+                mocapID = Wand4MocapID;
+            }
+            WandState newWandState = new WandState((int)wandID, mocapID);
+            newWandState.UpdateController(flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+            wandStates.Add((int)wandID, newWandState);
+        }
+    }
+
+    void UpdateMocap(uint sourceId, Vector3 unityPos, Quaternion unityRot)
+    {
+        if (mocapStates.ContainsKey((int)sourceId))
+        {
+            ((MocapState)mocapStates[(int)sourceId]).Update(unityPos, unityRot);
+        }
+        else
+        {
+            MocapState newMocapState = new MocapState((int)sourceId);
+            newMocapState.Update(unityPos, unityRot);
+            mocapStates.Add((int)sourceId, newMocapState);
+        }
+        if (wandStates.ContainsKey((int)sourceId))
+        {
+            ((WandState)wandStates[(int)sourceId]).UpdateMocap(unityPos, unityRot);
+        }
+        else
+        {
+            int mocapID = (int)sourceId;
+            if ((int)sourceId == 1)
+            {
+                mocapID = Wand1MocapID;
+            }
+            else if ((int)sourceId == 2)
+            {
+                mocapID = Wand2MocapID;
+            }
+            else if ((int)sourceId == 3)
+            {
+                mocapID = Wand3MocapID;
+            }
+            else if ((int)sourceId == 4)
+            {
+                mocapID = Wand4MocapID;
+            }
+            WandState newWandState = new WandState((int)sourceId, mocapID);
+            newWandState.UpdateMocap(unityPos, unityRot);
+            wandStates.Add((int)sourceId, newWandState);
+        }
+    }
+
+#if USING_GETREAL3D
+    [getReal3D.RPC]
 	void UpdateControllerRPC( uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger )
 	{
-		if( wandID == wand1.sourceID )
+        UpdateController(wandID, flags, leftAnalogStick, rightAnalogStick, analogTrigger);
+    }
+
+	[getReal3D.RPC]
+	void UpdateMocapRPC( uint sourceId, Vector3 unityPos, Quaternion unityRot )
+	{
+        UpdateMocap(sourceId, unityPos, unityRot);
+
+    }
+	#endif
+
+    public static MocapState GetMocapState(int ID)
+	{
+        CAVE2Manager cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+        if (cave2Manager.mocapStates.ContainsKey(ID))
+        {
+            return (MocapState)cave2Manager.mocapStates[ID];
+        }
+        else
+        {
+            //Debug.LogWarning("CAVE2Manager: GetMocapState ID: " + ID + " does not exist.");
+            return nullMocapState;
+        }
+	}
+	
+	public WandState GetWand(int ID)
+	{
+        CAVE2Manager cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
+        if (cave2Manager.wandStates.ContainsKey(ID))
+        {
+            return (WandState)cave2Manager.wandStates[ID];
+        }
+        else
+        {
+            //Debug.LogWarning("CAVE2Manager: GetMocapState ID: " + ID + " does not exist.");
+            return nullWandState;
+        }
+	}
+
+	public static void BroadcastMessage(string targetObjectName, string methodName, object param)
+	{
+#if USING_GETREAL3D
+		if( getReal3D.Cluster.isMaster )
+			getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
+#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
+#endif
+	}
+
+	public static void BroadcastMessage(string targetObjectName, string methodName)
+	{
+		BroadcastMessage(targetObjectName, methodName, 0);
+	}
+
+	public static void Destroy(string targetObjectName)
+	{
+		#if USING_GETREAL3D
+		if( getReal3D.Cluster.isMaster )
+			getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
+		#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            Destroy(targetObject);
+        }
+		#endif
+	}
+
+#if USING_GETREAL3D
+	[getReal3D.RPC]
+	public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
+	{
+		//Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
+
+		GameObject targetObject = GameObject.Find(targetObjectName);
+		if( targetObject != null )
 		{
-			wand1.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
-		}
-		else if( wandID == wand2.sourceID )
-		{
-			wand2.UpdateController( flags, leftAnalogStick, rightAnalogStick, analogTrigger );
+			//Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+			targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
 		}
 	}
 
 	[getReal3D.RPC]
-	void UpdateMocapRPC( uint id, Vector3 unityPos, Quaternion unityRot )
+	public void CAVE2DestroyRPC(string targetObjectName)
 	{
-		if( id == head1.sourceID )
+		//Debug.Log ("SendCAVE2RPC: call 'Destroy' on "+targetObjectName);
+		
+		GameObject targetObject = GameObject.Find(targetObjectName);
+		if( targetObject != null )
 		{
-			head1.Update( unityPos, unityRot );
-		}
-		else if( id == head2.sourceID )
-		{
-			head2.Update( unityPos, unityRot );
-		}
-		else if( id == wand1.mocapID )
-		{
-			wand1.UpdateMocap( unityPos, unityRot );
-		}
-		else if( id == wand2.mocapID )
-		{
-			wand2.UpdateMocap( unityPos, unityRot );
+			Destroy(targetObject);
 		}
 	}
-	#endif
+#endif
 
-	public HeadTrackerState getHead(int ID)
-	{
-		if( ID == 2 )
-			return head2;
-		else if( ID == 1 )
-			return head1;
-		else
-		{
-			Debug.LogWarning("CAVE2Manager: getHead ID: " +ID+" does not exist. Returned Head1");
-			return head1;
-		}
-	}
-	
-	public WandState getWand(int ID)
-	{
-		if( ID == 2 )
-			return wand2;
-		else if( ID == 1 )
-			return wand1;
-		else
-		{
-			Debug.LogWarning("CAVE2Manager: getWand ID: " +ID+" does not exist. Returned Wand1");
-			return wand1;
-		}
-	}
 
 	Vector2 GUIOffset;
 	

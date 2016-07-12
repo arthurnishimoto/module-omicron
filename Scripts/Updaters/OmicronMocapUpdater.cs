@@ -30,19 +30,13 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class OmicronHeadUpdater : MonoBehaviour {
-	CAVE2Manager cave2Manager;
-	public int headID = 1;
+public class OmicronMocapUpdater : MonoBehaviour {
+	public int mocapID = 1;
 
-	// Use this for initialization
-	public void Start () {
-		cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
-	}
-	
 	// Update is called once per frame
 	void Update () {
-		transform.localPosition = cave2Manager.getHead(headID).position;
-		transform.localRotation = cave2Manager.getHead(headID).rotation;
+        transform.localPosition = CAVE2Manager.GetMocapState(mocapID).position;
+        transform.localRotation = CAVE2Manager.GetMocapState(mocapID).rotation;
 	}
 
 	void FixedUpdate()
