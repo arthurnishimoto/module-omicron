@@ -373,6 +373,21 @@ namespace omicronConnector
 			string dataString = Encoding.UTF8.GetString(extraData, 0, (int)extraDataItems);
 			return dataString;
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        public uint getExtraDataSize()
+        {
+            if (extraDataType == ExtraDataType.ExtraDataNull)
+                return 0;
+            else if (extraDataType == ExtraDataType.ExtraDataFloatArray || extraDataType == ExtraDataType.ExtraDataIntArray)
+                return extraDataItems * 4;
+            else if (extraDataType == ExtraDataType.ExtraDataVector3Array)
+                return extraDataItems * 4 * 3;
+            else if (extraDataType == ExtraDataType.ExtraDataString)
+                return extraDataItems;
+            else
+                return extraDataItems;
+        }
     };
 
     abstract class IOmicronConnectorClientListener

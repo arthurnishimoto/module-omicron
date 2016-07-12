@@ -47,6 +47,8 @@ public class TouchPoint{
 	RaycastHit touchHit;
 	long timeStamp;
 	GameObject objectTouched;
+    GameObject touchObject;
+    int rootID;
 	
 	public TouchPoint(Vector2 pos, int id){
 		position = pos;
@@ -67,7 +69,12 @@ public class TouchPoint{
 	public int GetID(){
 		return ID;
 	}
-	
+
+    public int GetRootID()
+    {
+        return rootID;
+    }
+
 	public long GetTimeStamp(){
 		return timeStamp;
 	}
@@ -79,11 +86,21 @@ public class TouchPoint{
 	public RaycastHit GetRaycastHit(){
 		 return touchHit;
 	}
-	
+
+    public GameObject GetGameObject()
+    {
+        return touchObject;
+    }
+
 	public GameObject GetObjectTouched(){
 		 return objectTouched;
 	}
-	
+
+    public void SetRootID(int root)
+    {
+        rootID = root;
+    }
+
 	public void SetGesture(EventBase.Type value){
 		 gesture = value;
 	}
@@ -92,6 +109,16 @@ public class TouchPoint{
 		 touchHit = value;
 	}
 	
+    public void SetPosition(Vector2 position)
+    {
+        this.position = position;
+    }
+    
+    public void SetGameObject(GameObject g)
+    {
+        touchObject = g;
+    }
+
 	public void SetObjectTouched(GameObject value){
 		 objectTouched = value;
 	}
@@ -149,11 +176,23 @@ class OmicronManager : MonoBehaviour
 		
 		eventList = new ArrayList();
 		
-		if( connectToServer && CAVE2Manager.IsMaster() )
+		if( connectToServer && IsMaster() )
 		{
 			ConnectToServer();
 		}
 	}// start
+
+    public bool IsMaster()
+    {
+        if (GetComponent<CAVE2Manager>())
+        {
+            return CAVE2Manager.IsMaster();
+        }
+        else
+        {
+            return true;
+        }
+    }
 
 	public bool ConnectToServer()
 	{
@@ -244,7 +283,7 @@ class OmicronManager : MonoBehaviour
 				{
 					ArrayList activeClients = new ArrayList();
 					foreach( OmicronEventClient c in omicronClients )
-					{
+                    {
 						if( !c.IsFlaggedForRemoval() )
 						{
 							c.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);

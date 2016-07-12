@@ -45,7 +45,7 @@ public class OmicronEventClient : MonoBehaviour {
 
 	public void InitOmicron()
 	{
-		omicronManager = CAVE2Manager.GetCAVE2Manager().GetComponent<OmicronManager>();
+		omicronManager = GameObject.Find("CAVE2-Manager").GetComponent<OmicronManager>();
 		omicronManager.AddClient(this);
 	}
 
