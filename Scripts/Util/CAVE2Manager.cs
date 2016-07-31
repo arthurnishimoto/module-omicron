@@ -818,7 +818,7 @@ public class CAVE2Manager : OmicronEventClient {
 			#if USING_GETREAL3D
 			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
             #else
-            UpdateMocapRPC(e.sourceId, unityPos, unityRot);
+            UpdateMocap(e.sourceId, unityPos, unityRot);
             #endif
 
         }
