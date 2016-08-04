@@ -350,21 +350,59 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 	}
 
+    // Primary function for getting mocap states
+    public static MocapState GetMocapState(int ID)
+    {
+        CAVE2Manager cave2Manager = CAVE2Manager.GetCAVE2Manager();
+        if (cave2Manager.mocapStates.ContainsKey(ID))
+        {
+            return (MocapState)cave2Manager.mocapStates[ID];
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2Manager: GetMocapState ID: " + ID + " does not exist.");
+            return nullMocapState;
+        }
+    }
+
+    // Primary function for getting wand states
+    public WandState GetWand(int ID)
+    {
+        CAVE2Manager cave2Manager = CAVE2Manager.GetCAVE2Manager();
+
+        // Wand states are internally stored by MocapID
+        switch (ID)
+        {
+            case (1): ID = Wand1MocapID; break;
+            case (2): ID = Wand2MocapID; break;
+            case (3): ID = Wand3MocapID; break;
+            case (4): ID = Wand4MocapID; break;
+            default: ID = Wand1MocapID; break;
+        }
+
+        if (cave2Manager.wandStates.ContainsKey(ID))
+        {
+            return (WandState)cave2Manager.wandStates[ID];
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2Manager: GetWand ID: " + ID + " does not exist.");
+            return nullWandState;
+        }
+    }
+
+    // Convience functions for getting head/wand data
     public static MocapState GetHead(int ID)
     {
         CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
 
-        if( ID == 1 )
+        if (ID == 1)
         {
             ID = c2m.Head1MocapID;
 
         }
 
-        if (c2m.mocapStates.ContainsKey(ID))
-        {
-            return (MocapState)c2m.mocapStates[ID];
-        }
-        return nullMocapState;
+        return GetMocapState(ID);
     }
 
     public static Vector3 GetWandPosition(int wandID)
@@ -403,22 +441,14 @@ public class CAVE2Manager : OmicronEventClient {
 
 	public static WandState.ButtonState GetButtonState(int wandID, CAVE2Manager.Button button)
 	{
-        CAVE2Manager c2m = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
-
-        if (c2m.wandStates.ContainsKey(wandID))
-        {
-            WandState state = (WandState)c2m.wandStates[wandID];
-            return state.GetButtonState((int)button);
-        }
-
-        return 0;
+        return CAVE2Manager.GetCAVE2Manager().GetWand(wandID).GetButtonState((int)button);
 	}
 
     public static Vector3 GetWandTrackingOffset(int wandID)
     {
         if (wandID == 1)
         {
-            return GetCAVE2Manager().GetComponent<CAVE2Manager>().wand1TrackingOffset;
+            return GetCAVE2Manager().wand1TrackingOffset;
         }
         else if (wandID == 2)
         {
@@ -842,45 +872,6 @@ public class CAVE2Manager : OmicronEventClient {
 
     }
 	#endif
-
-    public static MocapState GetMocapState(int ID)
-	{
-        CAVE2Manager cave2Manager = CAVE2Manager.GetCAVE2Manager();
-        if (cave2Manager.mocapStates.ContainsKey(ID))
-        {
-            return (MocapState)cave2Manager.mocapStates[ID];
-        }
-        else
-        {
-            Debug.LogWarning("CAVE2Manager: GetMocapState ID: " + ID + " does not exist.");
-            return nullMocapState;
-        }
-	}
-	
-	public WandState GetWand(int ID)
-	{
-        CAVE2Manager cave2Manager = CAVE2Manager.GetCAVE2Manager();
-
-        // Wand states are internally stored by MocapID
-        switch (ID)
-        {
-            case (1): ID = Wand1MocapID; break;
-            case (2): ID = Wand2MocapID; break;
-            case (3): ID = Wand3MocapID; break;
-            case (4): ID = Wand4MocapID; break;
-            default: ID = Wand1MocapID; break;
-        }
-
-        if (cave2Manager.wandStates.ContainsKey(ID))
-        {
-            return (WandState)cave2Manager.wandStates[ID];
-        }
-        else
-        {
-            Debug.LogWarning("CAVE2Manager: GetWand ID: " + ID + " does not exist.");
-            return nullWandState;
-        }
-	}
 
 	public static void BroadcastMessage(string targetObjectName, string methodName, object param)
 	{

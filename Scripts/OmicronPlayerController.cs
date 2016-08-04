@@ -76,14 +76,13 @@ public class OmicronPlayerController : OmicronWandUpdater
 	Vector3 headPosition;
 	Vector3 headRotation;
 
-    public enum CAVEFloorMode { AlwaysHide, MasterOnly, AlwaysShow }
-    public CAVEFloorMode showCAVEFloorOnlyOnMaster = CAVEFloorMode.MasterOnly;
-	public GameObject CAVEFloor;
+    //public enum CAVEFloorMode { AlwaysHide, MasterOnly, AlwaysShow }
+    //public CAVEFloorMode showCAVEFloorOnlyOnMaster = CAVEFloorMode.MasterOnly;
+	//public GameObject CAVEFloor;
 	
 	Vector3 wandPosition;
 	Quaternion wandRotation;
 
-	public GameObject visualColliderObject;
 	CapsuleCollider playerCollider;
 	
 	bool freeflyButtonDown;
@@ -94,7 +93,6 @@ public class OmicronPlayerController : OmicronWandUpdater
 	
 	public bool showGUI = true;
 	public bool freezeMovement = false;
-    public bool disableControls = false;
 
 	// Use this for initialization
 	new void Start () {
@@ -122,9 +120,6 @@ public class OmicronPlayerController : OmicronWandUpdater
 		{
 			playerCollider.center = new Vector3( 0, playerCollider.center.y, 0 );
 		}
-
-		if( visualColliderObject )
-			visualColliderObject.transform.localPosition = playerCollider.center;
 
 		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
 		{
@@ -177,34 +172,6 @@ public class OmicronPlayerController : OmicronWandUpdater
 
             freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
 		}
-
-        if (!disableControls)
-        {
-            if (CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton))
-            {
-                navMode++;
-                if ((int)navMode > 2)
-                    navMode = 0;
-
-                SetNavigationMode((int)navMode);
-            }
-
-            if (CAVE2Manager.GetButtonDown(wandID, autoLevelButton))
-            {
-                transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, 0);
-            }
-        }
-
-        if (CAVEFloor && !CAVEFloor.activeSelf)
-            CAVEFloor.SetActive(true);
-
-
-        if (CAVEFloor && CAVEFloor.activeSelf && showCAVEFloorOnlyOnMaster == CAVEFloorMode.MasterOnly && !CAVE2Manager.IsMaster())
-            CAVEFloor.SetActive(false);
-        else if (CAVEFloor && showCAVEFloorOnlyOnMaster != CAVEFloorMode.AlwaysHide && !CAVEFloor.activeSelf)
-            CAVEFloor.SetActive(true);
-        else if (CAVEFloor && showCAVEFloorOnlyOnMaster == CAVEFloorMode.AlwaysHide && CAVEFloor.activeSelf)
-            CAVEFloor.SetActive(false);
 	}
 	
 	void UpdateFreeflyMovement()
