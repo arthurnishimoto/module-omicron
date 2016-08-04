@@ -60,7 +60,7 @@ public class OmicronWandUpdater : MonoBehaviour {
 	
     void FixedUpdate()
     {
-        if (!cave2Manager.wandMousePointerEmulation && virtualWand && virtualWand.GetComponent<Rigidbody>() )
+        if (!CAVE2Manager.GetCAVE2Manager().wandMousePointerEmulation && virtualWand && virtualWand.GetComponent<Rigidbody>() )
         {
             transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
             transform.localRotation = CAVE2Manager.GetWandRotation(wandID);

@@ -12,7 +12,7 @@ public class DebugGUIManager : MonoBehaviour {
 
 	OmicronManager omgManager;
 	CAVE2Manager cave2manager;
-	OmicronPlayerController playerController;
+    OmicronPlayerController playerController;
     public MonoBehaviour appMenu;
 
 	Rect omicronWindow;

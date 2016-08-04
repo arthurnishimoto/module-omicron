@@ -28,9 +28,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class OmicronPlayerController : OmicronWandUpdater {
+public class OmicronPlayerController : OmicronWandUpdater
+{
 
-	string version = "v2.0-alpha2";
+	string version = "v2.1-alpha1";
 
 	public CAVE2Manager.Axis forwardAxis = CAVE2Manager.Axis.LeftAnalogStickUD;
 	public CAVE2Manager.Axis strafeAxis = CAVE2Manager.Axis.LeftAnalogStickLR;
@@ -97,7 +98,7 @@ public class OmicronPlayerController : OmicronWandUpdater {
 
 	// Use this for initialization
 	new void Start () {
-        CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().AddPlayerController(gameObject);
+        CAVE2Manager.GetCAVE2Manager().AddPlayerController(gameObject);
 
 		playerCollider = gameObject.GetComponent<CapsuleCollider> ();
 
@@ -133,9 +134,6 @@ public class OmicronPlayerController : OmicronWandUpdater {
 		{
 			UpdateWalkMovement();
 		}
-
-		if( CAVE2Manager.IsMaster() )
-			CAVE2Manager.BroadcastMessage(gameObject.name, "SyncPosition", transform.position);
 	}
 
 	public void SyncPosition(Vector3 position)
