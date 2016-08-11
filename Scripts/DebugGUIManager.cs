@@ -28,6 +28,12 @@ public class DebugGUIManager : MonoBehaviour {
 	private int   frames  = 0; // Frames drawn over the interval
 	private float timeleft; // Left time for current interval
 
+    public float FPSBenchmarkTime = 15;
+    float minFPS = 100;
+    float avgFPS, maxFPS;
+    int frameSumCount;
+    float frameSum;
+
 	public TextMesh fpsGUITextMesh;
 
 	void Start()
@@ -94,8 +100,40 @@ public class DebugGUIManager : MonoBehaviour {
 						fpsGUITextMesh.color = Color.green;
 				}
 
-				//	DebugConsole.Log(format,level);
-				timeleft = FPS_updateInterval;
+                if (Time.time < FPSBenchmarkTime - 1)
+                {
+                    frameSum += fps;
+                    frameSumCount++;
+
+                    if (fps < minFPS)
+                        minFPS = fps;
+                    if (fps > maxFPS)
+                        maxFPS = fps;
+
+                    if (GetComponent<GUIText>())
+                        GetComponent<GUIText>().text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTime - Time.time);
+                    if (fpsGUITextMesh)
+                        fpsGUITextMesh.text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTime - Time.time);
+                }
+                else
+                {
+                    avgFPS = frameSum / (float)frameSumCount;
+
+                    if (GetComponent<GUIText>())
+                    {
+                        GetComponent<GUIText>().text += "\nMin: " + System.String.Format("{0:F2}", minFPS);
+                        GetComponent<GUIText>().text += " Avg: " + System.String.Format("{0:F2}", avgFPS);
+                        GetComponent<GUIText>().text += " Max: " + System.String.Format("{0:F2}", maxFPS);
+                    }
+                    if (fpsGUITextMesh)
+                    {
+                        fpsGUITextMesh.text += "\nMin: " + System.String.Format("{0:F2}", minFPS);
+                        fpsGUITextMesh.text += " Avg: " + System.String.Format("{0:F2}", avgFPS);
+                        fpsGUITextMesh.text += " Max: " + System.String.Format("{0:F2}", maxFPS);
+                    }
+                }
+                //	DebugConsole.Log(format,level);
+                timeleft = FPS_updateInterval;
 				accum = 0.0F;
 				frames = 0;
 			}
