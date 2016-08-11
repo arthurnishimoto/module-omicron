@@ -28,6 +28,7 @@ public class DebugGUIManager : MonoBehaviour {
 	private int   frames  = 0; // Frames drawn over the interval
 	private float timeleft; // Left time for current interval
 
+    public float FPSBenchmarkTargetTime;
     public float FPSBenchmarkTime = 15;
     float minFPS = 100;
     float avgFPS, maxFPS;
@@ -49,7 +50,9 @@ public class DebugGUIManager : MonoBehaviour {
             if (GetComponent<TextMesh>() == null)
                 transform.position = new Vector3(0.01f, 0.04f, 0);
         }
-	}
+        FPSBenchmarkTargetTime = FPSBenchmarkTime;
+
+    }
 
 	void Update()
 	{
@@ -100,7 +103,7 @@ public class DebugGUIManager : MonoBehaviour {
 						fpsGUITextMesh.color = Color.green;
 				}
 
-                if (Time.time < FPSBenchmarkTime - 1)
+                if (Time.time > 5 && Time.time < FPSBenchmarkTargetTime - 1)
                 {
                     frameSum += fps;
                     frameSumCount++;
@@ -111,11 +114,11 @@ public class DebugGUIManager : MonoBehaviour {
                         maxFPS = fps;
 
                     if (GetComponent<GUIText>())
-                        GetComponent<GUIText>().text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTime - Time.time);
+                        GetComponent<GUIText>().text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
                     if (fpsGUITextMesh)
-                        fpsGUITextMesh.text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTime - Time.time);
+                        fpsGUITextMesh.text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
                 }
-                else
+                else if (Time.time > 5)
                 {
                     avgFPS = frameSum / (float)frameSumCount;
 
@@ -159,8 +162,6 @@ public class DebugGUIManager : MonoBehaviour {
 
 		currentWindow = (DebugWindow)GUI.SelectionGrid(new Rect(10, 20, 480, 24), (int)currentWindow, windowStrings, 4);
 
-
-
 		if (currentWindow == DebugWindow.Omicron )
 		{
 			if( omgManager != null )
@@ -170,7 +171,16 @@ public class DebugGUIManager : MonoBehaviour {
 
                 showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
                 showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
-	        }
+
+                if( GUI.Button(new Rect(20, 25 * 9, 250, 20), "Recalculate FPS") )
+                {
+                    FPSBenchmarkTargetTime = Time.time + FPSBenchmarkTime;
+                    frameSum = 0;
+                    frameSumCount = 0;
+                    minFPS = 100;
+                    maxFPS = 0;
+                }
+            }
 	        else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
 		}
