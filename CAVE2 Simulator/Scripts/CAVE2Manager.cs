@@ -90,10 +90,10 @@ public class CAVE2Manager : OmicronEventClient {
 	
 	// Note these represent Omicron sourceIDs
 	public int Head1MocapID = 0; 
-	public int Wand1MocapID = 1; // 1 = Batman/Kirk
-    public int Wand2MocapID = 2; // 2 = Robin/Spock
-    public int Wand3MocapID = 3; // 3 = Xbox
-    public int Wand4MocapID = 5; // 5 = Batgirl/Scotty
+	public int Wand1MocapID = 1; // 1 = Batman/Kirk (TrackD = 3)
+    public int Wand2MocapID = 2; // 2 = Robin/Spock (TrackD = 4)
+    public int Wand3MocapID = 3; // 3 = Xbox (TrackD = 2)
+    public int Wand4MocapID = 5; // 5 = Batgirl/Scotty (TrackD = 6)
 
     public float axisSensitivity = 1f;
 	public float axisDeadzone = 0.2f;
@@ -206,9 +206,20 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-
-		}
-	}
+            #if USING_GETREAL3D
+            if (!simulatorMode && Camera.main.GetComponent<getRealCameraUpdater>())
+            {
+                Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
+                Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
+                Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+            }
+            else if(!simulatorMode)
+            {
+                Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
+            }
+            #endif
+        }
+    }
 
     void Awake()
     {
@@ -725,8 +736,8 @@ public class CAVE2Manager : OmicronEventClient {
             #if USING_GETREAL3D
             GetHead(1).Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
             GetWand(1).UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
-			#endif
-		}
+            #endif
+        }
 
         if( kinectSimulatorMode )
         {
