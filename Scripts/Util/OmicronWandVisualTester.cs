@@ -48,6 +48,8 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 
 	public Vector2 rightAnalogStick;
 
+    public int flagRawData;
+
 	// Use this for initialization
 	new void Start () {
 
@@ -55,7 +57,7 @@ public class OmicronWandVisualTester : OmicronWandUpdater {
 	
 	// Update is called once per frame
 	void Update () {
-		leftAnalogStick = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.LeftAnalogStickLR), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.LeftAnalogStickUD) );
+        leftAnalogStick = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.LeftAnalogStickLR), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.LeftAnalogStickUD) );
 		rightAnalogStick = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.RightAnalogStickLR), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.RightAnalogStickUD) );
         analogTriggers = new Vector2(CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.AnalogTriggerL), CAVE2Manager.GetAxis(wandID, CAVE2Manager.Axis.AnalogTriggerR));
 

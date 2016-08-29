@@ -47,8 +47,17 @@ public class TouchPoint{
 	RaycastHit touchHit;
 	long timeStamp;
 	GameObject objectTouched;
-	
-	public TouchPoint(Vector2 pos, int id){
+
+    public TouchPoint(EventData e)
+    {
+        position = new Vector3(e.posx, e.posy, e.posz);
+        ID = (int)e.sourceId;
+        touchRay = Camera.main.ScreenPointToRay(position);
+        gesture = (EventBase.Type)e.type;
+        timeStamp = (long)Time.time;
+    }
+
+    public TouchPoint(Vector2 pos, int id){
 		position = pos;
 		ID = id;
 		touchRay = Camera.main.ScreenPointToRay(position);
@@ -121,10 +130,12 @@ class OmicronManager : getReal3D.MonoBehaviourWithRpc
 class OmicronManager : MonoBehaviour
 #endif
 {
+    static OmicronManager omicronManagerInstance;
 	EventListener omicronListener;
 	OmicronConnectorClient omicronManager;
 	public bool connectToServer = false;
-	public string serverIP = "localhost";
+    public bool connectedToServer = false;
+    public string serverIP = "localhost";
 	public int serverMsgPort = 28000;
 	public int dataPort = 7013;
 	
@@ -141,19 +152,33 @@ class OmicronManager : MonoBehaviour
 	
 	int connectStatus = 0;
 
-	// Initializations
-	public void Start()
+    public static OmicronManager GetOmicronManager()
+    {
+        if (omicronManagerInstance != null)
+        {
+            return omicronManagerInstance;
+        }
+        else
+        {
+            //Debug.LogWarning(ERROR_MANAGERNOTFOUND);
+            GameObject c2m = new GameObject("OmicronManager");
+            omicronManagerInstance = c2m.AddComponent<OmicronManager>();
+            return omicronManagerInstance;
+        }
+    }
+
+    // Initializations
+    public void Start()
 	{
-		omicronListener = new EventListener(this);
+        omicronManagerInstance = this;
+        omicronListener = new EventListener(this);
 		omicronManager = new OmicronConnectorClient(omicronListener);
 		
 		eventList = new ArrayList();
-		
-		if( connectToServer && CAVE2Manager.IsMaster() )
-		{
-			ConnectToServer();
-		}
-	}// start
+
+        if(connectToServer)
+            ConnectToServer();
+    }// start
 
 	public bool ConnectToServer()
 	{
@@ -164,7 +189,9 @@ class OmicronManager : MonoBehaviour
 		else
 			connectStatus = -1;
 
-		return connectToServer;
+        connectedToServer = connectToServer;
+
+        return connectToServer;
 	}
 
 	public void DisconnectServer()
@@ -172,7 +199,8 @@ class OmicronManager : MonoBehaviour
 		omicronManager.Dispose ();
 		connectStatus = 0;
 		connectToServer = false;
-		Debug.Log("InputService: Disconnected");
+        connectedToServer = false;
+        Debug.Log("InputService: Disconnected");
 	}
 
 	public void AddClient( OmicronEventClient c )
@@ -216,56 +244,65 @@ class OmicronManager : MonoBehaviour
 	public void Update()
 	{
 		if( mouseTouchEmulation )
-			{
-				Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
+		{
+			Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
 						
-				// Ray extending from main camera into screen from touch point
-				Ray touchRay = Camera.main.ScreenPointToRay(position);
-				Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
+			// Ray extending from main camera into screen from touch point
+			Ray touchRay = Camera.main.ScreenPointToRay(position);
+			Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
 						
-				TouchPoint touch = new TouchPoint(position, -1);
+			TouchPoint touch = new TouchPoint(position, -1);
 				
-				if( Input.GetMouseButtonDown(0) )
-					touch.SetGesture( EventBase.Type.Down );
-				else if( Input.GetMouseButtonUp(0) )
-					touch.SetGesture( EventBase.Type.Up );
-				else if( Input.GetMouseButton(0) )
-					touch.SetGesture( EventBase.Type.Move );
+			if( Input.GetMouseButtonDown(0) )
+				touch.SetGesture( EventBase.Type.Down );
+			else if( Input.GetMouseButtonUp(0) )
+				touch.SetGesture( EventBase.Type.Up );
+			else if( Input.GetMouseButton(0) )
+				touch.SetGesture( EventBase.Type.Move );
 				
-				//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-				//foreach (GameObject touchObj in touchObjects) {
-				//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
-				//}
-			}
-			
-			lock(eventList.SyncRoot)
-			{
-				foreach( EventData e in eventList )
-				{
-					ArrayList activeClients = new ArrayList();
-					foreach( OmicronEventClient c in omicronClients )
-					{
-						if( !c.IsFlaggedForRemoval() )
-						{
-							c.BroadcastMessage("OnEvent",e,SendMessageOptions.DontRequireReceiver);
-							activeClients.Add(c);
-						}
-					}
-					omicronClients = activeClients;
-					
-					#if USING_GETREAL3D
+			//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
+			//foreach (GameObject touchObj in touchObjects) {
+			//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
+			//}
+		}
+
+        StartCoroutine("SendEventsToClients");	
+	}
+	
+    IEnumerator SendEventsToClients()
+    {
+        lock (eventList.SyncRoot)
+        {
+            foreach (EventData e in eventList)
+            {
+                ArrayList activeClients = new ArrayList();
+                foreach (OmicronEventClient c in omicronClients)
+                {
+                    EventBase.ServiceType eType = e.serviceType;
+                    EventBase.ServiceType clientType = c.GetClientType();
+
+                    if (!c.IsFlaggedForRemoval() && (eType == EventBase.ServiceType.ServiceTypeAny || eType == clientType))
+                    {
+                        c.BroadcastMessage("OnEvent", e, SendMessageOptions.DontRequireReceiver);
+                        activeClients.Add(c);
+                    }
+                }
+                omicronClients = activeClients;
+
+#if USING_GETREAL3D
 					if(getReal3D.Cluster.isMaster)
 					{
 						getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
 					}
-					#endif
-				}
-				
-				// Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)
-				eventList.Clear();
-			}
-	}
-	
+#endif
+            }
+
+            // Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)
+            eventList.Clear();
+        }
+        yield return null;
+    }
+
 	void OnApplicationQuit()
     {
 		if( connectToServer ){
