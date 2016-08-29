@@ -47,7 +47,7 @@ public class OmicronEventClient : MonoBehaviour {
 
 	public void InitOmicron()
 	{
-        omicronManager = OmicronManager.GetOmicronManager(); ;
+        omicronManager = OmicronManager.GetOmicronManager();
 		omicronManager.AddClient(this);
 	}
 

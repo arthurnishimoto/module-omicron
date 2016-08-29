@@ -28,7 +28,7 @@ public class SimpleCanvasTouch : OmicronEventClient {
         Vector2 posInCanvasCoords = touchPos;
 
         posInCanvasCoords.x *= canvasRect.rect.width;
-        posInCanvasCoords.y *= canvasRect.rect.height;
+        posInCanvasCoords.y = canvasRect.rect.height - (posInCanvasCoords.y * canvasRect.rect.height);
 
         return posInCanvasCoords;
     }
@@ -50,6 +50,7 @@ public class SimpleCanvasTouch : OmicronEventClient {
     {
         //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType);
         TouchPoint touchPoint = new TouchPoint(e);
+        Vector3 screenPosition = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
         int touchID = touchPoint.GetID();
         //Debug.Log(touchPoint.GetPosition());
 
@@ -62,27 +63,12 @@ public class SimpleCanvasTouch : OmicronEventClient {
                 visualMarker.transform.SetParent(transform);
 
                 // Update position with new touch data
-                visualMarker.transform.position = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
+                visualMarker.transform.position = screenPosition;
                 visualMarker.transform.localScale = Vector3.one * 10;
 
                 touchPoint.SetObjectTouched(visualMarker);
+                touchPoint.Update(screenPosition, EventBase.Type.Down);
                 touchList.Add(touchID, touchPoint);
-
-                // For feeding custom touch event into Unity EventSystem
-                // Create a custom pointer event
-                PointerEventData pointerEvent = new PointerEventData(EventSystem.current);
-                pointerEvent.position = visualMarker.transform.position;
-                pointerEvent.pointerId = touchID;
-
-                // Raycast into the Event system
-                List<RaycastResult> raycastResults = new List<RaycastResult>();
-                EventSystem.current.RaycastAll(pointerEvent, raycastResults);
-
-                // Feed event to UI objects in raycast
-                foreach (RaycastResult result in raycastResults)
-                {
-                    ExecuteEvents.ExecuteHierarchy(result.gameObject, pointerEvent, ExecuteEvents.submitHandler);
-                }
             }
         }
         else
@@ -97,24 +83,10 @@ public class SimpleCanvasTouch : OmicronEventClient {
                 visualMarker.transform.position = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
                 visualMarker.transform.localScale = Vector3.one * 10;
 
+                existingTouchPoint.Update(screenPosition, EventBase.Type.Move);
+
                 touchList[touchID] = existingTouchPoint;
-
-                // For feeding custom touch event into Unity EventSystem
-                // Create a custom pointer event
-                PointerEventData pointerEvent = new PointerEventData(EventSystem.current);
-                pointerEvent.position = visualMarker.transform.position;
-                pointerEvent.pointerId = touchID;
-
-                // Raycast into the Event system
-                List<RaycastResult> raycastResults = new List<RaycastResult>();
-                EventSystem.current.RaycastAll(pointerEvent, raycastResults);
-
-                // Feed event to UI objects in raycast
-                foreach (RaycastResult result in raycastResults)
-                {
-                    ExecuteEvents.ExecuteHierarchy(result.gameObject, pointerEvent, ExecuteEvents.dragHandler);
-                    //ExecuteEvents.ExecuteHierarchy(result.gameObject, pointerEvent, ExecuteEvents.pointerDownHandler);
-                }
+                
             }
             else if (touchPoint.GetGesture() == EventBase.Type.Up)
             {
@@ -122,23 +94,8 @@ public class SimpleCanvasTouch : OmicronEventClient {
                 // Get the existing touch data
                 TouchPoint existingTouchPoint = (TouchPoint)touchList[touchID];
                 GameObject visualMarker = existingTouchPoint.GetObjectTouched();
-                /*
-                // For feeding custom touch event into Unity EventSystem
-                // Create a custom pointer event
-                PointerEventData pointerEvent = new PointerEventData(EventSystem.current);
-                pointerEvent.position = visualMarker.transform.position;
-                pointerEvent.pointerId = touchID;
+                existingTouchPoint.Update(screenPosition, EventBase.Type.Up);
 
-                // Raycast into the Event system
-                List<RaycastResult> raycastResults = new List<RaycastResult>();
-                EventSystem.current.RaycastAll(pointerEvent, raycastResults);
-
-                // Feed event to UI objects in raycast
-                foreach (RaycastResult result in raycastResults)
-                {
-                    ExecuteEvents.ExecuteHierarchy(result.gameObject, pointerEvent, ExecuteEvents.pointerUpHandler);
-                }
-                */
                 // Remove the TouchPoint
                 Destroy(visualMarker);
                 touchList.Remove(touchID);
