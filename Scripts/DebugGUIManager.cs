@@ -28,6 +28,13 @@ public class DebugGUIManager : MonoBehaviour {
 	private int   frames  = 0; // Frames drawn over the interval
 	private float timeleft; // Left time for current interval
 
+    public float FPSBenchmarkTargetTime;
+    public float FPSBenchmarkTime = 15;
+    float minFPS = 100;
+    float avgFPS, maxFPS;
+    int frameSumCount;
+    float frameSum;
+
 	public TextMesh fpsGUITextMesh;
 
 	void Start()
@@ -43,7 +50,9 @@ public class DebugGUIManager : MonoBehaviour {
             if (GetComponent<TextMesh>() == null)
                 transform.position = new Vector3(0.01f, 0.04f, 0);
         }
-	}
+        FPSBenchmarkTargetTime = FPSBenchmarkTime;
+
+    }
 
 	void Update()
 	{
@@ -94,8 +103,40 @@ public class DebugGUIManager : MonoBehaviour {
 						fpsGUITextMesh.color = Color.green;
 				}
 
-				//	DebugConsole.Log(format,level);
-				timeleft = FPS_updateInterval;
+                if (Time.time > 5 && Time.time < FPSBenchmarkTargetTime - 1)
+                {
+                    frameSum += fps;
+                    frameSumCount++;
+
+                    if (fps < minFPS)
+                        minFPS = fps;
+                    if (fps > maxFPS)
+                        maxFPS = fps;
+
+                    if (GetComponent<GUIText>())
+                        GetComponent<GUIText>().text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
+                    if (fpsGUITextMesh)
+                        fpsGUITextMesh.text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
+                }
+                else if (Time.time > 5)
+                {
+                    avgFPS = frameSum / (float)frameSumCount;
+
+                    if (GetComponent<GUIText>())
+                    {
+                        GetComponent<GUIText>().text += "\nMin: " + System.String.Format("{0:F2}", minFPS);
+                        GetComponent<GUIText>().text += " Avg: " + System.String.Format("{0:F2}", avgFPS);
+                        GetComponent<GUIText>().text += " Max: " + System.String.Format("{0:F2}", maxFPS);
+                    }
+                    if (fpsGUITextMesh)
+                    {
+                        fpsGUITextMesh.text += "\nMin: " + System.String.Format("{0:F2}", minFPS);
+                        fpsGUITextMesh.text += " Avg: " + System.String.Format("{0:F2}", avgFPS);
+                        fpsGUITextMesh.text += " Max: " + System.String.Format("{0:F2}", maxFPS);
+                    }
+                }
+                //	DebugConsole.Log(format,level);
+                timeleft = FPS_updateInterval;
 				accum = 0.0F;
 				frames = 0;
 			}
@@ -121,8 +162,6 @@ public class DebugGUIManager : MonoBehaviour {
 
 		currentWindow = (DebugWindow)GUI.SelectionGrid(new Rect(10, 20, 480, 24), (int)currentWindow, windowStrings, 4);
 
-
-
 		if (currentWindow == DebugWindow.Omicron )
 		{
 			if( omgManager != null )
@@ -132,7 +171,16 @@ public class DebugGUIManager : MonoBehaviour {
 
                 showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
                 showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
-	        }
+
+                if( GUI.Button(new Rect(20, 25 * 9, 250, 20), "Recalculate FPS") )
+                {
+                    FPSBenchmarkTargetTime = Time.time + FPSBenchmarkTime;
+                    frameSum = 0;
+                    frameSumCount = 0;
+                    minFPS = 100;
+                    maxFPS = 0;
+                }
+            }
 	        else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
 		}
