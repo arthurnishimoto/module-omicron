@@ -30,11 +30,21 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
 	void Update () {
 	    if(isLocalPlayer)
         {
-            headPosition = CAVE2Manager.GetHead(1).position;
+            // Sends my head position to server
+            CmdSetHeadPosition(CAVE2Manager.GetHead(1).position);
         }
         else
         {
+            // Update head position (or other players) from server
             SendMessage("SetHeadPosition", headPosition);
         }
 	}
+
+    // Client command to set the player's head position
+    // so that the server can SyncVar it to the other players
+    [Command]
+    void CmdSetHeadPosition(Vector3 position)
+    {
+        headPosition = position;
+    }
 }
