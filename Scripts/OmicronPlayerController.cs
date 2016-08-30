@@ -27,6 +27,7 @@
 
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
 public class OmicronPlayerController : OmicronWandUpdater
 {
@@ -110,7 +111,10 @@ public class OmicronPlayerController : OmicronWandUpdater
 	// Should be used with dealing with RigidBodies
 	void FixedUpdate()
 	{
-		playerCollider.height = headPosition.y - 0.25f; // Player height - head size
+        if (freezeMovement)
+            return;
+
+        playerCollider.height = headPosition.y - 0.25f; // Player height - head size
 
 		if( colliderMode == ColliderMode.Head )
 		{
@@ -131,7 +135,12 @@ public class OmicronPlayerController : OmicronWandUpdater
 		}
 	}
 
-	public void SyncPosition(Vector3 position)
+    public void FreezeMovement(bool value)
+    {
+        freezeMovement = value;
+    }
+
+    public void SyncPosition(Vector3 position)
 	{
 		if( !CAVE2Manager.IsMaster() )
 			transform.position = position;
@@ -140,7 +149,10 @@ public class OmicronPlayerController : OmicronWandUpdater
 	// Update is called once per frame
 	void Update () {
 
-		wandPosition = CAVE2Manager.GetWandPosition(wandID);
+        if (freezeMovement)
+            return;
+
+        wandPosition = CAVE2Manager.GetWandPosition(wandID);
 		wandRotation = CAVE2Manager.GetWandRotation(wandID);
 
 		headPosition = CAVE2Manager.GetHead(headID).GetPosition();
@@ -154,34 +166,31 @@ public class OmicronPlayerController : OmicronWandUpdater
 			Debug.LogWarning ("OmicronPlayerController: Head is at height (Y) 0.0 - This should never happen! Check your tracking system or enable mocap emulation in CAVE2Manager.");
         }
 
-		if( !freezeMovement )
-		{
-			forward = CAVE2Manager.GetAxis(wandID, forwardAxis);	
-			forward *= movementScale;
+		forward = CAVE2Manager.GetAxis(wandID, forwardAxis);	
+		forward *= movementScale;
 
-			strafe = CAVE2Manager.GetAxis(wandID, strafeAxis);	
-			strafe *= movementScale;
+		strafe = CAVE2Manager.GetAxis(wandID, strafeAxis);	
+		strafe *= movementScale;
 
-			lookAround.x = CAVE2Manager.GetAxis(wandID, lookUDAxis);
-			lookAround.x *= movementScale;
-			lookAround.y = CAVE2Manager.GetAxis(wandID, lookLRAxis);
-			lookAround.y *= movementScale;
+		lookAround.x = CAVE2Manager.GetAxis(wandID, lookUDAxis);
+		lookAround.x *= movementScale;
+		lookAround.y = CAVE2Manager.GetAxis(wandID, lookLRAxis);
+		lookAround.y *= movementScale;
 
-			vertical = CAVE2Manager.GetAxis(wandID, verticalAxis);
-            vertical *= movementScale;
+		vertical = CAVE2Manager.GetAxis(wandID, verticalAxis);
+        vertical *= movementScale;
 
-            freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
+        freeflyButtonDown = CAVE2Manager.GetButton(wandID, freeFlyButton);
             
-            if( CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton) )
-            {
-                if( navMode == NavigationMode.Walk )
-                    SetNavigationMode((int)NavigationMode.Drive);
-                else if (navMode == NavigationMode.Drive)
-                    SetNavigationMode((int)NavigationMode.Freefly);
-                else
-                    SetNavigationMode((int)NavigationMode.Walk);
-            }
-		}
+        if( CAVE2Manager.GetButtonDown(wandID, freeFlyToggleButton) )
+        {
+            if( navMode == NavigationMode.Walk )
+                SetNavigationMode((int)NavigationMode.Drive);
+            else if (navMode == NavigationMode.Drive)
+                SetNavigationMode((int)NavigationMode.Freefly);
+            else
+                SetNavigationMode((int)NavigationMode.Walk);
+        }
 	}
 	
 	void UpdateFreeflyMovement()
