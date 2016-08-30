@@ -111,9 +111,6 @@ public class OmicronPlayerController : OmicronWandUpdater
 	// Should be used with dealing with RigidBodies
 	void FixedUpdate()
 	{
-        if (freezeMovement)
-            return;
-
         playerCollider.height = headPosition.y - 0.25f; // Player height - head size
 
 		if( colliderMode == ColliderMode.Head )
@@ -125,7 +122,10 @@ public class OmicronPlayerController : OmicronWandUpdater
 			playerCollider.center = new Vector3( 0, playerCollider.center.y, 0 );
 		}
 
-		if( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
+        if (freezeMovement)
+            return;
+
+        if ( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
 		{
 			UpdateFreeflyMovement();
 		}
