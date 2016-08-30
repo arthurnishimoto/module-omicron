@@ -146,6 +146,11 @@ public class OmicronPlayerController : OmicronWandUpdater
 			transform.position = position;
 	}
 
+    public void SetHeadPosition(Vector3 position)
+    {
+        headPosition = position;
+    }
+
 	// Update is called once per frame
 	void Update () {
 
