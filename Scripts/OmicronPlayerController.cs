@@ -69,13 +69,14 @@ public class OmicronPlayerController : OmicronWandUpdater
 	public enum ForwardRef { CAVEFront, Head, Wand }
 	public ForwardRef forwardReference = ForwardRef.Wand;
 	public int headID = 1;
-	public GameObject headObject;
+	public Transform headObject;
+    public Transform[] wandObjects;
 
-	public enum ColliderMode { None, CAVECenter, Head }
+    public enum ColliderMode { None, CAVECenter, Head }
 	public ColliderMode colliderMode = ColliderMode.Head;
 
 	Vector3 headPosition;
-	Vector3 headRotation;
+	Quaternion headRotation;
 
     //public enum CAVEFloorMode { AlwaysHide, MasterOnly, AlwaysShow }
     //public CAVEFloorMode showCAVEFloorOnlyOnMaster = CAVEFloorMode.MasterOnly;
@@ -122,7 +123,7 @@ public class OmicronPlayerController : OmicronWandUpdater
 			playerCollider.center = new Vector3( 0, playerCollider.center.y, 0 );
 		}
 
-        if (freezeMovement)
+        if (freezeMovement || notLocalPlayer)
             return;
 
         if ( navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly )
@@ -151,22 +152,51 @@ public class OmicronPlayerController : OmicronWandUpdater
         headPosition = position;
     }
 
-	// Update is called once per frame
-	void Update () {
+    public void SetHeadRotation(Quaternion rotation)
+    {
+        headRotation = rotation;
+    }
 
-        if (!freezeMovement)
+    public void SetWandPosition(Vector3 position)
+    {
+        wandPosition = position;
+    }
+
+    public void SetWandRotation(Quaternion rotation)
+    {
+        wandRotation = rotation;
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        transform.position = position;
+    }
+
+    // Update is called once per frame
+    void Update () {
+
+        if (!freezeMovement && !notLocalPlayer)
         {
             wandPosition = CAVE2Manager.GetWandPosition(wandID);
             wandRotation = CAVE2Manager.GetWandRotation(wandID);
 
             headPosition = CAVE2Manager.GetHead(headID).GetPosition();
-            headRotation = CAVE2Manager.GetHead(headID).GetRotation().eulerAngles;
+            headRotation = CAVE2Manager.GetHead(headID).GetRotation();
         }
 
         headObject.transform.localPosition = headPosition;
-        headObject.transform.localEulerAngles = headRotation;
+        headObject.transform.localRotation = headRotation;
 
-        if (freezeMovement)
+        if (notLocalPlayer)
+        {
+            if (wandObjects.Length > 0)
+            {
+                wandObjects[0].transform.localPosition = wandPosition;
+                wandObjects[0].transform.localRotation = wandRotation;
+            }
+        }
+
+        if (freezeMovement || notLocalPlayer)
             return;
 
         if (headPosition.y == 0)

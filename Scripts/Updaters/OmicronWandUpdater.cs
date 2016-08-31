@@ -43,6 +43,8 @@ public class OmicronWandUpdater : MonoBehaviour {
 
     CAVE2Manager cave2Manager;
 
+    protected bool notLocalPlayer = false;
+
     public void InitOmicron()
     {
 	    cave2Manager = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>();
@@ -58,8 +60,16 @@ public class OmicronWandUpdater : MonoBehaviour {
 	    InitOmicron ();
     }
 	
+    public void SetLocalControl(bool value)
+    {
+        notLocalPlayer = !value;
+    }
+
     void FixedUpdate()
     {
+        if (notLocalPlayer)
+            return;
+
         if (!CAVE2Manager.GetCAVE2Manager().wandMousePointerEmulation && virtualWand && virtualWand.GetComponent<Rigidbody>() )
         {
             transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
@@ -69,7 +79,10 @@ public class OmicronWandUpdater : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-		if( !cave2Manager.wandMousePointerEmulation )
+        if (notLocalPlayer)
+            return;
+
+        if ( !cave2Manager.wandMousePointerEmulation )
 		{
             if (virtualWand && !cave2Manager.simulatorMode)
             {

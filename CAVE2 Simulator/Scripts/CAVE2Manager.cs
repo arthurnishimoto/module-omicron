@@ -118,7 +118,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public enum TrackerEmulated { CAVE, Head, Wand };
 	public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
 	string[] trackerEmuStrings = {"CAVE", "Head", "Wand1"};
-	string[] trackerEmuModeStrings = {"Translate", "Rotate" };
+	string[] trackerEmuModeStrings = {"Pointer", "Translate", "Rotate" };
 
     public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.Pointer;
@@ -129,8 +129,8 @@ public class CAVE2Manager : OmicronEventClient {
     Vector3 mouseLastPos;
     public Vector3 mouseDeltaPos;
 
-	TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
-	TrackerEmulationMode WASDkeyMode = TrackerEmulationMode.Translate;
+    public TrackerEmulated WASDkeys = TrackerEmulated.CAVE;
+    public TrackerEmulationMode WASDkeyMode = TrackerEmulationMode.Translate;
 
 	public TrackerEmulated IJKLkeys = TrackerEmulated.Head;
 	public TrackerEmulationMode IJKLkeyMode = TrackerEmulationMode.Translate;
@@ -588,9 +588,9 @@ public class CAVE2Manager : OmicronEventClient {
 		}
 		#endif
 
-		Vector2 wandAnalog = new Vector2(horizontal,vertical);
-		Vector2 wandAnalog2 = new Vector2(lookHorizontal,lookVertical);
-		Vector2 wandAnalog3 = new Vector2(forward,0);
+		Vector2 wandAnalog = new Vector2(0,0);
+		Vector2 wandAnalog2 = new Vector2(0,0);
+		Vector2 wandAnalog3 = new Vector2(0,0);
 
 		if( mouseHeadLook)
 		{
@@ -698,6 +698,13 @@ public class CAVE2Manager : OmicronEventClient {
 
 
 		}
+        else
+        {
+            // Normal VR case
+            wandAnalog = new Vector2(horizontal, vertical);
+            wandAnalog2 = new Vector2(lookHorizontal, lookVertical);
+            wandAnalog3 = new Vector2(forward, 0);
+        }
 
 		if( !CAVE2Manager.UsingOmicronServer() || (!CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
 		{
