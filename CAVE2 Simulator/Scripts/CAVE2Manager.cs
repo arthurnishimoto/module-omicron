@@ -120,8 +120,8 @@ public class CAVE2Manager : OmicronEventClient {
 	string[] trackerEmuStrings = {"CAVE", "Head", "Wand1"};
 	string[] trackerEmuModeStrings = {"Pointer", "Translate", "Rotate" };
 
-    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.TranslateVertical;
-    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.Pointer;
+    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
+    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
     public KeyCode toggleWandModeKey = KeyCode.Tab;
     public bool wandModeToggled = false;
@@ -164,7 +164,6 @@ public class CAVE2Manager : OmicronEventClient {
 	// Use this for initialization
 	new void Start () {
 		base.Start();
-
         Random.seed = 1138;
 
         mocapStates = new Hashtable();
@@ -208,13 +207,13 @@ public class CAVE2Manager : OmicronEventClient {
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
             #if USING_GETREAL3D
-            if (!simulatorMode && Camera.main.GetComponent<getRealCameraUpdater>())
+            if (Camera.main.GetComponent<getRealCameraUpdater>())
             {
                 Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
                 Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
                 Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
             }
-            else if(!simulatorMode)
+            else
             {
                 Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
             }
@@ -237,7 +236,7 @@ public class CAVE2Manager : OmicronEventClient {
         {
             OmicronManager omgManager = OmicronManager.GetOmicronManager();
             CAVE2Manager cave2Manager = omgManager.gameObject.AddComponent<CAVE2Manager>();
-            cave2Manager.simulatorMode = true;
+            //cave2Manager.simulatorMode = true;
             return cave2Manager;
         }
     }
@@ -325,7 +324,7 @@ public class CAVE2Manager : OmicronEventClient {
     {
         if (GetCAVE2Manager())
         {
-            CAVE2Manager manager = GameObject.Find("CAVE2-Manager").GetComponent<CAVE2Manager>();
+            CAVE2Manager manager = CAVE2Manager.GetCAVE2Manager();
             return (manager.simulatorMode || manager.kinectSimulatorMode);
         }
         else
@@ -504,6 +503,15 @@ public class CAVE2Manager : OmicronEventClient {
             }
             mouseDeltaPos = Input.mousePosition - mouseLastPos;
             mouseLastPos = Input.mousePosition;
+        }
+        else
+        {
+#if USING_GETREAL3D
+            if (!Camera.main.GetComponent<getRealCameraUpdater>())
+            {
+                Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
+            }
+#endif
         }
 
         foreach (DictionaryEntry pair in wandStates)
