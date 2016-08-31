@@ -154,7 +154,7 @@ public class OmicronPlayerController : OmicronWandUpdater
 	// Update is called once per frame
 	void Update () {
 
-        if (freezeMovement)
+        if (!freezeMovement)
         {
             wandPosition = CAVE2Manager.GetWandPosition(wandID);
             wandRotation = CAVE2Manager.GetWandRotation(wandID);
