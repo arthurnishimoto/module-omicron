@@ -935,8 +935,28 @@ public class CAVE2Manager : OmicronEventClient {
 		#endif
 	}
 
+    public static void CAVE2LoadSceneOnDisplays(string sceneName)
+    {
 #if USING_GETREAL3D
-	[getReal3D.RPC]
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("CAVE2LoadSceneOnDisplaysRPC", sceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
+#else
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName, UnityEngine.SceneManagement.LoadSceneMode.Single);
+#endif
+    }
+
+    public static void CAVE2LoadSceneOnDisplays(string sceneName, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("CAVE2LoadSceneOnDisplaysRPC", sceneName, mode);
+#else
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName, mode);
+#endif
+    }
+
+#if USING_GETREAL3D
+    [getReal3D.RPC]
 	public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
 	{
 		//Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
@@ -960,10 +980,17 @@ public class CAVE2Manager : OmicronEventClient {
 			Destroy(targetObject);
 		}
 	}
+
+    [getReal3D.RPC]
+    public void CAVE2LoadSceneOnDisplaysRPC(string sceneName, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        if (!getReal3D.Cluster.isMaster)
+            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName, mode);
+    }
 #endif
 
 
-	Vector2 GUIOffset;
+    Vector2 GUIOffset;
 	
 	public void SetGUIOffSet( Vector2 offset )
 	{

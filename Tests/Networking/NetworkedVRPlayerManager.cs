@@ -4,14 +4,26 @@ using UnityEngine.Networking;
 
 public class NetworkedVRPlayerManager : NetworkBehaviour {
 
+    [SyncVar]
+    public string playerName = "VRPlayer";
+
+    public CharacterLabelUI characterLabel;
+
     public float networkUpdateDelay = 0.1f;
     float networkWaitTimer = 0;
 
     public bool localPlayer;
+    public GameObject localPlayerControllerPrefab;
+    GameObject localPlayerController;
 
-    public Transform headObject;
-    public Transform[] wandObjects;
+    public GameObject headMarkerPrefab;
+    public GameObject wandMarkerPrefab;
 
+    public GameObject headMarker;
+    public GameObject[] wandMarkers;
+
+    Transform headObject;
+    Transform[] wandObjects;
     [SyncVar]
     public Vector3 headPosition;
 
@@ -31,13 +43,16 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
     public Quaternion wandRotation;
 
     // Use this for initialization
-    void Start () {
+    public override void OnStartClient() {
+        base.OnStartClient();
+
         localPlayer = isLocalPlayer;
-        UpdatePosition();
-        if (!isLocalPlayer)
+        characterLabel.SetName(playerName);
+
+        if (!localPlayer)
         {
             // Freeze character controller
-            BroadcastMessage("SetLocalControl", false);
+            localPlayerController.BroadcastMessage("SetLocalControl", false);
 
             // Disable non-local player cameras
             Camera[] playerCamera = gameObject.GetComponentsInChildren<Camera>();
@@ -45,8 +60,23 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
             {
                 c.gameObject.SetActive(false);
             }
+
+            headMarker = Instantiate(headMarkerPrefab);
+            headMarker.transform.parent = transform;
+
+            wandMarkers[0] = Instantiate(wandMarkerPrefab);
+            wandMarkers[0].transform.parent = transform;
         }
-	}
+        else
+        {
+            localPlayerController = Instantiate(localPlayerControllerPrefab, transform.position, transform.rotation) as GameObject;
+            VRPlayerWrapper vrPlayer = localPlayerController.GetComponent<VRPlayerWrapper>();
+            headObject = vrPlayer.GetHead();
+            wandObjects = vrPlayer.GetWands();
+        }
+
+        UpdatePosition();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -55,7 +85,7 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
 
     void UpdatePosition()
     {
-        if (isLocalPlayer)
+        if (localPlayer)
         {
             if (networkWaitTimer <= 0)
             {
@@ -79,12 +109,18 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
         else
         {
             // Update head position (or other players) from server
-            SendMessage("SetHeadPosition", headPosition);
-            SendMessage("SetHeadRotation", headRotation);
-            SendMessage("SetWandPosition", wandPosition);
-            SendMessage("SetWandRotation", wandRotation);
+            //SendMessage("SetHeadPosition", headPosition);
+            //SendMessage("SetHeadRotation", headRotation);
+            //SendMessage("SetWandPosition", wandPosition);
+            //SendMessage("SetWandRotation", wandRotation);
             transform.position = playerPosition;
             transform.rotation = playerRotation;
+
+            headMarker.transform.localPosition = headPosition;
+            headMarker.transform.localRotation = headRotation;
+
+            wandMarkers[0].transform.localPosition = wandPosition;
+            wandMarkers[0].transform.localRotation = wandRotation;
         }
     }
 
