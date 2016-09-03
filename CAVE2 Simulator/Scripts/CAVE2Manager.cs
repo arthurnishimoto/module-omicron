@@ -82,6 +82,7 @@ public class CAVE2Manager : OmicronEventClient {
     public Hashtable mocapStates;
 
     public static string ERROR_MANAGERNOTFOUND = "CAVE2-Manager GameObject expected, but not found in the current scene. Creating Default.";
+    bool ERROR_NOCAMERACONTROLLERFOUND_TRIGGERED;
 
 	public enum Axis { None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR,
 		LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTriggerR_Inverted
@@ -234,10 +235,8 @@ public class CAVE2Manager : OmicronEventClient {
         }
         else
         {
-            //Debug.LogWarning(ERROR_MANAGERNOTFOUND);
-            GameObject c2m = new GameObject("CAVE2-Manager");
-            c2m.AddComponent<OmicronManager>();
-            CAVE2Manager cave2Manager = c2m.AddComponent<CAVE2Manager>();
+            OmicronManager omgManager = OmicronManager.GetOmicronManager();
+            CAVE2Manager cave2Manager = omgManager.gameObject.AddComponent<CAVE2Manager>();
             cave2Manager.simulatorMode = true;
             return cave2Manager;
         }
@@ -247,7 +246,7 @@ public class CAVE2Manager : OmicronEventClient {
 	{
         if (GetCAVE2Manager())
 		{
-            return GetCAVE2Manager().GetComponent<OmicronManager>().connectToServer;
+            return OmicronManager.GetOmicronManager().connectToServer;
 		}
         else
         {
@@ -726,10 +725,12 @@ public class CAVE2Manager : OmicronEventClient {
                 //cameraController.transform.localPosition = headEmulatedPosition;
                 //cameraController.transform.localEulerAngles = headEmulatedRotation;
             }
-			else
+			else if(!ERROR_NOCAMERACONTROLLERFOUND_TRIGGERED)
 			{
 				Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2! Make sure the parent GameObject of the Main Camera contains an OmicronCameraController script.");
-			}
+                ERROR_NOCAMERACONTROLLERFOUND_TRIGGERED = true;
+
+            }
 		}
 		else
 		{
@@ -746,9 +747,10 @@ public class CAVE2Manager : OmicronEventClient {
                 cameraController.transform.localPosition = GetHead(1).position;
                 cameraController.transform.localEulerAngles = GetHead(1).rotation.eulerAngles;
             }
-            else
+            else if(!ERROR_NOCAMERACONTROLLERFOUND_TRIGGERED)
             {
                 Debug.LogWarning("CAVE2Manager: No CameraController found. May not display properly in CAVE2!");
+                ERROR_NOCAMERACONTROLLERFOUND_TRIGGERED = true;
             }
         }
 	}

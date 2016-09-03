@@ -109,7 +109,8 @@ namespace omicron
             ServiceTypeGeneric,
             ServiceTypeBrain,
             ServiceTypeWand,
-            ServiceTypeSpeech
+            ServiceTypeSpeech,
+            ServiceTypeAny = -1,
         };
 
         //! #PYAPI Supported event types.
@@ -309,7 +310,7 @@ namespace omicronConnector
     //#define OINT_PTR(x) *((int*)&x)
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    class EventData : EventBase
+    public class EventData : EventBase
     {
         public uint timestamp;
         public uint sourceId;
@@ -395,6 +396,7 @@ namespace omicronConnector
         public Int32 msgPort = 27000;
 
         public bool EnableInputService = true;
+        bool connected = false;
 
         static IOmicronConnectorClientListener listener;
 		
@@ -438,39 +440,46 @@ namespace omicronConnector
                     // Creates a separate thread to listen for incoming data
                     listenerThread = new Thread(Listen);
                     listenerThread.Start();
+                    connected = true;
 
-					return true;
+                    return true;
                 }
                 catch (ArgumentNullException e)
                 {
                     Debug.LogError("ArgumentNullException: " + e);
-					return false;
+                    connected = false;
+                    return false;
                 }
                 catch (SocketException e)
                 {
                     Debug.LogError("SocketException: " + e);
-					return false;
+                    connected = false;
+                    return false;
                 }
             }
-			return false;
+            connected = false;
+            return false;
         }// CTOR
 
         public void Dispose() 
 	    {
-			String message = "data_off";
-			Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-			streamToServer.Write(data, 0, data.Length);
+            if (connected)
+            {
+                String message = "data_off";
+                Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+                streamToServer.Write(data, 0, data.Length);
 
-		    // Close the socket when finished receiving datagrams
-            Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
-            udpClient.Close();
-            listenerThread.Abort();
+                // Close the socket when finished receiving datagrams
+                Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
+                udpClient.Close();
+                listenerThread.Abort();
 
-            // Close TCP connection.
-            streamToServer.Close();
-            client.Close();
+                // Close TCP connection.
+                streamToServer.Close();
+                client.Close();
 
-            Debug.Log("OmicronConnectorClient: Shutting down.");
+                Debug.Log("OmicronConnectorClient: Shutting down.");
+            }
 	    }
 
         private static void Listen()
