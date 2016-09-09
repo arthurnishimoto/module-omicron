@@ -3,6 +3,8 @@ using System.Collections;
 
 public class VRPlayerWrapper : MonoBehaviour {
 
+    public string VRTypeLabel = "";
+
     public Transform head;
 
     public Transform[] wands;
@@ -25,5 +27,17 @@ public class VRPlayerWrapper : MonoBehaviour {
     public Transform[] GetWands()
     {
         return wands;
+    }
+
+    public string GetVRTypeLabel()
+    {
+        if (CAVE2Manager.GetCAVE2Manager().simulatorMode)
+        {
+            VRTypeLabel = "CAVE2 Simulator";
+        }
+#if USING_GETREAL3D
+        VRTypeLabel = "CAVE2";
+#endif
+        return VRTypeLabel;
     }
 }

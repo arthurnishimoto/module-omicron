@@ -7,7 +7,10 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
     [SyncVar]
     public string playerName = "VRPlayer";
 
-    public CharacterLabelUI characterLabel;
+    [SyncVar]
+    public string playerType = "VR";
+
+    public GameObject characterLabelPrefab;
 
     public float networkUpdateDelay = 0.1f;
     float networkWaitTimer = 0;
@@ -42,18 +45,21 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
     [SyncVar]
     public Quaternion wandRotation;
 
+    CharacterLabelUI playerLabel;
+
     // Use this for initialization
-    public override void OnStartClient() {
-        base.OnStartClient();
+    public void Start() {
+        //base.OnStartClient(); // don't use OnClientStart - this will cause isLocalPlayer to always return false
 
         localPlayer = isLocalPlayer;
-        characterLabel.SetName(playerName);
+
+        GameObject playerLabelObj = Instantiate(characterLabelPrefab, transform.position, transform.rotation) as GameObject;
+        playerLabelObj.transform.parent = transform;
+        playerLabelObj.transform.localPosition = Vector3.up * 2f;
+        playerLabel = playerLabelObj.GetComponent<CharacterLabelUI>();
 
         if (!localPlayer)
         {
-            // Freeze character controller
-            localPlayerController.BroadcastMessage("SetLocalControl", false);
-
             // Disable non-local player cameras
             Camera[] playerCamera = gameObject.GetComponentsInChildren<Camera>();
             foreach (Camera c in playerCamera)
@@ -69,29 +75,55 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
         }
         else
         {
+            playerName = CAVE2VRLobbyManager.LobbyManager.playerName;
             localPlayerController = Instantiate(localPlayerControllerPrefab, transform.position, transform.rotation) as GameObject;
             VRPlayerWrapper vrPlayer = localPlayerController.GetComponent<VRPlayerWrapper>();
+            playerType = vrPlayer.GetVRTypeLabel();
             headObject = vrPlayer.GetHead();
             wandObjects = vrPlayer.GetWands();
+
+            CmdUpdatePlayerLabel(playerName, playerType);
         }
 
         UpdatePosition();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+    }
+
+    // Update is called once per frame
+    void Update () {
         UpdatePosition();
+
+        playerLabel.SetName(playerName);
+        if (playerType != "")
+        {
+            playerLabel.SetTitle("<" + playerType + ">");
+        }
+        else
+        {
+            playerLabel.SetTitle("");
+        }
     }
 
     void UpdatePosition()
     {
         if (localPlayer)
         {
+            headPosition = headObject.localPosition;
+            headRotation = headObject.localRotation;
+
+            playerPosition = localPlayerController.transform.position;
+            playerRotation = localPlayerController.transform.rotation;
+
             if (networkWaitTimer <= 0)
             {
+
                 // Sends my head position to server
-                CmdUpdateHeadTransform(headObject.localPosition, headObject.localRotation);
-                CmdUpdatePlayerTransform(transform.position, transform.rotation);
+                CmdUpdateHeadTransform(headPosition, headRotation);
+                CmdUpdatePlayerTransform(playerPosition, playerRotation);
                 int wandIndex = 0;
                 foreach (Transform wand in wandObjects)
                 {
@@ -108,11 +140,7 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
         }
         else
         {
-            // Update head position (or other players) from server
-            //SendMessage("SetHeadPosition", headPosition);
-            //SendMessage("SetHeadRotation", headRotation);
-            //SendMessage("SetWandPosition", wandPosition);
-            //SendMessage("SetWandRotation", wandRotation);
+            // Update transforms of other players from server
             transform.position = playerPosition;
             transform.rotation = playerRotation;
 
@@ -145,5 +173,12 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
     {
         wandPosition = position;
         wandRotation = rotation;
+    }
+
+    [Command]
+    void CmdUpdatePlayerLabel(string name, string type)
+    {
+        playerName = name;
+        playerType = type;
     }
 }
