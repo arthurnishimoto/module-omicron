@@ -238,7 +238,7 @@ class OmicronManager : MonoBehaviour
         omicronManager = new OmicronConnectorClient(omicronListener);
 
         eventList = new ArrayList();
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
     public void Start()
 	{

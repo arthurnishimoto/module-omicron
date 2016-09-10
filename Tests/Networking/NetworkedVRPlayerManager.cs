@@ -2,7 +2,8 @@
 using System.Collections;
 using UnityEngine.Networking;
 
-public class NetworkedVRPlayerManager : NetworkBehaviour {
+public class NetworkedVRPlayerManager : NetworkLobbyPlayer
+{
 
     [SyncVar]
     public string playerName = "VRPlayer";
@@ -47,6 +48,12 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
 
     CharacterLabelUI playerLabel;
 
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        CAVE2VRLobbyManager.LobbyManager.SetLocalLobbyPlayer(gameObject);
+    }
+
     // Use this for initialization
     public void Start() {
         //base.OnStartClient(); // don't use OnClientStart - this will cause isLocalPlayer to always return false
@@ -88,11 +95,6 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
         UpdatePosition();
     }
 
-    public override void OnStartLocalPlayer()
-    {
-        base.OnStartLocalPlayer();
-    }
-
     // Update is called once per frame
     void Update () {
         UpdatePosition();
@@ -117,6 +119,8 @@ public class NetworkedVRPlayerManager : NetworkBehaviour {
 
             playerPosition = localPlayerController.transform.position;
             playerRotation = localPlayerController.transform.rotation;
+
+            transform.position = playerPosition;
 
             if (networkWaitTimer <= 0)
             {
