@@ -31,12 +31,49 @@ using omicron;
 using omicronConnector;
 
 public class OmicronMocapUpdater : MonoBehaviour {
+
+    public enum MocapObject {None, Head1, Wand1, Wand2}
+    public MocapObject presetMocapObject = MocapObject.None;
+
 	public int mocapID = 1;
 
+    public bool useRawGetReal3D = false;
 	// Update is called once per frame
 	void Update () {
-        transform.localPosition = CAVE2Manager.GetMocapState(mocapID).position;
-        transform.localRotation = CAVE2Manager.GetMocapState(mocapID).rotation;
+        switch(presetMocapObject)
+        {
+            case (MocapObject.Head1):
+                mocapID = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().Head1MocapID;
+                break;
+            case (MocapObject.Wand1):
+                mocapID = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().Wand1MocapID;
+                break;
+            case (MocapObject.Wand2):
+                mocapID = CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().Wand2MocapID;
+                break;
+            default:
+                mocapID = 0;
+                break;
+        }
+
+        if (useRawGetReal3D)
+        {
+            if (mocapID == CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().Head1MocapID)
+            {
+                transform.localPosition = getReal3D.Input.GetSensor("Head").position;
+                transform.localRotation = getReal3D.Input.GetSensor("Head").rotation;
+            }
+            else if (mocapID == CAVE2Manager.GetCAVE2Manager().GetComponent<CAVE2Manager>().Wand1MocapID)
+            {
+                transform.localPosition = getReal3D.Input.GetSensor("Wand").position;
+                transform.localRotation = getReal3D.Input.GetSensor("Wand").rotation;
+            }
+        }
+        else
+        {
+            transform.localPosition = CAVE2Manager.GetMocapState(mocapID).position;
+            transform.localRotation = CAVE2Manager.GetMocapState(mocapID).rotation;
+        }
 	}
 
 	void FixedUpdate()

@@ -119,8 +119,8 @@ public class CAVE2Manager : OmicronEventClient {
 	string[] trackerEmuStrings = {"CAVE", "Head", "Wand1"};
 	string[] trackerEmuModeStrings = {"Translate", "Rotate" };
 
-    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.TranslateVertical;
-    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.Pointer;
+    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
+    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
     public KeyCode toggleWandModeKey = KeyCode.Tab;
     public bool wandModeToggled = false;
@@ -181,19 +181,6 @@ public class CAVE2Manager : OmicronEventClient {
 
 		if ((OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor) || OnCAVE2Display())
         {
-			#if USING_GETREAL3D
-			if( Camera.main.GetComponent<getRealCameraUpdater>() )
-			{
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
-			}
-			else
-			{
-				Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
-			}
-			#endif
-
 			keyboardEventEmulation = false;
 			wandMousePointerEmulation = false;
 			mocapEmulation = false;
@@ -203,16 +190,7 @@ public class CAVE2Manager : OmicronEventClient {
         }
 		else if( Application.platform == RuntimePlatform.WindowsEditor )
 		{
-			if( Camera.main == null )
-			{
-				Debug.LogError("CAVE2Manager: No Camera tagged 'MainCamera' was found. Will not display properly in CAVE2!");
-			}
-			#if USING_GETREAL3D
-			else if( !simulatorMode && !Camera.main.GetComponent<getRealCameraUpdater>() )
-			{
-				Camera.main.gameObject.AddComponent<getRealCameraUpdater>();
-			}
-			#endif
+
 		}
 	}
 
@@ -529,17 +507,17 @@ public class CAVE2Manager : OmicronEventClient {
 	// Update is called once per frame
 	void Update () {
         Application.targetFrameRate = framerateCap;
+
+#if USING_GETREAL3D
+        if (Camera.main != null && Camera.main.GetComponent<getRealCameraUpdater>())
+        {
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = !simulatorMode;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = !simulatorMode;
+            Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = !simulatorMode;
+        }
+#endif
         if (simulatorMode)
         {
-#if USING_GETREAL3D
-			if( Camera.main != null && Camera.main.GetComponent<getRealCameraUpdater>() )
-			{
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-           		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
-			}
-#endif
-
             keyboardEventEmulation = true;
             wandMousePointerEmulation = true;
             mocapEmulation = true;
@@ -774,10 +752,8 @@ public class CAVE2Manager : OmicronEventClient {
 
             if (cameraController != null)
             {
-                Camera.main.transform.localPosition = headEmulatedPosition;
-                Camera.main.transform.localEulerAngles = headEmulatedRotation;
-                //cameraController.transform.localPosition = headEmulatedPosition;
-                //cameraController.transform.localEulerAngles = headEmulatedRotation;
+                cameraController.GetComponent<OmicronCameraController>().GetMainCamera().transform.localPosition = headEmulatedPosition;
+                cameraController.GetComponent<OmicronCameraController>().GetMainCamera().transform.localEulerAngles = headEmulatedRotation;
             }
 			else
 			{
