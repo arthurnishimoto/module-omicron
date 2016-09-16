@@ -360,4 +360,23 @@ public class OmicronPlayerController : OmicronWandUpdater
 		else
 			autoLevelMode = AutoLevelMode.Disabled;
 	}
+
+    public string[] GetDebugText()
+    {
+        string[] debugText =
+        {
+            "Position: " + transform.position,
+            "Head Position: " + headPosition,
+            "Wand Position: " + wandPosition,
+            "Navigation Mode: " + navMode,
+            "Forward Reference: " + forwardReference,
+            "Left Analog LR Mode: " + horizontalMovementMode,
+            "Walk Nav Scale: " + movementScale.ToString(),
+            "Drive/Fly Nav Scale: " + flyMovementScale.ToString(),
+            "Rotate Scale: " + turnSpeed.ToString(),
+            " Auto Level On Ground Collision" + autoLevelMode
+        };
+
+        return debugText;
+    }
 }

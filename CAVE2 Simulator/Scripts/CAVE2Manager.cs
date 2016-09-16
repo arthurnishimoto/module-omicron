@@ -699,7 +699,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		if( !CAVE2Manager.UsingOmicronServer() || (!CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
+		if( !CAVE2Manager.UsingOmicronServer() || CAVE2Manager.UsingGetReal3D() || (keyboardEventEmulation && Input.anyKey) )
 		{
 			GetWand(1).UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
 		}
