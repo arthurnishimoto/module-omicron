@@ -325,7 +325,7 @@ public class CAVE2Manager : OmicronEventClient {
     {
         if (GetCAVE2Manager())
         {
-            CAVE2Manager manager = GameObject.Find("CAVE2-Manager").GetComponent<CAVE2Manager>();
+            CAVE2Manager manager = CAVE2Manager.GetCAVE2Manager();
             return (manager.simulatorMode || manager.kinectSimulatorMode);
         }
         else
