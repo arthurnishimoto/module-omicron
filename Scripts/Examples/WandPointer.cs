@@ -167,4 +167,14 @@ public class WandPointer : OmicronWandUpdater
 		}
         GetComponent<SphereCollider>().enabled = true; // Enable sphere collider after raycast
     }
+
+    public void ShowLaser(bool value)
+    {
+        drawLaser = value;
+    }
+
+    public void ShowLaserParticle(bool value)
+    {
+        alwaysShowLaserParticle = value;
+    }
 }
