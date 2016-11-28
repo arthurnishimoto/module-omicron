@@ -36,8 +36,9 @@ public class DebugGUIManager : MonoBehaviour {
     float frameSum;
 
 	public TextMesh fpsGUITextMesh;
+    public UnityEngine.UI.Text fpsGUICanvasText;
 
-	void Start()
+    void Start()
 	{
         GameObject cave2ManagerObj = GameObject.Find("CAVE2-Manager");
         if (cave2ManagerObj)
@@ -103,6 +104,19 @@ public class DebugGUIManager : MonoBehaviour {
 						fpsGUITextMesh.color = Color.green;
 				}
 
+                if (fpsGUICanvasText)
+                {
+                    fpsGUICanvasText.text = format;
+
+                    if (fps < 30)
+                        fpsGUICanvasText.color = Color.yellow;
+                    else
+                        if (fps < 10)
+                        fpsGUICanvasText.color = Color.red;
+                    else
+                        fpsGUICanvasText.color = Color.green;
+                }
+
                 if (Time.time > 5 && Time.time < FPSBenchmarkTargetTime - 1)
                 {
                     frameSum += fps;
@@ -117,6 +131,8 @@ public class DebugGUIManager : MonoBehaviour {
                         GetComponent<GUIText>().text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
                     if (fpsGUITextMesh)
                         fpsGUITextMesh.text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
+                    if(fpsGUICanvasText)
+                        fpsGUICanvasText.text += "\nCalculating Stats In: " + (int)(FPSBenchmarkTargetTime - Time.time);
                 }
                 else if (Time.time > 5)
                 {
@@ -133,6 +149,12 @@ public class DebugGUIManager : MonoBehaviour {
                         fpsGUITextMesh.text += "\nMin: " + System.String.Format("{0:F2}", minFPS);
                         fpsGUITextMesh.text += " Avg: " + System.String.Format("{0:F2}", avgFPS);
                         fpsGUITextMesh.text += " Max: " + System.String.Format("{0:F2}", maxFPS);
+                    }
+                    if (fpsGUICanvasText)
+                    {
+                        fpsGUICanvasText.text += "\nMin: " + System.String.Format("{0:F2}", minFPS);
+                        fpsGUICanvasText.text += " Avg: " + System.String.Format("{0:F2}", avgFPS);
+                        fpsGUICanvasText.text += " Max: " + System.String.Format("{0:F2}", maxFPS);
                     }
                 }
                 //	DebugConsole.Log(format,level);

@@ -544,9 +544,9 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.ButtonUp;
 			else if( DPadUD < 0 )
 				flags += (int)EventBase.Flags.ButtonDown;
-			if( DPadLR > 0 )
+			if( DPadLR < 0 )
 				flags += (int)EventBase.Flags.ButtonLeft;
-			else if( DPadLR < 0 )
+			else if( DPadLR > 0 )
 				flags += (int)EventBase.Flags.ButtonRight;
 
 			// Wand Button 1 (Triangle/Y)
@@ -699,7 +699,7 @@ public class CAVE2Manager : OmicronEventClient {
 
 		}
 
-		if( !CAVE2Manager.UsingOmicronServer() || (!CAVE2Manager.UsingOmicronServer() && CAVE2Manager.UsingGetReal3D()) || (keyboardEventEmulation && Input.anyKey) )
+		if( !CAVE2Manager.UsingOmicronServer() || CAVE2Manager.UsingGetReal3D() || (keyboardEventEmulation && Input.anyKey) )
 		{
 			GetWand(1).UpdateController( flags, wandAnalog, wandAnalog2, wandAnalog3 );
 		}

@@ -215,6 +215,8 @@ class OmicronManager : MonoBehaviour
 	
 	int connectStatus = 0;
 
+    public UnityEngine.UI.Text statusCanvasText;
+
     public static OmicronManager GetOmicronManager()
     {
         if (omicronManagerInstance != null)
@@ -224,8 +226,8 @@ class OmicronManager : MonoBehaviour
         else
         {
             //Debug.LogWarning(ERROR_MANAGERNOTFOUND);
-            GameObject c2m = new GameObject("OmicronManager");
-            omicronManagerInstance = c2m.AddComponent<OmicronManager>();
+            //GameObject c2m = new GameObject("OmicronManager");
+            //omicronManagerInstance = c2m.AddComponent<OmicronManager>();
             return omicronManagerInstance;
         }
     }
@@ -241,6 +243,8 @@ class OmicronManager : MonoBehaviour
 
         if(connectToServer)
             ConnectToServer();
+
+        DontDestroyOnLoad(gameObject);
     }// start
 
 	public bool ConnectToServer()
@@ -289,8 +293,7 @@ class OmicronManager : MonoBehaviour
 			eventList.Add(e);
 			if( debug )
 			{
-				Debug.Log("OmicronInputScript: New event ID: " + e.sourceId);
-				Debug.Log("   type" + e.serviceType);
+				Debug.Log("OmicronManager: Received New event ID: " + e.sourceId +" of type "+ e.serviceType);
 			}
 		};
 	}
@@ -332,7 +335,21 @@ class OmicronManager : MonoBehaviour
 			//}
 		}
 
-        StartCoroutine("SendEventsToClients");	
+        StartCoroutine("SendEventsToClients");
+
+        if(statusCanvasText)
+        {
+            string statusText = "UNKNOWN";
+            switch (connectStatus)
+            {
+                case (0): currentStatus = idleStatus; statusText = "Not Connected"; statusCanvasText.color = Color.grey; break;
+                case (1): currentStatus = activeStatus; statusText = "Connected"; statusCanvasText.color = Color.green;  break;
+                case (-1): currentStatus = errorStatus; statusText = "Failed to Connect"; statusCanvasText.color = Color.red;  break;
+                default: statusCanvasText.color = Color.yellow; break;
+            }
+
+            statusCanvasText.text = statusText;
+        }
 	}
 	
     IEnumerator SendEventsToClients()
@@ -343,10 +360,13 @@ class OmicronManager : MonoBehaviour
             {
                 foreach (OmicronEventClient c in omicronClients)
                 {
+                    if (c == null)
+                        continue;
+
                     EventBase.ServiceType eType = e.serviceType;
                     EventBase.ServiceType clientType = c.GetClientType();
 
-                    if (!c.IsFlaggedForRemoval() && (eType == EventBase.ServiceType.ServiceTypeAny || eType == clientType))
+                    if (!c.IsFlaggedForRemoval() && (clientType == EventBase.ServiceType.ServiceTypeAny || eType == clientType))
                     {
                         c.BroadcastMessage("OnEvent", e, SendMessageOptions.DontRequireReceiver);
                     }
