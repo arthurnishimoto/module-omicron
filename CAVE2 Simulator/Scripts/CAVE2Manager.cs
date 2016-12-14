@@ -146,6 +146,8 @@ public class CAVE2Manager : OmicronEventClient {
     private ArrayList playerControllers;
     public GameObject cameraController;
 
+    public Transform headRotationOverride;
+
     // CAVE2 Simulator to Wand button bindings
     public string wandSimulatorAnalogUD = "Vertical";
     public string wandSimulatorAnalogLR = "Horizontal";
@@ -738,9 +740,17 @@ public class CAVE2Manager : OmicronEventClient {
             GetHead(1).Update( getReal3D.Input.head.position, getReal3D.Input.head.rotation );
             GetWand(1).UpdateMocap( getReal3D.Input.wand.position, getReal3D.Input.wand.rotation );
             #endif
+
+            
         }
 
-        if( kinectSimulatorMode )
+        if (headRotationOverride != null)
+        {
+            headEmulatedRotation = headRotationOverride.localEulerAngles;
+            GetHead(1).Update(headEmulatedPosition, Quaternion.Euler(headEmulatedRotation));
+        }
+
+        if ( kinectSimulatorMode )
         {
             if (cameraController != null)
             {
