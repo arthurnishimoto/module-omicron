@@ -241,8 +241,10 @@ class OmicronManager : MonoBehaviour
 		
 		eventList = new ArrayList();
 
-        if(connectToServer)
-            ConnectToServer();
+        if (connectToServer)
+        {
+            StartCoroutine("ConnectToServer");
+        }
 
         DontDestroyOnLoad(gameObject);
     }// start

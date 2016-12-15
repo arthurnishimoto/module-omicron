@@ -33,6 +33,16 @@ public class SimpleCanvasTouch : OmicronEventClient {
         return posInCanvasCoords;
     }
 
+    Vector3 RawTouchSizeToCanvasCoords(Vector3 touchPos)
+    {
+        Vector2 posInCanvasCoords = touchPos;
+
+        posInCanvasCoords.x *= canvasRect.rect.width * 0.1f;
+        posInCanvasCoords.y *= canvasRect.rect.height * 0.1f;
+
+        return posInCanvasCoords;
+    }
+
     void SendTouchToEventSystem(PointerEventData pointerEvent)
     {
         // Raycast into the Event system
@@ -52,6 +62,7 @@ public class SimpleCanvasTouch : OmicronEventClient {
         TouchPoint touchPoint = new TouchPoint(e);
         Vector3 screenPosition = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
         int touchID = touchPoint.GetID();
+        Vector3 size = RawTouchSizeToCanvasCoords(new Vector3(e.getExtraDataFloat(0), e.getExtraDataFloat(1), 1));
         //Debug.Log(touchPoint.GetPosition());
 
         if (!touchList.ContainsKey(touchID))
@@ -64,7 +75,7 @@ public class SimpleCanvasTouch : OmicronEventClient {
 
                 // Update position with new touch data
                 visualMarker.transform.position = screenPosition;
-                visualMarker.transform.localScale = Vector3.one * 10;
+                visualMarker.transform.localScale = size * 10;
 
                 touchPoint.SetObjectTouched(visualMarker);
                 touchPoint.Update(screenPosition, EventBase.Type.Down);
@@ -81,7 +92,7 @@ public class SimpleCanvasTouch : OmicronEventClient {
 
                 // Update position with new touch data
                 visualMarker.transform.position = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
-                visualMarker.transform.localScale = Vector3.one * 10;
+                visualMarker.transform.localScale = size * 10;
 
                 existingTouchPoint.Update(screenPosition, EventBase.Type.Move);
 
