@@ -120,10 +120,10 @@ public class CAVE2InputManager : OmicronEventClient
             getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickLR)),
             getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickUD))
         );
-        wandButtonManager.analogInput3 = new Vector2(
-            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.AnalogTriggerL)),
-            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.AnalogTriggerR))
-        );
+        //wandButtonManager.analogInput3 = new Vector2(
+        //    getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.AnalogTriggerL)),
+        //    getReal3D.Input.GetAxis(0)
+        //);
 
         int flags = 0;
         float DPadUD = getReal3D.Input.GetAxis("DPadUD");
@@ -132,25 +132,25 @@ public class CAVE2InputManager : OmicronEventClient
             flags += (int)EventBase.Flags.ButtonUp;
         else if (DPadUD < 0)
             flags += (int)EventBase.Flags.ButtonDown;
-        if (DPadLR > 0)
+        if (DPadLR < 0)
             flags += (int)EventBase.Flags.ButtonLeft;
-        else if (DPadLR < 0)
+        else if (DPadLR > 0)
             flags += (int)EventBase.Flags.ButtonRight;
 
         // Wand Button 1 (Triangle/Y)
         if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
             flags += (int)EventBase.Flags.Button1;
         // F -> Wand Button 2 (Circle/B)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button2)))
             flags += (int)EventBase.Flags.Button2;
         // R -> Wand Button 3 (Cross/A)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button2)))
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button3)))
             flags += (int)EventBase.Flags.Button3;
         // Wand Button 4 (Square/X)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button3)))
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
             flags += (int)EventBase.Flags.Button4;
         // Wand Button 8 (R1/RB)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))
             flags += (int)EventBase.Flags.Button8;
         // Wand Button 5 (L1/LB)
         if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button5)))
@@ -174,7 +174,7 @@ public class CAVE2InputManager : OmicronEventClient
         if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton2)))
             flags += (int)EventBase.Flags.SpecialButton2;
 
-        wandButtonManager.UpdateButtons(flags);
+        wandButtonManager.rawFlags = flags;
 #endif
     }
 }
