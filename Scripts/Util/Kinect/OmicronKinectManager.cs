@@ -34,13 +34,13 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	public GameObject kinect2bodyPrefab;
 
-	public Vector3 kinectSensorPosition;
-	public Vector3 kinectSensorTilt;
+	public Vector4 kinectSensorTransformData;
 
 	public bool enableBodyTracking = true;
 	public bool enableSpeechRecognition = true;
 	public float minimumSpeechConfidence = 0.3f;
 
+    public int trackedBodyCount;
 	Hashtable trackedBodies;
 
 	public GameObject[] voiceCommandListeners;
@@ -49,22 +49,32 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	// Use this for initialization
 	new void Start () {
-		trackedBodies = new Hashtable ();
+        eventOptions = EventBase.ServiceType.ServiceTypeMocap;
+        trackedBodies = new Hashtable ();
 		InitOmicron ();
 	}
 
 	// Update is called once per frame
 	void Update () {
-	
-	}
+        trackedBodyCount = trackedBodies.Count;
+    }
 
 	void OnEvent( EventData e )
 	{
 		if (enableBodyTracking && e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{
 			int sourceID = (int)e.sourceId;
-			if( !trackedBodies.ContainsKey( sourceID ) )
+            kinectSensorTransformData = new Vector4(e.orx, e.ory, e.orz, e.orw);
+ 
+            if (kinectSensorTransformData.w != 0)
+            {
+                transform.localPosition = new Vector3(0, kinectSensorTransformData.w, 0);
+                //transform.localEulerAngles = new Vector3(kinectSensorTransformData.x * Mathf.Rad2Deg, kinectSensorTransformData.y * Mathf.Rad2Deg, kinectSensorTransformData.z * Mathf.Rad2Deg);
+            }
+
+            if ( !trackedBodies.ContainsKey( sourceID ) )
 			{
+                Debug.Log("Creating new tracked body " + sourceID);
 				CreateBody(sourceID);
 			}
 		}

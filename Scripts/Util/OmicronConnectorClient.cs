@@ -390,6 +390,7 @@ namespace omicronConnector
         // UDP Connection
         private static UdpClient udpClient;
         private static Thread listenerThread;
+        private static Thread listenTCPThread;
 
         public String InputServer = "localhost";
         public Int32 dataPort = 7000;
@@ -442,6 +443,9 @@ namespace omicronConnector
                     listenerThread.Start();
                     connected = true;
 
+                    listenTCPThread = new Thread(ListenTCP);
+                    listenTCPThread.Start();
+
                     return true;
                 }
                 catch (ArgumentNullException e)
@@ -473,6 +477,7 @@ namespace omicronConnector
                 Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
                 udpClient.Close();
                 listenerThread.Abort();
+                listenTCPThread.Abort();
 
                 // Close TCP connection.
                 streamToServer.Close();
@@ -500,7 +505,21 @@ namespace omicronConnector
             }
         }// Listen()
 
-		public static EventData ByteArrayToEventData(byte[] receiveBytes)
+        private void ListenTCP()
+        {
+            while (true)
+            {
+                if (streamToServer.DataAvailable)
+                {
+                    Byte[] receiveBytes = new Byte[512];
+                    streamToServer.Read(receiveBytes, 0, 512);
+                    listener.onEvent(ByteArrayToEventData(receiveBytes));
+                }
+            }
+            
+        }// Listen()
+
+        public static EventData ByteArrayToEventData(byte[] receiveBytes)
 		{
 			MemoryStream ms = new MemoryStream();
 			ms.Write(receiveBytes, 0, receiveBytes.Length);
