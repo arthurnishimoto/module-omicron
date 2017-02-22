@@ -72,8 +72,8 @@ public class CAVE2WandUpdater : MonoBehaviour
         SetLit(buttonRight, CAVE2.GetButtonState(wandID, CAVE2.Button.ButtonRight));
 
         SetLit(buttonL1, CAVE2.GetButtonState(wandID, CAVE2.Button.Button5));
-        SetLit(buttonL2, CAVE2.GetButtonState(wandID, CAVE2.Button.Button6));
-        SetLit(buttonL3, CAVE2.GetButtonState(wandID, CAVE2.Button.Button7));
+        SetLit(buttonL2, CAVE2.GetButtonState(wandID, CAVE2.Button.Button7));
+        SetLit(buttonL3, CAVE2.GetButtonState(wandID, CAVE2.Button.Button6));
 
         SetLit(buttonR1, CAVE2.GetButtonState(wandID, CAVE2.Button.Button8));
         SetLit(buttonR2, CAVE2.GetButtonState(wandID, CAVE2.Button.SpecialButton3));

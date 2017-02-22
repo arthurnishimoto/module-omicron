@@ -77,6 +77,23 @@ public class OmicronControllerManager : OmicronEventClient
         return ButtonState.Idle;
     }
 
+    public float GetAxis(CAVE2.Axis axis)
+    {
+        switch (axis)
+        {
+            case CAVE2.Axis.LeftAnalogStickLR: return analogInput1.x;
+            case CAVE2.Axis.LeftAnalogStickUD: return analogInput1.y;
+            case CAVE2.Axis.RightAnalogStickLR: return analogInput2.x;
+            case CAVE2.Axis.RightAnalogStickUD: return analogInput2.x;
+            case CAVE2.Axis.AnalogTriggerL: return analogInput3.x;
+
+            case CAVE2.Axis.LeftAnalogStickLR_Inverted: return -analogInput1.x;
+            case CAVE2.Axis.LeftAnalogStickUD_Inverted: return -analogInput1.y;
+            case CAVE2.Axis.AnalogTriggerL_Inverted: return -analogInput3.x;
+        }
+        return 0;
+    }
+
     void OnEvent(EventData e)
     {
         if (e.sourceId == sourceID || sourceID == -1)

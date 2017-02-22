@@ -203,22 +203,22 @@ public class CAVE2Manager : MonoBehaviour {
     // CAVE2 Input Management ----------------------------------------------------------------------
     public static float GetAxis(int wandID, CAVE2.Axis axis)
     {
-        return 0;
+        return GetCAVE2Manager().inputManager.GetAxis(wandID, axis);
     }
 
     public static bool GetButton(int wandID, CAVE2.Button button)
     {
-        return false;
+        return GetCAVE2Manager().inputManager.GetButton(wandID, button);
     }
 
     public static bool GetButtonDown(int wandID, CAVE2.Button button)
     {
-        return false;
+        return GetCAVE2Manager().inputManager.GetButtonDown(wandID, button);
     }
 
     public static bool GetButtonUp(int wandID, CAVE2.Button button)
     {
-        return false;
+        return GetCAVE2Manager().inputManager.GetButtonUp(wandID, button);
     }
 
     public static OmicronControllerManager.ButtonState GetButtonState(int wandID, CAVE2.Button button)
