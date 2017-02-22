@@ -20,37 +20,22 @@ public class CAVE2InputManager : OmicronEventClient
         wandManagers = new Hashtable();
     }
 
-    public OmicronControllerManager.ButtonState GetButtonState(int wandID, CAVE2.Button button)
+    public OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
     {
         if(wandManagers != null && wandManagers.ContainsKey(wandID))
         {
-            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
+            OmicronController wandButtonManager = (OmicronController)wandManagers[wandID];
             return wandButtonManager.GetButtonState(button);
         }
-        else if( CAVE2.UsingGetReal3D() && wandID == 1)
-        {
-            if (getReal3D.Input.GetButtonDown(CAVE2.CAVE2ToGetReal3DButton(button)))
-                return OmicronControllerManager.ButtonState.Down;
-            else if (getReal3D.Input.GetButtonUp(CAVE2.CAVE2ToGetReal3DButton(button)))
-                return OmicronControllerManager.ButtonState.Up;
-            else if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(button)))
-                return OmicronControllerManager.ButtonState.Held;
-            else
-                return OmicronControllerManager.ButtonState.Idle;
-        }
-        return OmicronControllerManager.ButtonState.Idle;
+        return OmicronController.ButtonState.Idle;
     }
 
     public bool GetButtonDown(int wandID, CAVE2.Button button)
     {
         if (wandManagers != null && wandManagers.ContainsKey(wandID))
         {
-            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
-            return wandButtonManager.GetButtonState(button) == OmicronControllerManager.ButtonState.Down;
-        }
-        else if (CAVE2.UsingGetReal3D() && wandID == 1)
-        {
-            return getReal3D.Input.GetButtonDown(CAVE2.CAVE2ToGetReal3DButton(button));
+            OmicronController wandButtonManager = (OmicronController)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button) == OmicronController.ButtonState.Down;
         }
         return false;
     }
@@ -59,62 +44,29 @@ public class CAVE2InputManager : OmicronEventClient
     {
         if (wandManagers != null && wandManagers.ContainsKey(wandID))
         {
-            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
-            return wandButtonManager.GetButtonState(button) == OmicronControllerManager.ButtonState.Held;
-        }
-        else if (CAVE2.UsingGetReal3D() && wandID == 1)
-        {
-            // Handle getReal3D DPad mapped to axes
-            if (button == CAVE2.Button.ButtonUp)
-                return getReal3D.Input.GetAxis("DPadUD") > 0;
-            else if (button == CAVE2.Button.ButtonDown)
-                return getReal3D.Input.GetAxis("DPadUD") < 0;
-            else if (button == CAVE2.Button.ButtonRight)
-                return getReal3D.Input.GetAxis("DPadLR") > 0;
-            else if (button == CAVE2.Button.ButtonLeft)
-                return getReal3D.Input.GetAxis("DPadLR") < 0;
-
-            return getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(button));
+            OmicronController wandButtonManager = (OmicronController)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button) == OmicronController.ButtonState.Held;
         }
         return false;
     }
 
     public bool GetButtonUp(int wandID, CAVE2.Button button)
     {
-        if (wandManagers != null && wandManagers.ContainsKey(wandID))
+        if (wandManagers.ContainsKey(wandID))
         {
-            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
-            return wandButtonManager.GetButtonState(button) == OmicronControllerManager.ButtonState.Up;
-        }
-        else if (CAVE2.UsingGetReal3D() && wandID == 1)
-        {
-            // Handle getReal3D DPad mapped to axes
-            if (button == CAVE2.Button.ButtonUp)
-                return getReal3D.Input.GetAxis("DPadUD") > 0;
-            else if (button == CAVE2.Button.ButtonDown)
-                return getReal3D.Input.GetAxis("DPadUD") < 0;
-            else if (button == CAVE2.Button.ButtonRight)
-                return getReal3D.Input.GetAxis("DPadLR") > 0;
-            else if (button == CAVE2.Button.ButtonLeft)
-                return getReal3D.Input.GetAxis("DPadLR") < 0;
-
-            return getReal3D.Input.GetButtonUp(CAVE2.CAVE2ToGetReal3DButton(button));
+            OmicronController wandButtonManager = (OmicronController)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button) == OmicronController.ButtonState.Up;
         }
         return false;
     }
 
     public float GetAxis(int wandID, CAVE2.Axis axis)
     {
-        if (wandManagers != null && wandManagers.ContainsKey(wandID))
+        if (wandManagers.ContainsKey(wandID))
         {
-            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
+            OmicronController wandButtonManager = (OmicronController)wandManagers[wandID];
             return wandButtonManager.GetAxis(axis);
         }
-        else if (CAVE2.UsingGetReal3D() && wandID == 1)
-        {
-            return getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(axis));
-        }
-
         return 0;
     }
 
@@ -131,54 +83,98 @@ public class CAVE2InputManager : OmicronEventClient
 
                 mocapManagers[(int)e.sourceId] = mocapManager;
             }
-
-            /*
-            // -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
-            Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
-            Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
-
-#if USING_GETREAL3D
-			getReal3D.RpcManager.call ("UpdateMocapRPC", e.sourceId, unityPos, unityRot );
-#else
-            //UpdateMocap(e.sourceId, unityPos, unityRot);
-#endif
-            */
         }
         else if (e.serviceType == EventBase.ServiceType.ServiceTypeWand)
         {
             if ( !wandManagers.ContainsKey((int)e.sourceId) )
             {
-                OmicronControllerManager wandButtonManager = gameObject.AddComponent<OmicronControllerManager>();
+                OmicronController wandButtonManager = gameObject.AddComponent<OmicronController>();
                 wandButtonManager.sourceID = (int)e.sourceId;
 
                 wandManagers[(int)e.sourceId] = wandButtonManager;
             }
-
-            /*
-            // -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
-            //Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
-            //Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
-
-            // Flip Up/Down analog stick values
-            Vector2 leftAnalogStick = new Vector2(e.getExtraDataFloat(0), -e.getExtraDataFloat(1)) * axisSensitivity;
-            Vector2 rightAnalogStick = new Vector2(e.getExtraDataFloat(2), e.getExtraDataFloat(3)) * axisSensitivity;
-            Vector2 analogTrigger = new Vector2(e.getExtraDataFloat(4), e.getExtraDataFloat(5));
-
-            if (Mathf.Abs(leftAnalogStick.x) < axisDeadzone)
-                leftAnalogStick.x = 0;
-            if (Mathf.Abs(leftAnalogStick.y) < axisDeadzone)
-                leftAnalogStick.y = 0;
-            if (Mathf.Abs(rightAnalogStick.x) < axisDeadzone)
-                rightAnalogStick.x = 0;
-            if (Mathf.Abs(rightAnalogStick.y) < axisDeadzone)
-                rightAnalogStick.y = 0;
-
-#if USING_GETREAL3D
-			getReal3D.RpcManager.call ("UpdateControllerRPC", e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-#else
-            UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-#endif
-            */
         }
+    }
+
+    void Update()
+    {
+        int wandID = 1;
+
+        OmicronController wandButtonManager;
+        if (!wandManagers.ContainsKey(wandID))
+        {
+            wandButtonManager = gameObject.AddComponent<OmicronController>();
+            wandButtonManager.sourceID = wandID;
+            wandManagers[wandID] = wandButtonManager;
+        }
+        else
+        {
+            wandButtonManager = (OmicronController)wandManagers[wandID];
+        }
+#if USING_GETREAL3D
+        wandButtonManager.analogInput1 = new Vector2(
+            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickLR)),
+            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickUD))
+        );
+        wandButtonManager.analogInput2 = new Vector2(
+            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickLR)),
+            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickUD))
+        );
+        wandButtonManager.analogInput3 = new Vector2(
+            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.AnalogTriggerL)),
+            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.AnalogTriggerR))
+        );
+
+        int flags = 0;
+        float DPadUD = getReal3D.Input.GetAxis("DPadUD");
+        float DPadLR = getReal3D.Input.GetAxis("DPadLR");
+        if (DPadUD > 0)
+            flags += (int)EventBase.Flags.ButtonUp;
+        else if (DPadUD < 0)
+            flags += (int)EventBase.Flags.ButtonDown;
+        if (DPadLR > 0)
+            flags += (int)EventBase.Flags.ButtonLeft;
+        else if (DPadLR < 0)
+            flags += (int)EventBase.Flags.ButtonRight;
+
+        // Wand Button 1 (Triangle/Y)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
+            flags += (int)EventBase.Flags.Button1;
+        // F -> Wand Button 2 (Circle/B)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
+            flags += (int)EventBase.Flags.Button2;
+        // R -> Wand Button 3 (Cross/A)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button2)))
+            flags += (int)EventBase.Flags.Button3;
+        // Wand Button 4 (Square/X)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button3)))
+            flags += (int)EventBase.Flags.Button4;
+        // Wand Button 8 (R1/RB)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
+            flags += (int)EventBase.Flags.Button8;
+        // Wand Button 5 (L1/LB)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button5)))
+            flags += (int)EventBase.Flags.Button5;
+        // Wand Button 6 (L3)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button6)))
+            flags += (int)EventBase.Flags.Button6;
+        // Wand Button 7 (L2)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button7)))
+            flags += (int)EventBase.Flags.Button7;
+        // Wand Button 8 (R2)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))
+            flags += (int)EventBase.Flags.Button8;
+        // Wand Button 9 (R3)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button9)))
+            flags += (int)EventBase.Flags.Button9;
+        // Wand Button SP1 (Back)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton1)))
+            flags += (int)EventBase.Flags.SpecialButton1;
+        // Wand Button SP2 (Start)
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton2)))
+            flags += (int)EventBase.Flags.SpecialButton2;
+
+        wandButtonManager.UpdateButtons(flags);
+#endif
     }
 }

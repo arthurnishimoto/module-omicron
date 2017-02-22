@@ -55,7 +55,7 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.GetButtonUp(wandID, button);
     }
 
-    public static OmicronControllerManager.ButtonState GetButtonState(int wandID, CAVE2.Button button)
+    public static OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
     {
         return CAVE2Manager.GetButtonState(wandID, button);
     }
@@ -254,7 +254,7 @@ public class CAVE2Manager : MonoBehaviour {
         return GetCAVE2Manager().inputManager.GetButtonUp(wandID, button);
     }
 
-    public static OmicronControllerManager.ButtonState GetButtonState(int wandID, CAVE2.Button button)
+    public static OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
     {
         return GetCAVE2Manager().inputManager.GetButtonState(wandID, button);
     }

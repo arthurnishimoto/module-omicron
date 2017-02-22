@@ -3,7 +3,7 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class OmicronControllerManager : OmicronEventClient
+public class OmicronController : OmicronEventClient
 {
     public int sourceID = 1; // Controller 1-4, -1 for any
 
@@ -134,7 +134,7 @@ public class OmicronControllerManager : OmicronEventClient
         return output;
     }
 
-    void UpdateButtons(int flags)
+    public void UpdateButtons(int flags)
     {
         UpdateButton(ref Button1, EventBase.Flags.Button1, flags);
         UpdateButton(ref Button2, EventBase.Flags.Button2, flags);

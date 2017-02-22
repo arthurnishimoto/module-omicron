@@ -84,13 +84,13 @@ public class CAVE2WandUpdater : MonoBehaviour
 
     }
 
-    void SetLit(GameObject g, OmicronControllerManager.ButtonState state)
+    void SetLit(GameObject g, OmicronController.ButtonState state)
     {
         if (g)
         {
-            if (state == OmicronControllerManager.ButtonState.Held)
+            if (state == OmicronController.ButtonState.Held)
                 g.GetComponent<Renderer>().material = litMaterial;
-            else if (state == OmicronControllerManager.ButtonState.Idle)
+            else if (state == OmicronController.ButtonState.Idle)
                 g.GetComponent<Renderer>().material = unlitMaterial;
         }
     }

@@ -4,7 +4,7 @@ using omicronConnector;
 
 public class OmicronControllerVisualTester : MonoBehaviour
 {
-    public OmicronControllerManager controllerManager;
+    public OmicronController controller;
 
     public Material litMaterial;
     public Material unlitMaterial;
@@ -45,9 +45,9 @@ public class OmicronControllerVisualTester : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        leftAnalogStick = new Vector2(controllerManager.analogInput1.x, controllerManager.analogInput1.y);
-		rightAnalogStick = new Vector2(controllerManager.analogInput2.x, controllerManager.analogInput2.y);
-        analogTriggers = new Vector2(controllerManager.analogInput3.x, controllerManager.analogInput3.y);
+        leftAnalogStick = new Vector2(controller.analogInput1.x, controller.analogInput1.y);
+		rightAnalogStick = new Vector2(controller.analogInput2.x, controller.analogInput2.y);
+        analogTriggers = new Vector2(controller.analogInput3.x, controller.analogInput3.y);
 
         if( buttonL3 )
 			buttonL3.transform.localEulerAngles = new Vector3( -leftAnalogStick.y, 0, -leftAnalogStick.x ) * 30;
@@ -61,36 +61,36 @@ public class OmicronControllerVisualTester : MonoBehaviour
 
         // Tests if hold state is working properly (public state varibles should change)
         // Tests if up/down is working (visual buttons should change)
-        SetLit(buttonCross, controllerManager.Button3);
-        SetLit(buttonCircle, controllerManager.Button2);
-        SetLit(buttonTriangle, controllerManager.Button1);
-        SetLit(buttonSquare, controllerManager.Button4);
+        SetLit(buttonCross, controller.Button3);
+        SetLit(buttonCircle, controller.Button2);
+        SetLit(buttonTriangle, controller.Button1);
+        SetLit(buttonSquare, controller.Button4);
 
-        SetLit(buttonUp, controllerManager.ButtonUp);
-        SetLit(buttonDown, controllerManager.ButtonDown);
-        SetLit(buttonLeft, controllerManager.ButtonLeft);
-        SetLit(buttonRight, controllerManager.ButtonRight);
+        SetLit(buttonUp, controller.ButtonUp);
+        SetLit(buttonDown, controller.ButtonDown);
+        SetLit(buttonLeft, controller.ButtonLeft);
+        SetLit(buttonRight, controller.ButtonRight);
 
-        SetLit(buttonL1, controllerManager.Button5);
-        SetLit(buttonL2, controllerManager.Button7);
-        SetLit(buttonL3, controllerManager.Button6);
+        SetLit(buttonL1, controller.Button5);
+        SetLit(buttonL2, controller.Button7);
+        SetLit(buttonL3, controller.Button6);
 
-        SetLit(buttonR1, controllerManager.Button8);
-        SetLit(buttonR2, controllerManager.SpecialButton3);
-        SetLit(buttonR3, controllerManager.Button9);
+        SetLit(buttonR1, controller.Button8);
+        SetLit(buttonR2, controller.SpecialButton3);
+        SetLit(buttonR3, controller.Button9);
 
-        SetLit(buttonSelect, controllerManager.SpecialButton1);
-        SetLit(buttonStart, controllerManager.SpecialButton2);
+        SetLit(buttonSelect, controller.SpecialButton1);
+        SetLit(buttonStart, controller.SpecialButton2);
 
     }
 
-    void SetLit(GameObject g, OmicronControllerManager.ButtonState state)
+    void SetLit(GameObject g, OmicronController.ButtonState state)
     {
         if (g)
         {
-            if (state == OmicronControllerManager.ButtonState.Held)
+            if (state == OmicronController.ButtonState.Held)
                 g.GetComponent<Renderer>().material = litMaterial;
-            else if (state == OmicronControllerManager.ButtonState.Idle)
+            else if (state == OmicronController.ButtonState.Idle)
                 g.GetComponent<Renderer>().material = unlitMaterial;
         }
     }
