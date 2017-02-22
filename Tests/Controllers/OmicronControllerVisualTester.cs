@@ -42,11 +42,6 @@ public class OmicronControllerVisualTester : MonoBehaviour
 
     }
 
-    void OnEvent(EventData e)
-    {
-        //Debug.Log("OmicronEventClient: '"+name+"' received " + e.serviceType);
-    }
-
     // Update is called once per frame
     void Update()
     {

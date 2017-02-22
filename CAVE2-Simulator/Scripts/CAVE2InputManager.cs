@@ -6,21 +6,60 @@ using omicronConnector;
 
 public class CAVE2InputManager : OmicronEventClient
 {
-    public Hashtable mocapStates;
-    public Hashtable wandStates;
+    Hashtable mocapStates;
+    Hashtable wandManagers;
 
     public float axisSensitivity = 1f;
     public float axisDeadzone = 0.2f;
 
+    WandState nullWandState = new WandState(-1, -1);
+
     // Use this for initialization
     new void Start () {
         base.Start();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+        wandManagers = new Hashtable();
+    }
+
+    public OmicronControllerManager.ButtonState GetButtonState(int wandID, CAVE2.Button button)
+    {
+        if(wandManagers.ContainsKey(wandID))
+        {
+            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button);
+        }
+        return OmicronControllerManager.ButtonState.Idle;
+    }
+
+    public bool GetButtonDown(int wandID, CAVE2.Button button)
+    {
+        if (wandManagers.ContainsKey(wandID))
+        {
+            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button) == OmicronControllerManager.ButtonState.Down;
+        }
+        return false;
+    }
+
+    public bool GetButton(int wandID, CAVE2.Button button)
+    {
+        if (wandManagers.ContainsKey(wandID))
+        {
+            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button) == OmicronControllerManager.ButtonState.Held;
+        }
+        return false;
+    }
+
+    public bool GetButtonUp(int wandID, CAVE2.Button button)
+    {
+        if (wandManagers.ContainsKey(wandID))
+        {
+            OmicronControllerManager wandButtonManager = (OmicronControllerManager)wandManagers[wandID];
+            return wandButtonManager.GetButtonState(button) == OmicronControllerManager.ButtonState.Up;
+        }
+        return false;
+    }
 
     // Parses Omicron Input Data
     void OnEvent(EventData e)
@@ -41,6 +80,15 @@ public class CAVE2InputManager : OmicronEventClient
         }
         else if (e.serviceType == EventBase.ServiceType.ServiceTypeWand)
         {
+            if ( !wandManagers.ContainsKey((int)e.sourceId) )
+            {
+                OmicronControllerManager wandButtonManager = gameObject.AddComponent<OmicronControllerManager>();
+                wandButtonManager.sourceID = (int)e.sourceId;
+
+                wandManagers[(int)e.sourceId] = wandButtonManager;
+            }
+
+            /*
             // -zPos -xRot -yRot for Omicron->Unity coordinate conversion)
             //Vector3 unityPos = new Vector3(e.posx, e.posy, -e.posz);
             //Quaternion unityRot = new Quaternion(-e.orx, -e.ory, e.orz, e.orw);
@@ -64,39 +112,7 @@ public class CAVE2InputManager : OmicronEventClient
 #else
             UpdateController(e.sourceId, e.flags, leftAnalogStick, rightAnalogStick, analogTrigger);
 #endif
-        }
-    }
-
-    void UpdateController(uint wandID, uint flags, Vector2 leftAnalogStick, Vector2 rightAnalogStick, Vector2 analogTrigger)
-    {
-        if (wandStates.ContainsKey((int)wandID))
-        {
-            ((WandState)wandStates[(int)wandID]).UpdateController(flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-        }
-        else
-        {
-            int mocapID = (int)wandID;
-            /*
-            if ((int)wandID == 1)
-            {
-                mocapID = Wand1MocapID;
-            }
-            else if ((int)wandID == 2)
-            {
-                mocapID = Wand2MocapID;
-            }
-            else if ((int)wandID == 3)
-            {
-                mocapID = Wand3MocapID;
-            }
-            else if ((int)wandID == 4)
-            {
-                mocapID = Wand4MocapID;
-            }
             */
-            WandState newWandState = new WandState((int)wandID, mocapID);
-            newWandState.UpdateController(flags, leftAnalogStick, rightAnalogStick, analogTrigger);
-            wandStates.Add((int)wandID, newWandState);
         }
     }
 }

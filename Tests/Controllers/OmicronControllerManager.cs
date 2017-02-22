@@ -49,7 +49,32 @@ public class OmicronControllerManager : OmicronEventClient
     // Update is called once per frame
     void Update () {
         UpdateButtons(rawFlags);
+    }
 
+    public ButtonState GetButtonState(CAVE2.Button button)
+    {
+        switch(button)
+        {
+            case CAVE2.Button.Button1: return Button1;
+            case CAVE2.Button.Button2: return Button2;
+            case CAVE2.Button.Button3: return Button3;
+            case CAVE2.Button.Button4: return Button4;
+            case CAVE2.Button.Button5: return Button5;
+            case CAVE2.Button.Button6: return Button6;
+            case CAVE2.Button.Button7: return Button7;
+            case CAVE2.Button.Button8: return Button8;
+            case CAVE2.Button.Button9: return Button9;
+
+            case CAVE2.Button.SpecialButton1: return SpecialButton1;
+            case CAVE2.Button.SpecialButton2: return SpecialButton2;
+            case CAVE2.Button.SpecialButton3: return SpecialButton3;
+
+            case CAVE2.Button.ButtonUp: return ButtonUp;
+            case CAVE2.Button.ButtonDown: return ButtonDown;
+            case CAVE2.Button.ButtonLeft: return ButtonLeft;
+            case CAVE2.Button.ButtonRight: return ButtonRight;
+        }
+        return ButtonState.Idle;
     }
 
     void OnEvent(EventData e)
