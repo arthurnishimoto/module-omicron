@@ -13,6 +13,8 @@ public class SimpleCanvasTouch : OmicronEventClient {
 
     RectTransform canvasRect;
 
+    public bool debug;
+
     // Use this for initialization
     new void Start()
     {
@@ -58,12 +60,25 @@ public class SimpleCanvasTouch : OmicronEventClient {
 
     void OnEvent(EventData e)
     {
-        //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType);
+        
         TouchPoint touchPoint = new TouchPoint(e);
         Vector3 screenPosition = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
         int touchID = touchPoint.GetID();
         Vector3 size = RawTouchSizeToCanvasCoords(new Vector3(e.getExtraDataFloat(0), e.getExtraDataFloat(1), 1));
-        //Debug.Log(touchPoint.GetPosition());
+        if( size.magnitude == 0 )
+        {
+            size = Vector3.one;
+        }
+
+        if( debug )
+        {
+            if (touchPoint.GetGesture() != EventBase.Type.Move)
+            {
+                Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " id: " + e.sourceId);
+                Debug.Log(touchPoint.GetGesture());
+            }
+        }
+
 
         if (!touchList.ContainsKey(touchID))
         {
