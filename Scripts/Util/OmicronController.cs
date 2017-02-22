@@ -8,36 +8,36 @@ public class OmicronController : OmicronEventClient
     public int sourceID = 1; // Controller 1-4, -1 for any
 
     public int rawFlags;
-    public Vector2 rawAnalogInput1;
-    public Vector2 rawAnalogInput2;
-    public Vector2 rawAnalogInput3;
-    public Vector2 rawAnalogInput4;
-    public float deadzone = 0.001f;
+    Vector2 rawAnalogInput1;
+    Vector2 rawAnalogInput2;
+    Vector2 rawAnalogInput3;
+    Vector2 rawAnalogInput4;
+    float deadzone = 0.001f;
 
-    public Vector2 analogInput1;
-    public Vector2 analogInput2;
-    public Vector2 analogInput3;
-    public Vector2 analogInput4;
+    Vector2 analogInput1;
+    Vector2 analogInput2;
+    Vector2 analogInput3;
+    Vector2 analogInput4;
 
     public enum ButtonState { Idle, Down, Held, Up };
-    public ButtonState Button1;
-    public ButtonState Button2;
-    public ButtonState Button3;
-    public ButtonState Button4;
-    public ButtonState Button5;
-    public ButtonState Button6;
-    public ButtonState Button7;
-    public ButtonState Button8;
-    public ButtonState Button9;
+    ButtonState Button1;
+    ButtonState Button2;
+    ButtonState Button3;
+    ButtonState Button4;
+    ButtonState Button5;
+    ButtonState Button6;
+    ButtonState Button7;
+    ButtonState Button8;
+    ButtonState Button9;
 
-    public ButtonState SpecialButton1;
-    public ButtonState SpecialButton2;
-    public ButtonState SpecialButton3;
+    ButtonState SpecialButton1;
+    ButtonState SpecialButton2;
+    ButtonState SpecialButton3;
 
-    public ButtonState ButtonUp;
-    public ButtonState ButtonDown;
-    public ButtonState ButtonLeft;
-    public ButtonState ButtonRight;
+    ButtonState ButtonUp;
+    ButtonState ButtonDown;
+    ButtonState ButtonLeft;
+    ButtonState ButtonRight;
 
     // Use this for initialization
     new void Start()
@@ -94,6 +94,18 @@ public class OmicronController : OmicronEventClient
         return 0;
     }
 
+    public Vector2 GetAnalogStick(int ID)
+    {
+        switch(ID)
+        {
+            case (1): return analogInput1;
+            case (2): return analogInput2;
+            case (3): return analogInput3;
+            case (4): return analogInput4;
+        }
+        return Vector2.zero;
+    }
+
     void OnEvent(EventData e)
     {
         if (e.sourceId == sourceID || sourceID == -1)
@@ -132,6 +144,14 @@ public class OmicronController : OmicronEventClient
             output.y = 0;
         }
         return output;
+    }
+
+    public void UpdateAnalog(Vector2 analog1, Vector2 analog2, Vector2 analog3, Vector2 analog4)
+    {
+        analogInput1 = analog1;
+        analogInput2 = analog2;
+        analogInput3 = analog3;
+        analogInput4 = analog4;
     }
 
     public void UpdateButtons(int flags)

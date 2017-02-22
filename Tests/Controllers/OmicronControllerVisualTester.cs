@@ -45,11 +45,11 @@ public class OmicronControllerVisualTester : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        leftAnalogStick = new Vector2(controller.analogInput1.x, controller.analogInput1.y);
-		rightAnalogStick = new Vector2(controller.analogInput2.x, controller.analogInput2.y);
-        analogTriggers = new Vector2(controller.analogInput3.x, controller.analogInput3.y);
+        leftAnalogStick = controller.GetAnalogStick(1);
+		rightAnalogStick = controller.GetAnalogStick(2);
+        analogTriggers = controller.GetAnalogStick(3);
 
-        if( buttonL3 )
+        if ( buttonL3 )
 			buttonL3.transform.localEulerAngles = new Vector3( -leftAnalogStick.y, 0, -leftAnalogStick.x ) * 30;
 		if( buttonR3 )
 			buttonR3.transform.localEulerAngles = new Vector3( rightAnalogStick.y, 0, -rightAnalogStick.x ) * 30;
@@ -61,26 +61,26 @@ public class OmicronControllerVisualTester : MonoBehaviour
 
         // Tests if hold state is working properly (public state varibles should change)
         // Tests if up/down is working (visual buttons should change)
-        SetLit(buttonCross, controller.Button3);
-        SetLit(buttonCircle, controller.Button2);
-        SetLit(buttonTriangle, controller.Button1);
-        SetLit(buttonSquare, controller.Button4);
+        SetLit(buttonCross, controller.GetButtonState(CAVE2.Button.Button3));
+        SetLit(buttonCircle, controller.GetButtonState(CAVE2.Button.Button2));
+        SetLit(buttonTriangle, controller.GetButtonState(CAVE2.Button.Button1));
+        SetLit(buttonSquare, controller.GetButtonState(CAVE2.Button.Button4));
 
-        SetLit(buttonUp, controller.ButtonUp);
-        SetLit(buttonDown, controller.ButtonDown);
-        SetLit(buttonLeft, controller.ButtonLeft);
-        SetLit(buttonRight, controller.ButtonRight);
+        SetLit(buttonUp, controller.GetButtonState(CAVE2.Button.ButtonUp));
+        SetLit(buttonDown, controller.GetButtonState(CAVE2.Button.ButtonDown));
+        SetLit(buttonLeft, controller.GetButtonState(CAVE2.Button.ButtonLeft));
+        SetLit(buttonRight, controller.GetButtonState(CAVE2.Button.ButtonRight));
 
-        SetLit(buttonL1, controller.Button5);
-        SetLit(buttonL2, controller.Button7);
-        SetLit(buttonL3, controller.Button6);
+        SetLit(buttonL1, controller.GetButtonState(CAVE2.Button.Button5));
+        SetLit(buttonL2, controller.GetButtonState(CAVE2.Button.Button7));
+        SetLit(buttonL3, controller.GetButtonState(CAVE2.Button.Button6));
 
-        SetLit(buttonR1, controller.Button8);
-        SetLit(buttonR2, controller.SpecialButton3);
-        SetLit(buttonR3, controller.Button9);
+        SetLit(buttonR1, controller.GetButtonState(CAVE2.Button.Button8));
+        SetLit(buttonR2, controller.GetButtonState(CAVE2.Button.SpecialButton3));
+        SetLit(buttonR3, controller.GetButtonState(CAVE2.Button.Button9));
 
-        SetLit(buttonSelect, controller.SpecialButton1);
-        SetLit(buttonStart, controller.SpecialButton2);
+        SetLit(buttonSelect, controller.GetButtonState(CAVE2.Button.SpecialButton1));
+        SetLit(buttonStart, controller.GetButtonState(CAVE2.Button.SpecialButton2));
 
     }
 

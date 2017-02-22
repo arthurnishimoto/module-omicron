@@ -132,14 +132,18 @@ public class CAVE2InputManager : OmicronEventClient
             wandButtonManager = (OmicronController)wandManagers[wandID];
         }
 #if USING_GETREAL3D
-        wandButtonManager.analogInput1 = new Vector2(
+
+        Vector2 analog1 = new Vector2(
             getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickLR)),
             getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickUD))
         );
-        wandButtonManager.analogInput2 = new Vector2(
+        Vector2 analog2 = new Vector2(
             getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickLR)),
             getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickUD))
         );
+
+        wandButtonManager.UpdateAnalog(analog1, analog2, Vector2.zero, Vector2.zero);
+
         //wandButtonManager.analogInput3 = new Vector2(
         //    getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.AnalogTriggerL)),
         //    getReal3D.Input.GetAxis(0)

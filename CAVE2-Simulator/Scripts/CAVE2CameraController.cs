@@ -7,7 +7,7 @@ public class CAVE2CameraController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		// CAVE2.GetCAVE2Manager().GetComponent<CAVE2Manager>().AddCameraController(gameObject);
+		CAVE2.AddCameraController(this);
 
         mainCamera = GetComponentInChildren<Camera>();
 

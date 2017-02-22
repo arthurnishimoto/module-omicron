@@ -128,6 +128,12 @@ public class CAVE2 : MonoBehaviour
     }
     // ---------------------------------------------------------------------------------------------
 
+    // CAVE2 Omicron Management --------------------------------------------------------------------
+    public static void AddCameraController(CAVE2CameraController cam)
+    {
+        CAVE2Manager.AddCameraController(cam);
+    }
+    // ---------------------------------------------------------------------------------------------
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
     public static void BroadcastMessage(string targetObjectName, string methodName, object param)
@@ -200,20 +206,33 @@ public class CAVE2Manager : MonoBehaviour {
 
     static string machineName;
 
-    public bool simulatorMode;
-    public bool usingKinectTrackingSimulator;
+    
 
 
     public int head1MocapID = 0;
     public int wand1MocapID = 1;
+    public int wand1ControllerID = 3;
 
     public int head2MocapID = 2;
     public int wand2MocapID = 3;
+    public int wand2ControllerID = 3;
+
+    ArrayList cameraControllers;
+    public CAVE2CameraController mainCameraController;
+
+    // Simulator
+    public bool simulatorMode;
+    public bool usingKinectTrackingSimulator;
+
+    public Vector3 simulatorHeadPosition = new Vector3(0.0f, 1.6f, 0.0f);
+    public Vector3 simulatorHeadRotation = new Vector3(0.0f, 0.0f, 0.0f);
 
     void Start()
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
+
+        cameraControllers = new ArrayList();
 
         machineName = System.Environment.MachineName;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
@@ -225,25 +244,54 @@ public class CAVE2Manager : MonoBehaviour {
         {
             CAVE2Manager_Instance = this;
         }
+
+        if( !UsingGetReal3D() && simulatorMode )
+        {
+            if (mainCameraController)
+            {
+                mainCameraController.GetMainCamera().transform.localPosition = simulatorHeadPosition;
+                mainCameraController.GetMainCamera().transform.localEulerAngles = simulatorHeadRotation;
+            }
+        }
     }
 
     // CAVE2 Tracking Management -------------------------------------------------------------------
     public static Vector3 GetHeadPosition(int ID)
     {
         int sensorID = 0;
-        if (ID == 1)
-            sensorID = GetCAVE2Manager().head1MocapID;
+        Vector3 pos = Vector3.zero;
 
-        return GetCAVE2Manager().inputManager.GetMocapPosition(sensorID);
+        if (ID == 1)
+        {
+            if (CAVE2.IsSimulatorMode())
+            {
+                pos = GetCAVE2Manager().simulatorHeadPosition;
+            }
+            else
+            {
+                sensorID = GetCAVE2Manager().head1MocapID;
+                pos = GetCAVE2Manager().inputManager.GetMocapPosition(sensorID);
+            }
+        }
+        return pos;
     }
 
     public static Quaternion GetHeadRotation(int ID)
     {
         int sensorID = 0;
+        Quaternion rot = Quaternion.identity;
         if (ID == 1)
+        {
             sensorID = GetCAVE2Manager().head1MocapID;
+            rot = GetCAVE2Manager().inputManager.GetMocapRotation(sensorID);
 
-        return GetCAVE2Manager().inputManager.GetMocapRotation(sensorID);
+            if (CAVE2.IsSimulatorMode())
+            {
+                rot = Quaternion.Euler(GetCAVE2Manager().simulatorHeadRotation);
+            }
+        }
+
+        return rot;
     }
 
     public static Vector3 GetWandPosition(int ID)
@@ -258,12 +306,12 @@ public class CAVE2Manager : MonoBehaviour {
 
     public static Vector3 GetMocapPosition(int ID)
     {
-        return CAVE2Manager.GetMocapPosition(ID);
+        return GetCAVE2Manager().inputManager.GetMocapPosition(ID);
     }
 
     public static Quaternion GetMocapRotation(int ID)
     {
-        return CAVE2Manager.GetMocapRotation(ID);
+        return GetCAVE2Manager().inputManager.GetMocapRotation(ID);
     }
     // ---------------------------------------------------------------------------------------------
 
@@ -447,12 +495,32 @@ public class CAVE2Manager : MonoBehaviour {
     // CAVE2 Simulator Management ------------------------------------------------------------------
     public static bool IsSimulatorMode()
     {
-        //CAVE2 manager = GameObject.Find("CAVE2-Manager").GetComponent<CAVE2>();
-        //return (manager.simulatorMode || manager.usingKinectTrackingSimulator);
-        return false;
+        return CAVE2Manager_Instance.simulatorMode;
     }
     // ---------------------------------------------------------------------------------------------
 
 
+    // CAVE2 Omicron Management --------------------------------------------------------------------
+    public static void AddCameraController(CAVE2CameraController cam)
+    {
+        if (CAVE2Manager_Instance.cameraControllers == null)
+        {
+            CAVE2Manager_Instance.cameraControllers = new ArrayList();
+        }
+
+        if(CAVE2Manager_Instance.cameraControllers.Count == 0)
+            CAVE2Manager_Instance.mainCameraController = cam;
+
+        CAVE2Manager_Instance.cameraControllers.Add(cam);
+    }
+
+    public static CAVE2CameraController GetCameraController(int cam)
+    {
+        if (cam >= 0 && cam < CAVE2Manager_Instance.cameraControllers.Count - 1)
+            return (CAVE2CameraController)CAVE2Manager_Instance.cameraControllers[cam];
+        else
+            return null;
+    }
+    // ---------------------------------------------------------------------------------------------
 
 }
