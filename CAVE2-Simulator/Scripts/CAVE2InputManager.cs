@@ -70,6 +70,26 @@ public class CAVE2InputManager : OmicronEventClient
         return 0;
     }
 
+    public Vector3 GetMocapPosition(int ID)
+    {
+        if (mocapManagers.ContainsKey(ID))
+        {
+            OmicronMocapSensor mocap = (OmicronMocapSensor)mocapManagers[ID];
+            return mocap.position;
+        }
+        return Vector3.zero;
+    }
+
+    public Quaternion GetMocapRotation(int ID)
+    {
+        if (mocapManagers.ContainsKey(ID))
+        {
+            OmicronMocapSensor mocap = (OmicronMocapSensor)mocapManagers[ID];
+            return mocap.orientation;
+        }
+        return Quaternion.identity;
+    }
+
     // Parses Omicron Input Data
     void OnEvent(EventData e)
     {
@@ -78,7 +98,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             if (!mocapManagers.ContainsKey((int)e.sourceId))
             {
-                OmicronMocapManager mocapManager = gameObject.AddComponent<OmicronMocapManager>();
+                OmicronMocapSensor mocapManager = gameObject.AddComponent<OmicronMocapSensor>();
                 mocapManager.sourceID = (int)e.sourceId;
 
                 mocapManagers[(int)e.sourceId] = mocapManager;
@@ -150,8 +170,8 @@ public class CAVE2InputManager : OmicronEventClient
         if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
             flags += (int)EventBase.Flags.Button4;
         // Wand Button 8 (R1/RB)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))
-            flags += (int)EventBase.Flags.Button8;
+        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
+            flags += (int)EventBase.Flags.SpecialButton3;
         // Wand Button 5 (L1/LB)
         if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button5)))
             flags += (int)EventBase.Flags.Button5;

@@ -9,37 +9,57 @@ public class CAVE2WandUpdater : MonoBehaviour
     public Material litMaterial;
     public Material unlitMaterial;
 
-    public GameObject buttonCross;
-    public GameObject buttonCircle;
-    public GameObject buttonUp;
-    public GameObject buttonDown;
-    public GameObject buttonLeft;
-    public GameObject buttonRight;
+    public Transform buttonCross;
+    public Transform buttonCircle;
+    public Transform buttonUp;
+    public Transform buttonDown;
+    public Transform buttonLeft;
+    public Transform buttonRight;
 
-    public GameObject buttonL1;
-    public GameObject buttonL2;
-    public GameObject buttonL3;
+    public Transform buttonL1;
+    public Transform buttonL2;
+    public Transform buttonL3;
 
     public Vector2 leftAnalogStick;
     public Vector2 analogTriggers;
 
     // Gamepad
-    public GameObject buttonTriangle;
-    public GameObject buttonSquare;
+    public Transform buttonTriangle;
+    public Transform buttonSquare;
 
-    public GameObject buttonR1;
-    public GameObject buttonR2;
-    public GameObject buttonR3;
+    public Transform buttonR1;
+    public Transform buttonR2;
+    public Transform buttonR3;
 
     public Vector2 rightAnalogStick;
 
-    public GameObject buttonSelect;
-    public GameObject buttonStart;
+    public Transform buttonSelect;
+    public Transform buttonStart;
 
     // Use this for initialization
     void Start()
     {
+        // Wand (Navigation Controller)
+        buttonCross = transform.FindChild("CrossButton");
+        buttonCircle = transform.FindChild("CircleButton");
+        buttonDown = transform.FindChild("ButtonDown");
+        buttonLeft = transform.FindChild("ButtonLeft");
+        buttonRight = transform.FindChild("ButtonRight");
+        buttonUp = transform.FindChild("ButtonUp");
+        buttonL1 = transform.FindChild("L1");
+        buttonL2 = transform.FindChild("L2");
+        buttonL3 = transform.FindChild("AnalogStick-L3");
 
+        // Full Controller
+        buttonTriangle = transform.FindChild("TriangleButton");
+        buttonSquare = transform.FindChild("SquareButton");
+
+        buttonR1 = transform.FindChild("R1");
+        buttonR2 = transform.FindChild("R2");
+        buttonR3 = transform.FindChild("AnalogStick-R3");
+
+        buttonSelect = transform.FindChild("Select");
+        buttonStart = transform.FindChild("Start");
     }
 
     // Update is called once per frame
@@ -50,14 +70,14 @@ public class CAVE2WandUpdater : MonoBehaviour
         analogTriggers = new Vector2(CAVE2.GetAxis(wandID, CAVE2.Axis.AnalogTriggerL), CAVE2.GetAxis(wandID, CAVE2.Axis.AnalogTriggerR));
 
         if (buttonL3)
-            buttonL3.transform.localEulerAngles = new Vector3(-leftAnalogStick.y, 0, -leftAnalogStick.x) * 30;
+            buttonL3.localEulerAngles = new Vector3(-leftAnalogStick.y, 0, -leftAnalogStick.x) * 30;
         if (buttonR3)
-            buttonR3.transform.localEulerAngles = new Vector3(rightAnalogStick.y, 0, -rightAnalogStick.x) * 30;
+            buttonR3.localEulerAngles = new Vector3(rightAnalogStick.y, 0, -rightAnalogStick.x) * 30;
 
         if (buttonL2)
-            buttonL2.transform.localEulerAngles = new Vector3(0, 90, analogTriggers.x * 20);
+            buttonL2.localEulerAngles = new Vector3(0, 90, analogTriggers.x * 20);
         if (buttonR2)
-            buttonR2.transform.localEulerAngles = new Vector3(0, 90, analogTriggers.y * 20);
+            buttonR2.localEulerAngles = new Vector3(0, 90, analogTriggers.y * 20);
 
         // Tests if hold state is working properly (public state varibles should change)
         // Tests if up/down is working (visual buttons should change)
@@ -84,7 +104,7 @@ public class CAVE2WandUpdater : MonoBehaviour
 
     }
 
-    void SetLit(GameObject g, OmicronController.ButtonState state)
+    void SetLit(Transform g, OmicronController.ButtonState state)
     {
         if (g)
         {

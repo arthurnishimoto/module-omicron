@@ -3,7 +3,7 @@ using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class OmicronMocapManager : OmicronEventClient
+public class OmicronMocapSensor : OmicronEventClient
 {
     public int sourceID = 1; // -1 for any
 

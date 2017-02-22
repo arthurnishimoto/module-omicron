@@ -12,19 +12,34 @@ public class CAVE2 : MonoBehaviour
     public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
 
     // CAVE2 Tracking Management -------------------------------------------------------------------
-    public static Vector3 GetHead(int ID)
+    public static Vector3 GetHeadPosition(int ID)
     {
-        return Vector3.zero;
+        return CAVE2Manager.GetHeadPosition(ID);
     }
 
-    public static Vector3 GetWandPosition(int wandID)
+    public static Quaternion GetHeadRotation(int ID)
     {
-        return Vector3.zero;
+        return CAVE2Manager.GetHeadRotation(ID);
     }
 
-    public static Quaternion GetWandRotation(int wandID)
+    public static Vector3 GetWandPosition(int ID)
     {
-        return Quaternion.identity;
+        return CAVE2Manager.GetWandPosition(ID);
+    }
+
+    public static Quaternion GetWandRotation(int ID)
+    {
+        return CAVE2Manager.GetWandRotation(ID);
+    }
+
+    public static Vector3 GetMocapPosition(int ID)
+    {
+        return CAVE2Manager.GetMocapPosition(ID);
+    }
+
+    public static Quaternion GetMocapRotation(int ID)
+    {
+        return CAVE2Manager.GetMocapRotation(ID);
     }
     // ---------------------------------------------------------------------------------------------
 
@@ -183,11 +198,17 @@ public class CAVE2Manager : MonoBehaviour {
     static CAVE2Manager CAVE2Manager_Instance;
     CAVE2InputManager inputManager;
 
-    
     static string machineName;
 
     public bool simulatorMode;
     public bool usingKinectTrackingSimulator;
+
+
+    public int head1MocapID = 0;
+    public int wand1MocapID = 1;
+
+    public int head2MocapID = 2;
+    public int wand2MocapID = 3;
 
     void Start()
     {
@@ -207,19 +228,42 @@ public class CAVE2Manager : MonoBehaviour {
     }
 
     // CAVE2 Tracking Management -------------------------------------------------------------------
-    public static Vector3 GetHead(int ID)
+    public static Vector3 GetHeadPosition(int ID)
     {
-        return Vector3.zero;
+        int sensorID = 0;
+        if (ID == 1)
+            sensorID = GetCAVE2Manager().head1MocapID;
+
+        return GetCAVE2Manager().inputManager.GetMocapPosition(sensorID);
     }
 
-    public static Vector3 GetWandPosition(int wandID)
+    public static Quaternion GetHeadRotation(int ID)
     {
-        return Vector3.zero;
+        int sensorID = 0;
+        if (ID == 1)
+            sensorID = GetCAVE2Manager().head1MocapID;
+
+        return GetCAVE2Manager().inputManager.GetMocapRotation(sensorID);
     }
 
-    public static Quaternion GetWandRotation(int wandID)
+    public static Vector3 GetWandPosition(int ID)
     {
-        return Quaternion.identity;
+        return CAVE2Manager.GetWandPosition(ID);
+    }
+
+    public static Quaternion GetWandRotation(int ID)
+    {
+        return CAVE2Manager.GetWandRotation(ID);
+    }
+
+    public static Vector3 GetMocapPosition(int ID)
+    {
+        return CAVE2Manager.GetMocapPosition(ID);
+    }
+
+    public static Quaternion GetMocapRotation(int ID)
+    {
+        return CAVE2Manager.GetMocapRotation(ID);
     }
     // ---------------------------------------------------------------------------------------------
 
