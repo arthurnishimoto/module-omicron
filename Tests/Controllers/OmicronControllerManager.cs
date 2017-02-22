@@ -113,6 +113,10 @@ public class OmicronControllerManager : OmicronEventClient
             analogInput2 = ApplyDeadzone(rawAnalogInput2);
             analogInput3 = rawAnalogInput3;
             analogInput4 = rawAnalogInput4;
+
+            // Flip Up/Down analog stick values
+            analogInput1.y *= -1;
+            analogInput2.y *= -1;
         }
     }
 

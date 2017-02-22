@@ -376,7 +376,8 @@ class OmicronManager : MonoBehaviour
 #if USING_GETREAL3D
 					if(getReal3D.Cluster.isMaster)
 					{
-						getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
+                        // TODO: Breaks in getReal 3.3.3
+						//getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
 					}
 #endif
             }
