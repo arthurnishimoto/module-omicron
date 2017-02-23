@@ -19,6 +19,9 @@ public class OmicronMocapSensor : OmicronEventClient
 
     void OnEvent(EventData e)
     {
+        if (CAVE2.IsMaster() && CAVE2.GetCAVE2Manager().mocapEmulation)
+            return;
+
         if (e.sourceId == sourceID || sourceID == -1)
         {
             position = new Vector3(e.posx, e.posy, e.posz);

@@ -70,7 +70,7 @@ public class CAVE2WandUpdater : MonoBehaviour
         analogTriggers = new Vector2(CAVE2.GetAxis(wandID, CAVE2.Axis.AnalogTriggerL), CAVE2.GetAxis(wandID, CAVE2.Axis.AnalogTriggerR));
 
         if (buttonL3)
-            buttonL3.localEulerAngles = new Vector3(-leftAnalogStick.y, 0, -leftAnalogStick.x) * 30;
+            buttonL3.localEulerAngles = new Vector3(leftAnalogStick.y, 0, -leftAnalogStick.x) * 30;
         if (buttonR3)
             buttonR3.localEulerAngles = new Vector3(rightAnalogStick.y, 0, -rightAnalogStick.x) * 30;
 

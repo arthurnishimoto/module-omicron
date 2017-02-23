@@ -211,21 +211,39 @@ public class CAVE2Manager : MonoBehaviour {
 
     public int head1MocapID = 0;
     public int wand1MocapID = 1;
-    public int wand1ControllerID = 3;
+    public int wand1ControllerID = 1;
 
     public int head2MocapID = 2;
     public int wand2MocapID = 3;
-    public int wand2ControllerID = 3;
+    public int wand2ControllerID = 2;
 
     ArrayList cameraControllers;
     public CAVE2CameraController mainCameraController;
 
     // Simulator
     public bool simulatorMode;
+    public bool mocapEmulation;
+    public bool keyboardEventEmulation;
     public bool usingKinectTrackingSimulator;
 
     public Vector3 simulatorHeadPosition = new Vector3(0.0f, 1.6f, 0.0f);
     public Vector3 simulatorHeadRotation = new Vector3(0.0f, 0.0f, 0.0f);
+
+    public Vector3 simulatorWandPosition = new Vector3(0.16f, 1.43f, 0.4f);
+    public Vector3 simulatorWandRotation = new Vector3(0.0f, 0.0f, 0.0f);
+
+    // CAVE2 Simulator to Wand button bindings
+    public string wandSimulatorAnalogUD = "Vertical";
+    public string wandSimulatorAnalogLR = "Horizontal";
+    public string wandSimulatorButton3 = "Fire1"; // PS3 Navigation Cross
+    public string wandSimulatorButton2 = "Fire2"; // PS3 Navigation Circle
+    public KeyCode wandSimulatorDPadUp = KeyCode.UpArrow;
+    public KeyCode wandSimulatorDPadDown = KeyCode.DownArrow;
+    public KeyCode wandSimulatorDPadLeft = KeyCode.LeftArrow;
+    public KeyCode wandSimulatorDPadRight = KeyCode.RightArrow;
+    public KeyCode wandSimulatorButton5 = KeyCode.Space; // PS3 Navigation L1
+    public string wandSimulatorButton6 = "Fire3"; // PS3 Navigation L3
+    public KeyCode wandSimulatorButton7 = KeyCode.LeftShift; // PS3 Navigation L2
 
     void Start()
     {
@@ -263,16 +281,10 @@ public class CAVE2Manager : MonoBehaviour {
 
         if (ID == 1)
         {
-            if (CAVE2.IsSimulatorMode())
-            {
-                pos = GetCAVE2Manager().simulatorHeadPosition;
-            }
-            else
-            {
-                sensorID = GetCAVE2Manager().head1MocapID;
-                pos = GetCAVE2Manager().inputManager.GetMocapPosition(sensorID);
-            }
+            sensorID = GetCAVE2Manager().head1MocapID;
+            
         }
+        pos = GetCAVE2Manager().inputManager.GetMocapPosition(sensorID);
         return pos;
     }
 
@@ -283,14 +295,9 @@ public class CAVE2Manager : MonoBehaviour {
         if (ID == 1)
         {
             sensorID = GetCAVE2Manager().head1MocapID;
-            rot = GetCAVE2Manager().inputManager.GetMocapRotation(sensorID);
-
-            if (CAVE2.IsSimulatorMode())
-            {
-                rot = Quaternion.Euler(GetCAVE2Manager().simulatorHeadRotation);
-            }
         }
 
+        rot = GetCAVE2Manager().inputManager.GetMocapRotation(sensorID);
         return rot;
     }
 
