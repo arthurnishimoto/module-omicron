@@ -25,6 +25,21 @@ public class CAVE2CameraController : MonoBehaviour {
 #endif
     }
 
+    void Update()
+    {
+        if( CAVE2.IsSimulatorMode() )
+        {
+#if USING_GETREAL3D
+            if (mainCamera.GetComponent<getRealCameraUpdater>())
+            {
+                mainCamera.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
+                mainCamera.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
+                mainCamera.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+            }
+#endif
+        }
+    }
+
     public Camera GetMainCamera()
     {
         return mainCamera;

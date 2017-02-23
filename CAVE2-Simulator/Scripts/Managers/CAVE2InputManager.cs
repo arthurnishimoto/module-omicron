@@ -12,6 +12,8 @@ public class CAVE2InputManager : OmicronEventClient
     public float axisSensitivity = 1f;
     public float axisDeadzone = 0.2f;
 
+    public Vector3 wand1TrackingOffset = new Vector3(-0.007781088f, -0.04959464f, -0.07368752f);
+
     // Use this for initialization
     new void Start () {
         base.Start();
@@ -277,71 +279,72 @@ public class CAVE2InputManager : OmicronEventClient
 
         // getReal3D
 #if USING_GETREAL3D
+        if (!CAVE2.IsSimulatorMode())
+        {
+            mainHeadSensor.position = getReal3D.Input.head.position;
+            mainHeadSensor.orientation = getReal3D.Input.head.rotation;
 
-        mainHeadSensor.position = getReal3D.Input.head.position;
-        mainHeadSensor.orientation = getReal3D.Input.head.rotation;
+            wandMocapSensor.position = getReal3D.Input.wand.position;
+            wandMocapSensor.orientation = getReal3D.Input.wand.rotation;
 
-        wandMocapSensor.position = getReal3D.Input.wand.position;
-        wandMocapSensor.orientation = getReal3D.Input.wand.rotation;
+            analog1 = new Vector2(
+                getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickLR)),
+                getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickUD))
+            );
+            analog2 = new Vector2(
+                getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickLR)),
+                getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickUD))
+            );
 
-        analog1 = new Vector2(
-            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickLR)),
-            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickUD))
-        );
-        analog2 = new Vector2(
-            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickLR)),
-            getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.RightAnalogStickUD))
-        );
+            flags = 0;
+            float DPadUD = getReal3D.Input.GetAxis("DPadUD");
+            float DPadLR = getReal3D.Input.GetAxis("DPadLR");
+            if (DPadUD > 0)
+                flags += (int)EventBase.Flags.ButtonUp;
+            else if (DPadUD < 0)
+                flags += (int)EventBase.Flags.ButtonDown;
+            if (DPadLR < 0)
+                flags += (int)EventBase.Flags.ButtonLeft;
+            else if (DPadLR > 0)
+                flags += (int)EventBase.Flags.ButtonRight;
 
-        flags = 0;
-        float DPadUD = getReal3D.Input.GetAxis("DPadUD");
-        float DPadLR = getReal3D.Input.GetAxis("DPadLR");
-        if (DPadUD > 0)
-            flags += (int)EventBase.Flags.ButtonUp;
-        else if (DPadUD < 0)
-            flags += (int)EventBase.Flags.ButtonDown;
-        if (DPadLR < 0)
-            flags += (int)EventBase.Flags.ButtonLeft;
-        else if (DPadLR > 0)
-            flags += (int)EventBase.Flags.ButtonRight;
-
-        // Wand Button 1 (Triangle/Y)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
-            flags += (int)EventBase.Flags.Button1;
-        // F -> Wand Button 2 (Circle/B)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button2)))
-            flags += (int)EventBase.Flags.Button2;
-        // R -> Wand Button 3 (Cross/A)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button3)))
-            flags += (int)EventBase.Flags.Button3;
-        // Wand Button 4 (Square/X)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
-            flags += (int)EventBase.Flags.Button4;
-        // Wand Button 8 (R1/RB)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
-            flags += (int)EventBase.Flags.SpecialButton3;
-        // Wand Button 5 (L1/LB)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button5)))
-            flags += (int)EventBase.Flags.Button5;
-        // Wand Button 6 (L3)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button6)))
-            flags += (int)EventBase.Flags.Button6;
-        // Wand Button 7 (L2)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button7)))
-            flags += (int)EventBase.Flags.Button7;
-        // Wand Button 8 (R2)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))
-            flags += (int)EventBase.Flags.Button8;
-        // Wand Button 9 (R3)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button9)))
-            flags += (int)EventBase.Flags.Button9;
-        // Wand Button SP1 (Back)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton1)))
-            flags += (int)EventBase.Flags.SpecialButton1;
-        // Wand Button SP2 (Start)
-        if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton2)))
-            flags += (int)EventBase.Flags.SpecialButton2;
-
+            // Wand Button 1 (Triangle/Y)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
+                flags += (int)EventBase.Flags.Button1;
+            // F -> Wand Button 2 (Circle/B)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button2)))
+                flags += (int)EventBase.Flags.Button2;
+            // R -> Wand Button 3 (Cross/A)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button3)))
+                flags += (int)EventBase.Flags.Button3;
+            // Wand Button 4 (Square/X)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
+                flags += (int)EventBase.Flags.Button4;
+            // Wand Button 8 (R1/RB)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
+                flags += (int)EventBase.Flags.SpecialButton3;
+            // Wand Button 5 (L1/LB)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button5)))
+                flags += (int)EventBase.Flags.Button5;
+            // Wand Button 6 (L3)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button6)))
+                flags += (int)EventBase.Flags.Button6;
+            // Wand Button 7 (L2)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button7)))
+                flags += (int)EventBase.Flags.Button7;
+            // Wand Button 8 (R2)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))
+                flags += (int)EventBase.Flags.Button8;
+            // Wand Button 9 (R3)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button9)))
+                flags += (int)EventBase.Flags.Button9;
+            // Wand Button SP1 (Back)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton1)))
+                flags += (int)EventBase.Flags.SpecialButton1;
+            // Wand Button SP2 (Start)
+            if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton2)))
+                flags += (int)EventBase.Flags.SpecialButton2;
+        }
         
 #endif
         // Update wandManager

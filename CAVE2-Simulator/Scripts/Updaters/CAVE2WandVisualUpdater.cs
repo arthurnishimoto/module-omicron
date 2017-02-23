@@ -2,7 +2,7 @@
 using System.Collections;
 using omicronConnector;
 
-public class CAVE2WandUpdater : MonoBehaviour
+public class CAVE2WandVisualUpdater : MonoBehaviour
 {
     public int wandID = 1;
 

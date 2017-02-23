@@ -223,8 +223,9 @@ public class CAVE2Manager : MonoBehaviour {
     public bool simulatorMode;
     public bool mocapEmulation;
     public bool keyboardEventEmulation;
+    public bool wandMousePointerEmulation;
     public bool usingKinectTrackingSimulator;
-
+    
     public Vector3 simulatorHeadPosition = new Vector3(0.0f, 1.6f, 0.0f);
     public Vector3 simulatorHeadRotation = new Vector3(0.0f, 0.0f, 0.0f);
 
@@ -244,6 +245,19 @@ public class CAVE2Manager : MonoBehaviour {
     public string wandSimulatorButton6 = "Fire3"; // PS3 Navigation L3
     public KeyCode wandSimulatorButton7 = KeyCode.LeftShift; // PS3 Navigation L2
 
+    public enum TrackerEmulated { CAVE, Head, Wand };
+    public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
+    string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
+    string[] trackerEmuModeStrings = { "Pointer", "Translate", "Rotate" };
+
+    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
+    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
+    public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
+    public KeyCode toggleWandModeKey = KeyCode.Tab;
+    public bool wandModeToggled = false;
+    Vector3 mouseLastPos;
+    public Vector3 mouseDeltaPos;
+
     void Start()
     {
         CAVE2Manager_Instance = this;
@@ -254,6 +268,18 @@ public class CAVE2Manager : MonoBehaviour {
 
         machineName = System.Environment.MachineName;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
+
+        if( OnCAVE2Display() || OnCAVE2Master() )
+        {
+#if UNITY_EDITOR
+#else
+            simulatorMode = false;
+            mocapEmulation = false;
+            keyboardEventEmulation = false;
+            wandMousePointerEmulation = false;
+            usingKinectTrackingSimulator = false;
+#endif
+        }
     }
 
     void Update()
@@ -479,6 +505,19 @@ public class CAVE2Manager : MonoBehaviour {
     {
         machineName = System.Environment.MachineName;
         if (machineName.Contains("LYRA") && !IsMaster())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool OnCAVE2Master()
+    {
+        machineName = System.Environment.MachineName;
+        if (machineName.Contains("LYRA-WIN") )
         {
             return true;
         }
