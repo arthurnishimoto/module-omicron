@@ -15,12 +15,15 @@ public class CAVE2HeadMarker : MonoBehaviour {
         headToGroundLine.SetWidth(0.02f, 0.02f);
         headToGroundLine.material = lineMaterial;
 
-        GameObject forwardReference = new GameObject("Head-ForwardRef");
-        forwardReference.transform.parent = transform;
-        forwardLine = forwardReference.AddComponent<LineRenderer>();
+        if (!CAVE2.OnCAVE2Display())
+        {
+            GameObject forwardReference = new GameObject("Head-ForwardRef");
+            forwardReference.transform.parent = transform;
+            forwardLine = forwardReference.AddComponent<LineRenderer>();
 
-        forwardLine.SetWidth(0.02f, 0.02f);
-        forwardLine.material = lineMaterial;
+            forwardLine.SetWidth(0.02f, 0.02f);
+            forwardLine.material = lineMaterial;
+        }
     }
 	
 	// Update is called once per frame

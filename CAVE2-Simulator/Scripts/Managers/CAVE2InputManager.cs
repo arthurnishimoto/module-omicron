@@ -90,6 +90,50 @@ public class CAVE2InputManager : OmicronEventClient
         return Quaternion.identity;
     }
 
+    public Vector3 GetHeadPosition(int ID)
+    {
+        int headID = 1;
+        switch(ID)
+        {
+            case (1): headID = CAVE2.GetCAVE2Manager().head1MocapID; break;
+            case (2): headID = CAVE2.GetCAVE2Manager().head2MocapID; break;
+        }
+        return GetMocapPosition(headID);
+    }
+
+    public Quaternion GetHeadRotation(int ID)
+    {
+        int headID = 1;
+        switch (ID)
+        {
+            case (1): headID = CAVE2.GetCAVE2Manager().head1MocapID; break;
+            case (2): headID = CAVE2.GetCAVE2Manager().head2MocapID; break;
+        }
+        return GetMocapRotation(headID);
+    }
+
+    public Vector3 GetWandPosition(int ID)
+    {
+        int wandID = 1;
+        switch (ID)
+        {
+            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
+            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+        }
+        return GetMocapPosition(wandID);
+    }
+
+    public Quaternion GetWandRotation(int ID)
+    {
+        int wandID = 1;
+        switch (ID)
+        {
+            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
+            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+        }
+        return GetMocapRotation(wandID);
+    }
+
     // Parses Omicron Input Data
     void OnEvent(EventData e)
     {

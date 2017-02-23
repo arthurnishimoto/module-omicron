@@ -11,6 +11,8 @@ public class CAVE2 : MonoBehaviour
     };
     public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
 
+    public static CAVE2InputManager Input;
+
     // CAVE2 Tracking Management -------------------------------------------------------------------
     public static Vector3 GetHeadPosition(int ID)
     {
@@ -206,9 +208,6 @@ public class CAVE2Manager : MonoBehaviour {
 
     static string machineName;
 
-    
-
-
     public int head1MocapID = 0;
     public int wand1MocapID = 1;
     public int wand1ControllerID = 1;
@@ -249,6 +248,7 @@ public class CAVE2Manager : MonoBehaviour {
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
+        CAVE2.Input = inputManager;
 
         cameraControllers = new ArrayList();
 
@@ -284,7 +284,7 @@ public class CAVE2Manager : MonoBehaviour {
             sensorID = GetCAVE2Manager().head1MocapID;
             
         }
-        pos = GetCAVE2Manager().inputManager.GetMocapPosition(sensorID);
+        pos = CAVE2.Input.GetMocapPosition(sensorID);
         return pos;
     }
 
@@ -297,28 +297,28 @@ public class CAVE2Manager : MonoBehaviour {
             sensorID = GetCAVE2Manager().head1MocapID;
         }
 
-        rot = GetCAVE2Manager().inputManager.GetMocapRotation(sensorID);
+        rot = CAVE2.Input.GetMocapRotation(sensorID);
         return rot;
     }
 
     public static Vector3 GetWandPosition(int ID)
     {
-        return CAVE2Manager.GetWandPosition(ID);
+        return CAVE2.Input.GetWandPosition(ID);
     }
 
     public static Quaternion GetWandRotation(int ID)
     {
-        return CAVE2Manager.GetWandRotation(ID);
+        return CAVE2.Input.GetWandRotation(ID);
     }
 
     public static Vector3 GetMocapPosition(int ID)
     {
-        return GetCAVE2Manager().inputManager.GetMocapPosition(ID);
+        return CAVE2.Input.GetMocapPosition(ID);
     }
 
     public static Quaternion GetMocapRotation(int ID)
     {
-        return GetCAVE2Manager().inputManager.GetMocapRotation(ID);
+        return CAVE2.Input.GetMocapRotation(ID);
     }
     // ---------------------------------------------------------------------------------------------
 
@@ -335,27 +335,27 @@ public class CAVE2Manager : MonoBehaviour {
 
     public static float GetAxis(int wandID, CAVE2.Axis axis)
     {
-        return GetCAVE2Manager().inputManager.GetAxis(wandID, axis);
+        return CAVE2.Input.GetAxis(wandID, axis);
     }
 
     public static bool GetButton(int wandID, CAVE2.Button button)
     {
-        return GetCAVE2Manager().inputManager.GetButton(wandID, button);
+        return CAVE2.Input.GetButton(wandID, button);
     }
 
     public static bool GetButtonDown(int wandID, CAVE2.Button button)
     {
-        return GetCAVE2Manager().inputManager.GetButtonDown(wandID, button);
+        return CAVE2.Input.GetButtonDown(wandID, button);
     }
 
     public static bool GetButtonUp(int wandID, CAVE2.Button button)
     {
-        return GetCAVE2Manager().inputManager.GetButtonUp(wandID, button);
+        return CAVE2.Input.GetButtonUp(wandID, button);
     }
 
     public static OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
     {
-        return GetCAVE2Manager().inputManager.GetButtonState(wandID, button);
+        return CAVE2.Input.GetButtonState(wandID, button);
     }
 
     /*
