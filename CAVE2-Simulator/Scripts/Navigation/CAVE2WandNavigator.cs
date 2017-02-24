@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CAVE2WandNavigator : MonoBehaviour {
 
+    public int headID = 1;
     public int wandID = 1;
 
     public CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
@@ -17,7 +18,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
     public Vector2 lookAround = new Vector2();
     public float movementScale = 2;
     public float flyMovementScale = 10;
-    public float turnSpeed = 50;
+    public float turnSpeed = 20;
 
     public Vector3 moveDirection;
 
@@ -109,9 +110,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
         float forwardAngle = transform.eulerAngles.y;
 
         if (forwardReference == ForwardRef.Head)
-            forwardAngle += CAVE2.GetHeadRotation(1).eulerAngles.y;
+            forwardAngle = CAVE2.GetHeadRotation(headID).eulerAngles.y;
         else if (forwardReference == ForwardRef.Wand)
-            forwardAngle += CAVE2.GetWandRotation(1).eulerAngles.y;
+            forwardAngle = CAVE2.GetWandRotation(wandID).eulerAngles.y;
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
@@ -130,7 +131,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
             nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle);
             transform.position = nextPos;
 
-            transform.RotateAround(transform.localToWorldMatrix * CAVE2.GetHeadPosition(1), Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime * turnSpeed);
             transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
         }
 
@@ -146,11 +147,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
         //GetComponent<Rigidbody>().useGravity = false;
         //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         //playerCollider.enabled = false;
-        Vector3 wandPosition = CAVE2.Input.GetWandPosition(1);
-        Quaternion wandRotation = CAVE2.Input.GetWandRotation(1);
+        Vector3 wandPosition = CAVE2.Input.GetWandPosition(wandID);
+        Quaternion wandRotation = CAVE2.Input.GetWandRotation(wandID);
 
-        Vector3 headPosition = CAVE2.Input.GetHeadPosition(1);
-        Quaternion headRotation = CAVE2.Input.GetHeadRotation(1);
+        Vector3 headPosition = CAVE2.Input.GetHeadPosition(headID);
+        Quaternion headRotation = CAVE2.Input.GetHeadRotation(headID);
 
         if (freeflyButtonDown && !freeflyInitVectorSet)
         {
@@ -203,9 +204,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
         float forwardAngle = transform.eulerAngles.y;
 
         if (forwardReference == ForwardRef.Head)
-            forwardAngle += headRotation.y;
+            forwardAngle = headRotation.y;
         else if (forwardReference == ForwardRef.Wand)
-            forwardAngle += wandRotation.eulerAngles.y;
+            forwardAngle = wandRotation.eulerAngles.y;
 
         nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
         nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
@@ -222,7 +223,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
             transform.position = nextPos;
-            transform.RotateAround(transform.localToWorldMatrix * headPosition, Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
         }
     }
 }
