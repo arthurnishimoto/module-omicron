@@ -4,6 +4,7 @@
 	{
 		_Color ("Color", Color) = (0.19, 0.30, 0.47,1)
 		[KeywordEnum(Less, Greater, LEqual, GEqual, Equal, NotEqual, Always)] _ZTest("Z Test", Float) = 2
+		[KeywordEnum(Back, Front, Off)] _Cull("Culling", Float) = 0
 	}
 	SubShader{
 		Tags{
@@ -15,7 +16,7 @@
 		LOD 100
 		ZTest [_ZTest]
 		Lighting Off
-		Cull Off
+		Cull [_Cull]
 		ZWrite Off
 
 		Pass{

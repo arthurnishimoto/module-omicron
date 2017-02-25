@@ -6,8 +6,8 @@ using omicronConnector;
 
 public class CAVE2InputManager : OmicronEventClient
 {
-    Hashtable mocapSensors;
-    Hashtable wandControllers;
+    Hashtable mocapSensors = new Hashtable();
+    Hashtable wandControllers = new Hashtable();
 
     public float axisSensitivity = 1f;
     public float axisDeadzone = 0.2f;
@@ -17,9 +17,6 @@ public class CAVE2InputManager : OmicronEventClient
     // Use this for initialization
     new void Start () {
         base.Start();
-
-        mocapSensors = new Hashtable();
-        wandControllers = new Hashtable();
     }
 
     public OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)

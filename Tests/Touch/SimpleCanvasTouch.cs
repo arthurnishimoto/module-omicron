@@ -46,20 +46,18 @@ public class SimpleCanvasTouch : OmicronEventClient {
         }
     }
 
-    void OnEvent(EventData e)
+    public void OnEvent(TouchPoint touchPoint)
     {
-        //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType);
-        TouchPoint touchPoint = new TouchPoint(e);
         Vector3 screenPosition = RawTouchPosToCanvasCoords(touchPoint.GetPosition());
         int touchID = touchPoint.GetID();
-        //Debug.Log(touchPoint.GetPosition());
+        //Debug.Log(touchPoint.GetPosition() + " " + touchPoint.GetID() + " " + touchPoint.GetGesture());
 
         if (!touchList.ContainsKey(touchID))
         {
             if (touchPoint.GetGesture() == EventBase.Type.Down)
             {
                 GameObject visualMarker = Instantiate(touchPointPrefab);
-                visualMarker.name = "TouchPoint " + e.sourceId;
+                visualMarker.name = "TouchPoint " + touchID;
                 visualMarker.transform.SetParent(transform);
 
                 // Update position with new touch data
@@ -86,11 +84,11 @@ public class SimpleCanvasTouch : OmicronEventClient {
                 existingTouchPoint.Update(screenPosition, EventBase.Type.Move);
 
                 touchList[touchID] = existingTouchPoint;
-                
+
             }
             else if (touchPoint.GetGesture() == EventBase.Type.Up)
             {
-                
+
                 // Get the existing touch data
                 TouchPoint existingTouchPoint = (TouchPoint)touchList[touchID];
                 GameObject visualMarker = existingTouchPoint.GetObjectTouched();
@@ -101,5 +99,12 @@ public class SimpleCanvasTouch : OmicronEventClient {
                 touchList.Remove(touchID);
             }
         }
+    }
+
+    void OnEvent(EventData e)
+    {
+        //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType);
+        TouchPoint touchPoint = new TouchPoint(e);
+        OnEvent(touchPoint);
     }
 }

@@ -91,6 +91,7 @@ public class TouchPoint{
             if (raycastResults.Count > 0)
             {
                 objectTouched = raycastResults[raycastResults.Count - 1].gameObject;
+                Debug.Log(objectTouched);
             }
 
             pointerEvent.Reset();
@@ -312,11 +313,12 @@ class OmicronManager : MonoBehaviour
 	}
 #endif
 
-	public void Update()
+    public SimpleCanvasTouch testTouchCanvas;
+    public void Update()
 	{
-		if( mouseTouchEmulation )
+		if( mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)) )
 		{
-			Vector2 position = new Vector3( Input.mousePosition.x, Input.mousePosition.y );
+			Vector2 position = new Vector3( Input.mousePosition.x / Screen.width, 1 - (Input.mousePosition.y / Screen.height) );
 						
 			// Ray extending from main camera into screen from touch point
 			Ray touchRay = Camera.main.ScreenPointToRay(position);
@@ -330,12 +332,9 @@ class OmicronManager : MonoBehaviour
 				touch.SetGesture( EventBase.Type.Up );
 			else if( Input.GetMouseButton(0) )
 				touch.SetGesture( EventBase.Type.Move );
-				
-			//GameObject[] touchObjects = GameObject.FindGameObjectsWithTag("OmicronListener");
-			//foreach (GameObject touchObj in touchObjects) {
-			//	touchObj.BroadcastMessage("OnTouch",touch,SendMessageOptions.DontRequireReceiver);
-			//}
-		}
+            
+            testTouchCanvas.OnEvent(touch);
+        }
 
         StartCoroutine("SendEventsToClients");
 
