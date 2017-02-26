@@ -15,8 +15,8 @@ public class CAVE2InputManager : OmicronEventClient
     public Vector3 wand1TrackingOffset = new Vector3(-0.007781088f, -0.04959464f, -0.07368752f);
 
     // Prevent other inputs from wand if it has opened a menu
-    bool wand1MenuLock = false;
-    bool wand2MenuLock = false;
+    public bool wand1MenuLock = false;
+    public bool wand2MenuLock = false;
 
     // Use this for initialization
     new void Start () {
