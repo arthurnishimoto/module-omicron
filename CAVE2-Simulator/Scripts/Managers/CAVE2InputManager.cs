@@ -14,9 +14,31 @@ public class CAVE2InputManager : OmicronEventClient
 
     public Vector3 wand1TrackingOffset = new Vector3(-0.007781088f, -0.04959464f, -0.07368752f);
 
+    // Prevent other inputs from wand if it has opened a menu
+    bool wand1MenuLock = false;
+    bool wand2MenuLock = false;
+
     // Use this for initialization
     new void Start () {
         base.Start();
+    }
+
+    public bool IsWandMenuLocked(int wandID)
+    {
+        if (wandID == 1)
+            return wand1MenuLock;
+        else if (wandID == 2)
+            return wand2MenuLock;
+        else
+            return false;
+    }
+
+    public void SetWandMenuLock(int wandID, bool value)
+    {
+        if (wandID == 1)
+            wand1MenuLock = value;
+        else if (wandID == 2)
+            wand2MenuLock = value;
     }
 
     public OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)

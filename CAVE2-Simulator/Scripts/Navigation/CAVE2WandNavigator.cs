@@ -51,9 +51,26 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     CAVE2PlayerCollider playerCollider;
 
+    public Vector3 initialPosition;
+    public Quaternion initialRotation;
+    public NavigationMode initMode;
+
+    public UnityEngine.UI.Text positionUIText;
+
+    public void Reset()
+    {
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+        //navMode = initMode;
+    }
+
     // Use this for initialization
     void Start ()
     {
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+        initMode = navMode;
+
         playerCollider = GetComponent<CAVE2PlayerCollider>();
 
     }
@@ -73,19 +90,22 @@ public class CAVE2WandNavigator : MonoBehaviour {
 	// Update is called once per frame
 	void Update()
     {
+        if(positionUIText)
+            positionUIText.text = "Position: " + transform.position + "\nRotation: " + transform.eulerAngles;
+
         forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
-        forward *= movementScale * globalSpeedMod;
+        forward *= movementScale;
 
         strafe = CAVE2.GetAxis(wandID, strafeAxis);
-        strafe *= movementScale * globalSpeedMod;
+        strafe *= movementScale;
 
         lookAround.x = CAVE2.GetAxis(wandID, lookUDAxis);
-        lookAround.x *= movementScale * globalSpeedMod;
+        lookAround.x *= movementScale;
         lookAround.y = CAVE2.GetAxis(wandID, lookLRAxis);
-        lookAround.y *= movementScale * globalSpeedMod;
+        lookAround.y *= movementScale;
 
         vertical = CAVE2.GetAxis(wandID, verticalAxis);
-        vertical *= movementScale * globalSpeedMod;
+        vertical *= movementScale;
 
         freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
 
@@ -231,14 +251,14 @@ public class CAVE2WandNavigator : MonoBehaviour {
         else if (forwardReference == ForwardRef.Wand)
             forwardAngle = wandRotation.eulerAngles.y;
 
-        nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale * globalSpeedMod;
-        nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale * globalSpeedMod;
+        nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
+        nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
         nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
-            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale * globalSpeedMod;
-            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale * globalSpeedMod;
+            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
+            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
 
             transform.position = nextPos;
             transform.Rotate(new Vector3(0, lookAround.y, 0) * Time.deltaTime * turnSpeed);
