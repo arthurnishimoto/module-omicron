@@ -43,9 +43,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
     public enum ForwardRef { CAVEFront, Head, Wand }
     public ForwardRef forwardReference = ForwardRef.Wand;
 
-    bool freeflyButtonDown;
-    bool freeflyInitVectorSet;
-    Vector3 freeflyInitVector;
+    public bool freeflyButtonDown;
+    public bool freeflyInitVectorSet;
+    public Vector3 freeflyInitVector;
+    public Vector3 wandPosition;
+    public Vector3 movementVector;
 
     Vector3 fly_x, fly_y, fly_z;
 
@@ -182,7 +184,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
         }
     }
 
-
     void UpdateFreeflyMovement()
     {
         GetComponent<Rigidbody>().useGravity = false;
@@ -190,7 +191,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         if (playerCollider)
             playerCollider.enabled = false;
 
-        Vector3 wandPosition = CAVE2.Input.GetWandPosition(wandID);
+        wandPosition = CAVE2.Input.GetWandPosition(wandID);
         Quaternion wandRotation = CAVE2.Input.GetWandRotation(wandID);
 
         Vector3 headPosition = CAVE2.Input.GetHeadPosition(headID);
@@ -216,7 +217,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         }
         else
         {
-            Vector3 movementVector = (wandPosition - freeflyInitVector);
+            movementVector = (wandPosition - freeflyInitVector);
 
             // Ported from Electro's Vortex application by Robert Kooima
             //Vector3 xVec = new Vector3(1.0f,0.0f,0.0f);
@@ -238,7 +239,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
             float rY = -(vx * fly_x.x + vy * fly_x.y + vz * fly_x.z) * Time.deltaTime * turnSpeed;
             float rZ = (wx * fly_x.x + wy * fly_x.y + wz * fly_x.z) * Time.deltaTime * turnSpeed;
 
-            transform.Translate(movementVector * Time.deltaTime * flyMovementScale * globalSpeedMod);
+            transform.Translate(movementVector * flyMovementScale * globalSpeedMod);
             if (navMode == NavigationMode.Freefly)
                 transform.Rotate(new Vector3(rX, rY, rZ));
         }
