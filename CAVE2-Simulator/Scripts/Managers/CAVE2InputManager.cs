@@ -156,7 +156,7 @@ public class CAVE2InputManager : OmicronEventClient
     }
 
     // Parses Omicron Input Data
-    void OnEvent(EventData e)
+    public override void OnEvent(EventData e)
     {
         //Debug.Log("CAVE2Manager_Legacy: '"+name+"' received " + e.serviceType);
         if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)

@@ -39,7 +39,10 @@ public class OmicronControllerVisualTester : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        if(controller == null)
+        {
+            controller = GetComponent<OmicronController>();
+        }
     }
 
     // Update is called once per frame

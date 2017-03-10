@@ -289,7 +289,7 @@ public class CAVE2Manager : MonoBehaviour {
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && simulatorMode )
+        if( !UsingGetReal3D() && (mocapEmulation || usingKinectTrackingSimulator) )
         {
             if (mainCameraController)
             {

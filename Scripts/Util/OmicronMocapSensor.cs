@@ -18,7 +18,7 @@ public class OmicronMocapSensor : OmicronEventClient
         InitOmicron();
     }
 
-    void OnEvent(EventData e)
+    public override void OnEvent(EventData e)
     {
         if (CAVE2.IsMaster() && CAVE2.GetCAVE2Manager().mocapEmulation)
             return;

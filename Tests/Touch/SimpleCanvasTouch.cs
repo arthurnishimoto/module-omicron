@@ -101,7 +101,7 @@ public class SimpleCanvasTouch : OmicronEventClient {
         }
     }
 
-    void OnEvent(EventData e)
+    public override void OnEvent(EventData e)
     {
         //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType);
         TouchPoint touchPoint = new TouchPoint(e);

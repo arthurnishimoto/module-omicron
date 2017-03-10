@@ -106,11 +106,8 @@ public class OmicronController : OmicronEventClient
         return Vector2.zero;
     }
 
-    void OnEvent(EventData e)
+    public override void OnEvent(EventData e)
     {
-        if (CAVE2.IsMaster() && CAVE2.GetCAVE2Manager().keyboardEventEmulation)
-            return;
-
         if (e.sourceId == sourceID || sourceID == -1)
         {
             //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);

@@ -45,6 +45,7 @@ public class TouchPoint{
 	Vector3 position;
 
     int ID;
+    int rootID;
 	EventBase.Type gesture;
 	Ray touchRay = new Ray();
 	RaycastHit touchHit;
@@ -141,6 +142,11 @@ public class TouchPoint{
 		return ID;
 	}
 	
+    public int GetRootID()
+    {
+        return rootID;
+    }
+
 	public long GetTimeStamp(){
 		return timeStamp;
 	}
@@ -156,8 +162,13 @@ public class TouchPoint{
 	public GameObject GetObjectTouched(){
 		 return visualObject;
 	}
-	
-	public void SetGesture(EventBase.Type value){
+
+    public GameObject GetGameObject()
+    {
+        return objectTouched;
+    }
+
+    public void SetGesture(EventBase.Type value){
 		 gesture = value;
 	}
 	
@@ -168,6 +179,16 @@ public class TouchPoint{
 	public void SetObjectTouched(GameObject value){
         visualObject = value;
 	}
+
+    public void SetGameObject(GameObject value)
+    {
+        objectTouched = value;
+    }
+
+    public void SetRootID(int value)
+    {
+        rootID = value;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -369,7 +390,8 @@ class OmicronManager : MonoBehaviour
 
                     if (!c.IsFlaggedForRemoval() && (clientType == EventBase.ServiceType.ServiceTypeAny || eType == clientType))
                     {
-                        c.BroadcastMessage("OnEvent", e, SendMessageOptions.DontRequireReceiver);
+                        //c.BroadcastMessage("OnEvent", e, SendMessageOptions.DontRequireReceiver);
+                        c.OnEvent(e);
                     }
                 }
 #if USING_GETREAL3D

@@ -17,7 +17,7 @@ public class OmicronMocapObject : OmicronEventClient
         InitOmicron();
     }
 
-    void OnEvent(EventData e)
+    public override void OnEvent(EventData e)
     {
         if (e.sourceId == sourceID || sourceID == -1)
         {

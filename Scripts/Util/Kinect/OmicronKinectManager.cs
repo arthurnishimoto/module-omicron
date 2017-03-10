@@ -75,7 +75,7 @@ public class OmicronKinectManager : OmicronEventClient {
         }
     }
 
-	void OnEvent( EventData e )
+    public override void OnEvent( EventData e )
 	{
 		if (enableBodyTracking && e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{

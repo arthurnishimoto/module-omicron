@@ -145,8 +145,8 @@ public class OmicronKinectEventClient : OmicronEventClient {
 			RemoveBody();
 		}
 	}
-	
-	void OnEvent( EventData e )
+
+    public override void OnEvent( EventData e )
 	{
 		if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap )
 		{

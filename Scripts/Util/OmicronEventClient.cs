@@ -32,7 +32,7 @@ using omicronConnector;
 #if USING_GETREAL3D
 public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
 #else
-public class OmicronEventClient : MonoBehaviour {
+public abstract class OmicronEventClient : MonoBehaviour {
 #endif
     OmicronManager omicronManager;
     
@@ -54,11 +54,8 @@ public class OmicronEventClient : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	}
-	
-	void OnEvent( EventData e )
-	{
-		//Debug.Log("OmicronEventClient: '"+name+"' received " + e.serviceType);
-	}
+
+    public abstract void OnEvent(EventData e);
 
 	public void SetFlaggedForRemoval()
 	{

@@ -35,7 +35,7 @@ public class CanvasTouch : OmicronEventClient {
 	
 	}
 
-    void OnEvent(EventData e)
+    public override void OnEvent(EventData e)
     {
         if (e.serviceType == EventBase.ServiceType.ServiceTypePointer)
         {
