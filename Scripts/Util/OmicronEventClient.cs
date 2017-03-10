@@ -34,9 +34,11 @@ public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
 #else
 public class OmicronEventClient : MonoBehaviour {
 #endif
-	OmicronManager omicronManager;
+    OmicronManager omicronManager;
+    
+    protected EventBase.ServiceType eventOptions = EventBase.ServiceType.ServiceTypeAny;
 
-	bool flagForRemoval = false;
+    bool flagForRemoval = false;
 
 	// Use this for initialization
 	public void Start () {
@@ -45,7 +47,7 @@ public class OmicronEventClient : MonoBehaviour {
 
 	public void InitOmicron()
 	{
-		omicronManager = GameObject.Find("CAVE2-Manager").GetComponent<OmicronManager>();
+        omicronManager = OmicronManager.GetOmicronManager();
 		omicronManager.AddClient(this);
 	}
 
@@ -68,4 +70,8 @@ public class OmicronEventClient : MonoBehaviour {
 		return flagForRemoval;
 	}
 
+    public EventBase.ServiceType GetClientType()
+    {
+        return eventOptions;
+    }
 }

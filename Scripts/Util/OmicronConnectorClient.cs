@@ -109,7 +109,8 @@ namespace omicron
             ServiceTypeGeneric,
             ServiceTypeBrain,
             ServiceTypeWand,
-            ServiceTypeSpeech
+            ServiceTypeSpeech,
+            ServiceTypeAny = -1,
         };
 
         //! #PYAPI Supported event types.
@@ -309,7 +310,7 @@ namespace omicronConnector
     //#define OINT_PTR(x) *((int*)&x)
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    class EventData : EventBase
+    public class EventData : EventBase
     {
         public uint timestamp;
         public uint sourceId;
@@ -404,12 +405,14 @@ namespace omicronConnector
         // UDP Connection
         private static UdpClient udpClient;
         private static Thread listenerThread;
+        private static Thread listenTCPThread;
 
         public String InputServer = "localhost";
         public Int32 dataPort = 7000;
         public Int32 msgPort = 27000;
 
         public bool EnableInputService = true;
+        bool connected = false;
 
         static IOmicronConnectorClientListener listener;
 		
@@ -453,39 +456,50 @@ namespace omicronConnector
                     // Creates a separate thread to listen for incoming data
                     listenerThread = new Thread(Listen);
                     listenerThread.Start();
+                    connected = true;
 
-					return true;
+                    listenTCPThread = new Thread(ListenTCP);
+                    listenTCPThread.Start();
+
+                    return true;
                 }
                 catch (ArgumentNullException e)
                 {
                     Debug.LogError("ArgumentNullException: " + e);
-					return false;
+                    connected = false;
+                    return false;
                 }
                 catch (SocketException e)
                 {
                     Debug.LogError("SocketException: " + e);
-					return false;
+                    connected = false;
+                    return false;
                 }
             }
-			return false;
+            connected = false;
+            return false;
         }// CTOR
 
         public void Dispose() 
 	    {
-			String message = "data_off";
-			Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
-			streamToServer.Write(data, 0, data.Length);
+            if (connected)
+            {
+                String message = "data_off";
+                Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+                streamToServer.Write(data, 0, data.Length);
 
-		    // Close the socket when finished receiving datagrams
-            Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
-            udpClient.Close();
-            listenerThread.Abort();
+                // Close the socket when finished receiving datagrams
+                Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
+                udpClient.Close();
+                listenerThread.Abort();
+                listenTCPThread.Abort();
 
-            // Close TCP connection.
-            streamToServer.Close();
-            client.Close();
+                // Close TCP connection.
+                streamToServer.Close();
+                client.Close();
 
-            Debug.Log("OmicronConnectorClient: Shutting down.");
+                Debug.Log("OmicronConnectorClient: Shutting down.");
+            }
 	    }
 
         private static void Listen()
@@ -506,7 +520,21 @@ namespace omicronConnector
             }
         }// Listen()
 
-		public static EventData ByteArrayToEventData(byte[] receiveBytes)
+        private void ListenTCP()
+        {
+            while (true)
+            {
+                if (streamToServer.DataAvailable)
+                {
+                    Byte[] receiveBytes = new Byte[512];
+                    streamToServer.Read(receiveBytes, 0, 512);
+                    listener.onEvent(ByteArrayToEventData(receiveBytes));
+                }
+            }
+            
+        }// Listen()
+
+        public static EventData ByteArrayToEventData(byte[] receiveBytes)
 		{
 			MemoryStream ms = new MemoryStream();
 			ms.Write(receiveBytes, 0, receiveBytes.Length);
