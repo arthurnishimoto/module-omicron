@@ -9,6 +9,7 @@ public class OmicronMocapSensor : OmicronEventClient
 
     public Vector3 position;
     public Quaternion orientation;
+    public Vector3 positionMod = Vector3.one;
 
     // Use this for initialization
     new void Start()
@@ -24,7 +25,7 @@ public class OmicronMocapSensor : OmicronEventClient
 
         if (e.sourceId == sourceID || sourceID == -1)
         {
-            position = new Vector3(e.posx, e.posy, e.posz);
+            position = new Vector3(e.posx * positionMod.x, e.posy * positionMod.y, e.posz * positionMod.z);
             orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);
         }
     }

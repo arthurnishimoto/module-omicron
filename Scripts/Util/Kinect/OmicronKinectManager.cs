@@ -35,6 +35,7 @@ public class OmicronKinectManager : OmicronEventClient {
 	public GameObject kinect2bodyPrefab;
 
 	public Vector4 kinectSensorTransformData;
+    public bool applyKinectSensorTransform;
 
 	public bool enableBodyTracking = true;
 	public bool enableSpeechRecognition = true;
@@ -47,6 +48,8 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	public UnityEngine.UI.Text debugText;
 
+    public Transform floorPlane;
+
 	// Use this for initialization
 	new void Start () {
         eventOptions = EventBase.ServiceType.ServiceTypeMocap;
@@ -57,6 +60,19 @@ public class OmicronKinectManager : OmicronEventClient {
 	// Update is called once per frame
 	void Update () {
         trackedBodyCount = trackedBodies.Count;
+
+        Vector3 floorClipPlane = new Vector3(kinectSensorTransformData.x, kinectSensorTransformData.y, kinectSensorTransformData.z);
+
+        if (applyKinectSensorTransform)
+        {
+            if( kinectSensorTransformData.w > 0 )
+                transform.localPosition = new Vector3(transform.localPosition.x, kinectSensorTransformData.w, transform.localPosition.z);
+            Vector3 kinectEulerAngles = transform.localEulerAngles;
+            kinectEulerAngles.x = Mathf.Atan(floorClipPlane.z / floorClipPlane.y);
+            transform.localEulerAngles = kinectEulerAngles;
+
+
+        }
     }
 
 	void OnEvent( EventData e )
