@@ -165,7 +165,10 @@ public class CAVE2InputManager : OmicronEventClient
             {
                 OmicronMocapSensor mocapManager = gameObject.AddComponent<OmicronMocapSensor>();
                 mocapManager.sourceID = (int)e.sourceId;
-
+                if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
+                {
+                    mocapManager.positionMod = new Vector3(1, 1, -1);
+                }
                 mocapSensors[(int)e.sourceId] = mocapManager;
             }
         }
@@ -175,7 +178,6 @@ public class CAVE2InputManager : OmicronEventClient
             {
                 OmicronController wandController = gameObject.AddComponent<OmicronController>();
                 wandController.sourceID = (int)e.sourceId;
-
                 wandControllers[(int)e.sourceId] = wandController;
             }
         }
@@ -233,6 +235,17 @@ public class CAVE2InputManager : OmicronEventClient
         // Mocap
         if (CAVE2.GetCAVE2Manager().mocapEmulation)
         {
+            mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
+            mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
+
+            wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
+            wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
+        }
+        else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
+        {
+            CAVE2.GetCAVE2Manager().simulatorHeadPosition = GetHeadPosition(1);
+            CAVE2.GetCAVE2Manager().simulatorWandPosition = GetWandPosition(1);
+
             mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
             mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
 

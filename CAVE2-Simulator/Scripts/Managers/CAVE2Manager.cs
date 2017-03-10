@@ -250,13 +250,13 @@ public class CAVE2Manager : MonoBehaviour {
     string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
     string[] trackerEmuModeStrings = { "Pointer", "Translate", "Rotate" };
 
-    public TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
-    public TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
+    TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
+    TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
-    public KeyCode toggleWandModeKey = KeyCode.Tab;
-    public bool wandModeToggled = false;
+    KeyCode toggleWandModeKey = KeyCode.Tab;
+    bool wandModeToggled = false;
     Vector3 mouseLastPos;
-    public Vector3 mouseDeltaPos;
+    Vector3 mouseDeltaPos;
 
     void Start()
     {
@@ -542,6 +542,11 @@ public class CAVE2Manager : MonoBehaviour {
     public static bool IsSimulatorMode()
     {
         return CAVE2Manager_Instance.simulatorMode;
+    }
+
+    public Vector3 GetMouseDeltaPos()
+    {
+        return mouseDeltaPos;
     }
     // ---------------------------------------------------------------------------------------------
 

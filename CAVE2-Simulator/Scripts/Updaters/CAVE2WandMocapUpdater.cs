@@ -87,14 +87,14 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
         else if (CAVE2.GetCAVE2Manager().wandEmulationMode == CAVE2Manager.TrackerEmulationMode.TranslateVertical) // Mouse pointer mode
         {
             // Translate wand based on mouse position
-            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().mouseDeltaPos * Time.deltaTime * 0.05f;
+            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().GetMouseDeltaPos() * Time.deltaTime * 0.05f;
             transform.localPosition += mouseDeltaPos;
             CAVE2.GetCAVE2Manager().simulatorWandPosition = transform.localPosition;
         }
         else if (CAVE2.GetCAVE2Manager().wandEmulationMode == CAVE2Manager.TrackerEmulationMode.TranslateForward) // Wand mouse mode
         {
             // Translate wand based on mouse position
-            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().mouseDeltaPos * Time.deltaTime * 0.05f;
+            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().GetMouseDeltaPos() * Time.deltaTime * 0.05f;
             float mouseScroll = Input.GetAxis("Mouse ScrollWheel") * Time.deltaTime * 2.0f;
             transform.localPosition += new Vector3(mouseDeltaPos.x, mouseScroll, mouseDeltaPos.y);
             CAVE2.GetCAVE2Manager().simulatorWandPosition = transform.localPosition;
@@ -102,14 +102,14 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
         else if (CAVE2.GetCAVE2Manager().wandEmulationMode == CAVE2Manager.TrackerEmulationMode.RotatePitchYaw) // Wand mouse mode
         {
             // Translate wand based on mouse position
-            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().mouseDeltaPos;
+            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().GetMouseDeltaPos();
             transform.Rotate(new Vector3(-mouseDeltaPos.y, mouseDeltaPos.x, 0));
             CAVE2.GetCAVE2Manager().simulatorWandPosition = transform.eulerAngles;
         }
         else if (CAVE2.GetCAVE2Manager().wandEmulationMode == CAVE2Manager.TrackerEmulationMode.RotateRoll) // Wand mouse mode
         {
             // Translate wand based on mouse position
-            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().mouseDeltaPos;
+            Vector3 mouseDeltaPos = CAVE2.GetCAVE2Manager().GetMouseDeltaPos();
             transform.Rotate(new Vector3(0, 0, -mouseDeltaPos.x));
             CAVE2.GetCAVE2Manager().simulatorWandPosition = transform.eulerAngles;
         }
