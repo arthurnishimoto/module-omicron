@@ -183,7 +183,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         int headMocapID = CAVE2.GetCAVE2Manager().head1MocapID;
         int wandMocapID = CAVE2.GetCAVE2Manager().wand1MocapID;

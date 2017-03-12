@@ -29,7 +29,7 @@ public class CAVE2HeadMarker : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
         transform.localPosition = CAVE2.GetHeadPosition(1);
         transform.localRotation = CAVE2.GetHeadRotation(1);
 
