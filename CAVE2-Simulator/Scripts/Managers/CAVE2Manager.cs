@@ -135,6 +135,10 @@ public class CAVE2 : MonoBehaviour
     {
         CAVE2Manager.AddCameraController(cam);
     }
+    public static CAVE2CameraController GetCameraController()
+    {
+        return GetCAVE2Manager().mainCameraController;
+    }
     // ---------------------------------------------------------------------------------------------
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
@@ -345,6 +349,11 @@ public class CAVE2Manager : MonoBehaviour {
     public static Quaternion GetMocapRotation(int ID)
     {
         return CAVE2.Input.GetMocapRotation(ID);
+    }
+
+    public static CAVE2CameraController GetCameraController()
+    {
+        return CAVE2.GetCAVE2Manager().mainCameraController;
     }
     // ---------------------------------------------------------------------------------------------
 
