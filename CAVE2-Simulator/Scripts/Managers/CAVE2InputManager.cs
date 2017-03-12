@@ -15,8 +15,8 @@ public class CAVE2InputManager : OmicronEventClient
     public Vector3 wand1TrackingOffset = new Vector3(-0.007781088f, -0.04959464f, -0.07368752f);
 
     // Prevent other inputs from wand if it has opened a menu
-    public bool wand1MenuLock = false;
-    public bool wand2MenuLock = false;
+    bool wand1MenuLock = false;
+    bool wand2MenuLock = false;
 
     // Use this for initialization
     new void Start () {
@@ -287,8 +287,8 @@ public class CAVE2InputManager : OmicronEventClient
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
             //    flags += (int)EventBase.Flags.SpecialButton3;
             // Wand Button 5 (L1/LB)
-            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button5)))
-            //    flags += (int)EventBase.Flags.Button5;
+            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorButton5))
+                flags += (int)EventBase.Flags.Button5;
             // Wand Button 6 (L3)
             if (Input.GetButton(CAVE2.GetCAVE2Manager().wandSimulatorButton6))
                 flags += (int)EventBase.Flags.Button6;

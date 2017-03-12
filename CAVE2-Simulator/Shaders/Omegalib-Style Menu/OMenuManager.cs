@@ -16,6 +16,12 @@ public class OMenuManager : MonoBehaviour {
     public Vector3 angleOffset;
     public Vector3 distOffset = Vector3.forward;
 
+    // CAVE2 Omegalib-style
+    public CAVE2.Button menuOpenButton = CAVE2.Button.Button2;
+    public CAVE2.Button menuBackButton = CAVE2.Button.Button3;
+    public CAVE2.Button selectButton = CAVE2.Button.Button2;
+    
+
     // Use this for initialization
     void Start () {
         currentMenu = mainMenu;
@@ -26,7 +32,7 @@ public class OMenuManager : MonoBehaviour {
 
         if (currentMenu == mainMenu && currentMenu.activeMenu == false)
         {
-            if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.Button2))
+            if (CAVE2.Input.GetButtonDown(1, menuOpenButton))
             {
                 mainMenu.ToggleMenu();
 

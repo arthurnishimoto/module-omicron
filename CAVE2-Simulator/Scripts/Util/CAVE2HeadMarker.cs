@@ -24,6 +24,8 @@ public class CAVE2HeadMarker : MonoBehaviour {
             forwardLine.SetWidth(0.02f, 0.02f);
             forwardLine.material = lineMaterial;
         }
+
+        CAVE2.RegisterHeadObject(headID, gameObject);
     }
 	
 	// Update is called once per frame

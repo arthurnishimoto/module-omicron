@@ -128,6 +128,27 @@ public class CAVE2 : MonoBehaviour
     {
         return CAVE2Manager.IsSimulatorMode();
     }
+
+    public static void RegisterHeadObject(int headID, GameObject gameobject)
+    {
+        CAVE2Manager.GetCAVE2Manager().RegisterHeadObject(headID, gameobject);
+    }
+
+    public static void RegisterWandObject(int wandID, GameObject gameobject)
+    {
+        CAVE2Manager.GetCAVE2Manager().RegisterWandObject(wandID, gameobject);
+    }
+
+    public static GameObject GetHeadObject(int ID)
+    {
+        return CAVE2Manager.GetCAVE2Manager().GetHeadObject(ID);
+    }
+
+    public static GameObject GetWandObject(int ID)
+    {
+        return CAVE2Manager.GetCAVE2Manager().GetWandObject(ID);
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     // CAVE2 Omicron Management --------------------------------------------------------------------
@@ -222,6 +243,8 @@ public class CAVE2Manager : MonoBehaviour {
 
     ArrayList cameraControllers;
     public CAVE2CameraController mainCameraController;
+    public Hashtable headObjects = new Hashtable();
+    public Hashtable wandObjects = new Hashtable();
 
     // Simulator
     public bool simulatorMode;
@@ -257,7 +280,7 @@ public class CAVE2Manager : MonoBehaviour {
     TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
     TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
-    KeyCode toggleWandModeKey = KeyCode.Tab;
+
     bool wandModeToggled = false;
     Vector3 mouseLastPos;
     Vector3 mouseDeltaPos;
@@ -556,6 +579,26 @@ public class CAVE2Manager : MonoBehaviour {
     public Vector3 GetMouseDeltaPos()
     {
         return mouseDeltaPos;
+    }
+
+    public void RegisterHeadObject(int ID, GameObject gameObject)
+    {
+        headObjects[ID] = gameObject;
+    }
+
+    public void RegisterWandObject(int ID, GameObject gameObject)
+    {
+        wandObjects[ID] = gameObject;
+    }
+
+    public GameObject GetHeadObject(int ID)
+    {
+        return (GameObject)headObjects[ID];
+    }
+
+    public GameObject GetWandObject(int ID)
+    {
+        return (GameObject)wandObjects[ID];
     }
     // ---------------------------------------------------------------------------------------------
 

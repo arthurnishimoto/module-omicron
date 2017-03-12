@@ -76,7 +76,7 @@ public class OMenu : MonoBehaviour {
             }
         }
 
-        if(CAVE2.Input.GetButtonDown(1, CAVE2.Button.Button2))
+        if(CAVE2.Input.GetButtonDown(1, menuManager.selectButton))
         {
             if (menuItems[currentItem].GetType() == typeof(Button))
             {
@@ -87,7 +87,7 @@ public class OMenu : MonoBehaviour {
                 ((Toggle)menuItems[currentItem]).OnPointerClick(pointerData);
             }
         }
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.Button3))
+        if (CAVE2.Input.GetButtonDown(1, menuManager.menuBackButton))
         {
             ToggleMenu();
         }
