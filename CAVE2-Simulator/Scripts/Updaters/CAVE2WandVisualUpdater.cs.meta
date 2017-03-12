@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: d59d8650cb24cc34b98357ff3f5b3ae1
+timeCreated: 1487794083
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - litMaterial: {fileID: 2100000, guid: 9dd1f6c394cbe6c499f1e1767800dad8, type: 2}
+  - unlitMaterial: {fileID: 2100000, guid: 1f49b4702d92d24498264d14be07f555, type: 2}
+  - buttonCross: {instanceID: 0}
+  - buttonCircle: {instanceID: 0}
+  - buttonUp: {instanceID: 0}
+  - buttonDown: {instanceID: 0}
+  - buttonLeft: {instanceID: 0}
+  - buttonRight: {instanceID: 0}
+  - buttonL1: {instanceID: 0}
+  - buttonL2: {instanceID: 0}
+  - buttonL3: {instanceID: 0}
+  - buttonTriangle: {instanceID: 0}
+  - buttonSquare: {instanceID: 0}
+  - buttonR1: {instanceID: 0}
+  - buttonR2: {instanceID: 0}
+  - buttonR3: {instanceID: 0}
+  - buttonSelect: {instanceID: 0}
+  - buttonStart: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

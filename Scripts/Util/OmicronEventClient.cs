@@ -32,11 +32,13 @@ using omicronConnector;
 #if USING_GETREAL3D
 public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
 #else
-public class OmicronEventClient : MonoBehaviour {
+public abstract class OmicronEventClient : MonoBehaviour {
 #endif
-	OmicronManager omicronManager;
+    OmicronManager omicronManager;
+    
+    protected EventBase.ServiceType eventOptions = EventBase.ServiceType.ServiceTypeAny;
 
-	bool flagForRemoval = false;
+    bool flagForRemoval = false;
 
 	// Use this for initialization
 	public void Start () {
@@ -45,18 +47,15 @@ public class OmicronEventClient : MonoBehaviour {
 
 	public void InitOmicron()
 	{
-		omicronManager = CAVE2Manager.GetCAVE2Manager().GetComponent<OmicronManager>();
+        omicronManager = OmicronManager.GetOmicronManager();
 		omicronManager.AddClient(this);
 	}
 
 	// Update is called once per frame
 	void Update () {
 	}
-	
-	void OnEvent( EventData e )
-	{
-		//Debug.Log("OmicronEventClient: '"+name+"' received " + e.serviceType);
-	}
+
+    public abstract void OnEvent(EventData e);
 
 	public void SetFlaggedForRemoval()
 	{
@@ -68,4 +67,8 @@ public class OmicronEventClient : MonoBehaviour {
 		return flagForRemoval;
 	}
 
+    public EventBase.ServiceType GetClientType()
+    {
+        return eventOptions;
+    }
 }
