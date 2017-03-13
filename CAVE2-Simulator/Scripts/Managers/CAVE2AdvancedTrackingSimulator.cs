@@ -22,8 +22,11 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         {
             MouseWandPointerMode();
         }
-
-        KeyboardHeadTracking();
+        if (CAVE2.GetCAVE2Manager().mocapEmulation)
+        {
+            KeyboardHeadTracking();
+        }
+        
 	}
 
     void MouseWandPointerMode()
