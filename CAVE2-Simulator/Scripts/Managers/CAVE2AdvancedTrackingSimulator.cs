@@ -57,7 +57,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             }
             wandObject.transform.LookAt(ray.GetPoint(1000));
             // Update the wandState rotation (opposite of normal since this object is determining the rotation)
-            CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.eulerAngles;
+            CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.localEulerAngles;
         }
     }
 
@@ -118,6 +118,16 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         CAVE2.GetCAVE2Manager().simulatorHeadPosition = headPosition;
         CAVE2.GetCAVE2Manager().simulatorHeadRotation = headRotation;
 
-        CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPositionOffset + new Vector3(headPosition.x, 0, headPosition.z);
+        Transform wandObject = CAVE2.GetWandObject(wandID).transform;
+        Transform headObject = CAVE2.GetHeadObject(headID).transform;
+        Transform playerController = CAVE2.GetWandObject(wandID).transform.root;
+
+        if(wandObject.transform.parent != headObject)
+            wandObject.transform.parent = headObject;
+
+        wandPosition.y = wandPositionOffset.y - headPosition.y;
+
+        CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
+
     }
 }
