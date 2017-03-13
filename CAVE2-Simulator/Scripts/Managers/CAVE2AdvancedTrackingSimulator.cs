@@ -9,24 +9,57 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
     public int wandID = 1;
 
     public bool wandOffsetFollowsHead = true;
-    public Vector3 wandPositionOffset = new Vector3(0.15f, 1.5f, 0.4f);
+    public Vector3 wandDefaultPositionOffset = new Vector3(0.15f, 1.5f, 0.4f);
+
+    public KeyCode toggleMouseTracking = KeyCode.Tab;
+
+    Vector3 mouseTrackingOffset;
+
+    bool mouseInitSet;
+    Vector3 mouseLastPosition;
 
 	// Use this for initialization
 	void Start () {
 	
 	}
 	
+    void Update()
+    {
+        
+    }
+
 	// Update is called once per frame
 	void FixedUpdate () {
-	    if( CAVE2.GetCAVE2Manager().wandMousePointerEmulation )
+        if (Input.GetKey(toggleMouseTracking))
         {
-            MouseWandPointerMode();
+            if (!mouseInitSet)
+            {
+                mouseLastPosition = Input.mousePosition;
+                mouseInitSet = true;
+            }
+            else
+            {
+                mouseTrackingOffset = (Input.mousePosition - mouseLastPosition) * Time.fixedDeltaTime * 0.1f;
+                mouseLastPosition = Input.mousePosition;
+
+                Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
+                CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
+            }
+
         }
-        if (CAVE2.GetCAVE2Manager().mocapEmulation)
+        else
         {
-            KeyboardHeadTracking();
+            mouseInitSet = false;
+
+            if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
+            {
+                MouseWandPointerMode();
+            }
+            if (CAVE2.GetCAVE2Manager().mocapEmulation)
+            {
+                KeyboardHeadTracking();
+            }
         }
-        
 	}
 
     void MouseWandPointerMode()
@@ -128,7 +161,8 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         if(wandObject.transform.parent != headObject)
             wandObject.transform.parent = headObject;
 
-        wandPosition.y = wandPositionOffset.y - headPosition.y;
+        //wandPosition = wandDefaultPositionOffset;
+        wandPosition.y = wandDefaultPositionOffset.y - headPosition.y;
 
         CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
 
