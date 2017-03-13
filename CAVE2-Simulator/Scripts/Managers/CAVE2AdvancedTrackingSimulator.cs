@@ -14,7 +14,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
     public KeyCode toggleMouseTracking = KeyCode.Tab;
 
     bool mouseWandOffsetTriggered;
-    Vector3 mouseTrackingOffset;
+    public Vector3 mouseTrackingOffset;
     bool mouseInitSet;
     Vector3 mouseLastPosition;
 
@@ -50,6 +50,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         }
         else
         {
+            mouseTrackingOffset = Vector3.zero;
             mouseInitSet = false;
 
             if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
