@@ -13,8 +13,8 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
     public KeyCode toggleMouseTracking = KeyCode.Tab;
 
+    bool mouseWandOffsetTriggered;
     Vector3 mouseTrackingOffset;
-
     bool mouseInitSet;
     Vector3 mouseLastPosition;
 
@@ -44,6 +44,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
                 Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
                 CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
+                mouseWandOffsetTriggered = true;
             }
 
         }
@@ -161,10 +162,14 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         if(wandObject.transform.parent != headObject)
             wandObject.transform.parent = headObject;
 
-        //wandPosition = wandDefaultPositionOffset;
-        wandPosition.y = wandDefaultPositionOffset.y - headPosition.y;
-
-        CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
-
+        if(mouseWandOffsetTriggered)
+        {
+            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
+        }
+        else
+        {
+            wandPosition.y = wandDefaultPositionOffset.y - headPosition.y;
+            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
+        }
     }
 }
