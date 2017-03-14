@@ -11,8 +11,10 @@ public class CAVE2PlayerCollider : MonoBehaviour {
     new Rigidbody rigidbody;
     Vector3 playerHeadPosition;
 
-	// Use this for initialization
-	void Start () {
+    public Collider[] playerColliders;
+
+    // Use this for initialization
+    void Start () {
 
         // Setup body collider
         bodyCollider = GetComponent<CapsuleCollider>();
@@ -25,6 +27,16 @@ public class CAVE2PlayerCollider : MonoBehaviour {
             rigidbody = gameObject.AddComponent<Rigidbody>();
         }
         rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+
+        // Ignore collisions between body and any listed child coliders
+        // as well as between child colliders
+        Collider lastCollider = bodyCollider;
+        foreach( Collider c in playerColliders )
+        {
+            Physics.IgnoreCollision(bodyCollider, c);
+            Physics.IgnoreCollision(lastCollider, c);
+            lastCollider = c;
+        }
 
         UpdatePlayerCollider();
     }
