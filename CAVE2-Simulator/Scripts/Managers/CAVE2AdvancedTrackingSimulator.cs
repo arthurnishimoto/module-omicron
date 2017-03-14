@@ -156,21 +156,24 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         CAVE2.GetCAVE2Manager().simulatorHeadPosition = headPosition;
         CAVE2.GetCAVE2Manager().simulatorHeadRotation = headRotation;
 
-        Transform wandObject = CAVE2.GetWandObject(wandID).transform;
-        Transform headObject = CAVE2.GetHeadObject(headID).transform;
-        Transform playerController = CAVE2.GetWandObject(wandID).transform.root;
-
-        if(wandObject.transform.parent != headObject)
-            wandObject.transform.parent = headObject;
-
-        if(mouseWandOffsetTriggered)
+        if (CAVE2.GetHeadObject(headID) != null && CAVE2.GetWandObject(wandID) != null)
         {
-            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
-        }
-        else
-        {
-            wandPosition.y = wandDefaultPositionOffset.y - headPosition.y;
-            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
+            Transform wandObject = CAVE2.GetWandObject(wandID).transform;
+            Transform headObject = CAVE2.GetHeadObject(headID).transform;
+            Transform playerController = CAVE2.GetWandObject(wandID).transform.root;
+
+            if (wandObject.transform.parent != headObject)
+                wandObject.transform.parent = headObject;
+
+            if (mouseWandOffsetTriggered)
+            {
+                CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
+            }
+            else
+            {
+                wandPosition.y = wandDefaultPositionOffset.y - headPosition.y;
+                CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
+            }
         }
     }
 }
