@@ -30,7 +30,7 @@ using omicron;
 using omicronConnector;
 
 #if USING_GETREAL3D
-public class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
+public abstract class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
 #else
 public abstract class OmicronEventClient : MonoBehaviour {
 #endif
