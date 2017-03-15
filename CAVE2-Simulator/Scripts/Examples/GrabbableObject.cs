@@ -56,7 +56,7 @@ public class GrabbableObject : MonoBehaviour {
             joint.breakTorque = float.PositiveInfinity;
 
             // Disable collisions between grabber and collider while held
-            grabberColliders = grabber.GetComponentsInChildren<Collider>();
+            grabberColliders = grabber.root.GetComponentsInChildren<Collider>();
             foreach (Collider c in grabberColliders)
             {
                 Physics.IgnoreCollision(c, GetComponent<Collider>(), true);
@@ -70,7 +70,7 @@ public class GrabbableObject : MonoBehaviour {
         if (GetComponent<Rigidbody>())
         {
             GetComponent<Rigidbody>().useGravity = usedGravity;
-            //Destroy(joint);
+            Destroy(joint);
         }
 
         // Re-enable collisions between grabber and collider after released

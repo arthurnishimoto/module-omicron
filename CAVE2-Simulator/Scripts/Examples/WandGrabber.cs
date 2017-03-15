@@ -40,9 +40,8 @@ public class WandGrabber : MonoBehaviour
 			{
                 if (hit.transform.GetComponent<GrabbableObject>())
                 {
-                    hit.collider.gameObject.SendMessage("OnWandGrab", transform.parent, SendMessageOptions.DontRequireReceiver);
+                    hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
                     grabbedObjects.Add(hit.collider.transform);
-                    
                 }
 			}
 				
