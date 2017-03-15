@@ -30,10 +30,11 @@ public class GrabbableObject : MonoBehaviour {
         else if(wasGrabbed)
         {
             Vector3 throwForce = Vector3.zero;
-            for(int i = 0; i < previousPositions.Count; i++ )
+            for (int i = 0; i < previousPositions.Count; i++ )
             {
                 Vector3 s1 = (Vector3)previousPositions.Dequeue();
                 Vector3 s2 = GetComponent<Rigidbody>().position;
+                
                 if ( previousPositions.Count > 0 )
                     s2 = (Vector3)previousPositions.Dequeue();
                 throwForce += (s2 - s1);
@@ -69,7 +70,7 @@ public class GrabbableObject : MonoBehaviour {
         if (GetComponent<Rigidbody>())
         {
             GetComponent<Rigidbody>().useGravity = usedGravity;
-            Destroy(joint);
+            //Destroy(joint);
         }
 
         // Re-enable collisions between grabber and collider after released

@@ -285,7 +285,7 @@ public class CAVE2Manager : MonoBehaviour {
     Vector3 mouseLastPos;
     Vector3 mouseDeltaPos;
 
-    void Start()
+    public void Init()
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
@@ -295,8 +295,12 @@ public class CAVE2Manager : MonoBehaviour {
 
         machineName = System.Environment.MachineName;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
+    }
+    void Start()
+    {
+        Init();
 
-        if( OnCAVE2Display() || OnCAVE2Master() )
+        if ( OnCAVE2Display() || OnCAVE2Master() )
         {
 #if UNITY_EDITOR
 #else
@@ -517,6 +521,11 @@ public class CAVE2Manager : MonoBehaviour {
         if(CAVE2Manager_Instance == null)
         {
             Debug.LogWarning("CAVE2Manager_Instance is NULL - SHOULD NOT HAPPEN!");
+            GameObject cave2Manager = new GameObject("CAVE2-Manager");
+            cave2Manager.AddComponent<OmicronManager>();
+            CAVE2Manager_Instance = cave2Manager.AddComponent<CAVE2Manager>();
+            cave2Manager.AddComponent<CAVE2InputManager>();
+            cave2Manager.AddComponent<CAVE2AdvancedTrackingSimulator>();
         }
         return CAVE2Manager_Instance;
     }
@@ -573,7 +582,7 @@ public class CAVE2Manager : MonoBehaviour {
     // CAVE2 Simulator Management ------------------------------------------------------------------
     public static bool IsSimulatorMode()
     {
-        return CAVE2Manager_Instance.simulatorMode;
+        return GetCAVE2Manager().simulatorMode;
     }
 
     public Vector3 GetMouseDeltaPos()
@@ -606,21 +615,21 @@ public class CAVE2Manager : MonoBehaviour {
     // CAVE2 Omicron Management --------------------------------------------------------------------
     public static void AddCameraController(CAVE2CameraController cam)
     {
-        if (CAVE2Manager_Instance.cameraControllers == null)
+        if (GetCAVE2Manager().cameraControllers == null)
         {
-            CAVE2Manager_Instance.cameraControllers = new ArrayList();
+            GetCAVE2Manager().cameraControllers = new ArrayList();
         }
 
-        if(CAVE2Manager_Instance.cameraControllers.Count == 0)
-            CAVE2Manager_Instance.mainCameraController = cam;
+        if(GetCAVE2Manager().cameraControllers.Count == 0)
+            GetCAVE2Manager().mainCameraController = cam;
 
-        CAVE2Manager_Instance.cameraControllers.Add(cam);
+        GetCAVE2Manager().cameraControllers.Add(cam);
     }
 
     public static CAVE2CameraController GetCameraController(int cam)
     {
-        if (cam >= 0 && cam < CAVE2Manager_Instance.cameraControllers.Count - 1)
-            return (CAVE2CameraController)CAVE2Manager_Instance.cameraControllers[cam];
+        if (cam >= 0 && cam < GetCAVE2Manager().cameraControllers.Count - 1)
+            return (CAVE2CameraController)GetCAVE2Manager().cameraControllers[cam];
         else
             return null;
     }

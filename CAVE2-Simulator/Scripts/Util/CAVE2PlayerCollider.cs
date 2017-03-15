@@ -22,7 +22,8 @@ public class CAVE2PlayerCollider : MonoBehaviour {
         {
             bodyCollider = gameObject.AddComponent<CapsuleCollider>();
         }
-        if( GetComponent<Rigidbody>() == null )
+        rigidbody = GetComponent<Rigidbody>();
+        if (rigidbody == null )
         {
             rigidbody = gameObject.AddComponent<Rigidbody>();
         }
