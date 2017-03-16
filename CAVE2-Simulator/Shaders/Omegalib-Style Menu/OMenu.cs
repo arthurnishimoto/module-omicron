@@ -51,7 +51,7 @@ public class OMenu : MonoBehaviour {
                 activeMenu = true;
         }
 
-        if (activeMenu && menuProgress > 0.5f)
+        if (showMenu && activeMenu && menuProgress > 0.5f)
             OnInput();
     }
 
