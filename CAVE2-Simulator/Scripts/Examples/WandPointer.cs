@@ -23,6 +23,8 @@ public class WandPointer : MonoBehaviour
 
 	public CAVE2.Button laserButton = CAVE2.Button.Button3;
 
+    public bool laserAlwaysOn = false;
+
     // Use this for initialization
     void Start()
     {
@@ -46,6 +48,9 @@ public class WandPointer : MonoBehaviour
         //GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
 		laserActivated = CAVE2.Input.GetButton(wandID,laserButton);
+
+        if (laserAlwaysOn)
+            laserActivated = true;
         laser.enabled = laserActivated;
 
         // Shoot a ray from the wand

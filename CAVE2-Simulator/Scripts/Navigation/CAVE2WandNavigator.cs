@@ -146,8 +146,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
     {
         GetComponent<Rigidbody>().useGravity = true;
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-        if(playerCollider)
-            playerCollider.enabled = true;
 
         Vector3 nextPos = transform.position;
         float forwardAngle = transform.eulerAngles.y;
@@ -188,8 +186,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
     {
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-        if (playerCollider)
-            playerCollider.enabled = false;
 
         wandPosition = CAVE2.Input.GetWandPosition(wandID);
         Quaternion wandRotation = CAVE2.Input.GetWandRotation(wandID);

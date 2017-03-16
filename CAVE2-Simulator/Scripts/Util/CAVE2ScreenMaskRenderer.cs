@@ -9,10 +9,13 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
 
     void Start()
     {
+#if UNITY_EDITOR
+#else
         if( CAVE2.OnCAVE2Display() )
         {
             GetComponent<Renderer>().enabled = false;
         }
+#endif
     }
 
 	// Update is called once per frame
