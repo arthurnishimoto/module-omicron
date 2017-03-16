@@ -83,7 +83,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             Vector2 position = new Vector3(Input.mousePosition.x, Input.mousePosition.y);
 
             // Ray extending from main camera into screen from touch point
-            Ray ray = Camera.main.ScreenPointToRay(position);
+            Ray ray = CAVE2.GetCameraController().GetMainCamera().ScreenPointToRay(position);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100))
             {
