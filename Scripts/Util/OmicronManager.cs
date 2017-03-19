@@ -380,6 +380,11 @@ class OmicronManager : MonoBehaviour
         {
             foreach (EventData e in eventList)
             {
+                // -zPos -xRot -yRot for Omicron->Unity coordinate conversion
+                e.posz = -e.posz;
+                e.orx = -e.orx;
+                e.ory = -e.ory;
+
                 foreach (OmicronEventClient c in omicronClients)
                 {
                     if (c == null)
