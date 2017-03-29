@@ -138,7 +138,9 @@ public class CAVE2 : MonoBehaviour
     {
         CAVE2Manager.GetCAVE2Manager().RegisterWandObject(wandID, gameobject);
     }
+    // ---------------------------------------------------------------------------------------------
 
+    // CAVE2 Player Management ---------------------------------------------------------------------
     public static GameObject GetHeadObject(int ID)
     {
         return CAVE2Manager.GetCAVE2Manager().GetHeadObject(ID);
@@ -149,9 +151,6 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.GetCAVE2Manager().GetWandObject(ID);
     }
 
-    // ---------------------------------------------------------------------------------------------
-
-    // CAVE2 Omicron Management --------------------------------------------------------------------
     public static void AddCameraController(CAVE2CameraController cam)
     {
         CAVE2Manager.AddCameraController(cam);
@@ -160,7 +159,23 @@ public class CAVE2 : MonoBehaviour
     {
         return GetCAVE2Manager().mainCameraController;
     }
+
+    public static void AddPlayerController(int id, GameObject g)
+    {
+        GetCAVE2Manager().AddPlayerController(id, g);
+    }
+
+    public static GameObject GetPlayerController(int id)
+    {
+        return GetCAVE2Manager().GetPlayerController(id);
+    }
+
+    public static int GetPlayerControllerCount()
+    {
+        return GetCAVE2Manager().GetPlayerControllerCount();
+    }
     // ---------------------------------------------------------------------------------------------
+
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
     public static void BroadcastMessage(string targetObjectName, string methodName, object param)
@@ -245,6 +260,8 @@ public class CAVE2Manager : MonoBehaviour {
     public CAVE2CameraController mainCameraController;
     public Hashtable headObjects = new Hashtable();
     public Hashtable wandObjects = new Hashtable();
+
+    public Hashtable playerControllers = new Hashtable();
 
     // Simulator
     public bool simulatorMode;
@@ -589,30 +606,10 @@ public class CAVE2Manager : MonoBehaviour {
     {
         return mouseDeltaPos;
     }
-
-    public void RegisterHeadObject(int ID, GameObject gameObject)
-    {
-        headObjects[ID] = gameObject;
-    }
-
-    public void RegisterWandObject(int ID, GameObject gameObject)
-    {
-        wandObjects[ID] = gameObject;
-    }
-
-    public GameObject GetHeadObject(int ID)
-    {
-        return (GameObject)headObjects[ID];
-    }
-
-    public GameObject GetWandObject(int ID)
-    {
-        return (GameObject)wandObjects[ID];
-    }
     // ---------------------------------------------------------------------------------------------
 
 
-    // CAVE2 Omicron Management --------------------------------------------------------------------
+    // CAVE2 Player Management ---------------------------------------------------------------------
     public static void AddCameraController(CAVE2CameraController cam)
     {
         if (GetCAVE2Manager().cameraControllers == null)
@@ -633,6 +630,43 @@ public class CAVE2Manager : MonoBehaviour {
         else
             return null;
     }
+
+    public void RegisterHeadObject(int ID, GameObject gameObject)
+    {
+        headObjects[ID] = gameObject;
+    }
+
+    public void RegisterWandObject(int ID, GameObject gameObject)
+    {
+        wandObjects[ID] = gameObject;
+    }
+
+    public GameObject GetHeadObject(int ID)
+    {
+        return (GameObject)headObjects[ID];
+    }
+
+    public GameObject GetWandObject(int ID)
+    {
+        return (GameObject)wandObjects[ID];
+    }
+
+    public void AddPlayerController(int id, GameObject g)
+    {
+        playerControllers[id] = g;
+    }
+
+    public GameObject GetPlayerController(int id)
+    {
+        GameObject player = (GameObject)playerControllers[id];
+        return player;
+    }
+
+    public int GetPlayerControllerCount()
+    {
+        return playerControllers.Count;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
 }

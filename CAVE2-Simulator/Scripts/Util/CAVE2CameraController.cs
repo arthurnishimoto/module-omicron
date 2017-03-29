@@ -44,4 +44,13 @@ public class CAVE2CameraController : MonoBehaviour {
     {
         return mainCamera;
     }
+
+    public void SetCameraCullingMask(int mask)
+    {
+        Camera[] cameras = GetComponentsInChildren<Camera>();
+        foreach( Camera c in cameras )
+        {
+            c.cullingMask = mask;
+        }
+    }
 }

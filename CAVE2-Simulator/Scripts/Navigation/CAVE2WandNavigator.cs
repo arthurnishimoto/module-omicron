@@ -57,8 +57,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
     public Quaternion initialRotation;
     public NavigationMode initMode;
 
-    public UnityEngine.UI.Text positionUIText;
-
     public void Reset()
     {
         transform.position = initialPosition;
@@ -92,9 +90,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
 	// Update is called once per frame
 	void Update()
     {
-        if(positionUIText)
-            positionUIText.text = "Position: " + transform.position + "\nRotation: " + transform.eulerAngles;
-
         forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
         forward *= movementScale;
 

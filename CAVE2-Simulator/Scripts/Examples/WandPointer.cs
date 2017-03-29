@@ -92,6 +92,20 @@ public class WandPointer : MonoBehaviour
                 hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.Button2, SendMessageOptions.DontRequireReceiver);
             }
 
+            if (CAVE2Manager.GetButtonDown(wandID, CAVE2.Button.Button3))
+            {
+                hit.collider.gameObject.SendMessage("OnWandButtonDown", CAVE2.Button.Button3, SendMessageOptions.DontRequireReceiver);
+            }
+            if (CAVE2Manager.GetButtonUp(wandID, CAVE2.Button.Button3))
+            {
+                hit.collider.gameObject.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver);
+            }
+
+            if (CAVE2Manager.GetButton(wandID, CAVE2.Button.Button3))
+            {
+                hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.Button3, SendMessageOptions.DontRequireReceiver);
+            }
+
             // DPad Click
             if (CAVE2Manager.GetButtonDown(wandID, CAVE2.Button.ButtonUp))
             {
