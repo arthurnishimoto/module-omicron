@@ -244,9 +244,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
         float forwardAngle = transform.eulerAngles.y;
 
         if (forwardReference == ForwardRef.Head)
-            forwardAngle = headRotation.y;
+            forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
         else if (forwardReference == ForwardRef.Wand)
-            forwardAngle = wandRotation.eulerAngles.y;
+            forwardAngle = CAVE2.GetWandObject(wandID).transform.eulerAngles.y;
 
         nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
         nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
