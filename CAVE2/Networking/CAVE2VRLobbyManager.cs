@@ -61,6 +61,11 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
             localPlayerNameField.text = PlayerPrefs.GetString("LocalPlayerName");
             playerName = localPlayerNameField.text;
         }
+
+        if( !CAVE2.IsMaster() )
+        {
+            StartHost();
+        }
     }
 
     public void SetLocalLobbyPlayer(GameObject player)
@@ -85,5 +90,11 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
     {
         lobbyCamera.gameObject.SetActive(false);
         lobbyCanvas.gameObject.SetActive(false);
+    }
+
+    public override void OnLobbyClientConnect(NetworkConnection conn)
+    {
+        Debug.Log("OnLobbyClientConnect: " + conn.address);
+        //Debug.Log(conn.);
     }
 }

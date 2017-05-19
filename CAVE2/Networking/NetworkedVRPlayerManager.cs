@@ -57,9 +57,18 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
     // Use this for initialization
     public void Start() {
         //base.OnStartClient(); // don't use OnClientStart - this will cause isLocalPlayer to always return false
-
+        NetworkIdentity netID = GetComponent<NetworkIdentity>();
+        if (netID.connectionToServer != null)
+        {
+            gameObject.name = "VRNetworkPlayer(" + netID.connectionToServer.address + " " + netID.netId + ")";
+        }
+        else
+        {
+            gameObject.name = "VRNetworkPlayer(local " + netID.netId + ")";
+        }
         localPlayer = isLocalPlayer;
 
+        // Create the UI label
         GameObject playerLabelObj = Instantiate(characterLabelPrefab, transform.position, transform.rotation) as GameObject;
         playerLabelObj.transform.parent = transform;
         playerLabelObj.transform.localPosition = Vector3.up * 2f;
