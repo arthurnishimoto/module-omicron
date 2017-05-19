@@ -28,6 +28,12 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
         StartHost();
     }
 
+    public void StartDedicatedServer()
+    {
+        StartServer();
+        showLobbyGUI = true;
+    }
+
     public void ConnectToServer()
     {
         networkAddress = serverAddressField.text;
