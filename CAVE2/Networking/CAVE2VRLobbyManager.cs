@@ -18,6 +18,8 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
 
     public Camera lobbyCamera;
 
+    public GameObject lobbyCanvas;
+
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
         //CAVE2Manager.CAVE2LoadSceneOnDisplays(sceneName, UnityEngine.SceneManagement.LoadSceneMode.Additive);
@@ -38,6 +40,7 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
     {
         networkAddress = serverAddressField.text;
         StartClient();
+        PlayerPrefs.SetString("ServerIPAddress", networkAddress);
     }
 
     void Start()
@@ -48,6 +51,16 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
         NetworkedVRPlayerManager playerInfo = lobbyPlayerPrefab.GetComponent<NetworkedVRPlayerManager>();
         string playerType = playerInfo.localPlayerControllerPrefab.GetComponent<VRPlayerWrapper>().GetVRTypeLabel();
         localPlayerTypeText.text = "Player type '" + playerType + "' detected";
+
+        if(PlayerPrefs.GetString("ServerIPAddress").Length > 0 )
+        {
+            serverAddressField.text = PlayerPrefs.GetString("ServerIPAddress");
+        }
+        if (PlayerPrefs.GetString("LocalPlayerName").Length > 0)
+        {
+            localPlayerNameField.text = PlayerPrefs.GetString("LocalPlayerName");
+            playerName = localPlayerNameField.text;
+        }
     }
 
     public void SetLocalLobbyPlayer(GameObject player)
@@ -64,10 +77,13 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
         playerName = localPlayerNameField.text;
         if(localPlayer != null)
             localPlayer.SendMessage("SetPlayerName", localPlayerNameField.text);
+
+        PlayerPrefs.SetString("LocalPlayerName", playerName);
     }
 
     void SetupLobbyAsPlayScene()
     {
         lobbyCamera.gameObject.SetActive(false);
+        lobbyCanvas.gameObject.SetActive(false);
     }
 }
