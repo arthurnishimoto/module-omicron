@@ -117,6 +117,8 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
             headPosition = headObject.localPosition;
             headRotation = headObject.localRotation;
 
+            playerLabel.transform.localPosition = new Vector3(headPosition.x, headPosition.y + 0.3f, headPosition.z);
+
             playerPosition = localPlayerController.transform.position;
             playerRotation = localPlayerController.transform.rotation;
 
@@ -150,6 +152,8 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
             headMarker.transform.localPosition = headPosition;
             headMarker.transform.localRotation = headRotation;
+
+            playerLabel.transform.localPosition = new Vector3(headPosition.x, headPosition.y + 0.3f, headPosition.z);
 
             wandMarkers[0].transform.localPosition = wandPosition;
             wandMarkers[0].transform.localRotation = wandRotation;
