@@ -11,6 +11,9 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
     [SyncVar]
     public string playerType = "VR";
 
+    public string networkAddress;
+    public uint networkID;
+
     public GameObject characterLabelPrefab;
 
     public float networkUpdateDelay = 0.1f;
@@ -60,12 +63,27 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
         NetworkIdentity netID = GetComponent<NetworkIdentity>();
         if (netID.connectionToServer != null)
         {
-            gameObject.name = "VRNetworkPlayer(" + netID.connectionToServer.address + " " + netID.netId + ")";
+            networkAddress = netID.connectionToServer.address;
+            networkID = netID.netId.Value;
+        }
+        else if (netID.connectionToClient != null)
+        {
+            networkAddress = netID.connectionToClient.address;
+            networkID = netID.netId.Value;
         }
         else
         {
-            gameObject.name = "VRNetworkPlayer(local " + netID.netId + ")";
+            networkAddress = "local";
+            networkID = netID.netId.Value;
         }
+
+        // Cleanup address if client (prepended with :fff::)
+        string[] splitAddr = networkAddress.Split(':');
+        networkAddress = splitAddr[splitAddr.Length - 1];
+
+        // Set gameobject name 
+        gameObject.name = "VRNetworkPlayer(" + networkAddress + " " + networkID + ")";
+
         localPlayer = isLocalPlayer;
 
         // Create the UI label
@@ -100,6 +118,10 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
             CmdUpdatePlayerLabel(playerName, playerType);
         }
+
+        // Register with the network manager
+
+
 
         UpdatePosition();
     }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class CAVE2VRLobbyManager : NetworkLobbyManager {
@@ -95,6 +95,6 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
     public override void OnLobbyClientConnect(NetworkConnection conn)
     {
         Debug.Log("OnLobbyClientConnect: " + conn.address);
-        //Debug.Log(conn.);
+
     }
 }
