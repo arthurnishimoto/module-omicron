@@ -61,19 +61,20 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
     public void Start() {
         //base.OnStartClient(); // don't use OnClientStart - this will cause isLocalPlayer to always return false
         NetworkIdentity netID = GetComponent<NetworkIdentity>();
-        if (netID.connectionToServer != null)
+        
+        if (netID.connectionToClient != null)
         {
-            networkAddress = netID.connectionToServer.address;
+            networkAddress = "local";
             networkID = netID.netId.Value;
         }
-        else if (netID.connectionToClient != null)
+        else if (netID.connectionToServer != null)
         {
-            networkAddress = netID.connectionToClient.address;
+            networkAddress = "local";
             networkID = netID.netId.Value;
         }
         else
         {
-            networkAddress = "local";
+            networkAddress = "remote";
             networkID = netID.netId.Value;
         }
 
@@ -82,7 +83,8 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
         networkAddress = splitAddr[splitAddr.Length - 1];
 
         // Set gameobject name 
-        gameObject.name = "VRNetworkPlayer(" + networkAddress + " " + networkID + ")";
+        if(networkID > 0)
+            gameObject.name = "VRNetworkPlayer(" + networkAddress + " " + networkID + ")";
 
         localPlayer = isLocalPlayer;
 
@@ -106,6 +108,14 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
             wandMarkers[0] = Instantiate(wandMarkerPrefab);
             wandMarkers[0].transform.parent = transform;
+
+            // CAVE2 - Tell Lobby Manager player needs to be spawned on display nodes
+            GameObject lobbyManagerObj = GameObject.Find("NetworkManager");
+            if(lobbyManagerObj && networkID > 0)
+            {
+                CAVE2VRLobbyManager lobbyManager = lobbyManagerObj.GetComponent<CAVE2VRLobbyManager>();
+                lobbyManager.SpawnPlayerOnCAVE2(gameObject);
+            }
         }
         else
         {
@@ -118,11 +128,6 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
             CmdUpdatePlayerLabel(playerName, playerType);
         }
-
-        // Register with the network manager
-
-
-
         UpdatePosition();
     }
 

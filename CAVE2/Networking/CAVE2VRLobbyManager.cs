@@ -20,6 +20,8 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
 
     public GameObject lobbyCanvas;
 
+    CAVE2ClusterSpawnManager cave2SpawnManager;
+
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
         //CAVE2Manager.CAVE2LoadSceneOnDisplays(sceneName, UnityEngine.SceneManagement.LoadSceneMode.Additive);
@@ -96,5 +98,16 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
     {
         Debug.Log("OnLobbyClientConnect: " + conn.address);
 
+    }
+
+    public override void OnLobbyClientDisconnect(NetworkConnection conn)
+    {
+        Debug.Log("OnLobbyClientDisconnect: " + conn.address);
+
+    }
+
+    public void SpawnPlayerOnCAVE2(GameObject source)
+    {
+        GetComponent<CAVE2ClusterSpawnManager>().SpawnNetworkPlayerOnCAVE2(source);
     }
 }
