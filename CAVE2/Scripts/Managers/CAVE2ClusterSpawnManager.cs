@@ -19,48 +19,41 @@ public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
 	
 	// Update is called once per frame
 	void Update () {
-        if (networkWaitTimer <= 0)
+        if (CAVE2.IsMaster())
         {
-            ICollection keys = spawnedPlayerList.Keys;
-            foreach( int netID in keys )
+            if (networkWaitTimer <= 0)
             {
-                GameObject g = spawnedPlayerList[netID] as GameObject;
-                NetworkedVRPlayerManager netPlayer = g.GetComponent<NetworkedVRPlayerManager>();
+                ICollection keys = spawnedPlayerList.Keys;
+                foreach (int netID in keys)
+                {
+                    GameObject g = spawnedPlayerList[netID] as GameObject;
+                    NetworkedVRPlayerManager netPlayer = g.GetComponent<NetworkedVRPlayerManager>();
 
-                UpdateNetworkPlayerRPC(netID, netPlayer.playerPosition, netPlayer.playerRotation, netPlayer.headPosition, netPlayer.headRotation);
+                    getReal3D.RpcManager.call("UpdateNetworkPlayerRPC", netID, netPlayer.playerPosition, netPlayer.playerRotation, netPlayer.headPosition, netPlayer.headRotation);
+                }
+                networkWaitTimer = networkUpdateDelay;
             }
-            /*
-            // Sends my head position to server
-            CmdUpdateHeadTransform(headPosition, headRotation);
-            CmdUpdatePlayerTransform(playerPosition, playerRotation);
-            int wandIndex = 0;
-            foreach (Transform wand in wandObjects)
+            else
             {
-                CmdUpdateWandTransform(wandIndex, wand.localPosition, wand.localRotation);
-                wandIndex++;
+                networkWaitTimer -= Time.deltaTime;
             }
-            */
-            networkWaitTimer = networkUpdateDelay;
-        }
-        else
-        {
-            networkWaitTimer -= Time.deltaTime;
         }
     }
 
     public void SpawnNetworkPlayerOnCAVE2(GameObject source)
     {
-        int netID = (int)source.GetComponent<NetworkedVRPlayerManager>().networkID;
+        NetworkedVRPlayerManager player = source.GetComponent<NetworkedVRPlayerManager>();
+        int netID = (int)player.networkID;
         if (!spawnedPlayerList.ContainsKey(netID))
         {
-            getReal3D.RpcManager.call("SpawnNetworkPlayerRPC", netID, source.transform.position, source.transform.rotation);
+            getReal3D.RpcManager.call("SpawnNetworkPlayerRPC", netID, player.playerName, player.playerType);
             Debug.Log("Added " + netID + " to list");
             spawnedPlayerList.Add(netID, source);
         }
     }
 
     [getReal3D.RPC]
-    void SpawnNetworkPlayerRPC(int netID, Vector3 position, Quaternion rotation)
+    void SpawnNetworkPlayerRPC(int netID, string playerName, string playerType)
     {
         Debug.Log("Added " + netID + " to CAVE2 display client");
         
@@ -68,13 +61,9 @@ public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
         newNetPlayer.name = "CAVE2 Client (remote " +netID + ")";
 
         NetworkedVRPlayerManager vrNetPlayer = newNetPlayer.GetComponent<NetworkedVRPlayerManager>();
-
-        vrNetPlayer.playerPosition = new Vector3(position.x, position.y - 50, position.z);
-        vrNetPlayer.playerRotation = rotation;
-
-        Debug.Log(position);
-        Debug.Log(rotation);
-        Debug.Log(newNetPlayer.name);
+        vrNetPlayer.playerName = playerName;
+        vrNetPlayer.playerType = playerType;
+        vrNetPlayer.SetNetID((uint)netID);
 
         clientPlayerList.Add(netID, vrNetPlayer);
     }
@@ -85,7 +74,7 @@ public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
         if( clientPlayerList.ContainsKey(netID) )
         {
             NetworkedVRPlayerManager vrNetPlayer = clientPlayerList[netID] as NetworkedVRPlayerManager;
-            vrNetPlayer.playerPosition = new Vector3(position.x, position.y - 50, position.z);
+            vrNetPlayer.playerPosition = new Vector3(position.x, position.y, position.z);
             vrNetPlayer.playerRotation = rotation;
             vrNetPlayer.headPosition = headPos;
             vrNetPlayer.headRotation = headRot;

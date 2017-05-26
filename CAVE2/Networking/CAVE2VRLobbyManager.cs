@@ -22,6 +22,8 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
 
     CAVE2ClusterSpawnManager cave2SpawnManager;
 
+    public bool cave2Client = false;
+
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
         //CAVE2Manager.CAVE2LoadSceneOnDisplays(sceneName, UnityEngine.SceneManagement.LoadSceneMode.Additive);
@@ -67,6 +69,7 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
         if( !CAVE2.IsMaster() )
         {
             StartHost();
+            cave2Client = true;
         }
     }
 

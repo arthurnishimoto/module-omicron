@@ -149,6 +149,10 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.GetCAVE2Manager().GetWandObject(ID);
     }
 
+    public static void ShowDebugCanvas(bool value)
+    {
+        CAVE2Manager.GetCAVE2Manager().showDebugCanvas = value;
+    }
     // ---------------------------------------------------------------------------------------------
 
     // CAVE2 Omicron Management --------------------------------------------------------------------
@@ -285,6 +289,9 @@ public class CAVE2Manager : MonoBehaviour {
     Vector3 mouseLastPos;
     Vector3 mouseDeltaPos;
 
+    public bool showDebugCanvas;
+    public GameObject debugCanvas;
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
@@ -327,6 +334,11 @@ public class CAVE2Manager : MonoBehaviour {
                 mainCameraController.GetMainCamera().transform.localPosition = simulatorHeadPosition;
                 mainCameraController.GetMainCamera().transform.localEulerAngles = simulatorHeadRotation;
             }
+        }
+
+        if( debugCanvas )
+        {
+            debugCanvas.SetActive(showDebugCanvas);
         }
     }
 

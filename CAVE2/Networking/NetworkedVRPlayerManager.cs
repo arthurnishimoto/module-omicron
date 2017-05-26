@@ -51,10 +51,18 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
     CharacterLabelUI playerLabel;
 
+    public bool cave2Client = false;
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
         CAVE2VRLobbyManager.LobbyManager.SetLocalLobbyPlayer(gameObject);
+    }
+
+    public void SetNetID(uint netID)
+    {
+        networkID = netID;
+        cave2Client = true;
     }
 
     // Use this for initialization
@@ -110,15 +118,27 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
             wandMarkers[0].transform.parent = transform;
 
             // CAVE2 - Tell Lobby Manager player needs to be spawned on display nodes
-            GameObject lobbyManagerObj = GameObject.Find("NetworkManager");
-            if(lobbyManagerObj && networkID > 0)
+            if (CAVE2.IsMaster())
             {
-                CAVE2VRLobbyManager lobbyManager = lobbyManagerObj.GetComponent<CAVE2VRLobbyManager>();
-                lobbyManager.SpawnPlayerOnCAVE2(gameObject);
+                GameObject lobbyManagerObj = GameObject.Find("NetworkManager");
+                if (lobbyManagerObj && networkID > 0)
+                {
+                    CAVE2VRLobbyManager lobbyManager = lobbyManagerObj.GetComponent<CAVE2VRLobbyManager>();
+                    lobbyManager.SpawnPlayerOnCAVE2(gameObject);
+                }
             }
         }
         else
         {
+            if(CAVE2VRLobbyManager.LobbyManager.cave2Client)
+            {
+                headMarker = Instantiate(headMarkerPrefab);
+                headMarker.transform.parent = transform;
+
+                wandMarkers[0] = Instantiate(wandMarkerPrefab);
+                wandMarkers[0].transform.parent = transform;
+            }
+
             playerName = CAVE2VRLobbyManager.LobbyManager.playerName;
             localPlayerController = Instantiate(localPlayerControllerPrefab, transform.position, transform.rotation) as GameObject;
             VRPlayerWrapper vrPlayer = localPlayerController.GetComponent<VRPlayerWrapper>();
@@ -148,7 +168,7 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
     void UpdatePosition()
     {
-        if (localPlayer)
+        if (localPlayer && !CAVE2VRLobbyManager.LobbyManager.cave2Client)
         {
             headPosition = headObject.localPosition;
             headRotation = headObject.localRotation;
