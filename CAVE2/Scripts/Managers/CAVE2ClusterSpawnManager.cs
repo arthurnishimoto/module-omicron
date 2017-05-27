@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+#if USING_GETREAL3D
 public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
-
+#else
+public class CAVE2ClusterSpawnManager : MonoBehaviour {
+#endif
     public CAVE2VRLobbyManager lobbyManager;
 
     Hashtable spawnedPlayerList;
@@ -28,8 +31,9 @@ public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
                 {
                     GameObject g = spawnedPlayerList[netID] as GameObject;
                     NetworkedVRPlayerManager netPlayer = g.GetComponent<NetworkedVRPlayerManager>();
-
+#if USING_GETREAL3D
                     getReal3D.RpcManager.call("UpdateNetworkPlayerRPC", netID, netPlayer.playerPosition, netPlayer.playerRotation, netPlayer.headPosition, netPlayer.headRotation);
+#endif
                 }
                 networkWaitTimer = networkUpdateDelay;
             }
@@ -46,13 +50,16 @@ public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
         int netID = (int)player.networkID;
         if (!spawnedPlayerList.ContainsKey(netID))
         {
+#if USING_GETREAL3D
             getReal3D.RpcManager.call("SpawnNetworkPlayerRPC", netID, player.playerName, player.playerType);
+#endif
             Debug.Log("Added " + netID + " to list");
             spawnedPlayerList.Add(netID, source);
         }
     }
-
+#if USING_GETREAL3D
     [getReal3D.RPC]
+#endif
     void SpawnNetworkPlayerRPC(int netID, string playerName, string playerType)
     {
         Debug.Log("Added " + netID + " to CAVE2 display client");
@@ -67,8 +74,9 @@ public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
 
         clientPlayerList.Add(netID, vrNetPlayer);
     }
-
+#if USING_GETREAL3D
     [getReal3D.RPC]
+#endif
     void UpdateNetworkPlayerRPC(int netID, Vector3 position, Quaternion rotation, Vector3 headPos, Quaternion headRot)
     {
         if( clientPlayerList.ContainsKey(netID) )
