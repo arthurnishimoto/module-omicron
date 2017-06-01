@@ -12,6 +12,7 @@ public class CAVE2 : MonoBehaviour
     public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
 
     public static CAVE2InputManager Input;
+    public static CAVE2RPCManager RpcManager;
 
     // CAVE2 Tracking Management -------------------------------------------------------------------
     public static Vector3 GetHeadPosition(int ID)
@@ -177,6 +178,11 @@ public class CAVE2 : MonoBehaviour
         GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param);
     }
 
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    {
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2);
+    }
+
     public static void Destroy(string targetObjectName)
     {
         GetCAVE2Manager().Destroy(targetObjectName);
@@ -184,11 +190,9 @@ public class CAVE2 : MonoBehaviour
     }
     // ---------------------------------------------------------------------------------------------
 }
-#if USING_GETREAL3D
-public class CAVE2Manager : getReal3D.MonoBehaviourWithRpc {
-#else
+
 public class CAVE2Manager : MonoBehaviour {
-#endif
+
 static CAVE2Manager CAVE2Manager_Instance;
     CAVE2InputManager inputManager;
 
@@ -249,16 +253,22 @@ static CAVE2Manager CAVE2Manager_Instance;
     public bool showDebugCanvas;
     public GameObject debugCanvas;
 
+    CAVE2RPCManager rpcManager;
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
         CAVE2.Input = inputManager;
+        CAVE2.RpcManager = GetComponent<CAVE2RPCManager>();
 
         cameraControllers = new ArrayList();
 
         machineName = System.Environment.MachineName;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
+
+        Random.InitState(1138);
+        
     }
     void Start()
     {
@@ -608,63 +618,23 @@ static CAVE2Manager CAVE2Manager_Instance;
     // CAVE2 Synchronization Management ------------------------------------------------------------
     public void BroadcastMessage(string targetObjectName, string methodName, object param)
     {
-        //Debug.Log ("Broadcast '" +methodName +"' on "+ targetObjectName);
-#if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
-            getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
-#else
-        GameObject targetObject = GameObject.Find(targetObjectName);
-        if (targetObject != null)
-        {
-            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
-        }
-#endif
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
     }
 
     public void BroadcastMessage(string targetObjectName, string methodName)
     {
-        BroadcastMessage(targetObjectName, methodName, 0);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0);
     }
 
     public void Destroy(string targetObjectName)
     {
-#if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
-            getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
-#else
-        GameObject targetObject = GameObject.Find(targetObjectName);
-        if (targetObject != null)
-        {
-            Destroy(targetObject);
-        }
-#endif
+        CAVE2.RpcManager.CAVE2DestroyRPC(targetObjectName);
     }
 
-#if USING_GETREAL3D
-    [getReal3D.RPC]
-    public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
-    {
-        //Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
 
-        GameObject targetObject = GameObject.Find(targetObjectName);
-        if (targetObject != null)
-        {
-            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
-        }
-    }
-
-    [getReal3D.RPC]
-    public void CAVE2DestroyRPC(string targetObjectName)
-    {
-        //Debug.Log ("SendCAVE2RPC: call 'Destroy' on "+targetObjectName);
-
-        GameObject targetObject = GameObject.Find(targetObjectName);
-        if (targetObject != null)
-        {
-            Destroy(targetObject);
-        }
-    }
-#endif
 }
