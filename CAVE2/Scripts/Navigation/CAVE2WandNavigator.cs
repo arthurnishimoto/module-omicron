@@ -27,11 +27,12 @@ public class CAVE2WandNavigator : MonoBehaviour {
     // Walk - Analog stick movement with physics
     // Fly - 6DoF movement with no physics
     // Drive - Same as fly without pitch/roll
-    public enum NavigationMode { Walk, Drive, Freefly }
+    public enum NavigationMode { Disabled, Walk, Drive, Freefly }
 
     public NavigationMode navMode = NavigationMode.Walk;
     public CAVE2.Button freeFlyToggleButton = CAVE2.Button.Button5;
     public CAVE2.Button freeFlyButton = CAVE2.Button.Button7;
+    NavigationMode lastNavMode;
 
     public enum HorizonalMovementMode { Strafe, Turn }
     public HorizonalMovementMode horizontalMovementMode = HorizonalMovementMode.Strafe;
@@ -66,12 +67,24 @@ public class CAVE2WandNavigator : MonoBehaviour {
         //navMode = initMode;
     }
 
+    public void DisableMovement()
+    {
+        lastNavMode = navMode;
+        navMode = NavigationMode.Disabled;
+    }
+
+    public void EnableMovement()
+    {
+        navMode = lastNavMode;
+    }
+
     // Use this for initialization
     void Start ()
     {
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         initMode = navMode;
+        lastNavMode = navMode;
 
         playerCollider = GetComponent<CAVE2PlayerCollider>();
 
@@ -83,7 +96,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         {
             UpdateFreeflyMovement();
         }
-        else
+        else if (navMode == NavigationMode.Walk)
         {
             UpdateWalkMovement();
         }

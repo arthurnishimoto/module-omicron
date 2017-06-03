@@ -7,6 +7,8 @@ public class WandHoverOverIndicator : MonoBehaviour {
 	public float lastWandOverTime;
 	public float wandOverTimeout = 0.15f;
 
+    public float highlightScaler = 1.05f;
+
 	public Mesh defaultMesh;
 	public Material hoverOverMaterial;
 	GameObject wandOverHighlight;
@@ -18,7 +20,7 @@ public class WandHoverOverIndicator : MonoBehaviour {
 		wandOverHighlight.transform.parent = transform;
 		wandOverHighlight.transform.position = transform.position;
 		wandOverHighlight.transform.rotation = transform.rotation;
-		wandOverHighlight.transform.localScale = Vector3.one * 1.1f;
+		wandOverHighlight.transform.localScale = Vector3.one * highlightScaler;
 
 		if( defaultMesh == null )
 		{

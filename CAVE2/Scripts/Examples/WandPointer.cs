@@ -63,77 +63,9 @@ public class WandPointer : MonoBehaviour
 
         if (wandHit) // The wand is pointed at a collider
         {
-            // Send a message to the hit object telling it that the wand is hovering over it
-            hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver);
-
-            // If the laser button has just been pressed, tell the hit object
-            if (CAVE2Manager.GetButtonDown(wandID, laserButton))
-            {
-				hit.collider.gameObject.SendMessage("OnWandButtonDown", laserButton, SendMessageOptions.DontRequireReceiver);
-            }
-
-			// If the laser button has just been pressed, tell the hit object
-			if (CAVE2Manager.GetButtonUp(wandID, laserButton))
-			{
-				hit.collider.gameObject.SendMessage("OnWandButtonUp", laserButton, SendMessageOptions.DontRequireReceiver);
-            }
-
-            if (CAVE2Manager.GetButtonDown(wandID,CAVE2.Button.Button2))
-            {
-				hit.collider.gameObject.SendMessage("OnWandButtonDown", CAVE2.Button.Button2, SendMessageOptions.DontRequireReceiver);
-			}
-			if (CAVE2Manager.GetButtonUp(wandID, CAVE2.Button.Button2))
-			{
-				hit.collider.gameObject.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver);
-			}
-
-            if (CAVE2Manager.GetButton(wandID, CAVE2.Button.Button2))
-            {
-                hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.Button2, SendMessageOptions.DontRequireReceiver);
-            }
-
-            // DPad Click
-            if (CAVE2Manager.GetButtonDown(wandID, CAVE2.Button.ButtonUp))
-            {
-				hit.collider.gameObject.SendMessage("OnWandButtonDown", CAVE2.Button.ButtonUp, SendMessageOptions.DontRequireReceiver);
-            }
-            if (CAVE2Manager.GetButtonDown(wandID, CAVE2.Button.ButtonDown))
-            {
-				hit.collider.gameObject.SendMessage("OnWandButtonDown", CAVE2.Button.ButtonDown, SendMessageOptions.DontRequireReceiver);
-            }
-            if (CAVE2Manager.GetButtonDown(wandID, CAVE2.Button.ButtonLeft))
-            {
-				hit.collider.gameObject.SendMessage("OnWandButtonDown", CAVE2.Button.ButtonLeft, SendMessageOptions.DontRequireReceiver);
-            }
-            if (CAVE2Manager.GetButtonDown(wandID, CAVE2.Button.ButtonRight))
-            {
-				hit.collider.gameObject.SendMessage("OnWandButtonDown", CAVE2.Button.ButtonRight, SendMessageOptions.DontRequireReceiver);
-            }
-
-            // DPad Hold
-            if (CAVE2Manager.GetButton(wandID, CAVE2.Button.ButtonUp))
-            {
-                hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.ButtonUp, SendMessageOptions.DontRequireReceiver);
-            }
-            if (CAVE2Manager.GetButton(wandID, CAVE2.Button.ButtonDown))
-            {
-                hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.ButtonDown, SendMessageOptions.DontRequireReceiver);
-            }
-            if (CAVE2Manager.GetButton(wandID, CAVE2.Button.ButtonLeft))
-            {
-                hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.ButtonLeft, SendMessageOptions.DontRequireReceiver);
-            }
-            if (CAVE2Manager.GetButton(wandID, CAVE2.Button.ButtonRight))
-            {
-                hit.collider.gameObject.SendMessage("OnWandButtonHold", CAVE2.Button.ButtonRight, SendMessageOptions.DontRequireReceiver);
-            }
-
             // Laser button is held down
             if (laserActivated)
             {
-                // Tell hit object laser button is held down
-				hit.collider.gameObject.SendMessage("OnWandButtonHold", laserButton, SendMessageOptions.DontRequireReceiver);
-
                 Debug.DrawLine(ray.origin, hit.point);
 
                 // Set the laser distance at the collision point

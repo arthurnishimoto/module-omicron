@@ -170,7 +170,7 @@ public class CAVE2 : MonoBehaviour
     // CAVE2 Synchronization Management ------------------------------------------------------------
     public static void BroadcastMessage(string targetObjectName, string methodName)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, 0);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName);
     }
 
     public static void BroadcastMessage(string targetObjectName, string methodName, object param)
@@ -633,7 +633,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public void Destroy(string targetObjectName)
     {
-        CAVE2.RpcManager.CAVE2DestroyRPC(targetObjectName);
+        CAVE2.RpcManager.Destroy(targetObjectName);
     }
 
 
