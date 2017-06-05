@@ -71,6 +71,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
     {
         lastNavMode = navMode;
         navMode = NavigationMode.Disabled;
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
     }
 
     public void EnableMovement()
