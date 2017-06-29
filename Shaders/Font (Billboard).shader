@@ -2,6 +2,8 @@ Shader "GUI/Text Shader (Billboard)" {
 	Properties {
 		_MainTex ("Font Texture", 2D) = "white" {}
 		_Color ("Text Color", Color) = (1,1,1,1)
+		_ScaleX("Scale X", Float) = 1.0
+		_ScaleY("Scale Y", Float) = 1.0
 	}
 
 	SubShader {
@@ -37,17 +39,20 @@ Shader "GUI/Text Shader (Billboard)" {
 			sampler2D _MainTex;
 			uniform float4 _MainTex_ST;
 			uniform fixed4 _Color;
+			uniform float _ScaleX;
+			uniform float _ScaleY;
 
-			v2f vert (appdata_t v)
+			v2f vert(appdata_t v)
 			{
 				v2f o;
 				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
 				o.color = v.color * _Color;
 
 				// Billboard without scale
-				o.vertex = mul(UNITY_MATRIX_P, 
-				mul(UNITY_MATRIX_MV, float4(0.0, 0.0, 0.0, 1.0))
-					- float4(-v.vertex.x, -v.vertex.y, 0.0, 0.0));
+				o.vertex = mul(UNITY_MATRIX_P,
+					mul(UNITY_MATRIX_MV, float4(0.0, 0.0, 0.0, 1.0))
+					- float4(-v.vertex.x, -v.vertex.y, 0.0, 0.0)
+					* float4(_ScaleX, _ScaleY, 1.0, 1.0));
 
 				o.texcoord = TRANSFORM_TEX(v.texcoord,_MainTex);
 				return o;
