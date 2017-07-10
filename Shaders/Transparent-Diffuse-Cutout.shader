@@ -1,4 +1,6 @@
-﻿Shader "Transparent/Cutout Billboard"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Transparent/Cutout Billboard"
 {
 	Properties {
 		_TintColor ("Tint Color", Color) = (0.5,0.5,0.5,0.5)
@@ -44,8 +46,8 @@
 					//o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
 
 					// Billboard with scale
-					float scaleX = length(mul(_Object2World, float4(1.0, 0.0, 0.0, 0.0)));
-					float scaleY = length(mul(_Object2World, float4(0.0, 1.0, 0.0, 0.0)));
+					float scaleX = length(mul(unity_ObjectToWorld, float4(1.0, 0.0, 0.0, 0.0)));
+					float scaleY = length(mul(unity_ObjectToWorld, float4(0.0, 1.0, 0.0, 0.0)));
 					o.vertex = mul(UNITY_MATRIX_P, 
 					 mul(UNITY_MATRIX_MV, float4(0.0, 0.0, 0.0, 1.0))
 					 - float4(v.vertex.x * scaleX, v.vertex.y * -scaleY, 0.0, 0.0));
