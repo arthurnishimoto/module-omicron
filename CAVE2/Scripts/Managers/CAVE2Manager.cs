@@ -156,6 +156,7 @@ public class CAVE2 : MonoBehaviour
     {
         CAVE2Manager.GetCAVE2Manager().showDebugCanvas = value;
     }
+    // ---------------------------------------------------------------------------------------------
 
     public static void AddCameraController(CAVE2CameraController cam)
     {
@@ -648,6 +649,28 @@ static CAVE2Manager CAVE2Manager_Instance;
     }
 
     // ---------------------------------------------------------------------------------------------
+
+
+    // CAVE2 Synchronization Management ------------------------------------------------------------
+    public void BroadcastMessage(string targetObjectName, string methodName, object param)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0);
+    }
+
+    public void Destroy(string targetObjectName)
+    {
+        CAVE2.RpcManager.Destroy(targetObjectName);
+    }
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
