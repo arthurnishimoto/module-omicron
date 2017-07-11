@@ -14,6 +14,20 @@ public class CAVE2 : MonoBehaviour
     public static CAVE2InputManager Input;
     public static CAVE2RPCManager RpcManager;
 
+    public struct ButtonInfo
+    {
+        public CAVE2PlayerIdentity playerID;
+        public int wandID;
+        public Button button;
+
+        public ButtonInfo(CAVE2PlayerIdentity id, int wand, Button b)
+        {
+            playerID = id;
+            wandID = wand;
+            button = b;
+        }
+    };
+
     // CAVE2 Tracking Management -------------------------------------------------------------------
     public static Vector3 GetHeadPosition(int ID)
     {
@@ -671,28 +685,4 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         CAVE2.RpcManager.Destroy(targetObjectName);
     }
-
-
-    // CAVE2 Synchronization Management ------------------------------------------------------------
-    public void BroadcastMessage(string targetObjectName, string methodName, object param)
-    {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param);
-    }
-
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
-    {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
-    }
-
-    public void BroadcastMessage(string targetObjectName, string methodName)
-    {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0);
-    }
-
-    public void Destroy(string targetObjectName)
-    {
-        CAVE2.RpcManager.Destroy(targetObjectName);
-    }
-
-
 }
