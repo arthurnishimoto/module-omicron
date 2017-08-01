@@ -336,44 +336,49 @@ class OmicronManager : MonoBehaviour
 
     public SimpleCanvasTouch testTouchCanvas;
     public void Update()
-	{
-		if( mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)) )
-		{
-			Vector2 position = new Vector3( Input.mousePosition.x / Screen.width, 1 - (Input.mousePosition.y / Screen.height) );
-						
-			// Ray extending from main camera into screen from touch point
-			Ray touchRay = Camera.main.ScreenPointToRay(position);
-			Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
-						
-			TouchPoint touch = new TouchPoint(position, -1);
-				
-			if( Input.GetMouseButtonDown(0) )
-				touch.SetGesture( EventBase.Type.Down );
-			else if( Input.GetMouseButtonUp(0) )
-				touch.SetGesture( EventBase.Type.Up );
-			else if( Input.GetMouseButton(0) )
-				touch.SetGesture( EventBase.Type.Move );
-            
+    {
+        if (mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)))
+        {
+            Vector2 position = new Vector3(Input.mousePosition.x / Screen.width, 1 - (Input.mousePosition.y / Screen.height));
+
+            // Ray extending from main camera into screen from touch point
+            Ray touchRay = Camera.main.ScreenPointToRay(position);
+            Debug.DrawRay(touchRay.origin, touchRay.direction * 10, Color.white);
+
+            TouchPoint touch = new TouchPoint(position, -1);
+
+            if (Input.GetMouseButtonDown(0))
+                touch.SetGesture(EventBase.Type.Down);
+            else if (Input.GetMouseButtonUp(0))
+                touch.SetGesture(EventBase.Type.Up);
+            else if (Input.GetMouseButton(0))
+                touch.SetGesture(EventBase.Type.Move);
+
             testTouchCanvas.OnEvent(touch);
         }
 
         StartCoroutine("SendEventsToClients");
 
-        if(statusCanvasText)
+        CAVE2.BroadcastMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
+    }
+
+    void UpdateDebugTextRPC(int connectStatus)
+    {
+        if (statusCanvasText)
         {
             string statusText = "UNKNOWN";
             switch (connectStatus)
             {
                 case (0): currentStatus = idleStatus; statusText = "Not Connected"; statusCanvasText.color = Color.grey; break;
-                case (1): currentStatus = activeStatus; statusText = "Connected"; statusCanvasText.color = Color.green;  break;
-                case (-1): currentStatus = errorStatus; statusText = "Failed to Connect"; statusCanvasText.color = Color.red;  break;
+                case (1): currentStatus = activeStatus; statusText = "Connected"; statusCanvasText.color = Color.green; break;
+                case (-1): currentStatus = errorStatus; statusText = "Failed to Connect"; statusCanvasText.color = Color.red; break;
                 default: statusCanvasText.color = Color.yellow; break;
             }
 
             statusCanvasText.text = statusText;
         }
-	}
-	
+    }
+      	
     IEnumerator SendEventsToClients()
     {
         lock (eventList.SyncRoot)

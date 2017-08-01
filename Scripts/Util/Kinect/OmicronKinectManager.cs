@@ -52,7 +52,7 @@ public class OmicronKinectManager : OmicronEventClient {
 
 	// Use this for initialization
 	new void Start () {
-        eventOptions = EventBase.ServiceType.ServiceTypeMocap;
+        eventOptions = EventBase.ServiceType.ServiceTypeAny;
         trackedBodies = new Hashtable ();
 		InitOmicron ();
 	}
@@ -119,7 +119,8 @@ public class OmicronKinectManager : OmicronEventClient {
 	[getReal3D.RPC]
 	void SetHUDSpeechDebugText(string s)
 	{
-		debugText.text = s;
+        if(debugText)
+		    debugText.text = s;
 	}
 #endif
 	void CreateBody( int sourceID )

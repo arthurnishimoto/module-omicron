@@ -17,6 +17,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
     public float vertical;
     public Vector2 lookAround = new Vector2();
 
+    public bool walkUsesFlyGlobalSpeedScale = false;
     public float globalSpeedMod = 1.0f;
     public float movementScale = 2;
     public float flyMovementScale = 10;
@@ -105,8 +106,14 @@ public class CAVE2WandNavigator : MonoBehaviour {
 	// Update is called once per frame
 	void Update()
     {
+        float speedMod = 1;
+        if(walkUsesFlyGlobalSpeedScale)
+        {
+            speedMod = globalSpeedMod;
+        }
+
         forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
-        forward *= movementScale;
+        forward *= movementScale * speedMod;
 
         strafe = CAVE2.GetAxis(wandID, strafeAxis);
         strafe *= movementScale;
@@ -117,7 +124,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         lookAround.y *= movementScale;
 
         vertical = CAVE2.GetAxis(wandID, verticalAxis);
-        vertical *= movementScale;
+        vertical *= movementScale * speedMod;
 
         freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
 
@@ -273,7 +280,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
             transform.position = nextPos;
-            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime);
             transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
         }
     }

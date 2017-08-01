@@ -53,4 +53,14 @@ public class CAVE2CameraController : MonoBehaviour {
             c.cullingMask = mask;
         }
     }
+
+    public void SetCameraNearClippingPlane(float value)
+    {
+        Camera[] cameras = GetComponentsInChildren<Camera>();
+        foreach (Camera c in cameras)
+        {
+            c.nearClipPlane = value;
+        }
+    }
+
 }
