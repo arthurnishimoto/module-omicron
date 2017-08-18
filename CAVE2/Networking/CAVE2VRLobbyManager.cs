@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class CAVE2VRLobbyManager : NetworkLobbyManager {
@@ -19,6 +19,10 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
     public Camera lobbyCamera;
 
     public GameObject lobbyCanvas;
+
+    CAVE2ClusterSpawnManager cave2SpawnManager;
+
+    public bool cave2Client = false;
 
     public override void OnLobbyServerSceneChanged(string sceneName)
     {
@@ -65,6 +69,7 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
         if( !CAVE2.IsMaster() )
         {
             StartHost();
+            cave2Client = true;
         }
     }
 
@@ -95,6 +100,17 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
     public override void OnLobbyClientConnect(NetworkConnection conn)
     {
         Debug.Log("OnLobbyClientConnect: " + conn.address);
-        //Debug.Log(conn.);
+
+    }
+
+    public override void OnLobbyClientDisconnect(NetworkConnection conn)
+    {
+        Debug.Log("OnLobbyClientDisconnect: " + conn.address);
+
+    }
+
+    public void SpawnPlayerOnCAVE2(GameObject source)
+    {
+        GetComponent<CAVE2ClusterSpawnManager>().SpawnNetworkPlayerOnCAVE2(source);
     }
 }

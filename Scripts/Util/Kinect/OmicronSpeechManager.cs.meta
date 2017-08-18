@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: d64095e3b43a8c744826a1ce84aced2a
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - kinect2bodyPrefab: {fileID: 100000, guid: 9017932525ee41047b5c6fc8a6d7e305, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

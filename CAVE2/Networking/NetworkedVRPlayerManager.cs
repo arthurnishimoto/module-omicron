@@ -11,6 +11,9 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
     [SyncVar]
     public string playerType = "VR";
 
+    public string networkAddress;
+    public uint networkID;
+
     public GameObject characterLabelPrefab;
 
     public float networkUpdateDelay = 0.1f;
@@ -48,24 +51,49 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
     CharacterLabelUI playerLabel;
 
+    public bool cave2Client = false;
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
         CAVE2VRLobbyManager.LobbyManager.SetLocalLobbyPlayer(gameObject);
     }
 
+    public void SetNetID(uint netID)
+    {
+        networkID = netID;
+        cave2Client = true;
+    }
+
     // Use this for initialization
     public void Start() {
         //base.OnStartClient(); // don't use OnClientStart - this will cause isLocalPlayer to always return false
         NetworkIdentity netID = GetComponent<NetworkIdentity>();
-        if (netID.connectionToServer != null)
+        
+        if (netID.connectionToClient != null)
         {
-            gameObject.name = "VRNetworkPlayer(" + netID.connectionToServer.address + " " + netID.netId + ")";
+            networkAddress = "local";
+            networkID = netID.netId.Value;
+        }
+        else if (netID.connectionToServer != null)
+        {
+            networkAddress = "local";
+            networkID = netID.netId.Value;
         }
         else
         {
-            gameObject.name = "VRNetworkPlayer(" + netID.connectionToClient.address + " " + netID.netId + ")";
+            networkAddress = "remote";
+            networkID = netID.netId.Value;
         }
+
+        // Cleanup address if client (prepended with :fff::)
+        string[] splitAddr = networkAddress.Split(':');
+        networkAddress = splitAddr[splitAddr.Length - 1];
+
+        // Set gameobject name 
+        if(networkID > 0)
+            gameObject.name = "VRNetworkPlayer(" + networkAddress + " " + networkID + ")";
+
         localPlayer = isLocalPlayer;
 
         // Create the UI label
@@ -88,9 +116,29 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
             wandMarkers[0] = Instantiate(wandMarkerPrefab);
             wandMarkers[0].transform.parent = transform;
+
+            // CAVE2 - Tell Lobby Manager player needs to be spawned on display nodes
+            if (CAVE2.IsMaster())
+            {
+                GameObject lobbyManagerObj = GameObject.Find("NetworkManager");
+                if (lobbyManagerObj && networkID > 0)
+                {
+                    CAVE2VRLobbyManager lobbyManager = lobbyManagerObj.GetComponent<CAVE2VRLobbyManager>();
+                    lobbyManager.SpawnPlayerOnCAVE2(gameObject);
+                }
+            }
         }
         else
         {
+            if(CAVE2VRLobbyManager.LobbyManager.cave2Client)
+            {
+                headMarker = Instantiate(headMarkerPrefab);
+                headMarker.transform.parent = transform;
+
+                wandMarkers[0] = Instantiate(wandMarkerPrefab);
+                wandMarkers[0].transform.parent = transform;
+            }
+
             playerName = CAVE2VRLobbyManager.LobbyManager.playerName;
             localPlayerController = Instantiate(localPlayerControllerPrefab, transform.position, transform.rotation) as GameObject;
             VRPlayerWrapper vrPlayer = localPlayerController.GetComponent<VRPlayerWrapper>();
@@ -100,7 +148,6 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
             CmdUpdatePlayerLabel(playerName, playerType);
         }
-
         UpdatePosition();
     }
 
@@ -121,7 +168,7 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 
     void UpdatePosition()
     {
-        if (localPlayer)
+        if (localPlayer && !CAVE2VRLobbyManager.LobbyManager.cave2Client)
         {
             headPosition = headObject.localPosition;
             headRotation = headObject.localRotation;

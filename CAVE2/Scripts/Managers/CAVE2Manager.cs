@@ -12,6 +12,21 @@ public class CAVE2 : MonoBehaviour
     public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
 
     public static CAVE2InputManager Input;
+    public static CAVE2RPCManager RpcManager;
+
+    public struct ButtonInfo
+    {
+        public CAVE2PlayerIdentity playerID;
+        public int wandID;
+        public Button button;
+
+        public ButtonInfo(CAVE2PlayerIdentity id, int wand, Button b)
+        {
+            playerID = id;
+            wandID = wand;
+            button = b;
+        }
+    };
 
     // CAVE2 Tracking Management -------------------------------------------------------------------
     public static Vector3 GetHeadPosition(int ID)
@@ -138,7 +153,9 @@ public class CAVE2 : MonoBehaviour
     {
         CAVE2Manager.GetCAVE2Manager().RegisterWandObject(wandID, gameobject);
     }
+    // ---------------------------------------------------------------------------------------------
 
+    // CAVE2 Player Management ---------------------------------------------------------------------
     public static GameObject GetHeadObject(int ID)
     {
         return CAVE2Manager.GetCAVE2Manager().GetHeadObject(ID);
@@ -149,9 +166,12 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.GetCAVE2Manager().GetWandObject(ID);
     }
 
+    public static void ShowDebugCanvas(bool value)
+    {
+        CAVE2Manager.GetCAVE2Manager().showDebugCanvas = value;
+    }
     // ---------------------------------------------------------------------------------------------
 
-    // CAVE2 Omicron Management --------------------------------------------------------------------
     public static void AddCameraController(CAVE2CameraController cam)
     {
         CAVE2Manager.AddCameraController(cam);
@@ -160,75 +180,51 @@ public class CAVE2 : MonoBehaviour
     {
         return GetCAVE2Manager().mainCameraController;
     }
-    // ---------------------------------------------------------------------------------------------
 
-    // CAVE2 Synchronization Management ------------------------------------------------------------
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public static void AddPlayerController(int id, GameObject g)
     {
-#if USING_GETREAL3D
-		if( getReal3D.Cluster.isMaster )
-			getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
-#else
-        GameObject targetObject = GameObject.Find(targetObjectName);
-        if (targetObject != null)
-        {
-            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
-        }
-#endif
+        GetCAVE2Manager().AddPlayerController(id, g);
     }
 
+    public static GameObject GetPlayerController(int id)
+    {
+        return GetCAVE2Manager().GetPlayerController(id);
+    }
+
+    public static int GetPlayerControllerCount()
+    {
+        return GetCAVE2Manager().GetPlayerControllerCount();
+    }
+    // ---------------------------------------------------------------------------------------------
+
+
+    // CAVE2 Synchronization Management ------------------------------------------------------------
     public static void BroadcastMessage(string targetObjectName, string methodName)
     {
-        BroadcastMessage(targetObjectName, methodName, 0);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName);
+    }
+
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param)
+    {
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param);
+    }
+
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    {
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2);
     }
 
     public static void Destroy(string targetObjectName)
     {
-#if USING_GETREAL3D
-		if( getReal3D.Cluster.isMaster )
-			getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
-#else
-        GameObject targetObject = GameObject.Find(targetObjectName);
-        if (targetObject != null)
-        {
-            Destroy(targetObject);
-        }
-#endif
+        GetCAVE2Manager().Destroy(targetObjectName);
+
     }
-
-#if USING_GETREAL3D
-	[getReal3D.RPC]
-	public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
-	{
-		//Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
-
-		GameObject targetObject = GameObject.Find(targetObjectName);
-		if( targetObject != null )
-		{
-			//Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-			targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
-		}
-	}
-
-	[getReal3D.RPC]
-	public void CAVE2DestroyRPC(string targetObjectName)
-	{
-		//Debug.Log ("SendCAVE2RPC: call 'Destroy' on "+targetObjectName);
-		
-		GameObject targetObject = GameObject.Find(targetObjectName);
-		if( targetObject != null )
-		{
-			Destroy(targetObject);
-		}
-	}
-#endif
     // ---------------------------------------------------------------------------------------------
 }
 
 public class CAVE2Manager : MonoBehaviour {
 
-    static CAVE2Manager CAVE2Manager_Instance;
+static CAVE2Manager CAVE2Manager_Instance;
     CAVE2InputManager inputManager;
 
     static string machineName;
@@ -245,6 +241,8 @@ public class CAVE2Manager : MonoBehaviour {
     public CAVE2CameraController mainCameraController;
     public Hashtable headObjects = new Hashtable();
     public Hashtable wandObjects = new Hashtable();
+
+    public Hashtable playerControllers = new Hashtable();
 
     // Simulator
     public bool simulatorMode;
@@ -285,16 +283,25 @@ public class CAVE2Manager : MonoBehaviour {
     Vector3 mouseLastPos;
     Vector3 mouseDeltaPos;
 
+    public bool showDebugCanvas;
+    public GameObject debugCanvas;
+
+    CAVE2RPCManager rpcManager;
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
         CAVE2.Input = inputManager;
+        CAVE2.RpcManager = GetComponent<CAVE2RPCManager>();
 
         cameraControllers = new ArrayList();
 
         machineName = System.Environment.MachineName;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
+
+        Random.InitState(1138);
+        
     }
     void Start()
     {
@@ -327,6 +334,11 @@ public class CAVE2Manager : MonoBehaviour {
                 mainCameraController.GetMainCamera().transform.localPosition = simulatorHeadPosition;
                 mainCameraController.GetMainCamera().transform.localEulerAngles = simulatorHeadRotation;
             }
+        }
+
+        if( debugCanvas )
+        {
+            debugCanvas.SetActive(showDebugCanvas);
         }
     }
 
@@ -589,30 +601,10 @@ public class CAVE2Manager : MonoBehaviour {
     {
         return mouseDeltaPos;
     }
-
-    public void RegisterHeadObject(int ID, GameObject gameObject)
-    {
-        headObjects[ID] = gameObject;
-    }
-
-    public void RegisterWandObject(int ID, GameObject gameObject)
-    {
-        wandObjects[ID] = gameObject;
-    }
-
-    public GameObject GetHeadObject(int ID)
-    {
-        return (GameObject)headObjects[ID];
-    }
-
-    public GameObject GetWandObject(int ID)
-    {
-        return (GameObject)wandObjects[ID];
-    }
     // ---------------------------------------------------------------------------------------------
 
 
-    // CAVE2 Omicron Management --------------------------------------------------------------------
+    // CAVE2 Player Management ---------------------------------------------------------------------
     public static void AddCameraController(CAVE2CameraController cam)
     {
         if (GetCAVE2Manager().cameraControllers == null)
@@ -633,6 +625,64 @@ public class CAVE2Manager : MonoBehaviour {
         else
             return null;
     }
+
+    public void RegisterHeadObject(int ID, GameObject gameObject)
+    {
+        headObjects[ID] = gameObject;
+    }
+
+    public void RegisterWandObject(int ID, GameObject gameObject)
+    {
+        wandObjects[ID] = gameObject;
+    }
+
+    public GameObject GetHeadObject(int ID)
+    {
+        return (GameObject)headObjects[ID];
+    }
+
+    public GameObject GetWandObject(int ID)
+    {
+        return (GameObject)wandObjects[ID];
+    }
+
+    public void AddPlayerController(int id, GameObject g)
+    {
+        playerControllers[id] = g;
+    }
+
+    public GameObject GetPlayerController(int id)
+    {
+        GameObject player = (GameObject)playerControllers[id];
+        return player;
+    }
+
+    public int GetPlayerControllerCount()
+    {
+        return playerControllers.Count;
+    }
+
     // ---------------------------------------------------------------------------------------------
 
+
+    // CAVE2 Synchronization Management ------------------------------------------------------------
+    public void BroadcastMessage(string targetObjectName, string methodName, object param)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0);
+    }
+
+    public void Destroy(string targetObjectName)
+    {
+        CAVE2.RpcManager.Destroy(targetObjectName);
+    }
 }

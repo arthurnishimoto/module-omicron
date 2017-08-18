@@ -17,6 +17,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
     public float vertical;
     public Vector2 lookAround = new Vector2();
 
+    public bool walkUsesFlyGlobalSpeedScale = false;
     public float globalSpeedMod = 1.0f;
     public float movementScale = 2;
     public float flyMovementScale = 10;
@@ -27,11 +28,12 @@ public class CAVE2WandNavigator : MonoBehaviour {
     // Walk - Analog stick movement with physics
     // Fly - 6DoF movement with no physics
     // Drive - Same as fly without pitch/roll
-    public enum NavigationMode { Walk, Drive, Freefly }
+    public enum NavigationMode { Disabled, Walk, Drive, Freefly }
 
     public NavigationMode navMode = NavigationMode.Walk;
     public CAVE2.Button freeFlyToggleButton = CAVE2.Button.Button5;
     public CAVE2.Button freeFlyButton = CAVE2.Button.Button7;
+    NavigationMode lastNavMode;
 
     public enum HorizonalMovementMode { Strafe, Turn }
     public HorizonalMovementMode horizontalMovementMode = HorizonalMovementMode.Strafe;
@@ -57,13 +59,24 @@ public class CAVE2WandNavigator : MonoBehaviour {
     public Quaternion initialRotation;
     public NavigationMode initMode;
 
-    public UnityEngine.UI.Text positionUIText;
-
     public void Reset()
     {
         transform.position = initialPosition;
         transform.rotation = initialRotation;
         //navMode = initMode;
+    }
+
+    public void DisableMovement()
+    {
+        lastNavMode = navMode;
+        navMode = NavigationMode.Disabled;
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+    }
+
+    public void EnableMovement()
+    {
+        navMode = lastNavMode;
     }
 
     // Use this for initialization
@@ -72,6 +85,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         initMode = navMode;
+        lastNavMode = navMode;
 
         playerCollider = GetComponent<CAVE2PlayerCollider>();
 
@@ -83,7 +97,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         {
             UpdateFreeflyMovement();
         }
-        else
+        else if (navMode == NavigationMode.Walk)
         {
             UpdateWalkMovement();
         }
@@ -92,11 +106,14 @@ public class CAVE2WandNavigator : MonoBehaviour {
 	// Update is called once per frame
 	void Update()
     {
-        if(positionUIText)
-            positionUIText.text = "Position: " + transform.position + "\nRotation: " + transform.eulerAngles;
+        float speedMod = 1;
+        if(walkUsesFlyGlobalSpeedScale)
+        {
+            speedMod = globalSpeedMod;
+        }
 
         forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
-        forward *= movementScale;
+        forward *= movementScale * speedMod;
 
         strafe = CAVE2.GetAxis(wandID, strafeAxis);
         strafe *= movementScale;
@@ -107,7 +124,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         lookAround.y *= movementScale;
 
         vertical = CAVE2.GetAxis(wandID, verticalAxis);
-        vertical *= movementScale;
+        vertical *= movementScale * speedMod;
 
         freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
 
@@ -263,7 +280,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
             transform.position = nextPos;
-            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime);
             transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
         }
     }
