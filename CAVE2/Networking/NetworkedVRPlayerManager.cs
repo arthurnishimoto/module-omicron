@@ -64,7 +64,7 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
         }
         else
         {
-            gameObject.name = "VRNetworkPlayer(local " + netID.netId + ")";
+            gameObject.name = "VRNetworkPlayer(" + netID.connectionToClient.address + " " + netID.netId + ")";
         }
         localPlayer = isLocalPlayer;
 
