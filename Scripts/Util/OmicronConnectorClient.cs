@@ -439,7 +439,7 @@ namespace omicronConnector
                     client = new TcpClient(serverIP, msgPort);
 
                     // Translate the passed message into ASCII and store it as a Byte array.
-                    String message = "omicron_data_on," + dataPort;
+                    String message = "omicronV2_data_on," + dataPort;
                     Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
 
                     streamToServer = client.GetStream();
