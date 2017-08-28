@@ -34,7 +34,8 @@ public class OMenuManager : MonoBehaviour {
         {
             if (CAVE2.Input.GetButtonDown(1, menuOpenButton))
             {
-                mainMenu.ToggleMenu();
+                CAVE2.BroadcastMessage(mainMenu.name, "ToggleMenu");
+                //mainMenu.ToggleMenu();
 
                 if (followWand)
                 {
