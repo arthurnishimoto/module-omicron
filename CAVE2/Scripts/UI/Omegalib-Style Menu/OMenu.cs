@@ -61,50 +61,33 @@ public class OMenu : MonoBehaviour {
         {
             if (currentItem < menuItems.Length - 1 && menuItems[currentItem+1].IsActive() )
             {
-                menuItems[currentItem].OnDeselect(pointerData);
-                currentItem++;
-                menuItems[currentItem].OnSelect(pointerData);
+                CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemDown");
             }
         }
         if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonUp))
         {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
-                menuItems[currentItem].OnDeselect(pointerData);
-                currentItem--;
-                menuItems[currentItem].OnSelect(pointerData);
+                CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemUp");
             }
         }
 
         if(CAVE2.Input.GetButtonDown(1, menuManager.selectButton))
         {
-            if (menuItems[currentItem].GetType() == typeof(Button))
-            {
-                ((Button)menuItems[currentItem]).OnPointerClick(pointerData);
-            }
-            else if (menuItems[currentItem].GetType() == typeof(Toggle))
-            {
-                ((Toggle)menuItems[currentItem]).OnPointerClick(pointerData);
-            }
+            CAVE2.BroadcastMessage(gameObject.name, "MenuSelectItem");
         }
         if (CAVE2.Input.GetButtonDown(1, menuManager.menuBackButton))
         {
-            ToggleMenu();
+            CAVE2.BroadcastMessage(gameObject.name, "ToggleMenu");
         }
 
         if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonLeft))
         {
-            if (menuItems[currentItem].GetType() == typeof(Slider))
-            {
-                ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value - 1;
-            }
+            CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemLeft");
         }
         if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonRight))
         {
-            if (menuItems[currentItem].GetType() == typeof(Slider))
-            {
-                ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value + 1;
-            }
+            CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemRight");
         }
     }
 
@@ -157,6 +140,48 @@ public class OMenu : MonoBehaviour {
             }
             activeMenu = false;
             menuManager.openMenus--;
+        }
+    }
+
+    public void MenuNextItemDown()
+    {
+        menuItems[currentItem].OnDeselect(pointerData);
+        currentItem++;
+        menuItems[currentItem].OnSelect(pointerData);
+    }
+
+    public void MenuNextItemUp()
+    {
+        menuItems[currentItem].OnDeselect(pointerData);
+        currentItem--;
+        menuItems[currentItem].OnSelect(pointerData);
+    }
+
+    public void MenuNextItemLeft()
+    {
+        if (menuItems[currentItem].GetType() == typeof(Slider))
+        {
+            ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value - 1;
+        }
+    }
+
+    public void MenuNextItemRight()
+    {
+        if (menuItems[currentItem].GetType() == typeof(Slider))
+        {
+            ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value + 1;
+        }
+    }
+
+    public void MenuSelectItem()
+    {
+        if (menuItems[currentItem].GetType() == typeof(Button))
+        {
+            ((Button)menuItems[currentItem]).OnPointerClick(pointerData);
+        }
+        else if (menuItems[currentItem].GetType() == typeof(Toggle))
+        {
+            ((Toggle)menuItems[currentItem]).OnPointerClick(pointerData);
         }
     }
 }
