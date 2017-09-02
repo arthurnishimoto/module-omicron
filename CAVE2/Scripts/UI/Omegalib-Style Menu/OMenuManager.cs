@@ -20,11 +20,29 @@ public class OMenuManager : MonoBehaviour {
     public CAVE2.Button menuOpenButton = CAVE2.Button.Button2;
     public CAVE2.Button menuBackButton = CAVE2.Button.Button3;
     public CAVE2.Button selectButton = CAVE2.Button.Button2;
-    
+
+    [SerializeField]
+    AudioClip openMenuSound;
+
+    [SerializeField]
+    AudioClip closeMenuSound;
+
+    [SerializeField]
+    AudioClip selectMenuSound;
+
+    [SerializeField]
+    AudioClip scrollMenuSound;
+
+    AudioSource audioSource;
 
     // Use this for initialization
     void Start () {
         currentMenu = mainMenu;
+        audioSource = GetComponent<AudioSource>();
+        if(audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 	
 	// Update is called once per frame
@@ -48,5 +66,29 @@ public class OMenuManager : MonoBehaviour {
         }
 
         CAVE2.Input.SetWandMenuLock(1, openMenus > 0);
+    }
+
+    public void PlayOpenMenuSound()
+    {
+        audioSource.clip = openMenuSound;
+        audioSource.Play();
+    }
+
+    public void PlayCloseMenuSound()
+    {
+        audioSource.clip = closeMenuSound;
+        audioSource.Play();
+    }
+
+    public void PlayScrollMenuSound()
+    {
+        audioSource.clip = scrollMenuSound;
+        audioSource.Play();
+    }
+
+    public void PlaySelectMenuSound()
+    {
+        audioSource.clip = selectMenuSound;
+        audioSource.Play();
     }
 }

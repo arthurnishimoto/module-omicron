@@ -22,6 +22,7 @@ public class OMenu : MonoBehaviour {
     public float menuProgress;
 
     float maxScale = 1;
+
     // Use this for initialization
     void Start () {
         maxScale = transform.localScale.x;
@@ -130,6 +131,7 @@ public class OMenu : MonoBehaviour {
             }
 
             menuManager.openMenus++;
+            menuManager.PlayOpenMenuSound();
         }
         else
         {
@@ -140,6 +142,7 @@ public class OMenu : MonoBehaviour {
             }
             activeMenu = false;
             menuManager.openMenus--;
+            menuManager.PlayCloseMenuSound();
         }
     }
 
@@ -148,6 +151,7 @@ public class OMenu : MonoBehaviour {
         menuItems[currentItem].OnDeselect(pointerData);
         currentItem++;
         menuItems[currentItem].OnSelect(pointerData);
+        menuManager.PlayScrollMenuSound();
     }
 
     public void MenuNextItemUp()
@@ -155,6 +159,7 @@ public class OMenu : MonoBehaviour {
         menuItems[currentItem].OnDeselect(pointerData);
         currentItem--;
         menuItems[currentItem].OnSelect(pointerData);
+        menuManager.PlayScrollMenuSound();
     }
 
     public void MenuNextItemLeft()
@@ -163,6 +168,7 @@ public class OMenu : MonoBehaviour {
         {
             ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value - 1;
         }
+        menuManager.PlayScrollMenuSound();
     }
 
     public void MenuNextItemRight()
@@ -171,6 +177,7 @@ public class OMenu : MonoBehaviour {
         {
             ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value + 1;
         }
+        menuManager.PlayScrollMenuSound();
     }
 
     public void MenuSelectItem()
@@ -183,5 +190,6 @@ public class OMenu : MonoBehaviour {
         {
             ((Toggle)menuItems[currentItem]).OnPointerClick(pointerData);
         }
+        menuManager.PlaySelectMenuSound();
     }
 }
