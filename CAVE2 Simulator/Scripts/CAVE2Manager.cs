@@ -629,8 +629,8 @@ public class CAVE2Manager : OmicronEventClient {
 					headEmulatedRotation += new Vector3( vertical, horizontal, 0 );
 			}
 
-			headEmulatedRotation += new Vector3( lookVertical, 0, 0 ) * emulatedRotationSpeed;
-
+			headEmulatedRotation += new Vector3( lookVertical, lookHorizontal, 0 ) * emulatedRotationSpeed;
+   
 			// Arrow keys -> DPad
 			if( Input.GetKey( wandSimulatorDPadUp ) )
 				flags += (int)EventBase.Flags.ButtonUp;
@@ -708,8 +708,8 @@ public class CAVE2Manager : OmicronEventClient {
 
 		if( mocapEmulation )
 		{
-            Vector3 lookAround = new Vector3(-GetWand(1).GetAxis(Axis.RightAnalogStickUD), GetWand(1).GetAxis(Axis.RightAnalogStickLR), 0);
-			headEmulatedRotation += lookAround * emulatedRotationSpeed;
+            //Vector3 lookAround = new Vector3(-GetWand(1).GetAxis(Axis.RightAnalogStickUD), GetWand(1).GetAxis(Axis.RightAnalogStickLR), 0);
+			//headEmulatedRotation += lookAround * emulatedRotationSpeed;
 
 			// Update emulated positions/rotations
             GetHead(1).Update(headEmulatedPosition, Quaternion.Euler(headEmulatedRotation));
