@@ -642,10 +642,10 @@ public class CAVE2Manager : OmicronEventClient {
 				flags += (int)EventBase.Flags.ButtonRight;
 			
 			// F -> Wand Button 2 (Circle)
-            if (Input.GetKey(KeyCode.F) || Input.GetButton(wandSimulatorButton2))
+            if (Input.GetButton(wandSimulatorButton2))
 				flags += (int)EventBase.Flags.Button2;
 			// R -> Wand Button 3 (Cross)
-            if (Input.GetKey(KeyCode.R) || Input.GetButton(wandSimulatorButton3))
+            if (Input.GetButton(wandSimulatorButton3))
 				flags += (int)EventBase.Flags.Button3;
 
             // Wand (L2 Trigger)
