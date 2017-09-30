@@ -65,8 +65,8 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             }
             if (PlayerSettings.virtualRealitySupported)
             {
-                //CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
-                //CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head).eulerAngles;
+                CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
+                CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
             }
         }
 	}

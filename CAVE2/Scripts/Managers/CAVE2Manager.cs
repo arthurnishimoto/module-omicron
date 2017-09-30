@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class CAVE2 : MonoBehaviour
 {
@@ -301,7 +302,6 @@ static CAVE2Manager CAVE2Manager_Instance;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
 
         Random.InitState(1138);
-        
     }
     void Start()
     {
@@ -327,7 +327,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && (mocapEmulation || usingKinectTrackingSimulator) )
+        if( !UsingGetReal3D() && !PlayerSettings.virtualRealitySupported && (mocapEmulation || usingKinectTrackingSimulator) )
         {
             if (mainCameraController)
             {

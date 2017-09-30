@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
 [ExecuteInEditMode]
@@ -10,6 +11,10 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
     void Start()
     {
 #if UNITY_EDITOR
+        if (PlayerSettings.virtualRealitySupported && renderMode == RenderMode.Background)
+        {
+            renderMode = RenderMode.Overlay;
+        }
 #else
         if( CAVE2.OnCAVE2Display() )
         {
