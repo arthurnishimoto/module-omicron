@@ -36,16 +36,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (virtualWand.GetComponent<Rigidbody>() && wandJoint == null)
-        {
-            Rigidbody rb = gameObject.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-
-            wandJoint = virtualWand.gameObject.AddComponent<FixedJoint>();
-            wandJoint.connectedBody = rb;
-        }
-        else if (virtualWand == null || virtualWand.GetComponent<Rigidbody>() == null)
+        if (virtualWand == null || virtualWand.GetComponent<Rigidbody>() == null)
         {
             transform.localPosition = CAVE2.Input.GetWandPosition(wandID);
             transform.localRotation = CAVE2.Input.GetWandRotation(wandID);

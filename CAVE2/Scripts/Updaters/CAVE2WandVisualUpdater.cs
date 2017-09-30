@@ -40,26 +40,26 @@ public class CAVE2WandVisualUpdater : MonoBehaviour
     void Start()
     {
         // Wand (Navigation Controller)
-        buttonCross = transform.FindChild("CrossButton");
-        buttonCircle = transform.FindChild("CircleButton");
-        buttonDown = transform.FindChild("ButtonDown");
-        buttonLeft = transform.FindChild("ButtonLeft");
-        buttonRight = transform.FindChild("ButtonRight");
-        buttonUp = transform.FindChild("ButtonUp");
-        buttonL1 = transform.FindChild("L1");
-        buttonL2 = transform.FindChild("L2");
-        buttonL3 = transform.FindChild("AnalogStick-L3");
+        buttonCross = transform.Find("CrossButton");
+        buttonCircle = transform.Find("CircleButton");
+        buttonDown = transform.Find("ButtonDown");
+        buttonLeft = transform.Find("ButtonLeft");
+        buttonRight = transform.Find("ButtonRight");
+        buttonUp = transform.Find("ButtonUp");
+        buttonL1 = transform.Find("L1");
+        buttonL2 = transform.Find("L2");
+        buttonL3 = transform.Find("AnalogStick-L3");
 
         // Full Controller
-        buttonTriangle = transform.FindChild("TriangleButton");
-        buttonSquare = transform.FindChild("SquareButton");
+        buttonTriangle = transform.Find("TriangleButton");
+        buttonSquare = transform.Find("SquareButton");
 
-        buttonR1 = transform.FindChild("R1");
-        buttonR2 = transform.FindChild("R2");
-        buttonR3 = transform.FindChild("AnalogStick-R3");
+        buttonR1 = transform.Find("R1");
+        buttonR2 = transform.Find("R2");
+        buttonR3 = transform.Find("AnalogStick-R3");
 
-        buttonSelect = transform.FindChild("Select");
-        buttonStart = transform.FindChild("Start");
+        buttonSelect = transform.Find("Select");
+        buttonStart = transform.Find("Start");
     }
 
     // Update is called once per frame

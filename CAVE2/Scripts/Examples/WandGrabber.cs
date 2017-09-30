@@ -3,22 +3,30 @@ using System.Collections;
 
 public class WandGrabber : MonoBehaviour
 {
-    public int wandID = 1;
-	public CAVE2.Button grabButton = CAVE2.Button.Button2;
-	public LayerMask wandLayerMask = -1;
+    [SerializeField]
+    int wandID = 1;
 
-	public bool wandHit;
-	public bool overGrabbable;
+    [SerializeField]
+    CAVE2.Button grabButton = CAVE2.Button.Button2;
 
-	ArrayList grabbedObjects;
+    [SerializeField]
+    LayerMask wandLayerMask = -1;
+
+    [SerializeField]
+    bool wandHit;
+
+    [SerializeField]
+    bool overGrabbable;
+
+    ArrayList grabbedObjects;
 
 	void Start()
 	{
 		grabbedObjects = new ArrayList();
 	}
 
-	// Update is called once per frame
-	void Update()
+    // Update is called once per frame
+    void Update()
 	{
 		//GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
@@ -38,15 +46,12 @@ public class WandGrabber : MonoBehaviour
 			overGrabbable = (hit.transform.GetComponent<GrabbableObject>() != null);
 			if (CAVE2Manager.GetButtonDown(wandID,grabButton))
 			{
-                // Disable wand collision while grabbing (prevent physics glitches)
-                GetComponent<Rigidbody>().isKinematic = true;
-
                 if (hit.transform.GetComponent<GrabbableObject>())
                 {
                     hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
                     grabbedObjects.Add(hit.collider.transform);
                 }
-			}
+            }
 				
 
 		}
@@ -54,11 +59,9 @@ public class WandGrabber : MonoBehaviour
 		{
 			overGrabbable = false;
 		}
+
 		if (CAVE2Manager.GetButtonUp(wandID,grabButton))
 		{
-            // Re-enable wand collision
-            GetComponent<Rigidbody>().isKinematic = false;
-
             foreach ( Transform t in grabbedObjects )
 			{
                 if (t != null)
