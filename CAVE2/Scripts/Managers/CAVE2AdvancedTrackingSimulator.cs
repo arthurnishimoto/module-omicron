@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.VR;
+using UnityEditor;
 using System.Collections;
 
 public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
@@ -60,6 +62,11 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             if (CAVE2.GetCAVE2Manager().mocapEmulation)
             {
                 KeyboardHeadTracking();
+            }
+            if (PlayerSettings.virtualRealitySupported)
+            {
+                //CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
+                //CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head).eulerAngles;
             }
         }
 	}
