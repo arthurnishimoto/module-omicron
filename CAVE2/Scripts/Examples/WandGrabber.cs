@@ -38,6 +38,9 @@ public class WandGrabber : MonoBehaviour
 			overGrabbable = (hit.transform.GetComponent<GrabbableObject>() != null);
 			if (CAVE2Manager.GetButtonDown(wandID,grabButton))
 			{
+                // Disable wand collision while grabbing (prevent physics glitches)
+                GetComponent<Rigidbody>().isKinematic = true;
+
                 if (hit.transform.GetComponent<GrabbableObject>())
                 {
                     hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
@@ -53,9 +56,15 @@ public class WandGrabber : MonoBehaviour
 		}
 		if (CAVE2Manager.GetButtonUp(wandID,grabButton))
 		{
-			foreach( Transform t in grabbedObjects )
+            // Re-enable wand collision
+            GetComponent<Rigidbody>().isKinematic = false;
+
+            foreach ( Transform t in grabbedObjects )
 			{
-                t.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver);
+                if (t != null)
+                {
+                    t.SendMessage("OnWandGrabRelease", SendMessageOptions.DontRequireReceiver);
+                }
 			}
 			grabbedObjects.Clear();
 		}
