@@ -383,7 +383,6 @@ public class CAVE2InputManager : OmicronEventClient
         
 #endif
         // Update wandManager
-
         if ( CAVE2.UsingGetReal3D() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
         {
             wandController.UpdateAnalog(analog1, analog2, Vector2.zero, Vector2.zero);

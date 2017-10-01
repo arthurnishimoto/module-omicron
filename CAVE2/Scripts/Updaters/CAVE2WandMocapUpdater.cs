@@ -30,6 +30,16 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
         {
             transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
             transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
+
+            // If position and rotation are zero, wand is not tracking, disable drawing and physics
+            if (transform.localPosition == Vector3.zero && transform.localRotation == Quaternion.identity && virtualWand.gameObject.activeSelf)
+            {
+                virtualWand.gameObject.SetActive(false);
+            }
+            else if (transform.localPosition != Vector3.zero && transform.localRotation == Quaternion.identity && !virtualWand.gameObject.activeSelf)
+            {
+                virtualWand.gameObject.SetActive(true);
+            }
         }
     }
 

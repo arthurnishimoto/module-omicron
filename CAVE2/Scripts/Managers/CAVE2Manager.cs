@@ -632,6 +632,10 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public void RegisterWandObject(int ID, GameObject gameObject)
     {
+        if( !wandObjects.ContainsKey(ID) )
+        {
+
+        }
         wandObjects[ID] = gameObject;
     }
 
