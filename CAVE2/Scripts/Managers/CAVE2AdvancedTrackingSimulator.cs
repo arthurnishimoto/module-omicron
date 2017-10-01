@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.VR;
-using UnityEditor;
 using System.Collections;
 
 public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
@@ -63,10 +62,19 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             {
                 KeyboardHeadTracking();
             }
-            if (PlayerSettings.virtualRealitySupported)
+            if (UnityEngine.VR.VRSettings.enabled)
             {
-                CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
-                CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+                if (VRDevice.model == "Vive MV")
+                {
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+
+                }
+                else
+                {
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+                }
             }
         }
 	}
