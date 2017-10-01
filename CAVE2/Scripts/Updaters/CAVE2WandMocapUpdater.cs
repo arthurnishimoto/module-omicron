@@ -36,7 +36,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
             {
                 virtualWand.gameObject.SetActive(false);
             }
-            else if (transform.localPosition != Vector3.zero && transform.localRotation == Quaternion.identity && !virtualWand.gameObject.activeSelf)
+            else if (transform.localPosition != Vector3.zero && transform.localRotation != Quaternion.identity && !virtualWand.gameObject.activeSelf)
             {
                 virtualWand.gameObject.SetActive(true);
             }

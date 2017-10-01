@@ -382,8 +382,86 @@ public class CAVE2InputManager : OmicronEventClient
         }
         
 #endif
+        if (UnityEngine.VR.VRSettings.enabled)
+        {
+            // VR Left Controller (Keycode.Joystick2)
+            // Button2 - Menu
+            // Button8 - Thumbstick Press
+            // Button16 - Thumbstick Touch
+            // Button14 - Index Trigger
+            // Axis1 - Thumbstick Horz
+            // Axis2 - Thumbstick Vert
+            // Axis9 - Index Trigger
+            // Axis11 - Hand Trigger
+            flags = 0;
+            if (Input.GetKey(KeyCode.Joystick2Button2))
+            {
+            }
+            if (Input.GetKey(KeyCode.Joystick2Button8))
+            {
+                flags += (int)EventBase.Flags.Button6;
+            }
+            if (Input.GetKey(KeyCode.Joystick2Button16))
+            {
+
+            }
+            if (Input.GetKey(KeyCode.Joystick2Button14))
+            {
+                flags += (int)EventBase.Flags.Button7;
+            }
+            if (Input.GetAxis("Grip L") > 0)
+            {
+                flags += (int)EventBase.Flags.Button5;
+                flags += (int)EventBase.Flags.Button3;
+            }
+
+            // VR Right Controller (Keycode.Joystick1)
+            // Button0 - Menu
+            // Button9 - Thumbstick Press
+            // Button17 - Thumbstick Touch
+            // Button15 - Index Trigger
+            // Axis4 - Thumbstick Horz
+            // Axis5 - Thumbstick Vert
+            // Axis10 - Index Trigger
+            // Axis12 - Hand Trigger
+            if (Input.GetKey(KeyCode.Joystick1Button0))
+            {
+                flags += (int)EventBase.Flags.Button2;
+            }
+            if (Input.GetKey(KeyCode.Joystick1Button9))
+            {
+            }
+            if (Input.GetKey(KeyCode.Joystick1Button17))
+            {
+            }
+            if (Input.GetKey(KeyCode.Joystick2Button15))
+            {
+            }
+
+            if (Input.GetAxis("Grip R") > 0.5f)
+            {
+                flags += (int)EventBase.Flags.Button3;
+            }
+            if (Input.GetAxis("Horizontal2") < -0.5f && Input.GetKey(KeyCode.Joystick1Button9))
+            {
+                flags += (int)EventBase.Flags.ButtonLeft;
+            }
+            else if (Input.GetAxis("Horizontal2") > 0.5f && Input.GetKey(KeyCode.Joystick1Button9))
+            {
+                flags += (int)EventBase.Flags.ButtonRight;
+            }
+            if (Input.GetAxis("Vertical2") < -0.5f && Input.GetKey(KeyCode.Joystick1Button9))
+            {
+                flags += (int)EventBase.Flags.ButtonUp;
+            }
+            else if (Input.GetAxis("Vertical2") > 0.5f && Input.GetKey(KeyCode.Joystick1Button9))
+            {
+                flags += (int)EventBase.Flags.ButtonDown;
+            }
+        }
+
         // Update wandManager
-        if ( CAVE2.UsingGetReal3D() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
+        if (CAVE2.UsingGetReal3D() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
         {
             wandController.UpdateAnalog(analog1, analog2, Vector2.zero, Vector2.zero);
             wandController.rawFlags = flags;
