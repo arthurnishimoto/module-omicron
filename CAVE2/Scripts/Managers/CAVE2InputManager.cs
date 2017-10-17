@@ -443,8 +443,10 @@ public class CAVE2InputManager : OmicronEventClient
             // Axis9 - Index Trigger
             // Axis11 - Hand Trigger
             wand1_flags = 0;
+            wand2_flags = 0;
             if (Input.GetKey(KeyCode.Joystick2Button2))
             {
+                wand1_flags += (int)EventBase.Flags.Button2;
             }
             if (Input.GetKey(KeyCode.Joystick2Button8))
             {
@@ -484,8 +486,9 @@ public class CAVE2InputManager : OmicronEventClient
             if (Input.GetKey(KeyCode.Joystick1Button17))
             {
             }
-            if (Input.GetKey(KeyCode.Joystick2Button15))
+            if (Input.GetKey(KeyCode.Joystick1Button15))
             {
+                wand2_flags += (int)EventBase.Flags.Button7;
             }
 
             if (Input.GetAxis("Grip R") > 0.4f)
