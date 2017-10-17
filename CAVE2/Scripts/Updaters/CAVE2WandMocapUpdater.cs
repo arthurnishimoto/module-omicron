@@ -17,7 +17,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
     {
         if(virtualWand && wandID == 1)
         {
-            virtualWand.localPosition = CAVE2.Input.wand1TrackingOffset;
+            virtualWand.localPosition = CAVE2.Input.wandTrackingOffset[wandID - 1];
         }
 
         // Register this gameobject as wand

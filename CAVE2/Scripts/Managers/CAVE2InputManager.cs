@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using omicron;
 using omicronConnector;
-
+using UnityEngine.VR;
 public class CAVE2InputManager : OmicronEventClient
 {
     Hashtable mocapSensors = new Hashtable();
@@ -12,7 +12,9 @@ public class CAVE2InputManager : OmicronEventClient
     public float axisSensitivity = 1f;
     public float axisDeadzone = 0.2f;
 
-    public Vector3 wand1TrackingOffset = new Vector3(-0.007781088f, -0.04959464f, -0.07368752f);
+    public Vector3[] wandTrackingOffset = new Vector3[]{
+        new Vector3(-0.007781088f, -0.04959464f, -0.07368752f) // Wand 1
+    };
 
     // Prevent other inputs from wand if it has opened a menu
     bool wand1MenuLock = false;
@@ -190,7 +192,9 @@ public class CAVE2InputManager : OmicronEventClient
     {
         int headMocapID = CAVE2.GetCAVE2Manager().head1MocapID;
         int wandMocapID = CAVE2.GetCAVE2Manager().wand1MocapID;
+        int wand2MocapID = CAVE2.GetCAVE2Manager().wand2MocapID;
         int wandID = CAVE2.GetCAVE2Manager().wand1ControllerID;
+        int wand2ID = CAVE2.GetCAVE2Manager().wand2ControllerID;
 
         // Get/Create Primary Head
         OmicronMocapSensor mainHeadSensor;
@@ -205,7 +209,7 @@ public class CAVE2InputManager : OmicronEventClient
             mainHeadSensor = (OmicronMocapSensor)mocapSensors[headMocapID];
         }
 
-        // Get/Create Primary Head
+        // Get/Create Primary Wand
         OmicronMocapSensor wandMocapSensor;
         if (!mocapSensors.ContainsKey(wandMocapID))
         {
@@ -231,6 +235,32 @@ public class CAVE2InputManager : OmicronEventClient
             wandController = (OmicronController)wandControllers[wandID];
         }
 
+        // Get/Create Secondary Wand
+        OmicronMocapSensor wand2MocapSensor;
+        if (!mocapSensors.ContainsKey(wand2MocapID))
+        {
+            wand2MocapSensor = gameObject.AddComponent<OmicronMocapSensor>();
+            wand2MocapSensor.sourceID = wand2MocapID;
+            mocapSensors[wand2MocapID] = wand2MocapSensor;
+        }
+        else
+        {
+            wand2MocapSensor = (OmicronMocapSensor)mocapSensors[wand2MocapID];
+        }
+
+        // Get Secondary Wand (ID 1)
+        OmicronController wandController2;
+        if (!wandControllers.ContainsKey(wand2ID))
+        {
+            wandController2 = gameObject.AddComponent<OmicronController>();
+            wandController2.sourceID = wand2ID;
+            wandControllers[wand2ID] = wandController2;
+        }
+        else
+        {
+            wandController2 = (OmicronController)wandControllers[wand2ID];
+        }
+
         Vector2 analog1 = Vector2.zero;
         Vector2 analog2 = Vector2.zero;
         int flags = 0;
@@ -238,11 +268,29 @@ public class CAVE2InputManager : OmicronEventClient
         // Mocap
         if (CAVE2.GetCAVE2Manager().mocapEmulation)
         {
+
+            if (VRDevice.model == "Vive MV")
+            {
+                CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
+                CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
+
+                CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
+                CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+            }
+            else
+            {
+                CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
+                CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+            }
+
             mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
             mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
 
             wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
+
+            wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand);
+            wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
         {
@@ -430,6 +478,7 @@ public class CAVE2InputManager : OmicronEventClient
             }
             if (Input.GetKey(KeyCode.Joystick1Button9))
             {
+                flags += (int)EventBase.Flags.Button6;
             }
             if (Input.GetKey(KeyCode.Joystick1Button17))
             {
@@ -438,25 +487,32 @@ public class CAVE2InputManager : OmicronEventClient
             {
             }
 
-            if (Input.GetAxis("Grip R") > 0.5f)
+            if (Input.GetAxis("Grip R") > 0.4f)
             {
                 flags += (int)EventBase.Flags.Button3;
             }
-            if (Input.GetAxis("Horizontal2") < -0.5f && Input.GetKey(KeyCode.Joystick1Button9))
+
+            if(Input.GetKey(KeyCode.Joystick1Button9))
             {
-                flags += (int)EventBase.Flags.ButtonLeft;
-            }
-            else if (Input.GetAxis("Horizontal2") > 0.5f && Input.GetKey(KeyCode.Joystick1Button9))
-            {
-                flags += (int)EventBase.Flags.ButtonRight;
-            }
-            if (Input.GetAxis("Vertical2") < -0.5f && Input.GetKey(KeyCode.Joystick1Button9))
-            {
-                flags += (int)EventBase.Flags.ButtonUp;
-            }
-            else if (Input.GetAxis("Vertical2") > 0.5f && Input.GetKey(KeyCode.Joystick1Button9))
-            {
-                flags += (int)EventBase.Flags.ButtonDown;
+                float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
+
+                if(padAngle < -45 && padAngle > -135)
+                {
+                    flags += (int)EventBase.Flags.ButtonUp;
+                }
+                else if (padAngle > -45 && padAngle < 45)
+                {
+                    flags += (int)EventBase.Flags.ButtonRight;
+                }
+                else if (padAngle > 45 && padAngle < 135)
+                {
+                    flags += (int)EventBase.Flags.ButtonDown;
+                }
+                else if (padAngle < -135 || padAngle > 135)
+                {
+                    flags += (int)EventBase.Flags.ButtonLeft;
+                }
+                
             }
         }
 
@@ -465,6 +521,9 @@ public class CAVE2InputManager : OmicronEventClient
         {
             wandController.UpdateAnalog(analog1, analog2, Vector2.zero, Vector2.zero);
             wandController.rawFlags = flags;
+
+            wandController2.UpdateAnalog(analog1, analog2, Vector2.zero, Vector2.zero);
+            wandController2.rawFlags = flags;
         }
     }
 }

@@ -56,19 +56,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
             if (UnityEngine.VR.VRSettings.enabled)
             {
-                if (VRDevice.model == "Vive MV")
-                {
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
-
-                    CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
-                    CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
-                }
-                else
-                {
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
-                }
+                // CAVE2InputManager processes tracking data
             }
             else if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
             {
