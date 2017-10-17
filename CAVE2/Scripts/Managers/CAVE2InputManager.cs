@@ -272,19 +272,21 @@ public class CAVE2InputManager : OmicronEventClient
         // Mocap
         if (CAVE2.GetCAVE2Manager().mocapEmulation)
         {
-
-            if (VRDevice.model == "Vive MV")
+            if (UnityEngine.VR.VRSettings.enabled)
             {
-                CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
-                CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
+                if (VRDevice.model == "Vive MV")
+                {
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
 
-                CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
-                CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
-            }
-            else
-            {
-                CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
-                CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+                }
+                else
+                {
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+                }
             }
 
             mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
