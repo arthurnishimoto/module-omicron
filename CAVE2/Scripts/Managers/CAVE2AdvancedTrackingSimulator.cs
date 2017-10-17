@@ -58,11 +58,11 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             {
                 // CAVE2InputManager processes tracking data
             }
-            else if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
+            if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
             {
                 MouseWandPointerMode();
             }
-            else if (CAVE2.GetCAVE2Manager().mocapEmulation)
+            if (CAVE2.GetCAVE2Manager().mocapEmulation)
             {
                 KeyboardHeadTracking();
             }
