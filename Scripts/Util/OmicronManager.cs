@@ -203,8 +203,8 @@ class EventListener : IOmicronConnectorClientListener
 	
 	public override void onEvent(EventData e)
 	{
-		parent.AddEvent(e);
-	}// onEvent
+        parent.AddEvent(e);
+    }// onEvent
 	
 }// EventListener
 
@@ -225,16 +225,18 @@ class OmicronManager : MonoBehaviour
 	public int dataPort = 7013;
 	
 	public bool debug = false;
-	
-		
-	// Use mouse clicks to emulate touches
-	public bool mouseTouchEmulation = false;
+
+    public bool receivingDataFromMaster = false;
+
+    // Use mouse clicks to emulate touches
+    public bool mouseTouchEmulation = false;
 	
 	// List storing events since we have multiple threads
 	private ArrayList eventList;
 	
 	private ArrayList omicronClients;
 	
+    [SerializeField]
 	int connectStatus = 0;
 
     public UnityEngine.UI.Text statusCanvasText;
@@ -312,15 +314,15 @@ class OmicronManager : MonoBehaviour
 
 	public void AddEvent( EventData e )
 	{
-		lock(eventList.SyncRoot)
-		{
-			eventList.Add(e);
-			if( debug )
-			{
-				Debug.Log("OmicronManager: Received New event ID: " + e.sourceId +" of type "+ e.serviceType);
-			}
-		};
-	}
+        lock (eventList.SyncRoot)
+        {
+            eventList.Add(e);
+            if (debug)
+            {
+                Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
+            }
+        };
+    }
 
 #if USING_GETREAL3D
 	[getReal3D.RPC]
@@ -329,7 +331,7 @@ class OmicronManager : MonoBehaviour
 		EventData e = OmicronConnectorClient.StringToEventData(evtString);
 		if(!getReal3D.Cluster.isMaster)
 		{
-			AddEvent(e);
+            AddEvent(e);
 		}
 	}
 #endif
@@ -377,6 +379,8 @@ class OmicronManager : MonoBehaviour
 
             statusCanvasText.text = statusText;
         }
+
+        receivingDataFromMaster = connectStatus == 1;
     }
       	
     IEnumerator SendEventsToClients()
@@ -385,6 +389,15 @@ class OmicronManager : MonoBehaviour
         {
             foreach (EventData e in eventList)
             {
+#if USING_GETREAL3D
+                // Send Omicron events to display client
+                // Note we're doing this before coordinate conversion since display clients will do that calculation
+                if (getReal3D.Cluster.isMaster)
+                {
+                    getReal3D.RpcManager.call("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
+                }
+#endif
+
                 // -zPos -xRot -yRot for Omicron->Unity coordinate conversion
                 e.posz = -e.posz;
                 e.orx = -e.orx;
@@ -404,13 +417,6 @@ class OmicronManager : MonoBehaviour
                         c.OnEvent(e);
                     }
                 }
-#if USING_GETREAL3D
-					if(getReal3D.Cluster.isMaster)
-					{
-                        // TODO: Breaks in getReal 3.3.3
-						//getReal3D.RpcManager.call ("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
-					}
-#endif
             }
 
             // Clear the list (TODO: probably should set the Processed flag instead and cleanup elsewhere)
