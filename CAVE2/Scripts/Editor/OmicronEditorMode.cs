@@ -21,7 +21,8 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(CAVE2SIM_NAME, true);
         Menu.SetChecked(CAVE2_NAME, false);
 
-        Camera.main.transform.localPosition = Vector3.up * 1.6f;
+        if (Camera.main)
+            Camera.main.transform.localPosition = Vector3.up * 1.6f;
     }
 
     [MenuItem(CAVE2_NAME)]
@@ -36,13 +37,15 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(CAVE2_NAME, true);
         Menu.SetChecked(OCULUS_NAME, false);
 
-        Camera.main.transform.localPosition = Vector3.up * 1.6f;
+        if (Camera.main)
+            Camera.main.transform.localPosition = Vector3.up * 1.6f;
     }
 
     [MenuItem(OCULUS_NAME)]
     static void ConfigOculus()
     {
-        Camera.main.transform.localPosition = Vector3.up * 1.6f;
+        if (Camera.main)
+            Camera.main.transform.localPosition = Vector3.up * 1.6f;
 
         PlayerSettings.virtualRealitySupported = true;
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "");
@@ -57,7 +60,8 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(VIVE_NAME)]
     static void ConfigVive()
     {
-        Camera.main.transform.localPosition = Vector3.up * 0f;
+        if( Camera.main )
+            Camera.main.transform.localPosition = Vector3.up * 0f;
 
         PlayerSettings.virtualRealitySupported = true;
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "");
@@ -72,9 +76,9 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(VR_NAME)]
     static void ConfigVR()
     {
-        Camera.main.transform.localPosition = Vector3.up * 1.6f;
+        if (Camera.main)
+            Camera.main.transform.localPosition = Vector3.up * 1.6f;
         PlayerSettings.virtualRealitySupported = false;
-
         Menu.SetChecked(VIVE_NAME, false);
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
