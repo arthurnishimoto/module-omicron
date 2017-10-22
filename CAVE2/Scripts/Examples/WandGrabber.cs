@@ -46,14 +46,12 @@ public class WandGrabber : MonoBehaviour
 			overGrabbable = (hit.transform.GetComponent<GrabbableObject>() != null);
 			if (CAVE2Manager.GetButtonDown(wandID,grabButton))
 			{
-                if (hit.transform.GetComponent<GrabbableObject>())
+                if (overGrabbable)
                 {
                     hit.collider.gameObject.SendMessage("OnWandGrab", transform, SendMessageOptions.DontRequireReceiver);
                     grabbedObjects.Add(hit.collider.transform);
                 }
             }
-				
-
 		}
 		else
 		{

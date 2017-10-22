@@ -239,7 +239,8 @@ class OmicronManager : MonoBehaviour
     [SerializeField]
 	int connectStatus = 0;
 
-    public UnityEngine.UI.Text statusCanvasText;
+    [SerializeField]
+    UnityEngine.UI.Text statusCanvasText;
 
     public static OmicronManager GetOmicronManager()
     {
@@ -366,7 +367,7 @@ class OmicronManager : MonoBehaviour
 
     void UpdateDebugTextRPC(int connectStatus)
     {
-        if (statusCanvasText)
+        if (statusCanvasText != null)
         {
             string statusText = "UNKNOWN";
             switch (connectStatus)

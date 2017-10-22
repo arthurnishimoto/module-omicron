@@ -111,7 +111,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         Vector3 headRotation = CAVE2.GetCAVE2Manager().simulatorHeadRotation;
 
         Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
-        Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
+        // Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
 
         Vector3 translation = Vector3.zero;
 

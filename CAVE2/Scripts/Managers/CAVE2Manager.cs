@@ -272,16 +272,16 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public enum TrackerEmulated { CAVE, Head, Wand };
     public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
-    string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
-    string[] trackerEmuModeStrings = { "Pointer", "Translate", "Rotate" };
+    // string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
+    // string[] trackerEmuModeStrings = { "Pointer", "Translate", "Rotate" };
 
-    TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
-    TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
+    // TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
+    // TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
 
-    bool wandModeToggled = false;
+    // bool wandModeToggled = false;
     Vector3 mouseLastPos;
-    Vector3 mouseDeltaPos;
+    // Vector3 mouseDeltaPos;
 
     public bool showDebugCanvas;
     public GameObject debugCanvas;
@@ -596,10 +596,10 @@ static CAVE2Manager CAVE2Manager_Instance;
         return GetCAVE2Manager().simulatorMode;
     }
 
-    public Vector3 GetMouseDeltaPos()
-    {
-        return mouseDeltaPos;
-    }
+    // public Vector3 GetMouseDeltaPos()
+    // {
+    //     return mouseDeltaPos;
+    // }
     // ---------------------------------------------------------------------------------------------
 
 

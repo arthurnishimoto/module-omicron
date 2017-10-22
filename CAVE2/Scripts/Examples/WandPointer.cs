@@ -30,10 +30,12 @@ public class WandPointer : MonoBehaviour
     {
         // Laser line
         laser = gameObject.AddComponent<LineRenderer>();
-        laser.SetWidth(0.02f, 0.02f);
+        laser.startWidth = 0.02f;
+        laser.endWidth = 0.02f;
         laser.useWorldSpace = false;
         laser.material = laserMaterial;
-        laser.SetColors(laserColor, laserColor);
+        laser.startColor = laserColor;
+        laser.endColor = laserColor;
 		laser.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         laser.receiveShadows = false;
 

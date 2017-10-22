@@ -22,26 +22,31 @@ public class CAVE2ClusterSpawnManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
         if (CAVE2.IsMaster())
         {
             if (networkWaitTimer <= 0)
             {
+#if USING_GETREAL3D
                 ICollection keys = spawnedPlayerList.Keys;
                 foreach (int netID in keys)
                 {
                     GameObject g = spawnedPlayerList[netID] as GameObject;
+
+
                     NetworkedVRPlayerManager netPlayer = g.GetComponent<NetworkedVRPlayerManager>();
-#if USING_GETREAL3D
                     getReal3D.RpcManager.call("UpdateNetworkPlayerRPC", netID, netPlayer.playerPosition, netPlayer.playerRotation, netPlayer.headPosition, netPlayer.headRotation);
-#endif
+
                 }
+#endif
+            }
                 networkWaitTimer = networkUpdateDelay;
             }
             else
             {
                 networkWaitTimer -= Time.deltaTime;
             }
-        }
+
     }
 
     public void SpawnNetworkPlayerOnCAVE2(GameObject source)

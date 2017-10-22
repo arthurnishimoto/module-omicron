@@ -10,7 +10,6 @@ public class OMenuManager : MonoBehaviour {
 
     public int openMenus;
 
-    float newScale = 0;
     public float showMenuSpeed = 5;
 
     public bool followWand;
@@ -62,7 +61,6 @@ public class OMenuManager : MonoBehaviour {
                     angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
                     transform.localEulerAngles = angleOffset;
                     transform.localPosition = Vector3.zero + Quaternion.Euler(angleOffset) * distOffset;
-
                 }
             }
         }
