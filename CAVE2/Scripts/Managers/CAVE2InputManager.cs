@@ -462,11 +462,22 @@ public class CAVE2InputManager : OmicronEventClient
             {
                 wand1_flags += (int)EventBase.Flags.Button7;
             }
-            if (Input.GetAxis("Grip L") > 0)
+
+            try
             {
-                wand1_flags += (int)EventBase.Flags.Button5;
-                wand1_flags += (int)EventBase.Flags.Button3;
+                if (Input.GetAxis("Grip L") > 0)
+                {
+                    wand1_flags += (int)EventBase.Flags.Button5;
+                    wand1_flags += (int)EventBase.Flags.Button3;
+                }
+
+                if (Input.GetAxis("Grip R") > 0.4f)
+                {
+                    wand2_flags += (int)EventBase.Flags.Button3;
+                }
             }
+            catch (System.ArgumentException)
+            { }
 
             // VR Right Controller (Keycode.Joystick1)
             // Button0 - Menu
@@ -493,32 +504,34 @@ public class CAVE2InputManager : OmicronEventClient
                 wand2_flags += (int)EventBase.Flags.Button7;
             }
 
-            if (Input.GetAxis("Grip R") > 0.4f)
-            {
-                wand2_flags += (int)EventBase.Flags.Button3;
-            }
+            
 
             if(Input.GetKey(KeyCode.Joystick1Button9))
             {
-                float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
+                try
+                {
+                    float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
 
-                if(padAngle < -45 && padAngle > -135)
-                {
-                    wand2_flags += (int)EventBase.Flags.ButtonUp;
+                    if (padAngle < -45 && padAngle > -135)
+                    {
+                        wand2_flags += (int)EventBase.Flags.ButtonUp;
+                    }
+                    else if (padAngle > -45 && padAngle < 45)
+                    {
+                        wand2_flags += (int)EventBase.Flags.ButtonRight;
+                    }
+                    else if (padAngle > 45 && padAngle < 135)
+                    {
+                        wand2_flags += (int)EventBase.Flags.ButtonDown;
+                    }
+                    else if (padAngle < -135 || padAngle > 135)
+                    {
+                        wand2_flags += (int)EventBase.Flags.ButtonLeft;
+                    }
                 }
-                else if (padAngle > -45 && padAngle < 45)
+                catch (System.ArgumentException)
                 {
-                    wand2_flags += (int)EventBase.Flags.ButtonRight;
                 }
-                else if (padAngle > 45 && padAngle < 135)
-                {
-                    wand2_flags += (int)EventBase.Flags.ButtonDown;
-                }
-                else if (padAngle < -135 || padAngle > 135)
-                {
-                    wand2_flags += (int)EventBase.Flags.ButtonLeft;
-                }
-                
             }
         }
 

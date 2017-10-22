@@ -299,7 +299,10 @@ class OmicronManager : MonoBehaviour
 
 	public void AddClient( OmicronEventClient c )
 	{
-        Debug.Log("OmicronManager: OmicronEventClient " + c.name + " added of type " + c.GetClientType());
+        if (debug)
+        {
+            Debug.Log("OmicronManager: OmicronEventClient " + c.name + " added of type " + c.GetClientType());
+        }
         if (omicronClients != null)
         {
             omicronClients.Add(c);
