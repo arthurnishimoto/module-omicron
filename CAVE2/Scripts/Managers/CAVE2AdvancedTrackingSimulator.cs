@@ -165,6 +165,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         CAVE2.GetCAVE2Manager().simulatorHeadPosition = headPosition;
         CAVE2.GetCAVE2Manager().simulatorHeadRotation = headRotation;
 
+        /*
         if (CAVE2.GetHeadObject(headID) != null && CAVE2.GetWandObject(wandID) != null)
         {
             Transform wandObject = CAVE2.GetWandObject(wandID).transform;
@@ -184,5 +185,6 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
                 CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
             }
         }
+        */
     }
 }
