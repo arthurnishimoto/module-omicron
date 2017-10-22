@@ -463,21 +463,38 @@ public class CAVE2InputManager : OmicronEventClient
                 wand1_flags += (int)EventBase.Flags.Button7;
             }
 
-            try
+            /*
+             * Grip L/R are not default Unity InputManager axis, but 
+             * are required for proper mapping of VR controller buttons.
+             * The following can be added to the Axis. All other fields
+             * are blank unless otherwise specified
+             * 
+             * Name: Grip L
+             * Gravity: 3
+             * Dead: 0.001
+             * Sensitivity: 3
+             * Type: Joystick Axis
+             * Axis: 11th axis (Joysticks)
+             * JoyNum: Get Motion from all Joysticks
+             * 
+             * Name: Grip R
+             * Gravity: 3
+             * Dead: 0.001
+             * Sensitivity: 3
+             * Type: Joystick Axis
+             * Axis: 12th axis (Joysticks)
+             * JoyNum: Get Motion from all Joysticks
+             */
+            if (Input.GetAxis("Grip L") > 0)
             {
-                if (Input.GetAxis("Grip L") > 0)
-                {
-                    wand1_flags += (int)EventBase.Flags.Button5;
-                    wand1_flags += (int)EventBase.Flags.Button3;
-                }
-
-                if (Input.GetAxis("Grip R") > 0.4f)
-                {
-                    wand2_flags += (int)EventBase.Flags.Button3;
-                }
+                wand1_flags += (int)EventBase.Flags.Button5;
+                wand1_flags += (int)EventBase.Flags.Button3;
             }
-            catch (System.ArgumentException)
-            { }
+
+            if (Input.GetAxis("Grip R") > 0.4f)
+            {
+                wand2_flags += (int)EventBase.Flags.Button3;
+            }
 
             // VR Right Controller (Keycode.Joystick1)
             // Button0 - Menu
@@ -508,29 +525,45 @@ public class CAVE2InputManager : OmicronEventClient
 
             if(Input.GetKey(KeyCode.Joystick1Button9))
             {
-                try
-                {
-                    float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
+                /*
+                 * Horizontal2/Vertical2 are not default Unity InputManager axis, but 
+                 * are required for proper mapping of the second VR controller pad/analog stick.
+                 * The following can be added to the Axis. All other fields
+                 * are blank unless otherwise specified
+                 * 
+                 * Name: Horizontal2
+                 * Gravity: 3
+                 * Dead: 0.001
+                 * Sensitivity: 3
+                 * Type: Joystick Axis
+                 * Axis: 4th axis (Joysticks)
+                 * JoyNum: Get Motion from all Joysticks
+                 * 
+                 * Name: Vertical2
+                 * Gravity: 3
+                 * Dead: 0.001
+                 * Sensitivity: 3
+                 * Type: Joystick Axis
+                 * Axis: 5th axis (Joysticks)
+                 * JoyNum: Get Motion from all Joysticks
+                 */
+                float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
 
-                    if (padAngle < -45 && padAngle > -135)
-                    {
-                        wand2_flags += (int)EventBase.Flags.ButtonUp;
-                    }
-                    else if (padAngle > -45 && padAngle < 45)
-                    {
-                        wand2_flags += (int)EventBase.Flags.ButtonRight;
-                    }
-                    else if (padAngle > 45 && padAngle < 135)
-                    {
-                        wand2_flags += (int)EventBase.Flags.ButtonDown;
-                    }
-                    else if (padAngle < -135 || padAngle > 135)
-                    {
-                        wand2_flags += (int)EventBase.Flags.ButtonLeft;
-                    }
-                }
-                catch (System.ArgumentException)
+                if (padAngle < -45 && padAngle > -135)
                 {
+                    wand2_flags += (int)EventBase.Flags.ButtonUp;
+                }
+                else if (padAngle > -45 && padAngle < 45)
+                {
+                    wand2_flags += (int)EventBase.Flags.ButtonRight;
+                }
+                else if (padAngle > 45 && padAngle < 135)
+                {
+                    wand2_flags += (int)EventBase.Flags.ButtonDown;
+                }
+                else if (padAngle < -135 || padAngle > 135)
+                {
+                    wand2_flags += (int)EventBase.Flags.ButtonLeft;
                 }
             }
         }
