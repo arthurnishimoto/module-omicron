@@ -43,7 +43,9 @@ public class OMenuManager : MonoBehaviour {
         if(audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.volume = 0.25f;
         }
+        
     }
 	
 	// Update is called once per frame

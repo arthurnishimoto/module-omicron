@@ -221,6 +221,9 @@ public class CAVE2 : MonoBehaviour
     }
     // ---------------------------------------------------------------------------------------------
 }
+[RequireComponent(typeof(CAVE2AdvancedTrackingSimulator))]
+[RequireComponent(typeof(CAVE2InputManager))]
+[RequireComponent(typeof(CAVE2RPCManager))]
 
 public class CAVE2Manager : MonoBehaviour {
 
@@ -537,6 +540,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             CAVE2Manager_Instance = cave2Manager.AddComponent<CAVE2Manager>();
             cave2Manager.AddComponent<CAVE2InputManager>();
             cave2Manager.AddComponent<CAVE2AdvancedTrackingSimulator>();
+            cave2Manager.AddComponent<CAVE2RPCManager>();
         }
         return CAVE2Manager_Instance;
     }

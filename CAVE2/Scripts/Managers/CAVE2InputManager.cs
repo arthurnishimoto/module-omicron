@@ -278,9 +278,10 @@ public class CAVE2InputManager : OmicronEventClient
                 {
                     CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
                     CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
-
+#if UNITY_5_5_OR_NEWER
                     CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
                     CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+#endif
                 }
                 else
                 {
@@ -294,9 +295,10 @@ public class CAVE2InputManager : OmicronEventClient
 
             wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
-
+#if UNITY_5_5_OR_NEWER
             wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand);
             wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
+#endif
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
         {

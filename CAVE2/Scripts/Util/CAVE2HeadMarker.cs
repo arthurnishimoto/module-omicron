@@ -20,17 +20,24 @@ public class CAVE2HeadMarker : MonoBehaviour {
         if (!CAVE2.OnCAVE2Display())
         {
             headToGroundLine = gameObject.AddComponent<LineRenderer>();
+#if UNITY_5_5_OR_NEWER
             headToGroundLine.startWidth = 0.02f;
             headToGroundLine.endWidth = 0.02f;
+#else
+            headToGroundLine.SetWidth(0.02f, 0.02f);
+#endif
             headToGroundLine.material = lineMaterial;
 
         
             GameObject forwardReference = new GameObject("Head-ForwardRef");
             forwardReference.transform.parent = transform;
             forwardLine = forwardReference.AddComponent<LineRenderer>();
-
+#if UNITY_5_5_OR_NEWER
             forwardLine.startWidth = 0.02f;
             forwardLine.endWidth = 0.02f;
+#else
+            forwardLine.SetWidth(0.02f, 0.02f);
+#endif
             forwardLine.material = lineMaterial;
         }
 
