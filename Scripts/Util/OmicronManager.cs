@@ -276,9 +276,10 @@ class OmicronManager : MonoBehaviour
 
 	public bool ConnectToServer()
 	{
-		connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort );
-
-		if( connectToServer )
+#if !UNITY_WEBGL
+        connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort );
+#endif
+        if ( connectToServer )
 			connectStatus = 1;
 		else
 			connectStatus = -1;
