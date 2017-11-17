@@ -20,9 +20,17 @@ public class CAVE2InputManager : OmicronEventClient
     bool wand1MenuLock = false;
     bool wand2MenuLock = false;
 
+    Hashtable unityInputToOmicronInput = new Hashtable();
+
     // Use this for initialization
     new void Start () {
         base.Start();
+
+        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorAnalogUD] = CAVE2.Axis.LeftAnalogStickUD;
+        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorAnalogLR] = CAVE2.Axis.LeftAnalogStickLR;
+        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton3] = CAVE2.Button.Button3;
+        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton2] = CAVE2.Button.Button2;
+        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton6] = CAVE2.Button.Button6;
     }
 
     public bool IsWandMenuLocked(int wandID)
@@ -83,6 +91,21 @@ public class CAVE2InputManager : OmicronEventClient
         return false;
     }
 
+    public bool GetButtonDown(int wandID, string button)
+    {
+        return GetButtonDown(wandID, (CAVE2.Button)unityInputToOmicronInput[button]);
+    }
+
+    public bool GetButton(int wandID, string button)
+    {
+        return GetButton(wandID, (CAVE2.Button)unityInputToOmicronInput[button]);
+    }
+
+    public bool GetButtonUp(int wandID, string button)
+    {
+        return GetButtonUp(wandID, (CAVE2.Button)unityInputToOmicronInput[button]);
+    }
+
     public float GetAxis(int wandID, CAVE2.Axis axis)
     {
         if (wandControllers.ContainsKey(wandID))
@@ -94,6 +117,11 @@ public class CAVE2InputManager : OmicronEventClient
 			return axisValue;
         }
         return 0;
+    }
+
+    public float GetAxis(int wandID, string axis)
+    {
+        return GetAxis(wandID, (CAVE2.Axis)unityInputToOmicronInput[axis]);
     }
 
     public Vector3 GetMocapPosition(int ID)
