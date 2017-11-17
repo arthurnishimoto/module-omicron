@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class OmicronSAGE2Client : MonoBehaviour {
-
+#if UNITY_WEBGL
     WebSocket ws;
 
     [SerializeField]
@@ -41,4 +41,5 @@ public class OmicronSAGE2Client : MonoBehaviour {
 	void Update () {
 	
 	}
+#endif
 }
