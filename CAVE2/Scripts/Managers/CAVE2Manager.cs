@@ -214,6 +214,16 @@ public class CAVE2 : MonoBehaviour
         GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2);
     }
 
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    {
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3);
+    }
+
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    {
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4);
+    }
+
     public static void Destroy(string targetObjectName)
     {
         GetCAVE2Manager().Destroy(targetObjectName);
@@ -287,6 +297,9 @@ static CAVE2Manager CAVE2Manager_Instance;
     public GameObject debugCanvas;
 
     CAVE2RPCManager rpcManager;
+
+    [SerializeField]
+    bool simulateAsClient;
 
     public void Init()
     {
@@ -544,6 +557,8 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public static bool IsMaster()
     {
+        if (CAVE2Manager_Instance.simulateAsClient)
+            return false;
 #if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 #else
@@ -556,6 +571,9 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public static bool OnCAVE2Display()
     {
+        if (CAVE2Manager_Instance.simulateAsClient)
+            return true;
+
         machineName = System.Environment.MachineName;
         if (machineName.Contains("LYRA") && !IsMaster())
         {
@@ -569,6 +587,9 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public static bool OnCAVE2Master()
     {
+        if (CAVE2Manager_Instance.simulateAsClient)
+            return true;
+
         machineName = System.Environment.MachineName;
         if (machineName.Contains("LYRA-WIN") )
         {
@@ -674,6 +695,16 @@ static CAVE2Manager CAVE2Manager_Instance;
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
     {
         CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4);
     }
 
     public void BroadcastMessage(string targetObjectName, string methodName)
