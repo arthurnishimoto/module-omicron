@@ -22,6 +22,7 @@ public class ChildTransformScript : MonoBehaviour {
     [SerializeField]
     bool useLateUpdate = false;
 
+    public bool useOffset = true;
 	// Use this for initialization
 	void Start () {
 		positionOffset = transform.position;
@@ -33,24 +34,29 @@ public class ChildTransformScript : MonoBehaviour {
 	void Update () {
 		if( !useLateUpdate )
 		{
-			if( parent && matchPosition )
-				transform.position = parent.position + positionOffset;
-			if( parent && matchRotation )
-				transform.eulerAngles = parent.eulerAngles + rotationOffset;
-			if( parent && matchScale )
-				transform.localScale = parent.localScale + scaleOffset;
-		}
+            UpdateTransform();
+        }
 	}
 
 	void LateUpdate () {
 		if( useLateUpdate )
 		{
-			if( parent && matchPosition )
-				transform.position = parent.position + positionOffset;
-			if( parent && matchRotation )
-				transform.eulerAngles = parent.eulerAngles + rotationOffset;
-			if( parent && matchScale )
-				transform.localScale = parent.localScale + scaleOffset;
-		}
+            UpdateTransform();
+
+        }
 	}
+
+    void UpdateTransform()
+    {
+        int offset = 1;
+        if (!useOffset)
+            offset = 0;
+
+        if (parent && matchPosition)
+            transform.position = parent.position + positionOffset * offset;
+        if (parent && matchRotation)
+            transform.eulerAngles = parent.eulerAngles + rotationOffset * offset;
+        if (parent && matchScale)
+            transform.localScale = parent.localScale + scaleOffset * offset;
+    }
 }

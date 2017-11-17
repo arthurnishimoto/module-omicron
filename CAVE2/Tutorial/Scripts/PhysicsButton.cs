@@ -6,15 +6,22 @@ public class PhysicsButton : MonoBehaviour {
     Vector3 restingPosition = new Vector3(-0.3f, 0.0f, 0.0f);
     Vector3 maxPressedPosition = new Vector3(-0.2f, 0.0f, 0.0f);
 
-    public float buttonSpringStrength = 1.5f;
+    [SerializeField]
+    float buttonSpringStrength = 1.5f;
 
     float pressForce;
     float pressedProgress;
     bool collision;
+
     public bool pressed;
 
-    public Material pressedMaterial;
+    [SerializeField]
+    Material pressedMaterial;
+
     Material baseMaterial;
+
+    float timeSinceLastPress;
+    float pressTimeout = 0.1f;
 
     // Use this for initialization
     void Start () {
@@ -44,12 +51,23 @@ public class PhysicsButton : MonoBehaviour {
             if (pressForce < 0)
                 pressForce = 0;
         }
+
+        if (timeSinceLastPress < pressTimeout && collision)
+        {
+            timeSinceLastPress += Time.deltaTime;
+        }
+        else if (timeSinceLastPress >= pressTimeout && collision)
+        {
+            collision = false;
+        }
     }
 
     void OnCollisionStay(Collision c)
     {
         pressForce = c.impulse.magnitude;
         collision = true;
+
+        timeSinceLastPress = 0;
     }
 
     void OnCollisionExit()

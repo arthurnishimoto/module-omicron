@@ -6,6 +6,11 @@ public class TransformUI : MonoBehaviour {
     public Text positionUIText;
     public Transform targetTransform;
 
+    public bool local;
+
+    Vector3 position;
+    Vector3 eulerAngles;
+
     // Use this for initialization
     void Start () {
         if (positionUIText == null && GetComponent<Text>())
@@ -19,7 +24,18 @@ public class TransformUI : MonoBehaviour {
 	void Update () {
         if (positionUIText)
         {
-            positionUIText.text = "Position: " + targetTransform.position.ToString("N3") + "\nRotation: " + targetTransform.eulerAngles.ToString("N3");
+            if (local)
+            {
+                position = targetTransform.localPosition;
+                eulerAngles = targetTransform.localEulerAngles;
+            }
+            else
+            {
+                position = targetTransform.position;
+                eulerAngles = targetTransform.eulerAngles;
+            }
+
+            positionUIText.text = "Position: " + position.ToString("N3") + "\nRotation: " + eulerAngles.ToString("N3");
         }
     }
 }

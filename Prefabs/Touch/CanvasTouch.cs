@@ -9,14 +9,14 @@ public class CanvasTouch : OmicronEventClient {
     public GameObject touchPointPrefab;
 
     Hashtable touchPoints;
-    Dictionary<uint, string> touchGestureFlagNames;
+    // Dictionary<uint, string> touchGestureFlagNames;
 
 	// Use this for initialization
 	new void Start () {
         InitOmicron();
         touchPoints = new Hashtable();
 
-        uint userFlag = 18;
+        /*uint userFlag = 18;
         touchGestureFlagNames = new Dictionary<uint, string>
         {
             {userFlag << 2, "FLAG_SINGLE_TOUCH"},
@@ -27,11 +27,11 @@ public class CanvasTouch : OmicronEventClient {
             {userFlag << 7, "FLAG_SINGLE_CLICK"},
             {userFlag << 8, "FLAG_DOUBLE_CLICK"},
             {userFlag << 9, "FLAG_MULTI_TOUCH"}
-        };
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        };*/
+    }
+
+    // Update is called once per frame
+    void Update () {
 	
 	}
 
@@ -42,7 +42,7 @@ public class CanvasTouch : OmicronEventClient {
             int id = (int)e.sourceId;
             Vector2 pos = new Vector2(e.posx, e.posy);
             EventBase.Type eventType = (EventBase.Type)e.type;
-            EventBase.Flags flags = (EventBase.Flags)e.flags;
+            // EventBase.Flags flags = (EventBase.Flags)e.flags;
 
             pos = TouchPosToScreenPos(pos);
 

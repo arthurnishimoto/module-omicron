@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: a461667c840b09f47b65690609d1395f
+timeCreated: 1504378313
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - menuManager: {instanceID: 0}
+  - previousMenu: {instanceID: 0}
+  - openMenuSound: {fileID: 8300000, guid: c8ad541afbe776a4f8e27e498356f978, type: 3}
+  - closeMenuSound: {fileID: 8300000, guid: 843da81247a77174db046d866691daa1, type: 3}
+  - selectMenuSound: {fileID: 8300000, guid: 8ba17d7506ae4e6438de8317e440d7d6, type: 3}
+  - scrollMenuSound: {fileID: 8300000, guid: 6dbb79d861d06dc42ac812d3bb07cee4, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

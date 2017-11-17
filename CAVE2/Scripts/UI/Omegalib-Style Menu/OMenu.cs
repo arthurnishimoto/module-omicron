@@ -22,6 +22,7 @@ public class OMenu : MonoBehaviour {
     public float menuProgress;
 
     float maxScale = 1;
+
     // Use this for initialization
     void Start () {
         maxScale = transform.localScale.x;
@@ -57,54 +58,37 @@ public class OMenu : MonoBehaviour {
 
     void OnInput()
     {
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonDown))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonDown))
         {
             if (currentItem < menuItems.Length - 1 && menuItems[currentItem+1].IsActive() )
             {
-                menuItems[currentItem].OnDeselect(pointerData);
-                currentItem++;
-                menuItems[currentItem].OnSelect(pointerData);
+                CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemDown");
             }
         }
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonUp))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonUp))
         {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
-                menuItems[currentItem].OnDeselect(pointerData);
-                currentItem--;
-                menuItems[currentItem].OnSelect(pointerData);
+                CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemUp");
             }
         }
 
-        if(CAVE2.Input.GetButtonDown(1, menuManager.selectButton))
+        if(CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.selectButton))
         {
-            if (menuItems[currentItem].GetType() == typeof(Button))
-            {
-                ((Button)menuItems[currentItem]).OnPointerClick(pointerData);
-            }
-            else if (menuItems[currentItem].GetType() == typeof(Toggle))
-            {
-                ((Toggle)menuItems[currentItem]).OnPointerClick(pointerData);
-            }
+            CAVE2.BroadcastMessage(gameObject.name, "MenuSelectItem");
         }
-        if (CAVE2.Input.GetButtonDown(1, menuManager.menuBackButton))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.menuBackButton))
         {
-            ToggleMenu();
+            CAVE2.BroadcastMessage(gameObject.name, "ToggleMenu");
         }
 
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonLeft))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonLeft))
         {
-            if (menuItems[currentItem].GetType() == typeof(Slider))
-            {
-                ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value - 1;
-            }
+            CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemLeft");
         }
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonRight))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonRight))
         {
-            if (menuItems[currentItem].GetType() == typeof(Slider))
-            {
-                ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value + 1;
-            }
+            CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemRight");
         }
     }
 
@@ -147,6 +131,7 @@ public class OMenu : MonoBehaviour {
             }
 
             menuManager.openMenus++;
+            menuManager.PlayOpenMenuSound();
         }
         else
         {
@@ -157,6 +142,54 @@ public class OMenu : MonoBehaviour {
             }
             activeMenu = false;
             menuManager.openMenus--;
+            menuManager.PlayCloseMenuSound();
         }
+    }
+
+    public void MenuNextItemDown()
+    {
+        menuItems[currentItem].OnDeselect(pointerData);
+        currentItem++;
+        menuItems[currentItem].OnSelect(pointerData);
+        menuManager.PlayScrollMenuSound();
+    }
+
+    public void MenuNextItemUp()
+    {
+        menuItems[currentItem].OnDeselect(pointerData);
+        currentItem--;
+        menuItems[currentItem].OnSelect(pointerData);
+        menuManager.PlayScrollMenuSound();
+    }
+
+    public void MenuNextItemLeft()
+    {
+        if (menuItems[currentItem].GetType() == typeof(Slider))
+        {
+            ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value - 1;
+        }
+        menuManager.PlayScrollMenuSound();
+    }
+
+    public void MenuNextItemRight()
+    {
+        if (menuItems[currentItem].GetType() == typeof(Slider))
+        {
+            ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value + 1;
+        }
+        menuManager.PlayScrollMenuSound();
+    }
+
+    public void MenuSelectItem()
+    {
+        if (menuItems[currentItem].GetType() == typeof(Button))
+        {
+            ((Button)menuItems[currentItem]).OnPointerClick(pointerData);
+        }
+        else if (menuItems[currentItem].GetType() == typeof(Toggle))
+        {
+            ((Toggle)menuItems[currentItem]).OnPointerClick(pointerData);
+        }
+        menuManager.PlaySelectMenuSound();
     }
 }

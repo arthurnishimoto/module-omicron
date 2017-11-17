@@ -30,7 +30,8 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
             foreach (CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
             {
-                object[] playerInfo = new object[] { playerID, wandID, currentButton };
+                //object[] playerInfo = new object[] { playerID, wandID, currentButton };
+                CAVE2.ButtonInfo playerInfo = new CAVE2.ButtonInfo(playerID, wandID, currentButton);
 
                 // OnWandButtonDown
                 if (CAVE2Manager.GetButtonDown(wandID, currentButton))
@@ -38,7 +39,7 @@ public class CAVE2WandInteractor : MonoBehaviour {
                     hit.collider.gameObject.SendMessage("OnWandButtonDown", playerInfo, SendMessageOptions.DontRequireReceiver);
 
                     // Legacy Support
-                    hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
+                    //hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
                 }
 
                 // OnWandButton
@@ -47,7 +48,7 @@ public class CAVE2WandInteractor : MonoBehaviour {
                     hit.collider.gameObject.SendMessage("OnWandButton", playerInfo, SendMessageOptions.DontRequireReceiver);
 
                     // Legacy Support
-                    hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
+                    //hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
                 }
                 
                 // OnWandButtonUp
@@ -56,7 +57,7 @@ public class CAVE2WandInteractor : MonoBehaviour {
                     hit.collider.gameObject.SendMessage("OnWandButtonUp", playerInfo, SendMessageOptions.DontRequireReceiver);
 
                     // Legacy Support
-                    hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
+                    //hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
                 }
             }
         }

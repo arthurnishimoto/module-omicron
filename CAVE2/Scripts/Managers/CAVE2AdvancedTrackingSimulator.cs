@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.VR;
 using System.Collections;
 
 public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
@@ -13,7 +14,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
     public KeyCode toggleMouseTracking = KeyCode.Tab;
 
-    bool mouseWandOffsetTriggered;
+    // bool mouseWandOffsetTriggered;
     public Vector3 mouseTrackingOffset;
     bool mouseInitSet;
     Vector3 mouseLastPosition;
@@ -44,7 +45,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
                 Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
                 CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
-                mouseWandOffsetTriggered = true;
+                // mouseWandOffsetTriggered = true;
             }
 
         }
@@ -53,14 +54,22 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             mouseTrackingOffset = Vector3.zero;
             mouseInitSet = false;
 
-            if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
+            if (UnityEngine.VR.VRSettings.enabled)
             {
-                MouseWandPointerMode();
+                // CAVE2InputManager processes tracking data
             }
-            if (CAVE2.GetCAVE2Manager().mocapEmulation)
-            {
-                KeyboardHeadTracking();
+            else
+            { 
+                if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
+                {
+                    MouseWandPointerMode();
+                }
+                if (CAVE2.GetCAVE2Manager().mocapEmulation)
+                {
+                    KeyboardHeadTracking();
+                }
             }
+            
         }
 	}
 
@@ -104,8 +113,8 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         Vector3 headPosition = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
         Vector3 headRotation = CAVE2.GetCAVE2Manager().simulatorHeadRotation;
 
-        Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
-        Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
+        // Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
+        // Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
 
         Vector3 translation = Vector3.zero;
 
@@ -156,6 +165,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         CAVE2.GetCAVE2Manager().simulatorHeadPosition = headPosition;
         CAVE2.GetCAVE2Manager().simulatorHeadRotation = headRotation;
 
+        /*
         if (CAVE2.GetHeadObject(headID) != null && CAVE2.GetWandObject(wandID) != null)
         {
             Transform wandObject = CAVE2.GetWandObject(wandID).transform;
@@ -175,5 +185,6 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
                 CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition;
             }
         }
+        */
     }
 }
