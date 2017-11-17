@@ -3,16 +3,25 @@ using System.Collections;
 
 public class ChildTransformScript : MonoBehaviour {
 
-	public Transform parent;
-	public bool matchPosition = true;
-	public bool matchRotation = true;
-	public bool matchScale = true;
+    [SerializeField]
+	protected Transform parent;
 
-	Vector3 positionOffset;
-	Vector3 rotationOffset;
-	Vector3 scaleOffset;
+    [SerializeField]
+    bool matchPosition = true;
 
-	public bool useLateUpdate = false;
+    [SerializeField]
+    bool matchRotation = true;
+
+    [SerializeField]
+    bool matchScale = true;
+
+	protected Vector3 positionOffset;
+    protected Vector3 rotationOffset;
+    protected Vector3 scaleOffset;
+
+    [SerializeField]
+    bool useLateUpdate = false;
+
 	// Use this for initialization
 	void Start () {
 		positionOffset = transform.position;
