@@ -30,11 +30,21 @@ public class WandPointer : MonoBehaviour
     {
         // Laser line
         laser = gameObject.AddComponent<LineRenderer>();
+#if UNITY_5_5_OR_NEWER
+        laser.startWidth = 0.02f;
+        laser.endWidth = 0.02f;
+#else
         laser.SetWidth(0.02f, 0.02f);
+#endif
         laser.useWorldSpace = false;
         laser.material = laserMaterial;
+#if UNITY_5_5_OR_NEWER
+        laser.startColor = laserColor;
+        laser.endColor = laserColor;
+#else
         laser.SetColors(laserColor, laserColor);
-		laser.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+#endif
+        laser.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         laser.receiveShadows = false;
 
         // Laser impact glow

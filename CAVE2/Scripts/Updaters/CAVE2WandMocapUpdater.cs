@@ -17,7 +17,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
     {
         if(virtualWand && wandID == 1)
         {
-            virtualWand.localPosition = CAVE2.Input.wand1TrackingOffset;
+            virtualWand.localPosition = CAVE2.Input.wandTrackingOffset[wandID - 1];
         }
 
         // Register this gameobject as wand
@@ -30,22 +30,23 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
         {
             transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
             transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
+
+            // If position and rotation are zero, wand is not tracking, disable drawing and physics
+            if (transform.localPosition == Vector3.zero && transform.localRotation == Quaternion.identity && virtualWand.gameObject.activeSelf)
+            {
+                virtualWand.gameObject.SetActive(false);
+            }
+            else if (transform.localPosition != Vector3.zero && transform.localRotation != Quaternion.identity && !virtualWand.gameObject.activeSelf)
+            {
+                virtualWand.gameObject.SetActive(true);
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (virtualWand.GetComponent<Rigidbody>() && wandJoint == null)
-        {
-            Rigidbody rb = gameObject.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-
-            wandJoint = virtualWand.gameObject.AddComponent<FixedJoint>();
-            wandJoint.connectedBody = rb;
-        }
-        else if (virtualWand == null || virtualWand.GetComponent<Rigidbody>() == null)
+        if (virtualWand == null || virtualWand.GetComponent<Rigidbody>() == null)
         {
             transform.localPosition = CAVE2.Input.GetWandPosition(wandID);
             transform.localRotation = CAVE2.Input.GetWandRotation(wandID);

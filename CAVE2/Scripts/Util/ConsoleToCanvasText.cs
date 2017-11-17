@@ -6,7 +6,7 @@ public class ConsoleToCanvasText : MonoBehaviour {
     public UnityEngine.UI.Text textConsole;
 
     string output = "";
-    string stack = "";
+    // string stack = "";
 
     string outputLog;
 
@@ -21,7 +21,7 @@ public class ConsoleToCanvasText : MonoBehaviour {
     void HandleLog(string logString, string stackTrace, LogType type)
     {
         output = logString;
-        stack = stackTrace;
+        // stack = stackTrace;
 
         outputLog += output + "\n";
 

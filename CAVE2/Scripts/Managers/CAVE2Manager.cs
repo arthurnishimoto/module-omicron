@@ -231,6 +231,9 @@ public class CAVE2 : MonoBehaviour
     }
     // ---------------------------------------------------------------------------------------------
 }
+[RequireComponent(typeof(CAVE2AdvancedTrackingSimulator))]
+[RequireComponent(typeof(CAVE2InputManager))]
+[RequireComponent(typeof(CAVE2RPCManager))]
 
 public class CAVE2Manager : MonoBehaviour {
 
@@ -282,16 +285,16 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public enum TrackerEmulated { CAVE, Head, Wand };
     public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
-    string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
-    string[] trackerEmuModeStrings = { "Pointer", "Translate", "Rotate" };
+    // string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
+    // string[] trackerEmuModeStrings = { "Pointer", "Translate", "Rotate" };
 
-    TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
-    TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
+    // TrackerEmulationMode defaultWandEmulationMode = TrackerEmulationMode.Pointer;
+    // TrackerEmulationMode toggleWandEmulationMode = TrackerEmulationMode.TranslateVertical;
     public TrackerEmulationMode wandEmulationMode = TrackerEmulationMode.Pointer;
 
-    bool wandModeToggled = false;
+    // bool wandModeToggled = false;
     Vector3 mouseLastPos;
-    Vector3 mouseDeltaPos;
+    // Vector3 mouseDeltaPos;
 
     public bool showDebugCanvas;
     public GameObject debugCanvas;
@@ -314,7 +317,6 @@ static CAVE2Manager CAVE2Manager_Instance;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
 
         Random.InitState(1138);
-        
     }
     void Start()
     {
@@ -340,7 +342,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && (mocapEmulation || usingKinectTrackingSimulator) )
+        if( !UsingGetReal3D() && !UnityEngine.VR.VRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
         {
             if (mainCameraController)
             {
@@ -415,7 +417,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         OmicronManager omicronManager = GetCAVE2Manager().GetComponent<OmicronManager>();
         if (omicronManager)
-            return omicronManager.connectedToServer;
+            return omicronManager.connectedToServer || omicronManager.receivingDataFromMaster;
         else
             return false;
     }
@@ -551,6 +553,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             CAVE2Manager_Instance = cave2Manager.AddComponent<CAVE2Manager>();
             cave2Manager.AddComponent<CAVE2InputManager>();
             cave2Manager.AddComponent<CAVE2AdvancedTrackingSimulator>();
+            cave2Manager.AddComponent<CAVE2RPCManager>();
         }
         return CAVE2Manager_Instance;
     }
@@ -618,10 +621,10 @@ static CAVE2Manager CAVE2Manager_Instance;
         return GetCAVE2Manager().simulatorMode;
     }
 
-    public Vector3 GetMouseDeltaPos()
-    {
-        return mouseDeltaPos;
-    }
+    // public Vector3 GetMouseDeltaPos()
+    // {
+    //     return mouseDeltaPos;
+    // }
     // ---------------------------------------------------------------------------------------------
 
 

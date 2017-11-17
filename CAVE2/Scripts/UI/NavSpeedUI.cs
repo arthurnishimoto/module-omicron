@@ -12,10 +12,6 @@ public class NavSpeedUI : MonoBehaviour {
     // Use this for initialization
     void Start () {
         navController = GetComponentInParent<CAVE2WandNavigator>();
-
-        float navSpeed = navController.globalSpeedMod;
-
-
     }
 
     public void UpdateNavSpeed()

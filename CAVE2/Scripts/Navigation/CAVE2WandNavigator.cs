@@ -53,7 +53,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     Vector3 fly_x, fly_y, fly_z;
 
-    CAVE2PlayerCollider playerCollider;
+    // CAVE2PlayerCollider playerCollider;
 
     public Vector3 initialPosition;
     public Quaternion initialRotation;
@@ -87,8 +87,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         initMode = navMode;
         lastNavMode = navMode;
 
-        playerCollider = GetComponent<CAVE2PlayerCollider>();
-
+        // playerCollider = GetComponent<CAVE2PlayerCollider>();
     }
 	
     void FixedUpdate()
@@ -206,9 +205,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
         wandPosition = CAVE2.Input.GetWandPosition(wandID);
         Quaternion wandRotation = CAVE2.Input.GetWandRotation(wandID);
-
-        Vector3 headPosition = CAVE2.Input.GetHeadPosition(headID);
-        Quaternion headRotation = CAVE2.Input.GetHeadRotation(headID);
 
         if (freeflyButtonDown && !freeflyInitVectorSet)
         {

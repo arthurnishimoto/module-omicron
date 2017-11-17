@@ -58,14 +58,14 @@ public class OMenu : MonoBehaviour {
 
     void OnInput()
     {
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonDown))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonDown))
         {
             if (currentItem < menuItems.Length - 1 && menuItems[currentItem+1].IsActive() )
             {
                 CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemDown");
             }
         }
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonUp))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonUp))
         {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
@@ -73,20 +73,20 @@ public class OMenu : MonoBehaviour {
             }
         }
 
-        if(CAVE2.Input.GetButtonDown(1, menuManager.selectButton))
+        if(CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.selectButton))
         {
             CAVE2.BroadcastMessage(gameObject.name, "MenuSelectItem");
         }
-        if (CAVE2.Input.GetButtonDown(1, menuManager.menuBackButton))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.menuBackButton))
         {
             CAVE2.BroadcastMessage(gameObject.name, "ToggleMenu");
         }
 
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonLeft))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonLeft))
         {
             CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemLeft");
         }
-        if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonRight))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonRight))
         {
             CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemRight");
         }
