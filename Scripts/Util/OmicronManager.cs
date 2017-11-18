@@ -271,7 +271,7 @@ class OmicronManager : MonoBehaviour
             StartCoroutine("ConnectToServer");
         }
 
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }// start
 
 	public bool ConnectToServer()

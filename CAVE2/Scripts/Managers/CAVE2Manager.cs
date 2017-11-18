@@ -229,6 +229,27 @@ public class CAVE2 : MonoBehaviour
         GetCAVE2Manager().Destroy(targetObjectName);
 
     }
+
+    public static void LoadScene(int id)
+    {
+        RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadScene", id);
+    }
+
+    public static void LoadScene(string id)
+    {
+        RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadScene", id);
+    }
+
+    public static void LoadSceneAsync(int id)
+    {
+        RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+    }
+
+    public static void LoadSceneAsync(string id)
+    {
+        RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+    }
+
     // ---------------------------------------------------------------------------------------------
 }
 [RequireComponent(typeof(CAVE2AdvancedTrackingSimulator))]
@@ -718,5 +739,29 @@ static CAVE2Manager CAVE2Manager_Instance;
     public void Destroy(string targetObjectName)
     {
         CAVE2.RpcManager.Destroy(targetObjectName);
+    }
+
+    public void CAVE2LoadScene(int id)
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(id);
+        Debug.Log(this.GetType().Name + ">\t CAVE2 Load Scene: " + id);
+    }
+
+    public void CAVE2LoadScene(string sceneName)
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        Debug.Log(this.GetType().Name + ">\t CAVE2 Load Scene: " + sceneName);
+    }
+
+    public void CAVE2LoadSceneAsync(int id)
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(id);
+        Debug.Log(this.GetType().Name + ">\t CAVE2 Load Scene (Async): " + id);
+    }
+
+    public void CAVE2LoadSceneAsync(string sceneName)
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+        Debug.Log(this.GetType().Name + ">\t CAVE2 Load Scene (Async): " + sceneName);
     }
 }
