@@ -119,7 +119,7 @@ public class CAVE2InputManager : OmicronEventClient
         return 0;
     }
 
-    public float GetAxis(int wandID, string axis)
+    public float GetAxis(string axis, int wandID = 1)
     {
         return GetAxis(wandID, (CAVE2.Axis)unityInputToOmicronInput[axis]);
     }

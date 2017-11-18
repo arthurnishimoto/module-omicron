@@ -56,9 +56,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
     [SerializeField]
     CapsuleCollider bodyCollider;
 
-    public Vector3 initialPosition;
-    public Quaternion initialRotation;
-    public NavigationMode initMode;
+    Vector3 initialPosition;
+    Quaternion initialRotation;
+    NavigationMode initMode;
 
     public void Reset()
     {
@@ -88,9 +88,10 @@ public class CAVE2WandNavigator : MonoBehaviour {
         initMode = navMode;
         lastNavMode = navMode;
 
-        // playerCollider = GetComponent<CAVE2PlayerCollider>();
+        if( bodyCollider == null )
+            bodyCollider = GetComponent<CapsuleCollider>();
     }
-	
+
     void FixedUpdate()
     {
         if (navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly)
