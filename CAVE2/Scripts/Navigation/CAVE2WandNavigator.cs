@@ -159,6 +159,16 @@ public class CAVE2WandNavigator : MonoBehaviour {
         navMode = NavigationMode.Freefly;
     }
 
+    public void SetNavModeStrafe(bool val)
+    {
+        horizontalMovementMode = HorizonalMovementMode.Strafe;
+    }
+
+    public void SetNavModeRotate(bool val)
+    {
+        horizontalMovementMode = HorizonalMovementMode.Turn;
+    }
+
     void UpdateWalkMovement()
     {
         bodyCollider.GetComponent<Rigidbody>().useGravity = true;
