@@ -38,8 +38,8 @@ public class CAVE2PlayerCollider : MonoBehaviour {
         Collider lastCollider = bodyCollider;
         foreach( Collider c in playerColliders )
         {
-            Debug.Log("IgnoreCollision: " + bodyCollider.name + " " + c.name);
-            Debug.Log("IgnoreCollision: " + lastCollider.name + " " + c.name);
+            // Debug.Log("IgnoreCollision: " + bodyCollider.name + " " + c.name);
+            // Debug.Log("IgnoreCollision: " + lastCollider.name + " " + c.name);
 
             Physics.IgnoreCollision(bodyCollider, c);
             Physics.IgnoreCollision(lastCollider, c);
