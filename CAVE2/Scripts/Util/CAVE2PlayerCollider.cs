@@ -3,29 +3,33 @@ using System.Collections;
 
 public class CAVE2PlayerCollider : MonoBehaviour {
 
-    public int headID = 1;
+    [SerializeField]
+    int headID = 1;
 
-    public float bodyRadius = 0.3f;
+    [SerializeField]
+    float bodyRadius = 0.3f;
 
+    [SerializeField]
     CapsuleCollider bodyCollider;
+
     new Rigidbody rigidbody;
     Vector3 playerHeadPosition;
 
-    public Collider[] playerColliders;
+    [SerializeField]
+    Collider[] playerColliders;
 
     // Use this for initialization
     void Start () {
 
         // Setup body collider
-        bodyCollider = GetComponent<CapsuleCollider>();
         if(bodyCollider == null)
         {
             bodyCollider = gameObject.AddComponent<CapsuleCollider>();
         }
-        rigidbody = GetComponent<Rigidbody>();
+        rigidbody = bodyCollider.GetComponent<Rigidbody>();
         if (rigidbody == null )
         {
-            rigidbody = gameObject.AddComponent<Rigidbody>();
+            rigidbody = bodyCollider.gameObject.AddComponent<Rigidbody>();
         }
         rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
 
@@ -34,9 +38,12 @@ public class CAVE2PlayerCollider : MonoBehaviour {
         Collider lastCollider = bodyCollider;
         foreach( Collider c in playerColliders )
         {
+            Debug.Log("IgnoreCollision: " + bodyCollider.name + " " + c.name);
+            Debug.Log("IgnoreCollision: " + lastCollider.name + " " + c.name);
+
             Physics.IgnoreCollision(bodyCollider, c);
             Physics.IgnoreCollision(lastCollider, c);
-            lastCollider = c;
+            lastCollider = c; 
         }
 
         UpdatePlayerCollider();

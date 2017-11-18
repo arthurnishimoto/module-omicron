@@ -53,7 +53,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     Vector3 fly_x, fly_y, fly_z;
 
-    // CAVE2PlayerCollider playerCollider;
+    [SerializeField]
+    CapsuleCollider bodyCollider;
 
     public Vector3 initialPosition;
     public Quaternion initialRotation;
@@ -160,8 +161,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void UpdateWalkMovement()
     {
-        GetComponent<Rigidbody>().useGravity = true;
-        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+        bodyCollider.GetComponent<Rigidbody>().useGravity = true;
+        bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 
         Vector3 nextPos = transform.position;
         float forwardAngle = transform.eulerAngles.y;
@@ -200,8 +201,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void UpdateFreeflyMovement()
     {
-        GetComponent<Rigidbody>().useGravity = false;
-        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        bodyCollider.GetComponent<Rigidbody>().useGravity = false;
+        bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
         wandPosition = CAVE2.Input.GetWandPosition(wandID);
         Quaternion wandRotation = CAVE2.Input.GetWandRotation(wandID);
