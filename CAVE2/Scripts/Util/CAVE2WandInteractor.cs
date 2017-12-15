@@ -15,8 +15,16 @@ public class CAVE2WandInteractor : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        Vector3 raySource = transform.position;
+
+        // Helper override to set wand pointer to mouse cursor
+        if( CAVE2.Input.GetComponent<CAVE2AdvancedTrackingSimulator>().wandUsesHeadPosition )
+        {
+            raySource = transform.parent.position;
+        }
+
         // Shoot a ray from the wand
-        Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
+        Ray ray = new Ray(raySource, transform.TransformDirection(Vector3.forward));
         RaycastHit hit;
 
         // Get the first collider that was hit by the ray

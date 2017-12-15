@@ -9,7 +9,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
     public float headRotationSpeed = 25;
     public int wandID = 1;
 
-    public bool wandOffsetFollowsHead = true;
+    public bool wandUsesHeadPosition = false;
     public Vector3 wandDefaultPositionOffset = new Vector3(0.15f, 1.5f, 0.4f);
 
     public KeyCode toggleMouseTracking = KeyCode.Tab;
@@ -60,13 +60,13 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             }
             else
             { 
-                if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
-                {
-                    MouseWandPointerMode();
-                }
                 if (CAVE2.GetCAVE2Manager().mocapEmulation)
                 {
                     KeyboardHeadTracking();
+                }
+                if (CAVE2.GetCAVE2Manager().wandMousePointerEmulation)
+                {
+                    MouseWandPointerMode();
                 }
             }
             
@@ -88,6 +88,22 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
                 wandObject.transform.localPosition = CAVE2.Input.GetWandPosition(wandID);
             }
 
+            if(wandUsesHeadPosition)
+            {
+                wandObject.transform.localPosition = CAVE2.Input.GetHeadPosition(1);
+            }
+            else
+            {
+                wandObject.transform.localPosition = wandDefaultPositionOffset;
+            }
+
+            // Disable head collider if wand is attached to head
+            SphereCollider headCollider = CAVE2.GetHeadObject(1).GetComponentInChildren<SphereCollider>();
+            if(headCollider)
+            {
+                headCollider.enabled = !wandUsesHeadPosition;
+            }
+
             // Mouse pointer ray controls rotation
             Vector2 position = new Vector3(Input.mousePosition.x, Input.mousePosition.y);
 
@@ -104,6 +120,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             }
             wandObject.transform.LookAt(ray.GetPoint(1000));
             // Update the wandState rotation (opposite of normal since this object is determining the rotation)
+            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandObject.transform.localPosition;
             CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.localEulerAngles;
         }
     }

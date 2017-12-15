@@ -28,9 +28,20 @@ public class WandHoverOverIndicator : MonoBehaviour {
 		}
 		wandOverHighlight.AddComponent<MeshFilter>().mesh = defaultMesh;
 		renderer = wandOverHighlight.AddComponent<MeshRenderer>();
-		renderer.material = hoverOverMaterial;
+
+        if (hoverOverMaterial == null)
+        {
+            // Create a basic highlight material
+            hoverOverMaterial = new Material(Shader.Find("Standard"));
+            hoverOverMaterial.SetColor("_Color", new Color(0, 1, 1, 0.25f));
+            hoverOverMaterial.SetFloat("_Mode", 3); // Transparent
+            hoverOverMaterial.SetFloat("_Glossiness", 0);
+        }
+        renderer.material = hoverOverMaterial;
 
 		renderer.enabled = false;
+
+        
 	}
 	
 	// Update is called once per frame
