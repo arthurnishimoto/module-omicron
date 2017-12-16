@@ -399,7 +399,7 @@ class OmicronManager : MonoBehaviour
                 // Note we're doing this before coordinate conversion since display clients will do that calculation
                 if (getReal3D.Cluster.isMaster)
                 {
-                    getReal3D.RpcManager.call("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
+                    //getReal3D.RpcManager.call("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
                 }
 #endif
 
