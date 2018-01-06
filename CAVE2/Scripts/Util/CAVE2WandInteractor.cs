@@ -33,13 +33,15 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
         if (wandHit) // The wand is pointed at a collider
         {
+            CAVE2.ButtonInfo playerInfo = new CAVE2.ButtonInfo(playerID, wandID, CAVE2.Button.None);
+
             // Send a message to the hit object telling it that the wand is hovering over it
-            hit.collider.gameObject.SendMessage("OnWandOver", SendMessageOptions.DontRequireReceiver);
+            hit.collider.gameObject.SendMessage("OnWandOver", playerInfo, SendMessageOptions.DontRequireReceiver);
 
             foreach (CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
             {
                 //object[] playerInfo = new object[] { playerID, wandID, currentButton };
-                CAVE2.ButtonInfo playerInfo = new CAVE2.ButtonInfo(playerID, wandID, currentButton);
+                playerInfo = new CAVE2.ButtonInfo(playerID, wandID, currentButton);
 
                 // OnWandButtonDown
                 if (CAVE2Manager.GetButtonDown(wandID, currentButton))

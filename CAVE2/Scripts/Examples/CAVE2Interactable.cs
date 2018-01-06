@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CAVE2Interactable : MonoBehaviour {
 
-    public void OnWandButtonDown(object[] playerInfo)
+    public void OnWandButtonDown(CAVE2.ButtonInfo playerInfo)
     {
         //CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)playerInfo[0];
         //int wandID = (int)playerInfo[1];
@@ -12,13 +12,8 @@ public class CAVE2Interactable : MonoBehaviour {
 
         //Debug.Log("OnWandButtonDown: " + playerID.name + " " + wandID + " " + button);
     }
-    
-    public void OnWandButtonDown(CAVE2.Button button)
-    {
-        // Deprecated - Legacy Support Only
-    }
 
-    public void OnWandButton(object[] playerInfo)
+    public void OnWandButton(CAVE2.ButtonInfo playerInfo)
     {
         //CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)playerInfo[0];
         //int wandID = (int)playerInfo[1];
@@ -28,12 +23,7 @@ public class CAVE2Interactable : MonoBehaviour {
         //Debug.Log("OnWandButton: " + playerID.name + " " + wandID + " " + button);
     }
 
-    public void OnWandButton(CAVE2.Button button)
-    {
-        // Deprecated - Legacy Support Only
-    }
-
-    public void OnWandButtonUp(object[] playerInfo)
+    public void OnWandButtonUp(CAVE2.ButtonInfo playerInfo)
     {
         //CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)playerInfo[0];
         //int wandID = (int)playerInfo[1];
@@ -43,8 +33,27 @@ public class CAVE2Interactable : MonoBehaviour {
         //Debug.Log("OnWandButtonUp: " + playerID.name + " " + wandID + " " + button);
     }
 
-    public void OnWandButtonUp(CAVE2.Button button)
+    public void OnWandOver()
+    {
+    }
+
+    public void OnWandOver(CAVE2.ButtonInfo playerInfo)
+    {
+    }
+
+    /*
+    public void OnWandButtonDown(CAVE2.Button button)
     {
         // Deprecated - Legacy Support Only
     }
+
+    public void OnWandButton(CAVE2.Button button)
+    {
+        // Deprecated - Legacy Support Only
+    }
+
+    public void OnWandButtonUp(CAVE2.Button button)
+    {
+        // Deprecated - Legacy Support Only
+    }*/
 }
