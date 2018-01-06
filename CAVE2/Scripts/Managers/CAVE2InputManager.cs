@@ -615,7 +615,7 @@ public class CAVE2InputManager : OmicronEventClient
 
         // If Omicron server is enabled, let Omicron handle tracker/controller data instead of getReal3D
         // Unless keyboard emulation is enabled
-        if (!CAVE2.UsingOmicronServer() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
+        if (CAVE2.UsingOmicronServer() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
         {
             
             wandController.UpdateAnalog(wand1_analog1, wand1_analog2, Vector2.zero, Vector2.zero);
