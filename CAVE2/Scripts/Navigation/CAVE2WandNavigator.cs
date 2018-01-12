@@ -91,6 +91,12 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
         if( bodyCollider == null )
             bodyCollider = GetComponent<CapsuleCollider>();
+
+        if( navMode == NavigationMode.Disabled )
+        {
+            DisableMovement();
+            lastNavMode = NavigationMode.Walk;
+        }
     }
 
     void FixedUpdate()

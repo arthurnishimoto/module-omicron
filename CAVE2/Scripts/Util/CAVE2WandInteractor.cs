@@ -3,8 +3,11 @@ using System.Collections;
 
 public class CAVE2WandInteractor : MonoBehaviour {
 
-    public int wandID = 1;
-    public LayerMask wandLayerMask = -1;
+    [SerializeField]
+    int wandID = 1;
+
+    [SerializeField]
+    LayerMask wandLayerMask = -1;
 
     CAVE2PlayerIdentity playerID;
 
@@ -33,42 +36,45 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
         if (wandHit) // The wand is pointed at a collider
         {
-            CAVE2.ButtonInfo playerInfo = new CAVE2.ButtonInfo(playerID, wandID, CAVE2.Button.None);
+            CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Pointing);
 
             // Send a message to the hit object telling it that the wand is hovering over it
-            hit.collider.gameObject.SendMessage("OnWandOver", playerInfo, SendMessageOptions.DontRequireReceiver);
+            hit.collider.gameObject.SendMessage("OnWandPointing", playerInfo, SendMessageOptions.DontRequireReceiver);
 
-            foreach (CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
+            ProcessButtons(hit.collider.gameObject, playerInfo);
+        }
+    }
+
+    void OnTriggerStay(Collider collider)
+    {
+        CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Touching);
+
+        // Send a message to the hit object telling it that the wand is hovering over it
+        collider.gameObject.SendMessage("OnWandOver", playerInfo, SendMessageOptions.DontRequireReceiver);
+
+        ProcessButtons(collider.gameObject, playerInfo);
+    }
+
+    void ProcessButtons(GameObject interactedObject, CAVE2.WandEvent playerInfo)
+    {
+        foreach(CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
+        {
+             // OnWandButtonDown
+            if (CAVE2Manager.GetButtonDown(wandID, currentButton))
             {
-                //object[] playerInfo = new object[] { playerID, wandID, currentButton };
-                playerInfo = new CAVE2.ButtonInfo(playerID, wandID, currentButton);
+                interactedObject.SendMessage("OnWandButtonDown", playerInfo, SendMessageOptions.DontRequireReceiver);
+            }
 
-                // OnWandButtonDown
-                if (CAVE2Manager.GetButtonDown(wandID, currentButton))
-                {
-                    hit.collider.gameObject.SendMessage("OnWandButtonDown", playerInfo, SendMessageOptions.DontRequireReceiver);
+            // OnWandButton
+            else if (CAVE2Manager.GetButton(wandID, currentButton))
+            {
+                interactedObject.SendMessage("OnWandButton", playerInfo, SendMessageOptions.DontRequireReceiver);
+            }
 
-                    // Legacy Support
-                    //hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
-                }
-
-                // OnWandButton
-                else if (CAVE2Manager.GetButton(wandID, currentButton))
-                {
-                    hit.collider.gameObject.SendMessage("OnWandButton", playerInfo, SendMessageOptions.DontRequireReceiver);
-
-                    // Legacy Support
-                    //hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
-                }
-                
-                // OnWandButtonUp
-                if (CAVE2Manager.GetButtonDown(wandID, currentButton))
-                {
-                    hit.collider.gameObject.SendMessage("OnWandButtonUp", playerInfo, SendMessageOptions.DontRequireReceiver);
-
-                    // Legacy Support
-                    //hit.collider.gameObject.SendMessage("OnWandButtonDown", currentButton, SendMessageOptions.DontRequireReceiver);
-                }
+            // OnWandButtonUp
+            if (CAVE2Manager.GetButtonDown(wandID, currentButton))
+            {
+                interactedObject.SendMessage("OnWandButtonUp", playerInfo, SendMessageOptions.DontRequireReceiver);
             }
         }
     }

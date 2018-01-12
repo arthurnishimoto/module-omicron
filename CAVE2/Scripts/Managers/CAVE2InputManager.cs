@@ -498,13 +498,13 @@ public class CAVE2InputManager : OmicronEventClient
             // Oculus Touch Left: Button.Three / X (Press)
             if (Input.GetKey(KeyCode.Joystick1Button2))
             {
-                wand1_flags += (int)EventBase.Flags.Button3;
+                wand1_flags += (int)EventBase.Flags.Button2;
             }
 
             // Oculus Touch Left: Button.Four / Y (Press)
             if (Input.GetKey(KeyCode.Joystick1Button3))
             {
-                wand1_flags += (int)EventBase.Flags.Button2;
+                wand1_flags += (int)EventBase.Flags.Button3;
             }
 
             // Oculus Touch Left: Button.Start / Menu

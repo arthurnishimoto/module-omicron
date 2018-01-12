@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CAVE2Interactable : MonoBehaviour {
 
-    public void OnWandButtonDown(CAVE2.ButtonInfo playerInfo)
+    public void OnWandButtonDown(CAVE2.WandEvent playerInfo)
     {
         //CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)playerInfo[0];
         //int wandID = (int)playerInfo[1];
@@ -13,7 +13,7 @@ public class CAVE2Interactable : MonoBehaviour {
         //Debug.Log("OnWandButtonDown: " + playerID.name + " " + wandID + " " + button);
     }
 
-    public void OnWandButton(CAVE2.ButtonInfo playerInfo)
+    public void OnWandButton(CAVE2.WandEvent playerInfo)
     {
         //CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)playerInfo[0];
         //int wandID = (int)playerInfo[1];
@@ -23,7 +23,7 @@ public class CAVE2Interactable : MonoBehaviour {
         //Debug.Log("OnWandButton: " + playerID.name + " " + wandID + " " + button);
     }
 
-    public void OnWandButtonUp(CAVE2.ButtonInfo playerInfo)
+    public void OnWandButtonUp(CAVE2.WandEvent playerInfo)
     {
         //CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)playerInfo[0];
         //int wandID = (int)playerInfo[1];
@@ -37,7 +37,15 @@ public class CAVE2Interactable : MonoBehaviour {
     {
     }
 
-    public void OnWandOver(CAVE2.ButtonInfo playerInfo)
+    public void OnWandOver(CAVE2.WandEvent eventInfo)
+    {
+    }
+
+    public void OnWandPointing()
+    {
+    }
+
+    public void OnWandPointing(CAVE2.WandEvent eventInfo)
     {
     }
 

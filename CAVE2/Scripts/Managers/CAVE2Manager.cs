@@ -10,21 +10,24 @@ public class CAVE2 : MonoBehaviour
         LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTriggerR_Inverted
     };
     public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
+    public enum InteractionType { Pointing, Touching }
 
     public static CAVE2InputManager Input;
     public static CAVE2RPCManager RpcManager;
 
-    public struct ButtonInfo
+    public struct WandEvent
     {
         public CAVE2PlayerIdentity playerID;
         public int wandID;
         public Button button;
+        public InteractionType interactionType;
 
-        public ButtonInfo(CAVE2PlayerIdentity id, int wand, Button b)
+        public WandEvent(CAVE2PlayerIdentity id, int wand, Button b, InteractionType t)
         {
             playerID = id;
             wandID = wand;
             button = b;
+            interactionType = t;
         }
     };
 
