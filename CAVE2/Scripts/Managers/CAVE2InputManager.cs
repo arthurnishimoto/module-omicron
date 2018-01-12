@@ -9,8 +9,11 @@ public class CAVE2InputManager : OmicronEventClient
     Hashtable mocapSensors = new Hashtable();
     Hashtable wandControllers = new Hashtable();
 
-    public float axisSensitivity = 1f;
-    public float axisDeadzone = 0.2f;
+    [SerializeField]
+    float axisSensitivity = 1f;
+
+    [SerializeField]
+    float axisDeadzone = 0.2f;
 
     public Vector3[] wandTrackingOffset = new Vector3[]{
         new Vector3(-0.007781088f, -0.04959464f, -0.07368752f) // Wand 1
@@ -21,6 +24,11 @@ public class CAVE2InputManager : OmicronEventClient
     bool wand2MenuLock = false;
 
     Hashtable unityInputToOmicronInput = new Hashtable();
+
+    public enum InputMappingMode { CAVE2Simulator, Vive, Oculus };
+
+    [SerializeField]
+    InputMappingMode inputMappingMode = InputMappingMode.CAVE2Simulator;
 
     // Use this for initialization
     new void Start () {
@@ -291,10 +299,12 @@ public class CAVE2InputManager : OmicronEventClient
 
         Vector2 wand1_analog1 = Vector2.zero;
         Vector2 wand1_analog2 = Vector2.zero;
+        Vector2 wand1_analog3 = Vector2.zero;
         int wand1_flags = 0;
 
         Vector2 wand2_analog1 = Vector2.zero;
         Vector2 wand2_analog2 = Vector2.zero;
+        Vector2 wand2_analog3 = Vector2.zero;
         int wand2_flags = 0;
 
         // Mocap
@@ -302,6 +312,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             if (UnityEngine.VR.VRSettings.enabled)
             {
+
                 if (VRDevice.model == "Vive MV")
                 {
                     CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
@@ -313,8 +324,19 @@ public class CAVE2InputManager : OmicronEventClient
                 }
                 else
                 {
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = Camera.main.transform.localPosition;
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = Camera.main.transform.localEulerAngles;
+                    // Hack: InputTracking isn't using some offset that the Main Camera is otherwise getting. Calculate the diff here:
+                    Vector3 oculusRealHeadPosition = Camera.main.transform.localPosition;
+                    Vector3 positionOffset = oculusRealHeadPosition - InputTracking.GetLocalPosition(VRNode.Head);
+
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head) + positionOffset;
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
+#if UNITY_5_5_OR_NEWER
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand) + positionOffset;
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+
+                    wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand) + positionOffset;
+                    wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
+#endif
                 }
             }
 
@@ -323,10 +345,6 @@ public class CAVE2InputManager : OmicronEventClient
 
             wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
-#if UNITY_5_5_OR_NEWER
-            wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand);
-            wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
-#endif
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
         {
@@ -476,21 +494,48 @@ public class CAVE2InputManager : OmicronEventClient
             // Axis11 - Hand Trigger
             wand1_flags = 0;
             wand2_flags = 0;
-            if (Input.GetKey(KeyCode.Joystick2Button2))
+
+            // Oculus Touch Left: Button.Three / X (Press)
+            if (Input.GetKey(KeyCode.Joystick1Button2))
+            {
+                wand1_flags += (int)EventBase.Flags.Button3;
+            }
+
+            // Oculus Touch Left: Button.Four / Y (Press)
+            if (Input.GetKey(KeyCode.Joystick1Button3))
             {
                 wand1_flags += (int)EventBase.Flags.Button2;
             }
-            if (Input.GetKey(KeyCode.Joystick2Button8))
+
+            // Oculus Touch Left: Button.Start / Menu
+            if (Input.GetKey(KeyCode.Joystick1Button7))
+            {
+            }
+
+            // Oculus Touch Left: Analog Stick (Press)
+            if (Input.GetKey(KeyCode.Joystick1Button8))
             {
                 wand1_flags += (int)EventBase.Flags.Button6;
             }
-            if (Input.GetKey(KeyCode.Joystick2Button16))
-            {
 
-            }
-            if (Input.GetKey(KeyCode.Joystick2Button14))
+            // Oculus Touch Left: Button.Three / X (Touch)
+            if (Input.GetKey(KeyCode.Joystick1Button12))
             {
-                wand1_flags += (int)EventBase.Flags.Button7;
+            }
+
+            // Oculus Touch Left: Button.Four / Y (Touch)
+            if (Input.GetKey(KeyCode.Joystick1Button13))
+            {
+            }
+
+            // Oculus Touch Left: IndexTrigger (Touch)
+            if (Input.GetKey(KeyCode.Joystick1Button14))
+            {
+            }
+
+            // Oculus Touch Left: ThumbRest (Touch)
+            if (Input.GetKey(KeyCode.Joystick1Button18))
+            {
             }
 
             /*
@@ -498,6 +543,22 @@ public class CAVE2InputManager : OmicronEventClient
              * are required for proper mapping of VR controller buttons.
              * The following can be added to the Axis. All other fields
              * are blank unless otherwise specified
+             * 
+             * Name: Trigger L
+             * Gravity: 3
+             * Dead: 0.001
+             * Sensitivity: 3
+             * Type: Joystick Axis
+             * Axis: 9th axis (Joysticks)
+             * JoyNum: Get Motion from all Joysticks
+             *
+             * Name: Trigger R
+             * Gravity: 3
+             * Dead: 0.001
+             * Sensitivity: 3
+             * Type: Joystick Axis
+             * Axis: 10th axis (Joysticks)
+             * JoyNum: Get Motion from all Joysticks
              * 
              * Name: Grip L
              * Gravity: 3
@@ -515,15 +576,28 @@ public class CAVE2InputManager : OmicronEventClient
              * Axis: 12th axis (Joysticks)
              * JoyNum: Get Motion from all Joysticks
              */
-            if (Input.GetAxis("Grip L") > 0)
+            // Oculus Touch Left: IndexTrigger (Press)
+            if (Input.GetAxis("Trigger L") > 0)
             {
                 wand1_flags += (int)EventBase.Flags.Button5;
-                wand1_flags += (int)EventBase.Flags.Button3;
             }
 
-            if (Input.GetAxis("Grip R") > 0.4f)
+            // Oculus Touch Left: HandTrigger (Press)
+            if (Input.GetAxis("Grip L") > 0)
             {
-                wand2_flags += (int)EventBase.Flags.Button3;
+                wand1_flags += (int)EventBase.Flags.Button7;
+                wand1_analog3.x = Input.GetAxis("Grip L");
+            }
+
+            if (Input.GetAxis("Grip R") > 0)
+            {
+                wand2_flags += (int)EventBase.Flags.Button7;
+                wand2_analog3.x = Input.GetAxis("Grip R");
+            }
+
+            if (Input.GetAxis("Trigger R") > 0)
+            {
+                wand2_flags += (int)EventBase.Flags.Button5;
             }
 
             // VR Right Controller (Keycode.Joystick1)
@@ -535,25 +609,56 @@ public class CAVE2InputManager : OmicronEventClient
             // Axis5 - Thumbstick Vert
             // Axis10 - Index Trigger
             // Axis12 - Hand Trigger
-            if (Input.GetKey(KeyCode.Joystick1Button0))
+
+            // Oculus Touch Right: Button.One / A (Press)
+            if (Input.GetKey(KeyCode.Joystick2Button0))
             {
                 wand2_flags += (int)EventBase.Flags.Button2;
             }
-            if (Input.GetKey(KeyCode.Joystick1Button9))
+
+            // Oculus Touch Right: Button.Two / B (Press)
+            if (Input.GetKey(KeyCode.Joystick2Button1))
+            {
+                wand2_flags += (int)EventBase.Flags.Button3;
+            }
+
+            // Oculus Touch Right: Oculus Button Reserved
+
+            // Oculus Touch Right: Analog Stick (Press)
+            if (Input.GetKey(KeyCode.Joystick2Button9))
             {
                 wand2_flags += (int)EventBase.Flags.Button6;
             }
-            if (Input.GetKey(KeyCode.Joystick1Button17))
+
+            // Oculus Touch Right: Button.One / A (Touch)
+            if (Input.GetKey(KeyCode.Joystick2Button10))
             {
             }
-            if (Input.GetKey(KeyCode.Joystick1Button15))
+
+            // Oculus Touch Right: Button.Two / B (Touch)
+            if (Input.GetKey(KeyCode.Joystick2Button11))
             {
-                wand2_flags += (int)EventBase.Flags.Button7;
             }
 
-            
+            // Oculus Touch Right: IndexTrigger (Touch)
+            if (Input.GetKey(KeyCode.Joystick2Button15))
+            {
+            }
 
-            if(Input.GetKey(KeyCode.Joystick1Button9))
+            // Oculus Touch Right: ThumbRest (Touch)
+            if (Input.GetKey(KeyCode.Joystick2Button19))
+            {
+            }
+
+            wand1_analog1 = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical") );
+            wand2_analog1 = new Vector2(Input.GetAxis("Horizontal2"), -Input.GetAxis("Vertical2"));
+
+            // Oculus Touch Right: Analog (Touch)
+            // For CAVE2 simulator purposes, we're treating the right analog as the DPad
+            if (Input.GetKey(KeyCode.Joystick2Button17) &&
+                (Input.GetAxis("Vertical2") != 0 ||
+                Input.GetAxis("Horizontal2") != 0)
+                )
             {
                 /*
                  * Horizontal2/Vertical2 are not default Unity InputManager axis, but 
@@ -618,10 +723,10 @@ public class CAVE2InputManager : OmicronEventClient
         if (CAVE2.UsingOmicronServer() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
         {
             
-            wandController.UpdateAnalog(wand1_analog1, wand1_analog2, Vector2.zero, Vector2.zero);
+            wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
             wandController.rawFlags = wand1_flags;
 
-            wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, Vector2.zero, Vector2.zero);
+            wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
             wandController2.rawFlags = wand2_flags;
         }
     }
