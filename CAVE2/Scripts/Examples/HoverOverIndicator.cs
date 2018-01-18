@@ -4,13 +4,7 @@ using System.Collections;
 public class HoverOverIndicator : CAVE2Interactable
 {
     [SerializeField]
-    bool hoverOver = false;
-
-    [SerializeField]
-    float lastHoverOverTime;
-
-    [SerializeField]
-    float wandOverTimeout = 0.15f;
+    bool showHoverOver = true;
 
     [SerializeField]
     float highlightScaler = 1.05f;
@@ -22,9 +16,6 @@ public class HoverOverIndicator : CAVE2Interactable
 
     GameObject hoverOverHighlight;
     new MeshRenderer renderer;
-
-    [SerializeField]
-    bool showHoverOver = true;
 
     // Use this for initialization
     void Start()
@@ -58,17 +49,8 @@ public class HoverOverIndicator : CAVE2Interactable
     // Update is called once per frame
     void Update()
     {
-        if (Time.time - lastHoverOverTime > wandOverTimeout)
-        {
-            hoverOver = false;
-        }
-        renderer.enabled = showHoverOver && hoverOver;
-    }
-
-    new void OnWandOver()
-    {
-        lastHoverOverTime = Time.time;
-        hoverOver = true;
+        UpdateWandOverTimer();
+        renderer.enabled = showHoverOver && wandOver;
     }
 
     public void ShowHoverOverHighlight()
@@ -83,6 +65,6 @@ public class HoverOverIndicator : CAVE2Interactable
 
     public bool IsControllerOver()
     {
-        return hoverOver;
+        return wandOver;
     }
 }

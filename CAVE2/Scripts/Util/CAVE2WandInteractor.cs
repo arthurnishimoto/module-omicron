@@ -59,6 +59,8 @@ public class CAVE2WandInteractor : MonoBehaviour {
     {
         foreach(CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
         {
+            playerInfo.button = currentButton;
+
              // OnWandButtonDown
             if (CAVE2Manager.GetButtonDown(wandID, currentButton))
             {
@@ -72,7 +74,7 @@ public class CAVE2WandInteractor : MonoBehaviour {
             }
 
             // OnWandButtonUp
-            if (CAVE2Manager.GetButtonDown(wandID, currentButton))
+            if (CAVE2Manager.GetButtonUp(wandID, currentButton))
             {
                 interactedObject.SendMessage("OnWandButtonUp", playerInfo, SendMessageOptions.DontRequireReceiver);
             }

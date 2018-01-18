@@ -320,6 +320,9 @@ public class CAVE2InputManager : OmicronEventClient
 #if UNITY_5_5_OR_NEWER
                     CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
                     CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+
+                    wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand);
+                    wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
 #endif
                 }
                 else
