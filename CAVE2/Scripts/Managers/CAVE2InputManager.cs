@@ -30,6 +30,14 @@ public class CAVE2InputManager : OmicronEventClient
     [SerializeField]
     InputMappingMode inputMappingMode = InputMappingMode.CAVE2Simulator;
 
+    [SerializeField]
+    bool debug = false;
+
+    public enum VRModel { None, Vive, Oculus };
+
+    [SerializeField]
+    VRModel vrModel = VRModel.None;
+
     // Use this for initialization
     new void Start () {
         base.Start();
@@ -39,6 +47,15 @@ public class CAVE2InputManager : OmicronEventClient
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton3] = CAVE2.Button.Button3;
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton2] = CAVE2.Button.Button2;
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton6] = CAVE2.Button.Button6;
+
+        if(VRDevice.model == "Vive MV")
+        {
+            vrModel = VRModel.Vive;
+        }
+        else
+        {
+            Debug.Log("CAVE2InputManager: Detected VRDevice '" + VRDevice.model + "'.");
+        }
     }
 
     public bool IsWandMenuLocked(int wandID)
@@ -296,7 +313,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             wandController2 = (OmicronController)wandControllers[wand2ID];
         }
-
+        
         Vector2 wand1_analog1 = Vector2.zero;
         Vector2 wand1_analog2 = Vector2.zero;
         Vector2 wand1_analog3 = Vector2.zero;
@@ -306,7 +323,7 @@ public class CAVE2InputManager : OmicronEventClient
         Vector2 wand2_analog2 = Vector2.zero;
         Vector2 wand2_analog3 = Vector2.zero;
         int wand2_flags = 0;
-
+        
         // Mocap
         if (CAVE2.GetCAVE2Manager().mocapEmulation)
         {
@@ -486,59 +503,85 @@ public class CAVE2InputManager : OmicronEventClient
 #endif
         if (UnityEngine.VR.VRSettings.enabled)
         {
-            // VR Left Controller (Keycode.Joystick2)
-            // Button2 - Menu
-            // Button8 - Thumbstick Press
-            // Button16 - Thumbstick Touch
-            // Button14 - Index Trigger
-            // Axis1 - Thumbstick Horz
-            // Axis2 - Thumbstick Vert
-            // Axis9 - Index Trigger
-            // Axis11 - Hand Trigger
             wand1_flags = 0;
             wand2_flags = 0;
 
+            // VR Left Controller  ---------------------------------
+
             // Oculus Touch Left: Button.Three / X (Press)
-            if (Input.GetKey(KeyCode.Joystick1Button2))
+            // Vive Left: Menu Button
+            if (Input.GetKey(KeyCode.JoystickButton2))
             {
-                wand1_flags += (int)EventBase.Flags.Button2;
+                if (vrModel == VRModel.Vive)
+                {
+                    // Ignore left menu button, mapped from right controller
+                    // since accidental trackpad on left is common
+                    //wand1_flags += (int)EventBase.Flags.Button2;
+                }
+                else
+                {
+                    wand1_flags += (int)EventBase.Flags.Button2;
+                }
+                if (debug)
+                    Debug.Log("JoystickButton2");
             }
 
             // Oculus Touch Left: Button.Four / Y (Press)
-            if (Input.GetKey(KeyCode.Joystick1Button3))
+            // Vive Left: N/A
+            if (Input.GetKey(KeyCode.JoystickButton3))
             {
                 wand1_flags += (int)EventBase.Flags.Button3;
+                if (debug)
+                    Debug.Log("JoystickButton3");
             }
 
             // Oculus Touch Left: Button.Start / Menu
-            if (Input.GetKey(KeyCode.Joystick1Button7))
+            // Vive Left: N/A
+            if (Input.GetKey(KeyCode.JoystickButton7))
             {
+                if (debug)
+                    Debug.Log("JoystickButton7");
             }
 
             // Oculus Touch Left: Analog Stick (Press)
-            if (Input.GetKey(KeyCode.Joystick1Button8))
+            // Vive Left: Analog Stick (Press)
+            if (Input.GetKey(KeyCode.JoystickButton8))
             {
                 wand1_flags += (int)EventBase.Flags.Button6;
+                if (debug)
+                    Debug.Log("JoystickButton8");
             }
 
             // Oculus Touch Left: Button.Three / X (Touch)
-            if (Input.GetKey(KeyCode.Joystick1Button12))
+            // Vive Left: N/A
+            if (Input.GetKey(KeyCode.JoystickButton12))
             {
+                if (debug)
+                    Debug.Log("JoystickButton12");
             }
 
             // Oculus Touch Left: Button.Four / Y (Touch)
-            if (Input.GetKey(KeyCode.Joystick1Button13))
+            // Vive Left: N/A
+            if (Input.GetKey(KeyCode.JoystickButton13))
             {
+                if (debug)
+                    Debug.Log("JoystickButton13");
             }
 
             // Oculus Touch Left: IndexTrigger (Touch)
-            if (Input.GetKey(KeyCode.Joystick1Button14))
+            // Vive Left: IndexTrigger (Touch)
+            if (Input.GetKey(KeyCode.JoystickButton14))
             {
+                if (debug)
+                    Debug.Log("JoystickButton14");
             }
 
             // Oculus Touch Left: ThumbRest (Touch)
-            if (Input.GetKey(KeyCode.Joystick1Button18))
+            // Vive Left: N/A
+            if (Input.GetKey(KeyCode.JoystickButton18))
             {
+                if (debug)
+                    Debug.Log("JoystickButton18");
             }
 
             /*
@@ -580,85 +623,147 @@ public class CAVE2InputManager : OmicronEventClient
              * JoyNum: Get Motion from all Joysticks
              */
             // Oculus Touch Left: IndexTrigger (Press)
-            if (Input.GetAxis("Trigger L") > 0)
+            // Vive Left: IndexTrigger (Press)
+            wand1_analog3.y = Input.GetAxis("Trigger L");
+            if (Input.GetAxis("Trigger L") > 0.1f)
             {
-                wand1_flags += (int)EventBase.Flags.Button5;
+                if (vrModel == VRModel.Vive)
+                    wand1_flags += (int)EventBase.Flags.Button7;
+                else
+                    wand1_flags += (int)EventBase.Flags.Button5;
             }
 
             // Oculus Touch Left: HandTrigger (Press)
-            if (Input.GetAxis("Grip L") > 0)
+            // Vive Left: HandTrigger (Press)
+            wand1_analog3.x = Input.GetAxis("Grip L");
+            if (Input.GetAxis("Grip L") > 0.1f)
             {
-                wand1_flags += (int)EventBase.Flags.Button7;
-                wand1_analog3.x = Input.GetAxis("Grip L");
+                if (vrModel == VRModel.Vive)
+                    wand1_flags += (int)EventBase.Flags.Button5;
+                else
+                    wand2_flags += (int)EventBase.Flags.Button7;
             }
 
-            if (Input.GetAxis("Grip R") > 0)
+            // Oculus Touch Right: HandTrigger (Press)
+            // Vive Right: HandTrigger (Press)
+            wand2_analog3.x = Input.GetAxis("Grip R");
+            if (Input.GetAxis("Grip R") > 0.1f)
             {
-                wand2_flags += (int)EventBase.Flags.Button7;
-                wand2_analog3.x = Input.GetAxis("Grip R");
+                if (vrModel == VRModel.Vive)
+                    wand1_flags += (int)EventBase.Flags.Button3;
+                else
+                    wand2_flags += (int)EventBase.Flags.Button7;
             }
 
-            if (Input.GetAxis("Trigger R") > 0)
+            // Oculus Touch Right: IndexTrigger (Press)
+            // Vive Right: IndexTrigger (Press)
+            wand2_analog3.y = Input.GetAxis("Trigger R");
+            if (Input.GetAxis("Trigger R") > 0.1f)
             {
-                wand2_flags += (int)EventBase.Flags.Button5;
+                if (vrModel == VRModel.Vive)
+                    wand2_flags += (int)EventBase.Flags.Button7;
+                else
+                    wand2_flags += (int)EventBase.Flags.Button5;
             }
 
-            // VR Right Controller (Keycode.Joystick1)
-            // Button0 - Menu
-            // Button9 - Thumbstick Press
-            // Button17 - Thumbstick Touch
-            // Button15 - Index Trigger
-            // Axis4 - Thumbstick Horz
-            // Axis5 - Thumbstick Vert
-            // Axis10 - Index Trigger
-            // Axis12 - Hand Trigger
+            // VR Right Controller ---------------------------------
+            // For CAVE2 simulator mode, we map the right controller
+            // analog stick to the DPad
+            bool rightAnalogDPadActivate = false;
 
             // Oculus Touch Right: Button.One / A (Press)
-            if (Input.GetKey(KeyCode.Joystick2Button0))
+            // Vive Right: Menu Button
+            if (Input.GetKey(KeyCode.JoystickButton0))
             {
-                wand2_flags += (int)EventBase.Flags.Button2;
+                if (vrModel == VRModel.Vive)
+                {
+                    // Map the right menu button to main wand for Vive
+                    // since accidental trackpad on left is common
+                    wand1_flags += (int)EventBase.Flags.Button2;
+                }
+                else
+                {
+                    wand2_flags += (int)EventBase.Flags.Button2;
+                }
+                if (debug)
+                    Debug.Log("JoystickButton0");
             }
 
             // Oculus Touch Right: Button.Two / B (Press)
-            if (Input.GetKey(KeyCode.Joystick2Button1))
+            // Vive Right: N/A
+            if (Input.GetKey(KeyCode.JoystickButton1))
             {
                 wand2_flags += (int)EventBase.Flags.Button3;
+                if (debug)
+                    Debug.Log("JoystickButton1");
             }
 
             // Oculus Touch Right: Oculus Button Reserved
 
             // Oculus Touch Right: Analog Stick (Press)
-            if (Input.GetKey(KeyCode.Joystick2Button9))
+            // Vive Right: Analog Stick (Press)
+            if (Input.GetKey(KeyCode.JoystickButton9))
             {
+                if( vrModel == VRModel.Vive)
+                {
+                    rightAnalogDPadActivate = true;
+                }
                 wand2_flags += (int)EventBase.Flags.Button6;
+                if (debug)
+                    Debug.Log("JoystickButton9");
             }
 
             // Oculus Touch Right: Button.One / A (Touch)
-            if (Input.GetKey(KeyCode.Joystick2Button10))
+            // Vive Right: N/A
+            if (Input.GetKey(KeyCode.JoystickButton10))
             {
+                if (debug)
+                    Debug.Log("JoystickButton10");
             }
 
             // Oculus Touch Right: Button.Two / B (Touch)
-            if (Input.GetKey(KeyCode.Joystick2Button11))
+            // Vive Right: N/A
+            if (Input.GetKey(KeyCode.JoystickButton11))
             {
+                if (debug)
+                    Debug.Log("JoystickButton11");
             }
 
             // Oculus Touch Right: IndexTrigger (Touch)
-            if (Input.GetKey(KeyCode.Joystick2Button15))
+            // Vive Right: IndexTrigger (Touch)
+            if (Input.GetKey(KeyCode.JoystickButton15))
             {
+                if (debug)
+                    Debug.Log("JoystickButton15");
             }
 
             // Oculus Touch Right: ThumbRest (Touch)
-            if (Input.GetKey(KeyCode.Joystick2Button19))
+            // Vive Right: N/A
+            if (Input.GetKey(KeyCode.JoystickButton19))
             {
+                if (debug)
+                    Debug.Log("JoystickButton19");
             }
 
-            wand1_analog1 = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical") );
+            wand1_analog1 = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             wand2_analog1 = new Vector2(Input.GetAxis("Horizontal2"), -Input.GetAxis("Vertical2"));
 
             // Oculus Touch Right: Analog (Touch)
+            // Vive Right: Analog (Touch)
+            if (Input.GetKey(KeyCode.JoystickButton17))
+            {
+                if (vrModel == VRModel.Vive)
+                {
+                    // Right analog dpad is activated on pad press on Vive
+                }
+                else
+                {
+                    rightAnalogDPadActivate = true;
+                }
+            }
+
             // For CAVE2 simulator purposes, we're treating the right analog as the DPad
-            if (Input.GetKey(KeyCode.Joystick2Button17) &&
+                if (rightAnalogDPadActivate &&
                 (Input.GetAxis("Vertical2") != 0 ||
                 Input.GetAxis("Horizontal2") != 0)
                 )
@@ -689,19 +794,19 @@ public class CAVE2InputManager : OmicronEventClient
 
                 if (padAngle < -45 && padAngle > -135)
                 {
-                    wand2_flags += (int)EventBase.Flags.ButtonUp;
+                    wand1_flags += (int)EventBase.Flags.ButtonUp;
                 }
                 else if (padAngle > -45 && padAngle < 45)
                 {
-                    wand2_flags += (int)EventBase.Flags.ButtonRight;
+                    wand1_flags += (int)EventBase.Flags.ButtonRight;
                 }
                 else if (padAngle > 45 && padAngle < 135)
                 {
-                    wand2_flags += (int)EventBase.Flags.ButtonDown;
+                    wand1_flags += (int)EventBase.Flags.ButtonDown;
                 }
                 else if (padAngle < -135 || padAngle > 135)
                 {
-                    wand2_flags += (int)EventBase.Flags.ButtonLeft;
+                    wand1_flags += (int)EventBase.Flags.ButtonLeft;
                 }
             }
         }
@@ -725,7 +830,6 @@ public class CAVE2InputManager : OmicronEventClient
         // Unless keyboard emulation is enabled
         if (CAVE2.UsingOmicronServer() || CAVE2.GetCAVE2Manager().keyboardEventEmulation)
         {
-            
             wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
             wandController.rawFlags = wand1_flags;
 
