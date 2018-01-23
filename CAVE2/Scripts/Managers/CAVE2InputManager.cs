@@ -9,8 +9,8 @@ public class CAVE2InputManager : OmicronEventClient
     Hashtable mocapSensors = new Hashtable();
     Hashtable wandControllers = new Hashtable();
 
-    [SerializeField]
-    float axisSensitivity = 1f;
+    // [SerializeField]
+    // float axisSensitivity = 1f;
 
     [SerializeField]
     float axisDeadzone = 0.2f;
