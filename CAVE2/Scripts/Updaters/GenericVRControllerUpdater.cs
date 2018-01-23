@@ -63,12 +63,13 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+#if UNITY_5_5_OR_NEWER
         wand1_position = InputTracking.GetLocalPosition(VRNode.LeftHand);
         wand1_rotation = InputTracking.GetLocalRotation(VRNode.LeftHand);
 
         wand2_position = InputTracking.GetLocalPosition(VRNode.RightHand);
         wand2_rotation = InputTracking.GetLocalRotation(VRNode.RightHand);
-
+#endif
         ProcessVRInput();
     }
 

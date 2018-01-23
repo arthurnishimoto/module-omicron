@@ -52,7 +52,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             vrModel = VRModel.Vive;
         }
-        else
+        else if(VRDevice.model.Length > 0)
         {
             Debug.Log("CAVE2InputManager: Detected VRDevice '" + VRDevice.model + "'.");
         }
