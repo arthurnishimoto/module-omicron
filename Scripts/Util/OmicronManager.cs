@@ -366,7 +366,7 @@ class OmicronManager : MonoBehaviour
 
         StartCoroutine("SendEventsToClients");
 
-        CAVE2.BroadcastMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
+        // CAVE2.BroadcastMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
     }
 
     void UpdateDebugTextRPC(int connectStatus)
