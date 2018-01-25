@@ -179,6 +179,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void UpdateWalkMovement()
     {
+        GetComponent<Rigidbody>().isKinematic = false;
         bodyCollider.GetComponent<Rigidbody>().useGravity = true;
         bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 
