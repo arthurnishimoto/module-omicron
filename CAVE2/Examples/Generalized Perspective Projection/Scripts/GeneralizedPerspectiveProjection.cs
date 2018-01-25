@@ -48,8 +48,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     [SerializeField]
     bool debug = false;
 
-    [SerializeField]
-    Vector3 trackingOrigin;
+    bool useProjection = true;
 
     // Use this for initialization
     void Start () {
@@ -58,7 +57,11 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-        Projection(screenLL, screenLR, screenUL, head.position - trackingOrigin, Camera.main.nearClipPlane, Camera.main.farClipPlane);
+        if (useProjection)
+        {
+            Vector3 trackingOffset = transform.root.position;
+            Projection(screenLL, screenLR, screenUL, head.position - trackingOffset, Camera.main.nearClipPlane, Camera.main.farClipPlane);
+        }
     }
 
     // pa = Screen position - Lower left corner
@@ -123,5 +126,10 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
 
         GetComponent<Camera>().projectionMatrix = M;
         GetComponent<Camera>().transform.localPosition = pe;
+    }
+
+    public void UseProjection(bool value)
+    {
+        useProjection = value;
     }
 }
