@@ -3,11 +3,12 @@
 	Properties
 	{
 		_LeftTex("Left Eye Texture", 2D) = "white" {}
-		_RightTex("Right Eye TTexture", 2D) = "white" {}
-		_ResultTex("Result Texture", 2D) = "white" {}
+		_RightTex("Right Eye Texture", 2D) = "white" {}
 
-		_RenderWidth("Render Width", Float) = 1920
-		_RenderHeight("Render Height", Float) = 1080
+		_RenderWidth("Render Width", Float) = 1366
+		_RenderHeight("Render Height", Float) = 768
+
+		[KeywordEnum(LeftOnly, RightOnly, Interleaved, Checkerboard)] _StereoMode("Stereo mode", Float) = 0
 	}
 	SubShader
 	{
@@ -16,64 +17,86 @@
 
 		Pass
 		{
-		CGPROGRAM
-#pragma vertex vert
-#pragma fragment frag
-		// make fog work
-#pragma multi_compile_fog
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			// make fog work
+			#pragma multi_compile_fog
 
-#include "UnityCG.cginc"
+			#include "UnityCG.cginc"
 
-		struct appdata
-	{
-		float4 vertex : POSITION;
-		float2 uv : TEXCOORD0;
-	};
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+			};
 
-	struct v2f
-	{
-		float2 uv : TEXCOORD0;
-		UNITY_FOG_COORDS(1)
-			float4 vertex : SV_POSITION;
-	};
+			struct v2f
+			{
+				float2 uv : TEXCOORD0;
+				UNITY_FOG_COORDS(1)
+					float4 vertex : SV_POSITION;
+			};
 
-	sampler2D _LeftTex;
-	sampler2D _RightTex;
-	sampler2D _ResultTex;
+			sampler2D _LeftTex;
+			sampler2D _RightTex;
 
-	float4 _LeftTex_ST;
-	float4 _RightTex_ST;
+			float4 _LeftTex_ST;
+			float4 _RightTex_ST;
 
-	uniform float _RenderWidth;
-	uniform float _RenderHeight;
+			uniform float _RenderWidth;
+			uniform float _RenderHeight;
+			uniform float _StereoMode;
 
-	v2f vert(appdata v)
-	{
-		v2f o;
-		o.vertex = UnityObjectToClipPos(v.vertex);
-		o.uv = TRANSFORM_TEX(v.uv, _LeftTex);
-		UNITY_TRANSFER_FOG(o,o.vertex);
-		return o;
-	}
+			v2f vert(appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = TRANSFORM_TEX(v.uv, _LeftTex);
+				UNITY_TRANSFER_FOG(o,o.vertex);
+				return o;
+			}
 
-	fixed4 frag(v2f i) : SV_Target
-	{
-		// sample the texture
-		//fixed4 col = tex2D(_LeftTex, i.uv);
-		// apply fog
-		//UNITY_APPLY_FOG(i.fogCoord, col);
+			fixed4 frag(v2f i) : SV_Target
+			{
+				// Sample scene texture
+				float3 left = tex2D(_LeftTex, i.uv).rgb;
+				float3 right = tex2D(_RightTex, i.uv).rgb;
 
-		//return col;
+				if (_StereoMode == 0)
+				{
+					// Left Only
+					return float4(left, 1.0f);
+				}
+				else if (_StereoMode == 1)
+				{
+					// Right Only
+					return float4(right, 1.0f);
+				}
+				else if (_StereoMode == 2)
+				{
+					// Interleaved
+					if ((i.uv.y *_RenderHeight) % 2.0f > 1)
+					{
+						return float4(left, 1.0f);
+					}
+					else
+					{
+						return float4(right, 1.0f);
+					}
+				}
+				else if (_StereoMode == 3)
+				{
+					// Checkerboard
+					int x = fmod(floor(i.uv.x*_RenderWidth) + floor(i.uv.y*_RenderHeight), 2) < 1;
+					float4 color = float4(lerp(left, right, x), 0.0);
+					return color;
+				}
 
-		float3 left = tex2D(_LeftTex, i.uv).rgb;		// Sample scene texture
-		float3 right = tex2D(_RightTex, i.uv).rgb;	// Sample scene texture
-
-		int x = fmod(floor(i.uv.x*_RenderWidth) + floor(i.uv.y*_RenderHeight), 2) < 1;
-		return float4(lerp(left, right, x), 0.0);
-
-
-	}
-		ENDCG
-	}
+				// Left Only
+				return float4(left, 1.0f);
+			}
+			ENDCG
+		}
 	}
 }

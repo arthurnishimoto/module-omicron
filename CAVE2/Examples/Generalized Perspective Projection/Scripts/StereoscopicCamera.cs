@@ -4,7 +4,7 @@ using System.Collections;
 public class StereoscopicCamera : MonoBehaviour {
 
     [SerializeField]
-    bool generateCameras = true;
+    bool generateCameras = false;
 
     [SerializeField]
     float eyeSeparation;
@@ -15,25 +15,25 @@ public class StereoscopicCamera : MonoBehaviour {
     [SerializeField]
     Material stereoscopicMaterial;
 
-    RenderTexture cameraTexture;
+    RenderTexture leftTexture;
+    RenderTexture rightTexture;
 
     // Use this for initialization
     void Start () {
-        if (generateCameras)
+        if (generateCameras && transform.parent.GetComponent<StereoscopicCamera>() == null)
         {
-            Destroy(GetComponent<StereoscopicCamera>());
             SetupStereoCameras();
 
             if (transform.parent.name == "rightEye")
             {
                 Destroy(gameObject);
             }
+
+            GetComponent<Camera>().targetTexture = null;
         }
         else
         {
-            cameraTexture = GetComponent<Camera>().targetTexture;
-            GetComponent<Camera>().targetTexture = null;
-            stereoscopicMaterial.SetTexture("_ResultTex", cameraTexture);
+            Destroy(GetComponent<StereoscopicCamera>());
         }
     }
 	
@@ -60,6 +60,13 @@ public class StereoscopicCamera : MonoBehaviour {
         // Cleanup unnecessary duplicated components
         Destroy(leftEye.GetComponent<AudioListener>());
         Destroy(rightEye.GetComponent<AudioListener>());
+
+        // Setup stereo materials and render textures
+        leftTexture = stereoscopicMaterial.GetTexture("_LeftTex") as RenderTexture;
+        rightTexture = stereoscopicMaterial.GetTexture("_RightTex") as RenderTexture;
+
+        leftEye.GetComponent<Camera>().targetTexture = leftTexture;
+        rightEye.GetComponent<Camera>().targetTexture = rightTexture;
 
         // Temp
         leftEye.GetComponent<GeneralizedPerspectiveProjection>().UseProjection(false);
