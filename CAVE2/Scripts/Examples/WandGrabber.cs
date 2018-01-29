@@ -18,11 +18,10 @@ public class WandGrabber : MonoBehaviour
     [SerializeField]
     bool overGrabbable;
 
-    ArrayList grabbedObjects;
+    ArrayList grabbedObjects = new ArrayList();
 
-	void Start()
+    void Start()
 	{
-		grabbedObjects = new ArrayList();
 	}
 
     // Update is called once per frame

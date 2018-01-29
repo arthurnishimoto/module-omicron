@@ -38,8 +38,8 @@ public class CAVE2InputManager : OmicronEventClient
     [SerializeField]
     VRModel vrModel = VRModel.None;
 
-    // Use this for initialization
-    new void Start () {
+    public void Init()
+    {
         base.Start();
 
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorAnalogUD] = CAVE2.Axis.LeftAnalogStickUD;
@@ -48,16 +48,30 @@ public class CAVE2InputManager : OmicronEventClient
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton2] = CAVE2.Button.Button2;
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton6] = CAVE2.Button.Button6;
 
-        if(VRDevice.model == "Vive MV")
+        if (VRDevice.model == "Vive MV")
         {
             vrModel = VRModel.Vive;
         }
-        else if(VRDevice.model.Length > 0)
+        else if (VRDevice.model.Length > 0)
         {
             Debug.Log("CAVE2InputManager: Detected VRDevice '" + VRDevice.model + "'.");
         }
-    }
 
+        OmicronMocapSensor[] mocapSensors = GetComponents<OmicronMocapSensor>();
+        foreach (OmicronMocapSensor ms in mocapSensors)
+        {
+            Destroy(ms);
+            //mocapSensors[ms.sourceID] = ms;
+            Debug.LogWarning("CAVE2InputManager: Found existing mocap sensor id '" + ms.sourceID + "'.");
+        }
+        OmicronController[] controllers = GetComponents<OmicronController>();
+        foreach (OmicronController c in controllers)
+        {
+            Destroy(c);
+            //wandControllers[c.sourceID] = c;
+            Debug.LogWarning("CAVE2InputManager: Found existing controllers id '" + c.sourceID + "'.");
+        }
+    }
     public bool IsWandMenuLocked(int wandID)
     {
         if (wandID == 1)

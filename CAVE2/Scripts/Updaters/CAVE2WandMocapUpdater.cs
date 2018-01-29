@@ -26,6 +26,13 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Runtime check in case of reset (i.e. update in editor)
+        if(!CAVE2.IsWandRegistered(wandID, gameObject))
+        {
+            Debug.LogWarning("CAVE2WandMocapUpdater: Re-registering ID " + wandID);
+            CAVE2.RegisterWandObject(wandID, gameObject);
+        }
+
         if (virtualWand && virtualWand.GetComponent<Rigidbody>())
         {
             transform.localPosition = CAVE2Manager.GetWandPosition(wandID);

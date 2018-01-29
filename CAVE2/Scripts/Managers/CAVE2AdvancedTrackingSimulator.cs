@@ -98,10 +98,11 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             }
 
             // Disable head collider if wand is attached to head
-            SphereCollider headCollider = CAVE2.GetHeadObject(1).GetComponentInChildren<SphereCollider>();
-            if(headCollider)
+            if(CAVE2.GetHeadObject(1) != null)
             {
-                headCollider.enabled = !wandUsesHeadPosition;
+                SphereCollider headCollider = CAVE2.GetHeadObject(1).GetComponentInChildren<SphereCollider>();
+                if(headCollider)
+                    headCollider.enabled = !wandUsesHeadPosition;
             }
 
             // Mouse pointer ray controls rotation

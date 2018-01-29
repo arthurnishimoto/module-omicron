@@ -15,8 +15,8 @@ public class CAVE2HeadMarker : MonoBehaviour {
     [SerializeField]
     Material lineMaterial;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         if (!CAVE2.OnCAVE2Display())
         {
             headToGroundLine = gameObject.AddComponent<LineRenderer>();
@@ -46,6 +46,13 @@ public class CAVE2HeadMarker : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
+        // Runtime check in case of reset (i.e. update in editor)
+        if (!CAVE2.IsHeadRegistered(headID, gameObject))
+        {
+            Debug.LogWarning("CAVE2HeadMarker: Re-registering ID " + headID);
+            CAVE2.RegisterHeadObject(headID, gameObject);
+        }
+
         transform.localPosition = CAVE2.GetHeadPosition(1);
         transform.localRotation = CAVE2.GetHeadRotation(1);
 

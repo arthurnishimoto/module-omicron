@@ -251,21 +251,31 @@ class OmicronManager : MonoBehaviour
         else
         {
             //Debug.LogWarning(ERROR_MANAGERNOTFOUND);
-            //GameObject c2m = new GameObject("OmicronManager");
-            //omicronManagerInstance = c2m.AddComponent<OmicronManager>();
+            GameObject c2m = GameObject.Find("OmicronManager");
+            if( c2m == null )
+            {
+                Debug.LogWarning("OmicronManager not found looking for CAVE2Manager");
+                c2m = GameObject.Find("CAVE2-Manager");
+            }
+            omicronManagerInstance = c2m.GetComponent<OmicronManager>();
+            Debug.LogWarning("Reintializing OmicronManager");
+            omicronManagerInstance.Awake();
             return omicronManagerInstance;
         }
     }
 
     // Initializations
-    public void Start()
-	{
+    public void Awake()
+    {
         omicronManagerInstance = this;
         omicronListener = new EventListener(this);
-		omicronManager = new OmicronConnectorClient(omicronListener);
-		
-		eventList = new ArrayList();
+        omicronManager = new OmicronConnectorClient(omicronListener);
 
+        eventList = new ArrayList();
+    }
+
+    public void Start()
+	{
         if (connectToServer)
         {
             StartCoroutine("ConnectToServer");
