@@ -6,8 +6,8 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 
     public enum VRModel { None, Vive, Oculus };
 
-    [SerializeField]
-    VRModel vrModel = VRModel.None;
+    // [SerializeField]
+    // VRModel vrModel = VRModel.None;
 
     [SerializeField]
     string vrModelString;
@@ -58,7 +58,9 @@ public class GenericVRControllerUpdater : MonoBehaviour {
         vrModelString = VRDevice.model;
 
         if (vrModelString == "Vive MV")
-            vrModel = VRModel.Vive;
+        {
+            // vrModel = VRModel.Vive;
+        }
 	}
 	
 	// Update is called once per frame

@@ -9,8 +9,8 @@ public class CAVE2InputManager : OmicronEventClient
     Hashtable mocapSensors = new Hashtable();
     Hashtable wandControllers = new Hashtable();
 
-    [SerializeField]
-    float axisSensitivity = 1f;
+    // [SerializeField]
+    // float axisSensitivity = 1f;
 
     [SerializeField]
     float axisDeadzone = 0.2f;
@@ -25,10 +25,10 @@ public class CAVE2InputManager : OmicronEventClient
 
     Hashtable unityInputToOmicronInput = new Hashtable();
 
-    public enum InputMappingMode { CAVE2Simulator, Vive, Oculus };
+    // public enum InputMappingMode { CAVE2Simulator, Vive, Oculus };
 
-    [SerializeField]
-    InputMappingMode inputMappingMode = InputMappingMode.CAVE2Simulator;
+    // [SerializeField]
+    // InputMappingMode inputMappingMode = InputMappingMode.CAVE2Simulator;
 
     [SerializeField]
     bool debug = false;

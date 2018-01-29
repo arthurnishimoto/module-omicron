@@ -242,6 +242,9 @@ class OmicronManager : MonoBehaviour
     [SerializeField]
     UnityEngine.UI.Text statusCanvasText;
 
+    [SerializeField]
+    SimpleCanvasTouch testTouchCanvas;
+
     public static OmicronManager GetOmicronManager()
     {
         if (omicronManagerInstance != null)
@@ -351,7 +354,6 @@ class OmicronManager : MonoBehaviour
 	}
 #endif
 
-    public SimpleCanvasTouch testTouchCanvas;
     public void Update()
     {
         if (mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)))

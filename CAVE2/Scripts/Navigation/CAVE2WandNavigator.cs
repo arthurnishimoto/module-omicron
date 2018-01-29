@@ -64,7 +64,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
     {
         transform.position = initialPosition;
         transform.rotation = initialRotation;
-        //navMode = initMode;
+        navMode = initMode;
     }
 
     public void DisableMovement()

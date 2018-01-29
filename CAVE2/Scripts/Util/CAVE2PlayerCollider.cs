@@ -3,8 +3,8 @@ using System.Collections;
 
 public class CAVE2PlayerCollider : MonoBehaviour {
 
-    [SerializeField]
-    int headID = 1;
+    // [SerializeField]
+    // int headID = 1;
 
     [SerializeField]
     float bodyRadius = 0.3f;
