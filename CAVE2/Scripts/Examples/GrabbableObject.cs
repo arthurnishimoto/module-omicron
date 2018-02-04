@@ -1,20 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GrabbableObject : MonoBehaviour {
+public class GrabbableObject : CAVE2Interactable {
+
+    [SerializeField]
+    CAVE2.Button grabButton = CAVE2.Button.Button3;
+
+    [SerializeField]
+    CAVE2.InteractionType grabStyle = CAVE2.InteractionType.Any;
 
     bool usedGravity;
-    public RigidbodyConstraints constraints;
+
+    [SerializeField]
+    RigidbodyConstraints constraints;
 
     FixedJoint joint;
 
-    public bool grabbed;
+    [SerializeField]
+    bool grabbed;
+
     bool wasGrabbed;
 
-    public Queue previousPositions = new Queue();
+    Queue previousPositions = new Queue();
 
     Collider[] grabberColliders;
 
+    int grabbingWandID;
+
+    void Update()
+    {
+        UpdateWandOverTimer();
+
+        if( CAVE2.Input.GetButtonUp(grabbingWandID, grabButton) && grabbed )
+        {
+            OnWandGrabRelease();
+        }
+    }
     void FixedUpdate()
     {
         if( grabbed )
@@ -44,6 +65,15 @@ public class GrabbableObject : MonoBehaviour {
         }
     }
 
+    new void OnWandButtonDown(CAVE2.WandEvent evt)
+    {
+        if( evt.button == grabButton && (evt.interactionType == grabStyle || grabStyle == CAVE2.InteractionType.Any))
+        {
+            OnWandGrab(CAVE2.GetWandObject(evt.wandID).transform);
+            grabbingWandID = evt.wandID;
+        }
+    }
+
     void OnWandGrab(Transform grabber)
     {
         if (GetComponent<Rigidbody>() && transform.parent != grabber )
@@ -51,7 +81,7 @@ public class GrabbableObject : MonoBehaviour {
             usedGravity = GetComponent<Rigidbody>().useGravity;
             GetComponent<Rigidbody>().useGravity = false;
             joint = gameObject.AddComponent<FixedJoint>();
-            joint.connectedBody = grabber.GetComponent<Rigidbody>();
+            joint.connectedBody = grabber.GetComponentInChildren<Rigidbody>();
             joint.breakForce = float.PositiveInfinity;
             joint.breakTorque = float.PositiveInfinity;
 
