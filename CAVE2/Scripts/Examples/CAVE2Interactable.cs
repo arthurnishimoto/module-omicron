@@ -6,15 +6,28 @@ public class CAVE2Interactable : MonoBehaviour {
     [SerializeField]
     protected bool wandOver = false;
 
+    [SerializeField]
+    protected bool wandPointing = false;
+
     protected float lastWandOverTime;
+    protected float lastWandPointingTime;
 
     float wandOverTimeout = 0.05f;
+
+    void Update()
+    {
+        UpdateWandOverTimer();
+    }
 
     protected void UpdateWandOverTimer()
     {
         if (Time.time - lastWandOverTime > wandOverTimeout)
         {
             wandOver = false;
+        }
+        if (Time.time - lastWandPointingTime > wandOverTimeout)
+        {
+            wandPointing = false;
         }
     }
 
@@ -61,6 +74,13 @@ public class CAVE2Interactable : MonoBehaviour {
 
     public void OnWandPointing(CAVE2.WandEvent eventInfo)
     {
+        OnWandPointingEvent();
+    }
+
+    protected void OnWandPointingEvent()
+    {
+        lastWandPointingTime = Time.time;
+        wandPointing = true;
     }
 
     /*

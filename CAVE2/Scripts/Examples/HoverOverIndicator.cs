@@ -7,8 +7,12 @@ public class HoverOverIndicator : CAVE2Interactable
     bool showHoverOver = true;
 
     [SerializeField]
+    bool showPointingOver = true;
+
+    [SerializeField]
     float highlightScaler = 1.05f;
 
+    [SerializeField]
     Mesh defaultMesh;
 
     [SerializeField]
@@ -50,7 +54,7 @@ public class HoverOverIndicator : CAVE2Interactable
     void Update()
     {
         UpdateWandOverTimer();
-        renderer.enabled = showHoverOver && wandOver;
+        renderer.enabled = (showHoverOver && wandOver) || (showPointingOver && wandPointing);
     }
 
     public void ShowHoverOverHighlight()
