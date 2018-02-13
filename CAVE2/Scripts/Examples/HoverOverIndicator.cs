@@ -56,6 +56,10 @@ public class HoverOverIndicator : CAVE2Interactable
             hoverOverMaterial.SetFloat("_Mode", 3); // Transparent
             hoverOverMaterial.SetFloat("_Glossiness", 0);
         }
+        else
+        {
+            hoverOverMaterial = new Material(hoverOverMaterial);
+        }
         originalHoverMatColor = hoverOverMaterial.color;
         renderer.material = hoverOverMaterial;
 
@@ -109,5 +113,11 @@ public class HoverOverIndicator : CAVE2Interactable
     public bool IsControllerOver()
     {
         return wandOver;
+    }
+
+    public void SetStrobe(bool value, float speed)
+    {
+        strobing = value;
+        strobeSpeed = speed;
     }
 }
