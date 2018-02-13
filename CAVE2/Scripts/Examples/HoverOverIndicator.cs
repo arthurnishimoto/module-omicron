@@ -21,6 +21,17 @@ public class HoverOverIndicator : CAVE2Interactable
     GameObject hoverOverHighlight;
     new MeshRenderer renderer;
 
+    [SerializeField]
+    bool strobing;
+
+    [SerializeField]
+    float strobeSpeed;
+
+    bool progressUp = true;
+    float strobeProgress = 0.5f;
+
+    Color originalHoverMatColor;
+
     // Use this for initialization
     void Start()
     {
@@ -45,6 +56,7 @@ public class HoverOverIndicator : CAVE2Interactable
             hoverOverMaterial.SetFloat("_Mode", 3); // Transparent
             hoverOverMaterial.SetFloat("_Glossiness", 0);
         }
+        originalHoverMatColor = hoverOverMaterial.color;
         renderer.material = hoverOverMaterial;
 
         renderer.enabled = false;
@@ -54,7 +66,34 @@ public class HoverOverIndicator : CAVE2Interactable
     void Update()
     {
         UpdateWandOverTimer();
-        renderer.enabled = (showHoverOver && wandOver) || (showPointingOver && wandPointing);
+
+        if(strobing)
+        {
+            if (progressUp)
+            {
+                strobeProgress += Time.deltaTime * strobeSpeed;
+                if (strobeProgress > 1)
+                    progressUp = false;
+            }
+            else
+            {
+                strobeProgress -= Time.deltaTime * strobeSpeed;
+                if (strobeProgress < 0)
+                    progressUp = true;
+            }
+            hoverOverMaterial.color = new Color(originalHoverMatColor.r, originalHoverMatColor.g, originalHoverMatColor.b, strobeProgress * 0.5f);
+            renderer.enabled = true;
+        }
+
+        if((showHoverOver && wandOver) || (showPointingOver && wandPointing))
+        {
+            hoverOverMaterial.color = originalHoverMatColor;
+            renderer.enabled = true;
+        }
+        else if(!strobing)
+        {
+            renderer.enabled = false;
+        }
     }
 
     public void ShowHoverOverHighlight()
