@@ -184,7 +184,7 @@ public class CAVE2Manager : OmicronEventClient {
         wandStates.Add(Wand1MocapID, new WandState(1, Wand1MocapID));
 
 		machineName = System.Environment.MachineName;
-
+        /*
 		if ((OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor) || OnCAVE2Display())
         {
 			#if USING_GETREAL3D
@@ -222,6 +222,7 @@ public class CAVE2Manager : OmicronEventClient {
             }
             #endif
         }
+        */
     }
 
     void Awake()

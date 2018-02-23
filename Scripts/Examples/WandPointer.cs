@@ -43,6 +43,11 @@ public class WandPointer : OmicronWandUpdater
 	// Update is called once per frame
     void Update()
     {
+        if(Input.GetButtonDown("Toggle Laser"))
+        {
+            alwaysShowLaserParticle = !alwaysShowLaserParticle;
+        }
+
         GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
 		laserActivated = CAVE2Manager.GetButton(wandID,laserButton);
