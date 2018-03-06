@@ -31,7 +31,7 @@ public class DebugGUIManager : MonoBehaviour {
 	void Start()
 	{
 		omgManager = GetComponent<OmicronManager>();
-		// cave2manager = GetComponent<CAVE2Manager>();
+        // cave2manager = GetComponent<CAVE2Manager>();
 
         if (GetComponent<GUIText>() == null)
             gameObject.AddComponent<GUIText>();

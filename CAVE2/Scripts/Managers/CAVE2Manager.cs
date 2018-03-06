@@ -10,7 +10,7 @@ public class CAVE2 : MonoBehaviour
         LeftAnalogStickLR_Inverted, LeftAnalogStickUD_Inverted, RightAnalogStickLR_Inverted, RightAnalogStickUD_Inverted, AnalogTriggerL_Inverted, AnalogTriggerR_Inverted
     };
     public enum Button { Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight, None };
-    public enum InteractionType { Pointing, Touching }
+    public enum InteractionType { Any, Pointing, Touching }
 
     public static CAVE2InputManager Input;
     public static CAVE2RPCManager RpcManager;
@@ -155,6 +155,16 @@ public class CAVE2 : MonoBehaviour
     public static void RegisterWandObject(int wandID, GameObject gameobject)
     {
         CAVE2Manager.GetCAVE2Manager().RegisterWandObject(wandID, gameobject);
+    }
+
+    public static bool IsHeadRegistered(int headID, GameObject gameobject)
+    {
+        return CAVE2Manager.GetCAVE2Manager().IsHeadRegistered(headID, gameobject);
+    }
+
+    public static bool IsWandRegistered(int wandID, GameObject gameobject)
+    {
+        return CAVE2Manager.GetCAVE2Manager().IsWandRegistered(wandID, gameobject);
     }
     // ---------------------------------------------------------------------------------------------
 
@@ -332,8 +342,11 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
+        
         CAVE2.Input = inputManager;
         CAVE2.RpcManager = GetComponent<CAVE2RPCManager>();
+
+        CAVE2.Input.Init();
 
         cameraControllers = new ArrayList();
 
@@ -571,13 +584,24 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         if(CAVE2Manager_Instance == null)
         {
-            Debug.LogWarning("CAVE2Manager_Instance is NULL - SHOULD NOT HAPPEN!");
-            GameObject cave2Manager = new GameObject("CAVE2-Manager");
-            cave2Manager.AddComponent<OmicronManager>();
-            CAVE2Manager_Instance = cave2Manager.AddComponent<CAVE2Manager>();
-            cave2Manager.AddComponent<CAVE2InputManager>();
-            cave2Manager.AddComponent<CAVE2AdvancedTrackingSimulator>();
-            cave2Manager.AddComponent<CAVE2RPCManager>();
+            GameObject cave2Manager = GameObject.Find("CAVE2-Manager");
+            CAVE2Manager_Instance = cave2Manager.GetComponent<CAVE2Manager>();
+
+            if (CAVE2Manager_Instance == null)
+            {
+                Debug.LogWarning("CAVE2Manager_Instance is NULL - SHOULD NOT HAPPEN!");
+            }
+            else
+            {
+                Debug.LogWarning("Reintializing CAVE2Manager_Instance");
+                CAVE2Manager_Instance.Init();
+            }
+            //GameObject cave2Manager = new GameObject("CAVE2-Manager");
+            //cave2Manager.AddComponent<OmicronManager>();
+            //CAVE2Manager_Instance = cave2Manager.AddComponent<CAVE2Manager>();
+            //cave2Manager.AddComponent<CAVE2InputManager>();
+            //cave2Manager.AddComponent<CAVE2AdvancedTrackingSimulator>();
+            //cave2Manager.AddComponent<CAVE2RPCManager>();
         }
         return CAVE2Manager_Instance;
     }
@@ -682,6 +706,20 @@ static CAVE2Manager CAVE2Manager_Instance;
     public void RegisterWandObject(int ID, GameObject gameObject)
     {
         wandObjects[ID] = gameObject;
+    }
+
+    public bool IsHeadRegistered(int ID, GameObject gameObject)
+    {
+        if ((GameObject)headObjects[ID] == gameObject)
+            return true;
+        return false;
+    }
+
+    public bool IsWandRegistered(int ID, GameObject gameObject)
+    {
+        if ((GameObject)wandObjects[ID] == gameObject)
+            return true;
+        return false;
     }
 
     public GameObject GetHeadObject(int ID)

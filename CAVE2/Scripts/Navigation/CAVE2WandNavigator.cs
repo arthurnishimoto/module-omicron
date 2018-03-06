@@ -3,25 +3,27 @@ using System.Collections;
 
 public class CAVE2WandNavigator : MonoBehaviour {
 
-    public int headID = 1;
-    public int wandID = 1;
+    [Header("Input")]
+    [SerializeField] int headID = 1;
+    [SerializeField] int wandID = 1;
 
-    public CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
-    public CAVE2.Axis strafeAxis = CAVE2.Axis.LeftAnalogStickLR;
-    public CAVE2.Axis lookUDAxis = CAVE2.Axis.RightAnalogStickUD;
-    public CAVE2.Axis lookLRAxis = CAVE2.Axis.RightAnalogStickLR;
-    public CAVE2.Axis verticalAxis = CAVE2.Axis.AnalogTriggerL;
+    [SerializeField] CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
+    [SerializeField] CAVE2.Axis strafeAxis = CAVE2.Axis.LeftAnalogStickLR;
+    [SerializeField] CAVE2.Axis lookUDAxis = CAVE2.Axis.RightAnalogStickUD;
+    [SerializeField] CAVE2.Axis lookLRAxis = CAVE2.Axis.RightAnalogStickLR;
+    [SerializeField] CAVE2.Axis verticalAxis = CAVE2.Axis.AnalogTriggerL;
 
-    public float forward;
-    public float strafe;
-    public float vertical;
+    [SerializeField] float forward;
+    [SerializeField] float strafe;
+    [SerializeField] float vertical;
     public Vector2 lookAround = new Vector2();
 
-    public bool walkUsesFlyGlobalSpeedScale = false;
+    [Header("Movement Speed")]
+    [SerializeField] bool walkUsesFlyGlobalSpeedScale = false;
     public float globalSpeedMod = 1.0f;
-    public float movementScale = 2;
-    public float flyMovementScale = 10;
-    public float turnSpeed = 20;
+    [SerializeField] float movementScale = 2;
+    [SerializeField] float flyMovementScale = 10;
+    [SerializeField] float turnSpeed = 20;
 
     public Vector3 moveDirection;
 
@@ -30,28 +32,33 @@ public class CAVE2WandNavigator : MonoBehaviour {
     // Drive - Same as fly without pitch/roll
     public enum NavigationMode { Disabled, Walk, Drive, Freefly }
 
+    [Header("Navigation Mode")]
     public NavigationMode navMode = NavigationMode.Walk;
-    public CAVE2.Button freeFlyToggleButton = CAVE2.Button.Button5;
-    public CAVE2.Button freeFlyButton = CAVE2.Button.Button7;
+    [SerializeField] CAVE2.Button freeFlyToggleButton = CAVE2.Button.Button5;
+    [SerializeField] CAVE2.Button freeFlyButton = CAVE2.Button.Button7;
     NavigationMode lastNavMode;
 
     public enum HorizonalMovementMode { Strafe, Turn }
     public HorizonalMovementMode horizontalMovementMode = HorizonalMovementMode.Strafe;
 
-    public enum AutoLevelMode { Disabled, OnGroundCollision };
-    public AutoLevelMode autoLevelMode = AutoLevelMode.OnGroundCollision;
-    public CAVE2.Button autoLevelButton = CAVE2.Button.Button6;
+    
 
     public enum ForwardRef { CAVEFront, Head, Wand }
-    public ForwardRef forwardReference = ForwardRef.Wand;
+    [SerializeField] ForwardRef forwardReference = ForwardRef.Wand;
 
-    public bool freeflyButtonDown;
-    public bool freeflyInitVectorSet;
-    public Vector3 freeflyInitVector;
-    public Vector3 wandPosition;
-    public Vector3 movementVector;
+    bool freeflyButtonDown;
+    bool freeflyInitVectorSet;
+    Vector3 freeflyInitVector;
+    Vector3 wandPosition;
+    Vector3 movementVector;
 
     Vector3 fly_x, fly_y, fly_z;
+
+    public enum AutoLevelMode { Disabled, OnGroundCollision };
+
+    [Header("Collisions")]
+    [SerializeField] AutoLevelMode autoLevelMode = AutoLevelMode.OnGroundCollision;
+    [SerializeField] CAVE2.Button autoLevelButton = CAVE2.Button.Button6;
 
     [SerializeField]
     CapsuleCollider bodyCollider;
@@ -179,6 +186,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void UpdateWalkMovement()
     {
+        GetComponent<Rigidbody>().isKinematic = false;
         bodyCollider.GetComponent<Rigidbody>().useGravity = true;
         bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 
@@ -188,8 +196,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
         if (forwardReference == ForwardRef.Head)
             forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
         else if (forwardReference == ForwardRef.Wand)
+        {
             forwardAngle = CAVE2.GetWandObject(wandID).transform.eulerAngles.y;
-
+        }
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
             nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle);

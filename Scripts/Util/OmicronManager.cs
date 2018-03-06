@@ -242,6 +242,9 @@ class OmicronManager : MonoBehaviour
     [SerializeField]
     UnityEngine.UI.Text statusCanvasText;
 
+    [SerializeField]
+    SimpleCanvasTouch testTouchCanvas;
+
     public static OmicronManager GetOmicronManager()
     {
         if (omicronManagerInstance != null)
@@ -251,21 +254,31 @@ class OmicronManager : MonoBehaviour
         else
         {
             //Debug.LogWarning(ERROR_MANAGERNOTFOUND);
-            //GameObject c2m = new GameObject("OmicronManager");
-            //omicronManagerInstance = c2m.AddComponent<OmicronManager>();
+            GameObject c2m = GameObject.Find("OmicronManager");
+            if( c2m == null )
+            {
+                Debug.LogWarning("OmicronManager not found looking for CAVE2Manager");
+                c2m = GameObject.Find("CAVE2-Manager");
+            }
+            omicronManagerInstance = c2m.GetComponent<OmicronManager>();
+            Debug.LogWarning("Reintializing OmicronManager");
+            omicronManagerInstance.Awake();
             return omicronManagerInstance;
         }
     }
 
     // Initializations
-    public void Start()
-	{
+    public void Awake()
+    {
         omicronManagerInstance = this;
         omicronListener = new EventListener(this);
-		omicronManager = new OmicronConnectorClient(omicronListener);
-		
-		eventList = new ArrayList();
+        omicronManager = new OmicronConnectorClient(omicronListener);
 
+        eventList = new ArrayList();
+    }
+
+    public void Start()
+	{
         if (connectToServer)
         {
             StartCoroutine("ConnectToServer");
@@ -341,7 +354,6 @@ class OmicronManager : MonoBehaviour
 	}
 #endif
 
-    public SimpleCanvasTouch testTouchCanvas;
     public void Update()
     {
         if (mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)))
@@ -366,7 +378,7 @@ class OmicronManager : MonoBehaviour
 
         StartCoroutine("SendEventsToClients");
 
-        CAVE2.BroadcastMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
+        // CAVE2.BroadcastMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
     }
 
     void UpdateDebugTextRPC(int connectStatus)

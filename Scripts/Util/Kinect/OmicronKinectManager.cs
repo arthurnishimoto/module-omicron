@@ -84,7 +84,7 @@ public class OmicronKinectManager : OmicronEventClient {
  
             if (kinectSensorTransformData.w != 0)
             {
-                transform.localPosition = new Vector3(0, kinectSensorTransformData.w, 0);
+                // transform.localPosition = new Vector3(0, kinectSensorTransformData.w, 0);
                 //transform.localEulerAngles = new Vector3(kinectSensorTransformData.x * Mathf.Rad2Deg, kinectSensorTransformData.y * Mathf.Rad2Deg, kinectSensorTransformData.z * Mathf.Rad2Deg);
             }
 

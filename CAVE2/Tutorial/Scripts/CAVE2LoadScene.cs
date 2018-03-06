@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CAVE2LoadScene : MonoBehaviour {
 
+    [SerializeField]
+    string nextLevelName = "Cube World Example";
     private void OnTriggerEnter(Collider other)
     {
         // When using the CAVE2 Player Controller, the Head Sphere (child of Head)
@@ -13,7 +15,7 @@ public class CAVE2LoadScene : MonoBehaviour {
             // UnityEngine.SceneManagement.SceneManager.LoadScene("Cube World Example"); // Or using the scene build index (int) 
 
             // To properly load a scene on the CAVE2 cluster use this instead:
-            CAVE2.LoadScene("Cube World Example");
+            CAVE2.LoadScene(nextLevelName);
         }
     }
 }
