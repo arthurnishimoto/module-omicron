@@ -17,9 +17,6 @@ public class CAVE2InputManager : OmicronEventClient
         public Quaternion orientation;
     }
 
-    // [SerializeField]
-    // float axisSensitivity = 1f;
-
     [SerializeField]
     float axisDeadzone = 0.2f;
 
