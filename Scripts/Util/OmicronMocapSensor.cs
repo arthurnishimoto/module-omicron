@@ -2,7 +2,7 @@
 using System.Collections;
 using omicron;
 using omicronConnector;
-
+/*
 public class OmicronMocapSensor : OmicronEventClient
 {
     public int sourceID = 1; // -1 for any
@@ -27,3 +27,4 @@ public class OmicronMocapSensor : OmicronEventClient
         }
     }
 }
+*/

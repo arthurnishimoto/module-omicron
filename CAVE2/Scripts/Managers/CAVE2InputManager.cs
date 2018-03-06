@@ -9,6 +9,14 @@ public class CAVE2InputManager : OmicronEventClient
     Hashtable mocapSensors = new Hashtable();
     Hashtable wandControllers = new Hashtable();
 
+    public struct MocapSensor
+    {
+        public int sourceID;
+        public float timestamp;
+        public Vector3 position;
+        public Quaternion orientation;
+    }
+
     // [SerializeField]
     // float axisSensitivity = 1f;
 
@@ -57,13 +65,6 @@ public class CAVE2InputManager : OmicronEventClient
             Debug.Log("CAVE2InputManager: Detected VRDevice '" + VRDevice.model + "'.");
         }
 
-        OmicronMocapSensor[] mocapSensors = GetComponents<OmicronMocapSensor>();
-        foreach (OmicronMocapSensor ms in mocapSensors)
-        {
-            Destroy(ms);
-            //mocapSensors[ms.sourceID] = ms;
-            Debug.LogWarning("CAVE2InputManager: Found existing mocap sensor id '" + ms.sourceID + "'.");
-        }
         OmicronController[] controllers = GetComponents<OmicronController>();
         foreach (OmicronController c in controllers)
         {
@@ -167,7 +168,7 @@ public class CAVE2InputManager : OmicronEventClient
     {
         if (mocapSensors.ContainsKey(ID))
         {
-            OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
+            MocapSensor mocap = (MocapSensor)mocapSensors[ID];
             return mocap.position;
         }
         return Vector3.zero;
@@ -177,7 +178,7 @@ public class CAVE2InputManager : OmicronEventClient
     {
         if (mocapSensors.ContainsKey(ID))
         {
-            OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
+            MocapSensor mocap = (MocapSensor)mocapSensors[ID];
             return mocap.orientation;
         }
         return Quaternion.identity;
@@ -230,29 +231,64 @@ public class CAVE2InputManager : OmicronEventClient
     // Parses Omicron Input Data
     public override void OnEvent(EventData e)
     {
-        //Debug.Log("CAVE2Manager_Legacy: '"+name+"' received " + e.serviceType);
+        int sourceID = (int)e.sourceId;
+
         if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
         {
-            if (!mocapSensors.ContainsKey((int)e.sourceId))
+            
+            Vector3 position = new Vector3(e.posx, e.posy, e.posz);
+            Quaternion orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);
+
+            if (!mocapSensors.ContainsKey(sourceID))
             {
-                OmicronMocapSensor mocapManager = gameObject.AddComponent<OmicronMocapSensor>();
-                mocapManager.sourceID = (int)e.sourceId;
-                if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
-                {
-                    mocapManager.positionMod = new Vector3(1, 1, -1);
-                }
-                mocapSensors[(int)e.sourceId] = mocapManager;
+                CAVE2.BroadcastMessage(gameObject.name, "AddMocapSensor", sourceID);
+            }
+            else
+            {
+                CAVE2.BroadcastMessage(gameObject.name, "UpdateMocapSensor", sourceID, position, orientation);
             }
         }
         else if (e.serviceType == EventBase.ServiceType.ServiceTypeWand)
         {
-            if ( !wandControllers.ContainsKey((int)e.sourceId) )
+            if ( !wandControllers.ContainsKey(sourceID) )
             {
                 OmicronController wandController = gameObject.AddComponent<OmicronController>();
-                wandController.sourceID = (int)e.sourceId;
-                wandControllers[(int)e.sourceId] = wandController;
+                wandController.sourceID = sourceID;
+                wandControllers[sourceID] = wandController;
+                Debug.Log("CAVE2InputManager: Added Wand ID " + sourceID);
             }
         }
+    }
+
+    public void AddMocapSensor(int id)
+    {
+        /*
+        OmicronMocapSensor mocapManager = gameObject.AddComponent<OmicronMocapSensor>();
+        mocapManager.sourceID = id;
+        if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
+        {
+            mocapManager.positionMod = new Vector3(1, 1, -1);
+        }
+        mocapSensors[id] = mocapManager;
+        */
+        MocapSensor mocapSensor = new MocapSensor();
+        mocapSensor.sourceID = id;
+        mocapSensors[id] = mocapSensor;
+    }
+
+    public void UpdateMocapSensor(object[] data)
+    {
+        int id = (int)data[0];
+        Vector3 position = (Vector3)data[1];
+        Quaternion orientation = (Quaternion)data[2];
+
+        MocapSensor mocapSensor = (MocapSensor)mocapSensors[id];
+        mocapSensor.position = position;
+        mocapSensor.orientation = orientation;
+        mocapSensor.timestamp = Time.time;
+
+        // Update the sensor
+        mocapSensors[id] = mocapSensor;
     }
 
     void FixedUpdate()
@@ -264,29 +300,27 @@ public class CAVE2InputManager : OmicronEventClient
         int wand2ID = CAVE2.GetCAVE2Manager().wand2ControllerID;
 
         // Get/Create Primary Head
-        OmicronMocapSensor mainHeadSensor;
+        MocapSensor mainHeadSensor = new MocapSensor();
         if (!mocapSensors.ContainsKey(headMocapID))
         {
-            mainHeadSensor = gameObject.AddComponent<OmicronMocapSensor>();
             mainHeadSensor.sourceID = headMocapID;
             mocapSensors[headMocapID] = mainHeadSensor;
         }
         else
         {
-            mainHeadSensor = (OmicronMocapSensor)mocapSensors[headMocapID];
+            mainHeadSensor = (MocapSensor)mocapSensors[headMocapID];
         }
 
         // Get/Create Primary Wand
-        OmicronMocapSensor wandMocapSensor;
+        MocapSensor wandMocapSensor = new MocapSensor();
         if (!mocapSensors.ContainsKey(wandMocapID))
         {
-            wandMocapSensor = gameObject.AddComponent<OmicronMocapSensor>();
             wandMocapSensor.sourceID = wandMocapID;
             mocapSensors[wandMocapID] = wandMocapSensor;
         }
         else
         {
-            wandMocapSensor = (OmicronMocapSensor)mocapSensors[wandMocapID];
+            wandMocapSensor = (MocapSensor)mocapSensors[wandMocapID];
         }
 
         // Get Primary Wand (ID 1)
@@ -303,16 +337,15 @@ public class CAVE2InputManager : OmicronEventClient
         }
 
         // Get/Create Secondary Wand
-        OmicronMocapSensor wand2MocapSensor;
+        MocapSensor wand2MocapSensor = new MocapSensor();
         if (!mocapSensors.ContainsKey(wand2MocapID))
         {
-            wand2MocapSensor = gameObject.AddComponent<OmicronMocapSensor>();
             wand2MocapSensor.sourceID = wand2MocapID;
             mocapSensors[wand2MocapID] = wand2MocapSensor;
         }
         else
         {
-            wand2MocapSensor = (OmicronMocapSensor)mocapSensors[wand2MocapID];
+            wand2MocapSensor = (MocapSensor)mocapSensors[wand2MocapID];
         }
 
         // Get Secondary Wand (ID 1)
@@ -826,7 +859,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
 
         // Only apply tracking when not in simulator mode
-        if (!CAVE2.IsSimulatorMode())
+        if (!CAVE2.IsSimulatorMode() && !CAVE2.UsingOmicronServer())
         {
 #if USING_GETREAL3D
             mainHeadSensor.position = getReal3D.Input.head.position;
