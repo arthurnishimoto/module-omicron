@@ -8,7 +8,8 @@ public class DestroyOnTimer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Destroy(gameObject, 10);
+        if( timeDelay > 0 )
+            Destroy(gameObject, timeDelay);
 	}
 	
 	// Update is called once per frame
