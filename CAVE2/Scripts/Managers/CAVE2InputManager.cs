@@ -869,6 +869,11 @@ public class CAVE2InputManager : OmicronEventClient
             wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
 #endif
         }
+        else if(CAVE2.IsSimulatorMode())
+        {
+            CAVE2.BroadcastMessage(gameObject.name, "UpdateMocapSensor", headMocapID, CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
+            CAVE2.BroadcastMessage(gameObject.name, "UpdateMocapSensor", wandMocapID, CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+        }
 
         wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
         wandController.rawFlags = wand1_flags;
