@@ -7,12 +7,11 @@ public class CAVE2MocapUpdater : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        BroadcastMessage("SetText", sourceID.ToString(), SendMessageOptions.DontRequireReceiver);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
         transform.localPosition = CAVE2.GetMocapPosition(sourceID);
         transform.localRotation = CAVE2.GetMocapRotation(sourceID);
     }

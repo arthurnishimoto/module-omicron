@@ -28,7 +28,10 @@ public class OmicronMocapObject : OmicronEventClient
 
     private void Update()
     {
-        transform.localPosition = position;
-        transform.localRotation = orientation;
+        if (CAVE2.IsMaster())
+        {
+            transform.localPosition = position;
+            transform.localRotation = orientation;
+        }
     }
 }

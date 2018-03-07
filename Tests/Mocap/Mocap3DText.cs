@@ -5,8 +5,8 @@ public class Mocap3DText : MonoBehaviour {
 
     OmicronMocapObject mocapObject;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         mocapObject = GetComponentInParent<OmicronMocapObject>();
     }
 	
@@ -15,8 +15,13 @@ public class Mocap3DText : MonoBehaviour {
 	    if(mocapObject)
         {
             GetComponent<TextMesh>().text = mocapObject.sourceID.ToString();
-            transform.LookAt(Camera.main.transform.position);
-            transform.Rotate(Vector3.up, 180);
         }
-	}
+        transform.LookAt(Camera.main.transform.position);
+        transform.Rotate(Vector3.up, 180);
+    }
+
+    public void SetText(string label)
+    {
+        GetComponent<TextMesh>().text = label;
+    }
 }
