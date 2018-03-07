@@ -90,7 +90,7 @@ public class CAVE2InputManager : OmicronEventClient
 
     public OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
     {
-        if(wandControllers != null && wandControllers.ContainsKey(wandID))
+        if (wandControllers != null && wandControllers.ContainsKey(wandID))
         {
             OmicronController wandController = (OmicronController)wandControllers[wandID];
             return wandController.GetButtonState(button);
@@ -148,10 +148,10 @@ public class CAVE2InputManager : OmicronEventClient
         if (wandControllers.ContainsKey(wandID))
         {
             OmicronController wandController = (OmicronController)wandControllers[wandID];
-			float axisValue = wandController.GetAxis (axis);
-			if ( Mathf.Abs(axisValue) <= axisDeadzone)
-				axisValue = 0;
-			return axisValue;
+            float axisValue = wandController.GetAxis(axis);
+            if (Mathf.Abs(axisValue) <= axisDeadzone)
+                axisValue = 0;
+            return axisValue;
         }
         return 0;
     }
@@ -184,7 +184,7 @@ public class CAVE2InputManager : OmicronEventClient
     public Vector3 GetHeadPosition(int ID)
     {
         int headID = 1;
-        switch(ID)
+        switch (ID)
         {
             case (1): headID = CAVE2.GetCAVE2Manager().head1MocapID; break;
             case (2): headID = CAVE2.GetCAVE2Manager().head2MocapID; break;
@@ -232,7 +232,7 @@ public class CAVE2InputManager : OmicronEventClient
 
         if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
         {
-            
+
             Vector3 position = new Vector3(e.posx, e.posy, e.posz);
             Quaternion orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);
 
@@ -247,7 +247,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
         else if (e.serviceType == EventBase.ServiceType.ServiceTypeWand)
         {
-            if ( !wandControllers.ContainsKey(sourceID) )
+            if (!wandControllers.ContainsKey(sourceID))
             {
                 OmicronController wandController = gameObject.AddComponent<OmicronController>();
                 wandController.sourceID = sourceID;
@@ -279,9 +279,14 @@ public class CAVE2InputManager : OmicronEventClient
         Vector3 position = (Vector3)data[1];
         Quaternion orientation = (Quaternion)data[2];
 
+        UpdateMocapSensor(id, position, orientation);
+    }
+
+    private void UpdateMocapSensor(int id, Vector3 pos, Quaternion rot)
+    {
         MocapSensor mocapSensor = (MocapSensor)mocapSensors[id];
-        mocapSensor.position = position;
-        mocapSensor.orientation = orientation;
+        mocapSensor.position = pos;
+        mocapSensor.orientation = rot;
         mocapSensor.timestamp = Time.time;
 
         // Update the sensor
@@ -357,7 +362,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             wandController2 = (OmicronController)wandControllers[wand2ID];
         }
-        
+
         Vector2 wand1_analog1 = Vector2.zero;
         Vector2 wand1_analog2 = Vector2.zero;
         Vector2 wand1_analog3 = Vector2.zero;
@@ -367,7 +372,7 @@ public class CAVE2InputManager : OmicronEventClient
         Vector2 wand2_analog2 = Vector2.zero;
         Vector2 wand2_analog3 = Vector2.zero;
         int wand2_flags = 0;
-        
+
         // Mocap
         if (CAVE2.GetCAVE2Manager().mocapEmulation)
         {
@@ -410,7 +415,7 @@ public class CAVE2InputManager : OmicronEventClient
             wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
         }
-        else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
+        else if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
         {
             CAVE2.GetCAVE2Manager().simulatorHeadPosition = GetHeadPosition(1);
             CAVE2.GetCAVE2Manager().simulatorWandPosition = GetWandPosition(1);
@@ -748,7 +753,7 @@ public class CAVE2InputManager : OmicronEventClient
             // Vive Right: Analog Stick (Press)
             if (Input.GetKey(KeyCode.JoystickButton9))
             {
-                if( vrModel == VRModel.Vive)
+                if (vrModel == VRModel.Vive)
                 {
                     rightAnalogDPadActivate = true;
                 }
@@ -807,10 +812,10 @@ public class CAVE2InputManager : OmicronEventClient
             }
 
             // For CAVE2 simulator purposes, we're treating the right analog as the DPad
-                if (rightAnalogDPadActivate &&
-                (Input.GetAxis("Vertical2") != 0 ||
-                Input.GetAxis("Horizontal2") != 0)
-                )
+            if (rightAnalogDPadActivate &&
+            (Input.GetAxis("Vertical2") != 0 ||
+            Input.GetAxis("Horizontal2") != 0)
+            )
             {
                 /*
                  * Horizontal2/Vertical2 are not default Unity InputManager axis, but 
@@ -859,22 +864,16 @@ public class CAVE2InputManager : OmicronEventClient
         if (!CAVE2.IsSimulatorMode() && !CAVE2.UsingOmicronServer())
         {
 #if USING_GETREAL3D
-            mainHeadSensor.position = getReal3D.Input.head.position;
-            mainHeadSensor.orientation = getReal3D.Input.head.rotation;
-
-            wandMocapSensor.position = getReal3D.Input.wand.position;
-            wandMocapSensor.orientation = getReal3D.Input.wand.rotation;
-
-            wand2MocapSensor.position = getReal3D.Input.GetSensor("Wand2").position;
-            wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
+            UpdateMocapSensor(headMocapID, getReal3D.Input.head.position, getReal3D.Input.head.rotation);
+            UpdateMocapSensor(wandMocapID, getReal3D.Input.wand.position, getReal3D.Input.wand.rotation);
+            UpdateMocapSensor(wand2MocapID, getReal3D.Input.GetSensor("Wand2").position, getReal3D.Input.GetSensor("Wand2").rotation);
 #endif
         }
-        else if(CAVE2.IsSimulatorMode())
+        else if (CAVE2.IsSimulatorMode())
         {
-            CAVE2.BroadcastMessage(gameObject.name, "UpdateMocapSensor", headMocapID, CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
-            CAVE2.BroadcastMessage(gameObject.name, "UpdateMocapSensor", wandMocapID, CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+            UpdateMocapSensor(headMocapID, CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
+            UpdateMocapSensor(wandMocapID, CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
         }
-
         wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
         wandController.rawFlags = wand1_flags;
 
