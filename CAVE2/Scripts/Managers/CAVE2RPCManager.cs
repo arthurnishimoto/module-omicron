@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 #if USING_GETREAL3D
@@ -10,6 +11,132 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     // Cluster Sync
     public int cave2RPCCallCount;
+
+    // Remote Networking
+    [Header("Message Server")]
+    [SerializeField]
+    bool useMsgServer;
+
+    static short MessageID = 1104;
+    NetworkServerSimple msgServer;
+    NetworkMessageDelegate serverOnClientConnect;
+    NetworkMessageDelegate serverOnClientDisconnect;
+
+    [SerializeField]
+    int serverListenPort = 9105;
+
+    [Header("Message Client")]
+    [SerializeField]
+    bool useMsgClient;
+
+    NetworkClient msgClient;
+    NetworkMessageDelegate clientOnConnect;
+    NetworkMessageDelegate clientOnDisconnect;
+    NetworkMessageDelegate clientOnData;
+
+    [SerializeField]
+    string serverIP;
+
+    private void Start()
+    {
+        msgServer = new NetworkServerSimple();
+
+        if(useMsgServer)
+        {
+            StartNetServer();
+        }
+        if (useMsgClient)
+        {
+            StartNetClient();
+        }
+    }
+
+    private void StartNetServer()
+    {
+        msgServer.Listen(serverListenPort);
+
+        serverOnClientConnect += ServerOnClientConnect;
+        serverOnClientDisconnect += ServerOnClientDisconnect;
+
+        msgServer.RegisterHandler(MsgType.Connect, serverOnClientConnect);
+        msgServer.RegisterHandler(MsgType.Disconnect, serverOnClientDisconnect);
+
+        Debug.Log("Starting message server on port " + serverListenPort);
+    }
+
+    private void StartNetClient()
+    {
+        Debug.Log("Connecting to message server " + serverIP + ":" + serverListenPort);
+        msgClient.Connect(serverIP, serverListenPort);
+
+        clientOnConnect += ClientOnConnect;
+        clientOnDisconnect += ClientOnDisconnect;
+        clientOnData += ClientOnRecvMsg;
+
+        msgClient.RegisterHandler(MsgType.Connect, clientOnConnect);
+        msgClient.RegisterHandler(MsgType.Disconnect, clientOnDisconnect);
+        msgClient.RegisterHandler(MessageID, clientOnData);
+    }
+
+    void ServerOnClientConnect(NetworkMessage msg)
+    {
+        System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
+
+        foreach(NetworkConnection client in connections)
+        {
+            if(client != null)
+            {
+                Debug.Log("Msg Server: Client ID " + client.connectionId + " '" + client.address + "' connected");
+            }
+        } 
+    }
+
+    void ServerOnClientDisconnect(NetworkMessage msg)
+    {
+        Debug.Log("Msg Server: Client disconnected");
+    }
+
+    void ClientOnConnect(NetworkMessage msg)
+    {
+        Debug.Log("Msg Client: Connected to " + serverIP);
+    }
+
+    void ClientOnDisconnect(NetworkMessage msg)
+    {
+        Debug.Log("Msg Client: Disconnected");
+    }
+
+    void ServerSendMsgToClients(string msgStr)
+    {
+        System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
+
+        foreach (NetworkConnection client in connections)
+        {
+            if (client != null)
+            {
+                NetworkWriter writer = new NetworkWriter();
+                writer.StartMessage(MessageID);
+                writer.Write(msgStr);
+                writer.FinishMessage();
+
+                msgServer.SendWriterTo(client.connectionId, writer, 0);
+            }
+        }
+    }
+
+    void ClientOnRecvMsg(NetworkMessage msg)
+    {
+        // Reset reader index
+        msg.reader.SeekZero();
+
+        string msgString = msg.reader.ReadString();
+        string[] msgStrArray = msgString.Split(' ');
+
+        for(int i = 0; i < msgStrArray.Length; i++)
+        {
+            Debug.Log("[" + i + "] = '" + msgStrArray[i] + "'");
+        }
+    }
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param)
     {
