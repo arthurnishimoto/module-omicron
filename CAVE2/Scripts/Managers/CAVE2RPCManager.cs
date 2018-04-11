@@ -40,8 +40,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void Start()
     {
         msgServer = new NetworkServerSimple();
+        msgClient = new NetworkClient();
 
-        if(useMsgServer)
+        if (useMsgServer)
         {
             StartNetServer();
         }
@@ -51,22 +52,26 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
     }
 
+    private void Update()
+    {
+        msgServer.Update();
+    }
+
     private void StartNetServer()
     {
-        msgServer.Listen(serverListenPort);
-
         serverOnClientConnect += ServerOnClientConnect;
         serverOnClientDisconnect += ServerOnClientDisconnect;
 
         msgServer.RegisterHandler(MsgType.Connect, serverOnClientConnect);
         msgServer.RegisterHandler(MsgType.Disconnect, serverOnClientDisconnect);
 
+        msgServer.Listen(serverListenPort);
         Debug.Log("Starting message server on port " + serverListenPort);
     }
 
     private void StartNetClient()
     {
-        Debug.Log("Connecting to message server " + serverIP + ":" + serverListenPort);
+        Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
         msgClient.Connect(serverIP, serverListenPort);
 
         clientOnConnect += ClientOnConnect;
@@ -81,8 +86,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ServerOnClientConnect(NetworkMessage msg)
     {
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
+        Debug.Log("Msg Server: Client connected. Total " + connections.Count);
 
-        foreach(NetworkConnection client in connections)
+        foreach (NetworkConnection client in connections)
         {
             if(client != null)
             {
@@ -118,7 +124,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 writer.StartMessage(MessageID);
                 writer.Write(msgStr);
                 writer.FinishMessage();
-
+                Debug.Log("sending: " + msgStr);
                 msgServer.SendWriterTo(client.connectionId, writer, 0);
             }
         }
@@ -130,7 +136,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         msg.reader.SeekZero();
 
         string msgString = msg.reader.ReadString();
-        string[] msgStrArray = msgString.Split(' ');
+        string[] msgStrArray = msgString.Split('|');
 
         for(int i = 0; i < msgStrArray.Length; i++)
         {
@@ -141,6 +147,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void BroadcastMessage(string targetObjectName, string methodName, object param)
     {
         //Debug.Log ("Broadcast '" +methodName +"' on "+ targetObjectName);
+        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
@@ -157,6 +164,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
     {
         //Debug.Log ("Broadcast '" +methodName +"' on "+ targetObjectName);
+        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
@@ -173,6 +181,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
     {
         //Debug.Log ("Broadcast '" +methodName +"' on "+ targetObjectName);
+        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2 + "|" + param3);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
@@ -189,6 +198,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
     {
         //Debug.Log ("Broadcast '" +methodName +"' on "+ targetObjectName);
+        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
@@ -204,11 +214,13 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public void BroadcastMessage(string targetObjectName, string methodName)
     {
+        ServerSendMsgToClients(targetObjectName + "|" + methodName);
         BroadcastMessage(targetObjectName, methodName, 0);
     }
 
     public void Destroy(string targetObjectName)
     {
+        ServerSendMsgToClients(targetObjectName + " CAVE2DestroyRPC");
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
