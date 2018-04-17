@@ -454,7 +454,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         OmicronManager omicronManager = GetCAVE2Manager().GetComponent<OmicronManager>();
         if (omicronManager)
-            return omicronManager.connectedToServer || omicronManager.receivingDataFromMaster;
+            return omicronManager.IsConnectedToServer() || omicronManager.IsReceivingDataFromMaster();
         else
             return false;
     }

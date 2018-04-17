@@ -1,11 +1,11 @@
 /**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2016		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2016, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -218,15 +218,24 @@ class OmicronManager : MonoBehaviour
     static OmicronManager omicronManagerInstance;
 	EventListener omicronListener;
 	OmicronConnectorClient omicronManager;
-	public bool connectToServer = false;
-    public bool connectedToServer = false;
+
+    [SerializeField]
+	bool connectToServer = false;
+
+    enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
+
+    [SerializeField]
+    ConnectionState connectionState = ConnectionState.NotConnected;
+
     public string serverIP = "localhost";
 	public int serverMsgPort = 28000;
 	public int dataPort = 7013;
-	
-	public bool debug = false;
 
-    public bool receivingDataFromMaster = false;
+    [SerializeField]
+    bool debug = false;
+
+    [SerializeField]
+    bool receivingDataFromMaster = false;
 
     // Use mouse clicks to emulate touches
     public bool mouseTouchEmulation = false;
@@ -235,9 +244,6 @@ class OmicronManager : MonoBehaviour
 	private ArrayList eventList;
 	
 	private ArrayList omicronClients;
-	
-    [SerializeField]
-	int connectStatus = 0;
 
     [SerializeField]
     UnityEngine.UI.Text statusCanvasText;
@@ -292,22 +298,26 @@ class OmicronManager : MonoBehaviour
 #if !UNITY_WEBGL
         connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort );
 #endif
-        if ( connectToServer )
-			connectStatus = 1;
-		else
-			connectStatus = -1;
-
-        connectedToServer = connectToServer;
+        connectionState = connectToServer ? ConnectionState.Connected : ConnectionState.NotConnected;
 
         return connectToServer;
 	}
 
-	public void DisconnectServer()
+    public bool IsConnectedToServer()
+    {
+        return connectionState == ConnectionState.Connected;
+    }
+
+    public bool IsReceivingDataFromMaster()
+    {
+        return receivingDataFromMaster;
+    }
+
+    public void DisconnectServer()
 	{
 		omicronManager.Dispose ();
-		connectStatus = 0;
 		connectToServer = false;
-        connectedToServer = false;
+        connectionState = ConnectionState.NotConnected;
         Debug.Log("InputService: Disconnected");
 	}
 
@@ -478,11 +488,11 @@ class OmicronManager : MonoBehaviour
         currentStatus = idleStatus;
         
         string statusText = "UNKNOWN";
-        switch (connectStatus)
+        switch (connectionState)
         {
-            case(0): currentStatus = idleStatus; statusText = "Not Connected"; break;
-            case(1): currentStatus = activeStatus; statusText = "Connected"; break;
-            case(-1): currentStatus = errorStatus; statusText = "Failed to Connect"; break;
+            case(ConnectionState.NotConnected): currentStatus = idleStatus; statusText = "Not Connected"; break;
+            case(ConnectionState.Connected): currentStatus = activeStatus; statusText = "Connected"; break;
+            case(ConnectionState.FailedToConnect): currentStatus = errorStatus; statusText = "Failed to Connect"; break;
         }
 
 		if( GUI.Toggle (new Rect (GUIOffset.x + 20, GUIOffset.y + rowHeight * 0, 250, 20), connectToServer, "Connect to Server:") )
