@@ -173,7 +173,7 @@ public class OmicronKinectEventClient : OmicronEventClient {
 
 				// 
 
-				joints[i].transform.localPosition = new Vector3( posArray[0], posArray[1], -posArray[2] );
+				joints[i].transform.localPosition = new Vector3( -posArray[0], posArray[1], -posArray[2] );
 
 				// Hide unused/inactive joints
 				if( posArray[0] == 0 && posArray[1] == 0 && posArray[2] == 0 )
@@ -186,9 +186,28 @@ public class OmicronKinectEventClient : OmicronEventClient {
 				}
 			}
 
-			// Hand state is encoded using the event's orientation field
-			leftHandState = (int)e.orw;
-			rightHandState = (int)e.orx;
+            // Hand state is encoded using the event's flags
+            if ((int)(e.flags & (int)EventData.Flags.User << 1) != 0)
+                leftHandState = (int)KinectHandState.Unknown;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 2) != 0)
+                leftHandState = (int)KinectHandState.NotTracked;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 3) != 0)
+                leftHandState = (int)KinectHandState.Open;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 4) != 0)
+                leftHandState = (int)KinectHandState.Closed;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 5) != 0)
+                leftHandState = (int)KinectHandState.Lasso;
+
+            if ((int)(e.flags & (int)EventData.Flags.User << 6) != 0)
+                rightHandState = (int)KinectHandState.Unknown;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 7) != 0)
+                rightHandState = (int)KinectHandState.NotTracked;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 8) != 0)
+                rightHandState = (int)KinectHandState.Open;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 9) != 0)
+                rightHandState = (int)KinectHandState.Closed;
+            else if ((int)(e.flags & (int)EventData.Flags.User << 10) != 0)
+                rightHandState = (int)KinectHandState.Lasso;
 		}
 	}
 }
