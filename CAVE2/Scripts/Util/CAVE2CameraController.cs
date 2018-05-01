@@ -14,9 +14,7 @@ public class CAVE2CameraController : MonoBehaviour {
 #if USING_GETREAL3D
         if (mainCamera.GetComponent<getRealCameraUpdater>())
         {
-            mainCamera.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
-            mainCamera.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
-            mainCamera.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+            mainCamera.GetComponent<getRealCameraUpdater>().enabled = true;
         }
         else
         {
@@ -27,17 +25,21 @@ public class CAVE2CameraController : MonoBehaviour {
 
     void Update()
     {
-        if( CAVE2.IsSimulatorMode() )
-        {
 #if USING_GETREAL3D
-            if (mainCamera.GetComponent<getRealCameraUpdater>())
+        if (mainCamera.GetComponent<getRealCameraUpdater>())
+        {
+            if (CAVE2.IsSimulatorMode())
             {
-                mainCamera.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-                mainCamera.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-                mainCamera.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+                mainCamera.GetComponent<getRealCameraUpdater>().enabled = false;
+                mainCamera.transform.localPosition = CAVE2.GetHeadPosition(1);
+                mainCamera.transform.localRotation = CAVE2.GetHeadRotation(1);
             }
-#endif
+            else
+            {
+                mainCamera.GetComponent<getRealCameraUpdater>().enabled = true;
+            }
         }
+#endif
     }
 
     public Camera GetMainCamera()

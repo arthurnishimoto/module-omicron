@@ -52,6 +52,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
     Vector3 wandPosition;
     Vector3 movementVector;
 
+    Quaternion freeflyInitRotation;
+
     Vector3 fly_x, fly_y, fly_z;
 
     public enum AutoLevelMode { Disabled, OnGroundCollision };
@@ -237,11 +239,13 @@ public class CAVE2WandNavigator : MonoBehaviour {
         if (freeflyButtonDown && !freeflyInitVectorSet)
         {
             freeflyInitVector = wandPosition;
+            freeflyInitRotation = wandRotation;
             freeflyInitVectorSet = true;
 
             Vector3 xVec = new Vector3(1.0f, 0.0f, 0.0f);
             Vector3 yVec = new Vector3(0.0f, 1.0f, 0.0f);
             Vector3 zVec = new Vector3(0.0f, 0.0f, 1.0f);
+
             fly_x = wandRotation * xVec;
             fly_y = wandRotation * yVec;
             fly_z = wandRotation * zVec;
@@ -249,17 +253,18 @@ public class CAVE2WandNavigator : MonoBehaviour {
         else if (!freeflyButtonDown)
         {
             freeflyInitVector = Vector3.zero;
+            freeflyInitRotation = Quaternion.identity;
             freeflyInitVectorSet = false;
-
         }
         else
         {
             movementVector = (wandPosition - freeflyInitVector);
 
             // Ported from Electro's Vortex application by Robert Kooima
-            //Vector3 xVec = new Vector3(1.0f,0.0f,0.0f);
+            Vector3 xVec = new Vector3(1.0f,0.0f,0.0f);
             Vector3 yVec = new Vector3(0.0f, 1.0f, 0.0f);
             Vector3 zVec = new Vector3(0.0f, 0.0f, 1.0f);
+
             //Vector3 x = wandRotation * xVec;
             Vector3 y = wandRotation * yVec;
             Vector3 z = wandRotation * zVec;
@@ -278,20 +283,32 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
             transform.Translate(movementVector * flyMovementScale * globalSpeedMod);
             if (navMode == NavigationMode.Freefly)
-                transform.Rotate(new Vector3(rX, rY, rZ));
+            {
+                // Old 'Electro' method
+                //transform.Rotate(new Vector3(rX, rY, rZ));
+
+                Quaternion quat = Quaternion.Inverse(freeflyInitRotation) * CAVE2.GetWandRotation(wandID);
+                transform.Rotate(CAVE2.GetWandObject(wandID).transform.forward, quat.z * Time.deltaTime * turnSpeed);
+                transform.Rotate(CAVE2.GetWandObject(wandID).transform.right, quat.x * Time.deltaTime * turnSpeed);
+                transform.Rotate(CAVE2.GetWandObject(wandID).transform.up, quat.y * Time.deltaTime * turnSpeed);
+            }
         }
 
         Vector3 nextPos = transform.position;
         float forwardAngle = transform.eulerAngles.y;
 
-        if (forwardReference == ForwardRef.Head)
-            forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
-        else if (forwardReference == ForwardRef.Wand)
-            forwardAngle = CAVE2.GetWandObject(wandID).transform.eulerAngles.y;
+        Vector3 directionalVector = Vector3.zero;
 
-        nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
-        nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
-        nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
+        if (forwardReference == ForwardRef.Head)
+            directionalVector = CAVE2.GetHeadObject(headID).transform.forward;
+        else if (forwardReference == ForwardRef.Wand)
+            directionalVector = CAVE2.GetWandObject(wandID).transform.forward;
+
+        //nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
+        //nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
+        //nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
+
+        nextPos += forward * Time.deltaTime * directionalVector * flyMovementScale;
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
