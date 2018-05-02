@@ -55,7 +55,7 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        vrModelString = UnityEngine.XR.XRDevice.model;
+        vrModelString = UnityEngine.VR.VRDevice.model;
 
         if (vrModelString == "Vive MV")
         {

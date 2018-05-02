@@ -54,7 +54,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             mouseTrackingOffset = Vector3.zero;
             mouseInitSet = false;
 
-            if (UnityEngine.XR.XRSettings.enabled)
+            if (UnityEngine.VR.VRSettings.enabled)
             {
                 // CAVE2InputManager processes tracking data
             }

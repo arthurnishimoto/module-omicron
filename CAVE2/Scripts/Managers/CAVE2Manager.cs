@@ -379,7 +379,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
+        if( !UsingGetReal3D() && !UnityEngine.VR.VRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
         {
             if (mainCameraController)
             {
