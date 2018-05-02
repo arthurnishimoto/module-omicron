@@ -298,11 +298,18 @@ public class CAVE2WandNavigator : MonoBehaviour {
         float forwardAngle = transform.eulerAngles.y;
 
         Vector3 directionalVector = Vector3.zero;
+        Vector3 strafeVector = Vector3.zero;
 
         if (forwardReference == ForwardRef.Head)
+        {
             directionalVector = CAVE2.GetHeadObject(headID).transform.forward;
+            strafeVector = CAVE2.GetHeadObject(headID).transform.right;
+        }
         else if (forwardReference == ForwardRef.Wand)
+        {
             directionalVector = CAVE2.GetWandObject(wandID).transform.forward;
+            strafeVector = CAVE2.GetWandObject(wandID).transform.right;
+        }
 
         //nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
         //nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
@@ -312,8 +319,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
-            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
-            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
+            nextPos += strafe * Time.deltaTime * strafeVector * flyMovementScale;
 
             transform.position = nextPos;
             transform.Rotate(new Vector3(0, lookAround.y, 0) * Time.deltaTime * turnSpeed);
