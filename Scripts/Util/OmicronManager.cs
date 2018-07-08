@@ -222,7 +222,7 @@ class OmicronManager : MonoBehaviour
     [SerializeField]
 	bool connectToServer = false;
 
-    enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
+    public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
 
     [SerializeField]
     ConnectionState connectionState = ConnectionState.NotConnected;
@@ -298,7 +298,7 @@ class OmicronManager : MonoBehaviour
 #if !UNITY_WEBGL
         connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort );
 #endif
-        connectionState = connectToServer ? ConnectionState.Connected : ConnectionState.NotConnected;
+        connectionState = connectToServer ? ConnectionState.Connected : ConnectionState.FailedToConnect;
 
         return connectToServer;
 	}
@@ -306,6 +306,11 @@ class OmicronManager : MonoBehaviour
     public bool IsConnectedToServer()
     {
         return connectionState == ConnectionState.Connected;
+    }
+
+    public ConnectionState GetConnectionState()
+    {
+        return connectionState;
     }
 
     public bool IsReceivingDataFromMaster()
