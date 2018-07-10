@@ -40,14 +40,22 @@ public class CAVE2RPCTester : MonoBehaviour {
                         case (4):
                             CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent4", 1, "Two", new Vector3(3, 3.2f, 3.3f), 4.0f);
                             break;
+                        case (5):
+                            CallRPCFromFunction();
+                            break;
                     }
                     testMode++;
-                    if (testMode >= 4)
+                    if (testMode >= 6)
                         testMode = 0;
                 }
             }
             
         }
+    }
+
+    public void CallRPCFromFunction()
+    {
+        CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEventFunc");
     }
 
     void ProcessRPCEvent()
@@ -61,6 +69,20 @@ public class CAVE2RPCTester : MonoBehaviour {
         {
             uiText.text = "Display Node:\n";
             uiText.text += "CAVE2 RPC Received (No Param)";
+        }
+    }
+
+    void ProcessRPCEventFunc()
+    {
+        if (CAVE2.IsMaster())
+        {
+            uiText.text = "Master Node:\n";
+            uiText.text += "CAVE2 RPC Sent (No Param) from Function()";
+        }
+        else
+        {
+            uiText.text = "Display Node:\n";
+            uiText.text += "CAVE2 RPC Received (No Param) from Function()";
         }
     }
 
