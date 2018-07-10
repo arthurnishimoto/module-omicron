@@ -6,6 +6,8 @@ public class CAVE2RPCTester : MonoBehaviour {
 
     Text uiText;
 
+    int testMode = 0;
+
     // Use this for initialization
     void Start()
     {
@@ -19,21 +21,29 @@ public class CAVE2RPCTester : MonoBehaviour {
         {
             if(CAVE2.IsMaster())
             {
-                if(CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonUp))
+                if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.Button5))
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent");
-                }
-                else if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonLeft))
-                {
-                    CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent1", 1);
-                }
-                else if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonRight))
-                {
-                    CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent2", 2, "Two");
-                }
-                else if (CAVE2.Input.GetButtonDown(1, CAVE2.Button.ButtonDown))
-                {
-                    CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent3", 3, "Three", new Vector3(1, 2, 3));
+                    switch(testMode)
+                    {
+                        case (0):
+                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent");
+                            break;
+                        case (1):
+                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent1", 1);
+                            break;
+                        case (2):
+                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent2", 2, "Two");
+                            break;
+                        case (3):
+                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent3", 3, "Three", new Vector3(1, 2, 3));
+                            break;
+                        case (4):
+                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent4", 1, "Two", new Vector3(3, 3.2f, 3.3f), 4.0f);
+                            break;
+                    }
+                    testMode++;
+                    if (testMode >= 4)
+                        testMode = 0;
                 }
             }
             
@@ -105,6 +115,28 @@ public class CAVE2RPCTester : MonoBehaviour {
             uiText.text += "param[0]: " + param[0] + "\n";
             uiText.text += "param[1]: " + param[1] + "\n";
             uiText.text += "param[2]: " + param[2] + "\n";
+        }
+    }
+
+    void ProcessRPCEvent4(object[] param)
+    {
+        if (CAVE2.IsMaster())
+        {
+            uiText.text = "Master Node:\n";
+            uiText.text += "CAVE2 RPC Sent (4 Param)\n";
+            uiText.text += "param[0]: " + param[0] + "\n";
+            uiText.text += "param[1]: " + param[1] + "\n";
+            uiText.text += "param[2]: " + param[2] + "\n";
+            uiText.text += "param[3]: " + param[3] + "\n";
+        }
+        else
+        {
+            uiText.text = "Display Node:\n";
+            uiText.text += "CAVE2 RPC Received (4 Param)\n";
+            uiText.text += "param[0]: " + param[0] + "\n";
+            uiText.text += "param[1]: " + param[1] + "\n";
+            uiText.text += "param[2]: " + param[2] + "\n";
+            uiText.text += "param[3]: " + param[3] + "\n";
         }
     }
 }

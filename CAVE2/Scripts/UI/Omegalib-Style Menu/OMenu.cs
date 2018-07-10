@@ -52,7 +52,7 @@ public class OMenu : MonoBehaviour {
                 activeMenu = true;
         }
 
-        if (showMenu && activeMenu && menuProgress > 0.5f)
+        if (CAVE2.IsMaster() && showMenu && activeMenu && menuProgress > 0.5f)
             OnInput();
     }
 

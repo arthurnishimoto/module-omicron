@@ -10,8 +10,10 @@ public class OmicronStatusGUI : MonoBehaviour {
     [SerializeField]
     Text uiText;
 
-	// Use this for initialization
-	void Start () {
+    OmicronManager.ConnectionState connectionState;
+
+    // Use this for initialization
+    void Start () {
         omicronManager = CAVE2.GetCAVE2Manager().GetComponent<OmicronManager>();
         uiText = gameObject.GetComponent<Text>();
     }
@@ -27,22 +29,50 @@ public class OmicronStatusGUI : MonoBehaviour {
             }
             else
             {
-                if(omicronManager.GetConnectionState() == OmicronManager.ConnectionState.Connected)
+                if (CAVE2.IsMaster())
                 {
-                    uiText.text = "Connected to " + omicronManager.serverIP + ":" + omicronManager.serverMsgPort;
-                    uiText.color = Color.green;
+                    CAVE2.BroadcastMessage(gameObject.name, "UpdateOmicronConnectionState", omicronManager.GetConnectionState());
+
+                    if (connectionState == OmicronManager.ConnectionState.Connected)
+                    {
+                        uiText.text = "Connected to " + omicronManager.serverIP + ":" + omicronManager.serverMsgPort;
+                        uiText.color = Color.green;
+                    }
+                    else if (connectionState == OmicronManager.ConnectionState.NotConnected)
+                    {
+                        uiText.text = "Not Connected";
+                        uiText.color = Color.white;
+                    }
+                    else if (connectionState == OmicronManager.ConnectionState.FailedToConnect)
+                    {
+                        uiText.text = "Failed to connect to " + omicronManager.serverIP + ":" + omicronManager.serverMsgPort;
+                        uiText.color = Color.red;
+                    }
                 }
-                else if (omicronManager.GetConnectionState() == OmicronManager.ConnectionState.NotConnected)
+                else
                 {
-                    uiText.text = "Not Connected";
-                    uiText.color = Color.white;
-                }
-                else if (omicronManager.GetConnectionState() == OmicronManager.ConnectionState.FailedToConnect)
-                {
-                    uiText.text = "Failed to connect to " + omicronManager.serverIP + ":" + omicronManager.serverMsgPort;
-                    uiText.color = Color.red;
+                    if (connectionState == OmicronManager.ConnectionState.Connected)
+                    {
+                        uiText.text = "Master connected to " + omicronManager.serverIP + ":" + omicronManager.serverMsgPort;
+                        uiText.color = Color.green;
+                    }
+                    else if (connectionState == OmicronManager.ConnectionState.NotConnected)
+                    {
+                        uiText.text = "Master Not Connected";
+                        uiText.color = Color.white;
+                    }
+                    else if (connectionState == OmicronManager.ConnectionState.FailedToConnect)
+                    {
+                        uiText.text = "Master failed to connect to " + omicronManager.serverIP + ":" + omicronManager.serverMsgPort;
+                        uiText.color = Color.red;
+                    }
                 }
             }
         }
 	}
+
+    void UpdateOmicronConnectionState(OmicronManager.ConnectionState state)
+    {
+        connectionState = state;
+    }
 }

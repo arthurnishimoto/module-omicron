@@ -32,6 +32,18 @@ public class OmicronSpeechStatusGUI : OmicronEventClient {
 
             string speechString = evt.getExtraDataString().Trim();
             lastEventText.text = "'" + speechString + "' " + speechConfidence;
+
+            if(CAVE2.IsMaster())
+            {
+                CAVE2.BroadcastMessage(gameObject.name, "UpdateOmicronSpeechStatus", lastEventText.text);
+            }
         }
+    }
+
+    void UpdateOmicronSpeechStatus(string text)
+    {
+        statusText.text = "Online";
+        statusText.color = Color.green;
+        lastEventText.text = text;
     }
 }
