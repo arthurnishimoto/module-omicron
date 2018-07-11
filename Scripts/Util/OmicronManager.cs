@@ -427,6 +427,7 @@ class OmicronManager : MonoBehaviour
                 if (getReal3D.Cluster.isMaster)
                 {
                     //getReal3D.RpcManager.call("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
+                    // Commented out because risk of double events - use CAVE2.BroadcastMessage to sync actions instead
                 }
 #endif
 

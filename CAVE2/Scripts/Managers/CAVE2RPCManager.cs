@@ -158,6 +158,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
+        else
+            SendCAVE2RPC(targetObjectName, methodName, param);
 #else
         GameObject targetObject = GameObject.Find(targetObjectName);
         if (targetObject != null)
@@ -179,6 +181,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
+        else
+            SendCAVE2RPC4(targetObjectName, methodName, param, param2);
 #else
         GameObject targetObject = GameObject.Find(targetObjectName);
         if (targetObject != null)
@@ -200,6 +204,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
+        else
+            SendCAVE2RPC5(targetObjectName, methodName, param, param2, param3);
 #else
         GameObject targetObject = GameObject.Find(targetObjectName);
         if (targetObject != null)
@@ -221,6 +227,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
+        else
+            SendCAVE2RPC6(targetObjectName, methodName, param, param2, param3, param4);
 #else
         GameObject targetObject = GameObject.Find(targetObjectName);
         if (targetObject != null)
@@ -243,6 +251,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
+        else
+            CAVE2DestroyRPC(targetObjectName);
 #else
         GameObject targetObject = GameObject.Find(targetObjectName);
         if (targetObject != null)

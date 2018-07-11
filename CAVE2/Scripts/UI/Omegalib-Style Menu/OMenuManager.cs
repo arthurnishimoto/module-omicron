@@ -52,18 +52,21 @@ public class OMenuManager : MonoBehaviour {
 	void Update () {
 
         if (currentMenu == mainMenu && currentMenu.activeMenu == false)
-        {
-            if (CAVE2.Input.GetButtonDown(menuWandID, menuOpenButton))
-            {
-                CAVE2.BroadcastMessage(mainMenu.name, "ToggleMenu");
-                //mainMenu.ToggleMenu();
 
-                if (followWand)
-                {
-                    angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
-                    transform.localEulerAngles = angleOffset;
-                    transform.localPosition = Vector3.zero + Quaternion.Euler(angleOffset) * distOffset;
-                }
+        if (CAVE2.Input.GetButtonDown(menuWandID, menuOpenButton))
+        {
+           if(CAVE2.IsMaster())
+           {
+            CAVE2.BroadcastMessage(mainMenu.name, "ToggleMenu");
+            //mainMenu.ToggleMenu();
+           }
+
+
+            if (followWand)
+            {
+                angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
+                transform.localEulerAngles = angleOffset;
+                transform.localPosition = Vector3.zero + Quaternion.Euler(angleOffset) * distOffset;
             }
         }
 
