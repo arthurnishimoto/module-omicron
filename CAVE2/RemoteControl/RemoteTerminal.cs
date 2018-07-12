@@ -268,9 +268,9 @@ public class RemoteTerminal : MonoBehaviour {
                 float.TryParse(msgArray[3], out y);
                 float.TryParse(msgArray[4], out z);
 
-                float.TryParse(msgArray[5], out x);
-                float.TryParse(msgArray[6], out y);
-                float.TryParse(msgArray[7], out z);
+                float.TryParse(msgArray[5], out rx);
+                float.TryParse(msgArray[6], out ry);
+                float.TryParse(msgArray[7], out rz);
 
                 targetObject.transform.position = new Vector3(x, y, z);
                 targetObject.transform.eulerAngles = new Vector3(rx, ry, rz);
@@ -294,9 +294,9 @@ public class RemoteTerminal : MonoBehaviour {
                 float.TryParse(msgArray[3], out y);
                 float.TryParse(msgArray[4], out z);
 
-                float.TryParse(msgArray[5], out x);
-                float.TryParse(msgArray[6], out y);
-                float.TryParse(msgArray[7], out z);
+                float.TryParse(msgArray[5], out rx);
+                float.TryParse(msgArray[6], out ry);
+                float.TryParse(msgArray[7], out rz);
 
                 targetObject.transform.localPosition = new Vector3(x, y, z);
                 targetObject.transform.localEulerAngles = new Vector3(rx, ry, rz);
