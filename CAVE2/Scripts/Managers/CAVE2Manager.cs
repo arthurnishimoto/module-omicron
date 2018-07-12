@@ -350,7 +350,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 
         cameraControllers = new ArrayList();
 
-        machineName = System.Environment.MachineName;
+        machineName = GetMachineName();
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
 
         Random.InitState(1138);
@@ -620,12 +620,21 @@ static CAVE2Manager CAVE2Manager_Instance;
 #endif
     }
 
+    public static string GetMachineName()
+    {
+#if !UNITY_WSA
+        return System.Environment.MachineName;
+#else
+        return "";
+#endif
+    }
+
     public static bool OnCAVE2Display()
     {
         if (CAVE2Manager_Instance.simulateAsClient)
             return true;
 
-        machineName = System.Environment.MachineName;
+        machineName = GetMachineName();
         if (machineName.Contains("LYRA") && !IsMaster())
         {
             return true;
@@ -641,7 +650,7 @@ static CAVE2Manager CAVE2Manager_Instance;
         if (CAVE2Manager_Instance.simulateAsClient)
             return true;
 
-        machineName = System.Environment.MachineName;
+        machineName = GetMachineName();
         if (machineName.Contains("LYRA-WIN") )
         {
             return true;
