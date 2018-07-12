@@ -216,6 +216,92 @@ public class RemoteTerminal : MonoBehaviour {
                 } 
             }
         }
+        else if (rootCommand.Equals("setPosition", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string objectName = msgArray[1];
+            GameObject targetObject = GameObject.Find(objectName);
+            if (targetObject != null)
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+
+                float.TryParse(msgArray[2], out x);
+                float.TryParse(msgArray[3], out y);
+                float.TryParse(msgArray[4], out z);
+
+                targetObject.transform.position = new Vector3(x, y, z);
+            }
+        }
+        else if (rootCommand.Equals("setLocalPosition", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string objectName = msgArray[1];
+            GameObject targetObject = GameObject.Find(objectName);
+            if (targetObject != null)
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+
+                float.TryParse(msgArray[2], out x);
+                float.TryParse(msgArray[3], out y);
+                float.TryParse(msgArray[4], out z);
+
+                targetObject.transform.localPosition = new Vector3(x, y, z);
+            }
+        }
+        else if (rootCommand.Equals("setPositionRotation", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string objectName = msgArray[1];
+            GameObject targetObject = GameObject.Find(objectName);
+            if (targetObject != null)
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+
+                float rx = 0;
+                float ry = 0;
+                float rz = 0;
+
+                float.TryParse(msgArray[2], out x);
+                float.TryParse(msgArray[3], out y);
+                float.TryParse(msgArray[4], out z);
+
+                float.TryParse(msgArray[5], out x);
+                float.TryParse(msgArray[6], out y);
+                float.TryParse(msgArray[7], out z);
+
+                targetObject.transform.position = new Vector3(x, y, z);
+                targetObject.transform.eulerAngles = new Vector3(rx, ry, rz);
+            }
+        }
+        else if (rootCommand.Equals("setLocalPositionRotation", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string objectName = msgArray[1];
+            GameObject targetObject = GameObject.Find(objectName);
+            if (targetObject != null)
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+
+                float rx = 0;
+                float ry = 0;
+                float rz = 0;
+
+                float.TryParse(msgArray[2], out x);
+                float.TryParse(msgArray[3], out y);
+                float.TryParse(msgArray[4], out z);
+
+                float.TryParse(msgArray[5], out x);
+                float.TryParse(msgArray[6], out y);
+                float.TryParse(msgArray[7], out z);
+
+                targetObject.transform.localPosition = new Vector3(x, y, z);
+                targetObject.transform.localEulerAngles = new Vector3(rx, ry, rz);
+            }
+        }
         else if (rootCommand.Equals("rotate", System.StringComparison.OrdinalIgnoreCase))
         {
             string objectName = msgArray[1];
@@ -307,6 +393,17 @@ public class RemoteTerminal : MonoBehaviour {
             for(int i = 1; i < msgArray.Length; i++)
             {
                 if (i > 1)
+                    message += " ";
+                message += msgArray[i];
+            }
+            PrintUI(message);
+        }
+        else
+        {
+            string message = "";
+            for (int i = 0; i < msgArray.Length; i++)
+            {
+                if (i > 0)
                     message += " ";
                 message += msgArray[i];
             }
