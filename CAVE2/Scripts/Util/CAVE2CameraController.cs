@@ -45,9 +45,7 @@ public class CAVE2CameraController : MonoBehaviour {
 #if USING_GETREAL3D
         if (mainCamera.GetComponent<getRealCameraUpdater>())
         {
-            mainCamera.GetComponent<getRealCameraUpdater>().applyHeadPosition = true;
-            mainCamera.GetComponent<getRealCameraUpdater>().applyHeadRotation = true;
-            mainCamera.GetComponent<getRealCameraUpdater>().applyCameraProjection = true;
+            mainCamera.GetComponent<getRealCameraUpdater>().enabled = true;
         }
         else
         {
@@ -63,9 +61,7 @@ public class CAVE2CameraController : MonoBehaviour {
 #if USING_GETREAL3D
             if (mainCamera.GetComponent<getRealCameraUpdater>())
             {
-                mainCamera.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-                mainCamera.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-                mainCamera.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
+                mainCamera.GetComponent<getRealCameraUpdater>().enabled = false;
             }
 #endif
         }
