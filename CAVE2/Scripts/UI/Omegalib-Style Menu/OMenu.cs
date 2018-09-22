@@ -60,9 +60,13 @@ public class OMenu : MonoBehaviour {
     {
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonDown))
         {
-            if (currentItem < menuItems.Length - 1 && menuItems[currentItem+1].IsActive() )
+            if (currentItem < menuItems.Length - 1 && menuItems[currentItem + 1].IsActive() )
             {
                 CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemDown");
+            }
+            else if(currentItem >= menuItems.Length - 1)
+            {
+                CAVE2.BroadcastMessage(gameObject.name, "MenuSetItem", 0);
             }
         }
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonUp))
@@ -70,6 +74,10 @@ public class OMenu : MonoBehaviour {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
                 CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemUp");
+            }
+            else if (currentItem <= 0)
+            {
+                CAVE2.BroadcastMessage(gameObject.name, "MenuSetItem", menuItems.Length - 1);
             }
         }
 
@@ -178,6 +186,17 @@ public class OMenu : MonoBehaviour {
             ((Slider)menuItems[currentItem]).value = ((Slider)menuItems[currentItem]).value + 1;
         }
         menuManager.PlayScrollMenuSound();
+    }
+
+    public void MenuSetItem(int id)
+    {
+        if (menuItems[id] != null && menuItems[id].IsActive())
+        {
+            menuItems[currentItem].OnDeselect(pointerData);
+            currentItem = id;
+            menuItems[currentItem].OnSelect(pointerData);
+            menuManager.PlayScrollMenuSound();
+        }
     }
 
     public void MenuSelectItem()
