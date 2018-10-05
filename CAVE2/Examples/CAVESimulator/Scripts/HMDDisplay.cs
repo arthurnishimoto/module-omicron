@@ -1,8 +1,10 @@
 ﻿/**************************************************************************************************
- * CAVE2Display.cs
+ * HMDDisplay.cs
  *
  * Turns the attached object into a virtual reality display. Assumes parent object has a
- * VRDisplayManager to get the tracked head position and the virtual world head position
+ * VRDisplayManager to get the tracked head position and the virtual world head position.
+ * 
+ * Specialized version of CAVE2Display, allows display to move (as if attached to head)
  *-------------------------------------------------------------------------------------------------
  * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
@@ -31,41 +33,14 @@
 using UnityEngine;
 using System.Collections;
 
-public class CAVE2Display : GeneralizedPerspectiveProjection {
-
-    protected DisplayInfo displayInfo;
-
-    [SerializeField]
-    Vector2 displayResolution = new Vector2(1366, 768);
-
-    protected GameObject vrCamera;
-
-    // Use this for initialization
-    void Start () {
-        displayInfo = GetComponent<DisplayInfo>();
-
+public class HMDDisplay : CAVE2Display
+{
+	// Update is called once per frame
+	void Update () {
         screenUL = displayInfo.Px_UpperLeft;
         screenLL = displayInfo.Px_LowerLeft;
         screenLR = displayInfo.Px_LowerRight;
 
-        head = GetComponentInParent<VRDisplayManager>().headTrackedUser;
-
-        vrCamera = new GameObject(gameObject.name + " (VR Camera)");
-        vrCamera.transform.parent = GetComponentInParent<VRDisplayManager>().virtualHead;
-        vrCamera.transform.localPosition = Vector3.zero;
-        vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
-
-        virtualCamera = vrCamera.AddComponent<Camera>();
-        RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
-        virtualCamera.targetTexture = cameraRT;
-
-        Material displayMat = new Material(Shader.Find("Unlit/Texture"));
-        displayMat.name = gameObject.name + " (VR Camera Material)";
-        displayMat.mainTexture = cameraRT;
-
-        Transform displaySpace = transform.Find("Borders/PixelSpace");
-        displaySpace.GetComponent<MeshRenderer>().material = displayMat;
-        displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+        vrCamera.transform.localEulerAngles = transform.parent.localEulerAngles;
     }
-
 }
