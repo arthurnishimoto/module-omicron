@@ -34,33 +34,35 @@ using UnityEngine;
 public class GeneralizedPerspectiveProjection : MonoBehaviour {
 
     [SerializeField]
-    Vector3 screenUL = new Vector3(-1.0215f, 2.476f, -0.085972f);
+    protected Vector3 screenUL = new Vector3(-1.0215f, 2.476f, -0.085972f);
 
     [SerializeField]
-    Vector3 screenLL = new Vector3(-1.0215f, 1.324f, -0.085972f);
+    protected Vector3 screenLL = new Vector3(-1.0215f, 1.324f, -0.085972f);
 
     [SerializeField]
-    Vector3 screenLR = new Vector3(1.0215f, 1.324f, -0.085972f);
+    protected Vector3 screenLR = new Vector3(1.0215f, 1.324f, -0.085972f);
 
     [SerializeField]
-    Transform head;
+    protected Transform head;
 
     [SerializeField]
     bool debug = false;
 
     bool useProjection = true;
 
+    [SerializeField]
+    protected Camera virtualCamera;
+
     // Use this for initialization
     void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
 	void LateUpdate () {
         if (useProjection)
         {
-            Vector3 trackingOffset = transform.root.position;
-            Projection(screenLL, screenLR, screenUL, head.position - trackingOffset, Camera.main.nearClipPlane, Camera.main.farClipPlane);
+            Projection(screenLL, screenLR, screenUL, head.localPosition, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
         }
     }
 
@@ -97,9 +99,9 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
 
         if (debug)
         {
-            Debug.DrawRay(Camera.main.transform.position, va, Color.green);
-            Debug.DrawRay(Camera.main.transform.position, vb, Color.green);
-            Debug.DrawRay(Camera.main.transform.position, vc, Color.green);
+            Debug.DrawRay(virtualCamera.transform.position, va, Color.green);
+            Debug.DrawRay(virtualCamera.transform.position, vb, Color.green);
+            Debug.DrawRay(virtualCamera.transform.position, vc, Color.green);
         }
 
         // Find the distance between the eye to screen plane
@@ -124,8 +126,8 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
         M[2, 3] = 2.0f * f * n / (n - f);
         M[3, 2] = -1.0f;
 
-        GetComponent<Camera>().projectionMatrix = M;
-        GetComponent<Camera>().transform.localPosition = pe;
+        virtualCamera.projectionMatrix = M;
+        virtualCamera.transform.localPosition = pe;
     }
 
     public void UseProjection(bool value)
