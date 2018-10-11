@@ -398,7 +398,7 @@ namespace omicronConnector
 
 	class OmicronConnectorClient
     {
-#if !UNITY_WSA
+#if !UNITY_WSA || UNITY_EDITOR
         // TCP Connection
         TcpClient client;
         NetworkStream streamToServer;
@@ -428,6 +428,9 @@ namespace omicronConnector
 
         public bool Connect(string serverIP, int msgPort, int dataPort)
         {
+#if UNITY_WSA
+            Debug.LogWarning("Universal Windows Platform not supported. Will only work in Unity editor!");
+#endif
             if (EnableInputService)
             {
                 //dgrams = new ArrayList();
