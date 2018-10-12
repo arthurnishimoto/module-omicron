@@ -40,6 +40,11 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
     protected GameObject vrCamera;
 
+    // Set this to true if rendering to a virtual display
+    // Disable if say rendering to an HMD display
+    [SerializeField]
+    protected bool renderTextureToVRCamera = true;
+
     // Use this for initialization
     void Start () {
         displayInfo = GetComponent<DisplayInfo>();
@@ -57,7 +62,8 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
         virtualCamera = vrCamera.AddComponent<Camera>();
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
-        virtualCamera.targetTexture = cameraRT;
+        if(renderTextureToVRCamera)
+            virtualCamera.targetTexture = cameraRT;
 
         Material displayMat = new Material(Shader.Find("Unlit/Texture"));
         displayMat.name = gameObject.name + " (VR Camera Material)";
