@@ -9,6 +9,8 @@ public class CAVE2TransformSync : MonoBehaviour {
     public bool syncPosition = true;
     public bool syncRotation;
 
+    public Transform testSyncObject;
+
     public void FixedUpdate()
     {
         if (CAVE2.IsMaster())
@@ -28,6 +30,12 @@ public class CAVE2TransformSync : MonoBehaviour {
             }
             
             updateTimer -= Time.fixedDeltaTime;
+        }
+
+        if(testSyncObject)
+        {
+            transform.localPosition = testSyncObject.localPosition;
+            transform.localRotation = testSyncObject.localRotation;
         }
     }
 

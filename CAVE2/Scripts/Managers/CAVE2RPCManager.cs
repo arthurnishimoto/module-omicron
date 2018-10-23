@@ -141,9 +141,43 @@ public class CAVE2RPCManager : MonoBehaviour {
         string msgString = msg.reader.ReadString();
         string[] msgStrArray = msgString.Split('|');
 
-        for(int i = 0; i < msgStrArray.Length; i++)
+        if (debug)
         {
-            Debug.Log("[" + i + "] = '" + msgStrArray[i] + "'");
+            for (int i = 0; i < msgStrArray.Length; i++)
+            {
+                Debug.Log("[" + i + "] = '" + msgStrArray[i] + "'");
+
+            }
+        }
+
+        GameObject targetObj = GameObject.Find(msgStrArray[0]);
+        string functionName = msgStrArray[1];
+        if (targetObj != null)
+        {
+            if (functionName.Equals("SyncPosition"))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[2], out x);
+                float.TryParse(msgStrArray[3], out y);
+                float.TryParse(msgStrArray[4], out z);
+
+                targetObj.BroadcastMessage("SyncPosition", new Vector3(x, y, z));
+            }
+            else if (functionName.Equals("SyncRotation"))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float w = 0;
+                float.TryParse(msgStrArray[2], out x);
+                float.TryParse(msgStrArray[3], out y);
+                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[5], out w);
+
+                targetObj.BroadcastMessage("SyncRotation", new Quaternion(x, y, z, w));
+            }
         }
     }
 
