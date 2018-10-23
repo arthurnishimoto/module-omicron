@@ -63,7 +63,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
 
         Transform displaySpace = transform.Find("Borders/PixelSpace");
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
-        displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+        //displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
     }
 
     // Update is called once per frame
