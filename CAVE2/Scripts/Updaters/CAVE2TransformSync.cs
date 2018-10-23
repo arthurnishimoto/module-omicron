@@ -19,11 +19,11 @@ public class CAVE2TransformSync : MonoBehaviour {
             {
                 if(syncPosition)
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "SyncPosition", transform.position);
+                    CAVE2.BroadcastMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z);
                 }
                 if(syncRotation)
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "SyncRotation", transform.rotation);
+                    CAVE2.BroadcastMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
                 }
                 
                 updateTimer = updateSpeed;
@@ -46,10 +46,20 @@ public class CAVE2TransformSync : MonoBehaviour {
             transform.position = position;
     }
 
+    public void SyncPosition(object[] data)
+    {
+        SyncPosition(new Vector3((float)data[0], (float)data[1], (float)data[2]));
+    }
+
     public void SyncRotation(Quaternion rotation)
     {
         //Debug.Log("SyncPosition on " + gameObject.name + " to " + position);
         if (!CAVE2Manager.IsMaster())
             transform.rotation = rotation;
+    }
+
+    public void SyncRotation(object[] data)
+    {
+        SyncRotation(new Quaternion((float)data[0], (float)data[1], (float)data[2], (float)data[3]));
     }
 }

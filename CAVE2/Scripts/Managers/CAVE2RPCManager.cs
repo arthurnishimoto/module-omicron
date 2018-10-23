@@ -40,6 +40,17 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     bool debug;
 
+    [SerializeField]
+    RemoteTerminal remoteTerminal;
+
+    private void LogUI(string msg)
+    {
+        if (remoteTerminal)
+            remoteTerminal.PrintUI(msg);
+        else
+            Debug.Log(msg);
+    }
+
     private void Start()
     {
         msgServer = new NetworkServerSimple();
@@ -69,12 +80,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         msgServer.RegisterHandler(MsgType.Disconnect, serverOnClientDisconnect);
 
         msgServer.Listen(serverListenPort);
-        Debug.Log("Starting message server on port " + serverListenPort);
+        LogUI("Starting message server on port " + serverListenPort);
     }
 
     private void StartNetClient()
     {
-        Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
+        LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
         msgClient.Connect(serverIP, serverListenPort);
 
         clientOnConnect += ClientOnConnect;
@@ -89,30 +100,30 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ServerOnClientConnect(NetworkMessage msg)
     {
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
-        Debug.Log("Msg Server: Client connected. Total " + connections.Count);
+        LogUI("Msg Server: Client connected. Total " + connections.Count);
 
         foreach (NetworkConnection client in connections)
         {
             if(client != null)
             {
-                Debug.Log("Msg Server: Client ID " + client.connectionId + " '" + client.address + "' connected");
+                LogUI("Msg Server: Client ID " + client.connectionId + " '" + client.address + "' connected");
             }
         } 
     }
 
     void ServerOnClientDisconnect(NetworkMessage msg)
     {
-        Debug.Log("Msg Server: Client disconnected");
+        LogUI("Msg Server: Client disconnected");
     }
 
     void ClientOnConnect(NetworkMessage msg)
     {
-        Debug.Log("Msg Client: Connected to " + serverIP);
+        LogUI("Msg Client: Connected to " + serverIP);
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
-        Debug.Log("Msg Client: Disconnected");
+        LogUI("Msg Client: Disconnected");
     }
 
     void ServerSendMsgToClients(string msgStr)
@@ -127,7 +138,8 @@ public class CAVE2RPCManager : MonoBehaviour {
                 writer.StartMessage(MessageID);
                 writer.Write(msgStr);
                 writer.FinishMessage();
-                Debug.Log("sending: " + msgStr);
+                if(debug)
+                    LogUI("sending: " + msgStr);
                 msgServer.SendWriterTo(client.connectionId, writer, 0);
             }
         }
@@ -140,15 +152,6 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         string msgString = msg.reader.ReadString();
         string[] msgStrArray = msgString.Split('|');
-
-        if (debug)
-        {
-            for (int i = 0; i < msgStrArray.Length; i++)
-            {
-                Debug.Log("[" + i + "] = '" + msgStrArray[i] + "'");
-
-            }
-        }
 
         GameObject targetObj = GameObject.Find(msgStrArray[0]);
         string functionName = msgStrArray[1];
@@ -185,7 +188,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debug)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param);
@@ -208,7 +211,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debug)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2);
@@ -231,7 +234,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debug)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2 + "|" + param3);
@@ -254,7 +257,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debug)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4);
