@@ -3,6 +3,11 @@ using System.Collections;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
+    enum UpdateMode { Update, Fixed, Late};
+
+    [SerializeField]
+    UpdateMode updateMode = UpdateMode.Fixed;
+
     public float updateSpeed = 3;
     float updateTimer;
 
@@ -11,28 +16,53 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public Transform testSyncObject;
 
+    Vector3 nextPosition;
+    Quaternion nextRotation;
+
+    public void Update()
+    {
+        if (updateMode == UpdateMode.Update)
+            UpdateSync();
+    }
     public void FixedUpdate()
+    {
+        if (updateMode == UpdateMode.Fixed)
+            UpdateSync();
+    }
+
+    public void LateUpdate()
+    {
+        if (updateMode == UpdateMode.Late)
+            UpdateSync();
+    }
+
+    void UpdateSync()
     {
         if (CAVE2.IsMaster())
         {
-            if (updateTimer < 0 )
+            if (updateTimer < 0)
             {
-                if(syncPosition)
+                if (syncPosition)
                 {
                     CAVE2.BroadcastMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z);
                 }
-                if(syncRotation)
+                if (syncRotation)
                 {
                     CAVE2.BroadcastMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
                 }
-                
+
                 updateTimer = updateSpeed;
             }
-            
+
             updateTimer -= Time.fixedDeltaTime;
         }
+        else
+        {
+            transform.position = nextPosition;
+            transform.rotation = nextRotation;
+        }
 
-        if(testSyncObject)
+        if (testSyncObject)
         {
             transform.localPosition = testSyncObject.localPosition;
             transform.localRotation = testSyncObject.localRotation;
@@ -41,9 +71,7 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public void SyncPosition(Vector3 position)
     {
-        //Debug.Log("SyncPosition on " + gameObject.name + " to " + position);
-        if (!CAVE2Manager.IsMaster())
-            transform.position = position;
+        nextPosition = position;
     }
 
     public void SyncPosition(object[] data)
@@ -53,9 +81,7 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public void SyncRotation(Quaternion rotation)
     {
-        //Debug.Log("SyncPosition on " + gameObject.name + " to " + position);
-        if (!CAVE2Manager.IsMaster())
-            transform.rotation = rotation;
+        nextRotation = rotation;
     }
 
     public void SyncRotation(object[] data)

@@ -66,8 +66,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         //displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
     }
 
-    // Update is called once per frame
-    void Update () {
+    void LateUpdate () {
         vrDisplay.localScale = displaySize;
         vrDisplay.localPosition = displayOffset;
         HMDScreenUL = displayInfo.Px_UpperLeft;
@@ -79,5 +78,10 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         screenUL = headProjectionOffset + HMDScreenUL;
 
         vrCamera.transform.localEulerAngles = head.localEulerAngles;
+
+        if (useProjection)
+        {
+            Projection(screenLL, screenLR, screenUL, head.localPosition, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
+        }
     }
 }
