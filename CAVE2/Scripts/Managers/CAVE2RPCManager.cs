@@ -66,6 +66,13 @@ public class CAVE2RPCManager : MonoBehaviour {
         msgServer = new NetworkServerSimple();
         msgClient = new NetworkClient();
 
+        ConnectionConfig myConfig = new ConnectionConfig();
+        reliableChannelId = myConfig.AddChannel(QosType.Reliable);
+        unreliableChannelId = myConfig.AddChannel(QosType.Unreliable);
+
+        msgServer.Configure(myConfig, maxConnections);
+        msgClient.Configure(myConfig, maxConnections);
+
         if (useMsgServer)
         {
             StartNetServer();
@@ -83,11 +90,6 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void StartNetServer()
     {
-        ConnectionConfig myConfig = new ConnectionConfig();
-        reliableChannelId = myConfig.AddChannel(QosType.Reliable);
-        unreliableChannelId = myConfig.AddChannel(QosType.Unreliable);
-        msgServer.Configure(myConfig, maxConnections);
-
         serverOnClientConnect += ServerOnClientConnect;
         serverOnClientDisconnect += ServerOnClientDisconnect;
         serverOnData += ServerOnRecvMsg;
