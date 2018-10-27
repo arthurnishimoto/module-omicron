@@ -44,11 +44,11 @@ public class CAVE2TransformSync : MonoBehaviour {
             {
                 if (syncPosition)
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z);
+                    CAVE2.BroadcastMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z, false);
                 }
                 if (syncRotation)
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+                    CAVE2.BroadcastMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
                 }
 
                 updateTimer = updateSpeed;

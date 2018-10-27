@@ -180,8 +180,11 @@ public class RemoteTerminal : MonoBehaviour {
 
     void CAVE2ClusterMsg(string msgString)
     {
-        string[] msgArray = msgString.Split(' ');
-        ParseMessage(msgArray);
+        // CAVE2 RPC Message Format
+        // "functionName|targetGameObjectName|param1|param2|etc"
+        char[] charSeparators = new char[] { '|' };
+        string[] msgStrArray = msgString.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
+        ParseMessage(msgStrArray);
     }
 
     void ParseMessage(string[] msgArray)

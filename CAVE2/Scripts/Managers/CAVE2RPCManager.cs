@@ -26,6 +26,15 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     int serverListenPort = 9105;
 
+    [SerializeField]
+    int reliableChannelId;
+
+    [SerializeField]
+    int unreliableChannelId;
+
+    [SerializeField]
+    int maxConnections = 100;
+
     [Header("Message Client")]
     [SerializeField]
     bool useMsgClient;
@@ -74,6 +83,11 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void StartNetServer()
     {
+        ConnectionConfig myConfig = new ConnectionConfig();
+        reliableChannelId = myConfig.AddChannel(QosType.Reliable);
+        unreliableChannelId = myConfig.AddChannel(QosType.Unreliable);
+        msgServer.Configure(myConfig, maxConnections);
+
         serverOnClientConnect += ServerOnClientConnect;
         serverOnClientDisconnect += ServerOnClientDisconnect;
         serverOnData += ServerOnRecvMsg;
@@ -81,7 +95,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         msgServer.RegisterHandler(MsgType.Connect, serverOnClientConnect);
         msgServer.RegisterHandler(MsgType.Disconnect, serverOnClientDisconnect);
         msgServer.RegisterHandler(MessageID, serverOnData);
-
+        
         msgServer.Listen(serverListenPort);
         LogUI("Starting message server on port " + serverListenPort);
     }
@@ -129,7 +143,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("Msg Client: Disconnected");
     }
 
-    void ServerSendMsgToClients(string msgStr, NetworkConnection ignoreClient = null )
+    void ServerSendMsgToClients(string msgStr, bool useReliable = true, NetworkConnection ignoreClient = null)
     {
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
 
@@ -143,7 +157,14 @@ public class CAVE2RPCManager : MonoBehaviour {
                 writer.FinishMessage();
                 if(debug)
                     LogUI("sending: " + msgStr);
-                msgServer.SendWriterTo(client.connectionId, writer, 0);
+                if (useReliable)
+                {
+                    msgServer.SendWriterTo(client.connectionId, writer, reliableChannelId);
+                }
+                else
+                {
+                    msgServer.SendWriterTo(client.connectionId, writer, unreliableChannelId);
+                }
             }
         }
     }
@@ -159,11 +180,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         msg.reader.SeekZero();
 
         string msgString = msg.reader.ReadString();
-        LogUI("Msg Server: ServerOnRecvMsg '" + msgString + "'");
+        if (debug)
+            LogUI("Msg Server: ServerOnRecvMsg '" + msgString + "'");
         ProcessMsg(msg);
 
         // Forward message to clients (except sender client);
-        ServerSendMsgToClients(msgString, msg.conn);
+        ServerSendMsgToClients(msgString, true, msg.conn);
     }
 
     public void ProcessMsg(NetworkMessage msg)
@@ -336,14 +358,14 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
         if (debug)
         {
             LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
@@ -359,14 +381,14 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
         if (debug)
         {
             LogUI("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
@@ -382,14 +404,14 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
         if (debug)
         {
             LogUI("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
@@ -405,14 +427,14 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
         if (debug)
         {
             LogUI("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
@@ -428,10 +450,10 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName)
+    public void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        ServerSendMsgToClients(methodName + "|" + targetObjectName);
-        BroadcastMessage(targetObjectName, methodName, 0);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName, useReliable);
+        BroadcastMessage(targetObjectName, methodName, 0, useReliable);
     }
 
     public void Destroy(string targetObjectName)

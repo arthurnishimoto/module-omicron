@@ -212,29 +212,29 @@ public class CAVE2 : MonoBehaviour
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
-    public static void BroadcastMessage(string targetObjectName, string methodName)
+    public static void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
     }
 
     public static void Destroy(string targetObjectName)
@@ -761,29 +761,29 @@ static CAVE2Manager CAVE2Manager_Instance;
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
-    public void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName)
+    public void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0, useReliable);
     }
 
     public void Destroy(string targetObjectName)
