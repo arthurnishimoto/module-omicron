@@ -84,4 +84,17 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
             Projection(screenLL, screenLR, screenUL, head.localPosition, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
         }
     }
+
+    void SetHeadProjectionOffset(object[] data)
+    {
+        float x = headProjectionOffset.x;
+        float y = headProjectionOffset.y;
+        float z = headProjectionOffset.z;
+
+        float.TryParse((string)data[0], out x);
+        float.TryParse((string)data[1], out y);
+        float.TryParse((string)data[2], out z);
+
+        headProjectionOffset = new Vector3(x, y, z);
+    }
 }
