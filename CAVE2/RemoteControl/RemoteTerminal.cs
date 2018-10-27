@@ -24,6 +24,12 @@ public class RemoteTerminal : MonoBehaviour {
     static short TerminalMsgID = 1104;
 
     [SerializeField]
+    int maxConnections = 100;
+
+    int reliableChannelId;
+    int unreliableChannelId;
+
+    [SerializeField]
     Text terminalTextLog;
 
     // Client
@@ -62,6 +68,13 @@ public class RemoteTerminal : MonoBehaviour {
         client.RegisterHandler(MsgType.Connect, clientOnConnect);
         client.RegisterHandler(MsgType.Disconnect, clientOnDisconnect);
         client.RegisterHandler(TerminalMsgID, clientOnData);
+
+        ConnectionConfig myConfig = new ConnectionConfig();
+        reliableChannelId = myConfig.AddChannel(QosType.Reliable);
+        unreliableChannelId = myConfig.AddChannel(QosType.Unreliable);
+
+        server.Configure(myConfig, maxConnections);
+        client.Configure(myConfig, maxConnections);
     }
 
     public void Update()
@@ -417,7 +430,7 @@ public class RemoteTerminal : MonoBehaviour {
         }
     }
 
-    public void SendCommand(string cmd)
+    public void SendCommand(string cmd, bool useReliable = true)
     {
         //Debug.Log("Sending: '" + cmd + "'");
         if (isServer)
@@ -433,7 +446,7 @@ public class RemoteTerminal : MonoBehaviour {
                     writer.Write(FormatCmdStr(cmd));
                     writer.FinishMessage();
 
-                    server.SendWriterTo(connections[i].connectionId, writer, 0);
+                    server.SendWriterTo(connections[i].connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
                 }
             }
         }
@@ -446,7 +459,7 @@ public class RemoteTerminal : MonoBehaviour {
                 writer.Write(FormatCmdStr(cmd));
                 writer.FinishMessage();
 
-                if(client.SendWriter(writer, 0) == false)
+                if(client.SendWriter(writer, useReliable ? reliableChannelId : unreliableChannelId) == false)
                 {
                     PrintUI("Failed to send message. Disconnected from server. Reconnecting...");
                     ConnectToServer();
