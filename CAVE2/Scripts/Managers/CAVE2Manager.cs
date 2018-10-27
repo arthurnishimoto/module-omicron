@@ -265,6 +265,7 @@ public class CAVE2 : MonoBehaviour
 
     // ---------------------------------------------------------------------------------------------
 }
+
 [RequireComponent(typeof(CAVE2AdvancedTrackingSimulator))]
 [RequireComponent(typeof(CAVE2InputManager))]
 [RequireComponent(typeof(CAVE2RPCManager))]
