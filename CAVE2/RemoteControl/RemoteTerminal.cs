@@ -40,6 +40,9 @@ public class RemoteTerminal : MonoBehaviour {
     ArrayList cmdHistory = new ArrayList();
     int currentCmdHistoryLine;
 
+    [SerializeField]
+    GameObject selectedObject;
+
     public void Start()
     {
         server = new NetworkServerSimple();
@@ -424,7 +427,7 @@ public class RemoteTerminal : MonoBehaviour {
                 {
                     NetworkWriter writer = new NetworkWriter();
                     writer.StartMessage(TerminalMsgID);
-                    writer.Write(cmd);
+                    writer.Write(FormatCmdStr(cmd));
                     writer.FinishMessage();
 
                     server.SendWriterTo(connections[i].connectionId, writer, 0);
@@ -437,12 +440,52 @@ public class RemoteTerminal : MonoBehaviour {
             {
                 NetworkWriter writer = new NetworkWriter();
                 writer.StartMessage(TerminalMsgID);
-                writer.Write(cmd);
+                writer.Write(FormatCmdStr(cmd));
                 writer.FinishMessage();
 
-                client.SendWriter(writer, 0);
+                if(client.SendWriter(writer, 0) == false)
+                {
+                    PrintUI("Failed to send message. Disconnected from server. Reconnecting...");
+                    ConnectToServer();
+
+                    // TODO: Create unsent message queue the resend on connection?
+                }
             }
         }
+    }
+
+    string FormatCmdStr(string cmd)
+    {
+        string[] msgSplit = cmd.Split(' ');
+        cmd = "";
+        bool hasQuote = false;
+        foreach (string s in msgSplit)
+        {
+            string workingS = s;
+
+            // Handle object names with spaces (requires '' or "")
+            char[] trimChars = { '\"', '\'' };
+            if (!hasQuote && s.Contains("\"") || s.Contains("\'"))
+            {
+                workingS = s.TrimStart(trimChars);
+                hasQuote = true;
+            }
+            else if (hasQuote && s.Contains("\"") || s.Contains("\'"))
+            {
+                workingS = s.TrimEnd(trimChars);
+                hasQuote = false;
+            }
+
+            if (!hasQuote)
+            {
+                cmd += workingS + "|";
+            }
+            else
+            {
+                cmd += workingS + " ";
+            }
+        }
+        return cmd;
     }
 
     // Command Line Terminal ----------------------------------------------------------------------
