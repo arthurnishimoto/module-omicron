@@ -10,7 +10,7 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
     void Start()
     {
 #if UNITY_EDITOR
-        if (UnityEngine.VR.VRSettings.enabled && renderMode == RenderMode.Background)
+        if (UnityEngine.XR.XRSettings.enabled && renderMode == RenderMode.Background)
         {
             renderMode = RenderMode.Overlay;
         }

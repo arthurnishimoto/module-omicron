@@ -398,6 +398,7 @@ namespace omicronConnector
 
 	class OmicronConnectorClient
     {
+#if !UNITY_WSA || UNITY_EDITOR
         // TCP Connection
         TcpClient client;
         NetworkStream streamToServer;
@@ -427,6 +428,9 @@ namespace omicronConnector
 
         public bool Connect(string serverIP, int msgPort, int dataPort)
         {
+#if UNITY_WSA
+            Debug.LogWarning("Universal Windows Platform not supported. Will only work in Unity editor!");
+#endif
             if (EnableInputService)
             {
                 //dgrams = new ArrayList();
@@ -637,5 +641,22 @@ namespace omicronConnector
 			//System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
 			//return new string(chars);
 		}
+#else
+        public OmicronConnectorClient(IOmicronConnectorClientListener clistener)
+        {
+            Debug.LogWarning("Platform not supported");
+        }
+
+        public bool Connect(string serverIP, int msgPort, int dataPort)
+        {
+            Debug.LogWarning("Platform not supported");
+            return false;
+        }// CTOR
+
+        public void Dispose()
+        {
+            Debug.LogWarning("Platform not supported");
+        }
+#endif
     }
 }

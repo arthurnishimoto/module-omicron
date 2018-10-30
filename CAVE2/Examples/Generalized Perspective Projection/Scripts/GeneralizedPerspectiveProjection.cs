@@ -48,7 +48,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     [SerializeField]
     bool debug = false;
 
-    bool useProjection = true;
+    protected bool useProjection = true;
 
     [SerializeField]
     protected Camera virtualCamera;
@@ -72,7 +72,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     // pe = Viewer/camera position
     // n = Near clipping plane
     // f = Far clipping plane
-    void Projection( Vector3 pa, Vector3 pb, Vector3 pc, Vector3 pe, float n, float f)
+    protected void Projection( Vector3 pa, Vector3 pb, Vector3 pc, Vector3 pe, float n, float f)
     {
         // Non-unit vectors of screen corners
         Vector3 va, vb, vc;

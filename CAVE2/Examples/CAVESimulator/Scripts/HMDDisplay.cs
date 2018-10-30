@@ -35,8 +35,9 @@ using System.Collections;
 
 public class HMDDisplay : CAVE2Display
 {
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update () {
+
         screenUL = displayInfo.Px_UpperLeft;
         screenLL = displayInfo.Px_LowerLeft;
         screenLR = displayInfo.Px_LowerRight;
