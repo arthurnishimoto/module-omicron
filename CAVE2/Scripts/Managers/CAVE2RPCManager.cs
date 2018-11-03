@@ -159,14 +159,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 writer.FinishMessage();
                 if(debug)
                     LogUI("sending: " + msgStr);
-                if (useReliable)
-                {
-                    msgServer.SendWriterTo(client.connectionId, writer, reliableChannelId);
-                }
-                else
-                {
-                    msgServer.SendWriterTo(client.connectionId, writer, unreliableChannelId);
-                }
+                msgServer.SendWriterTo(client.connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
             }
         }
     }
