@@ -77,6 +77,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         vrDisplay.localPosition = displayOffset;
         headorigin.localPosition = headOriginOffset;
 
+        displayInfo.UpdateDisplayInfo();
         HMDScreenUL = displayInfo.Px_UpperLeft;
         HMDScreenLL = displayInfo.Px_LowerLeft;
         HMDScreenLR = displayInfo.Px_LowerRight;
