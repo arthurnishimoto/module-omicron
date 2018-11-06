@@ -37,6 +37,12 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     [SerializeField]
     Vector3 headProjectionOffset;
 
+    [SerializeField]
+    Vector3 headOriginOffset;
+
+    [SerializeField]
+    Transform headorigin;
+
     void Start()
     {
         displayInfo = GetComponent<DisplayInfo>();
@@ -69,6 +75,8 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     void LateUpdate () {
         vrDisplay.localScale = displaySize;
         vrDisplay.localPosition = displayOffset;
+        headorigin.localPosition = headOriginOffset;
+
         HMDScreenUL = displayInfo.Px_UpperLeft;
         HMDScreenLL = displayInfo.Px_LowerLeft;
         HMDScreenLR = displayInfo.Px_LowerRight;
@@ -96,5 +104,31 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         float.TryParse((string)data[2], out z);
 
         headProjectionOffset = new Vector3(x, y, z);
+    }
+
+    void SetDisplayOffset(object[] data)
+    {
+        float x = displayOffset.x;
+        float y = displayOffset.y;
+        float z = displayOffset.z;
+
+        float.TryParse((string)data[0], out x);
+        float.TryParse((string)data[1], out y);
+        float.TryParse((string)data[2], out z);
+
+        displayOffset = new Vector3(x, y, z);
+    }
+
+    void SetHeadOriginOffset(object[] data)
+    {
+        float x = displayOffset.x;
+        float y = displayOffset.y;
+        float z = displayOffset.z;
+
+        float.TryParse((string)data[0], out x);
+        float.TryParse((string)data[1], out y);
+        float.TryParse((string)data[2], out z);
+
+        headOriginOffset = new Vector3(x, y, z);
     }
 }
