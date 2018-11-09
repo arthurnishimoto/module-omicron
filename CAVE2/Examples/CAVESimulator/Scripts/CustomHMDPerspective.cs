@@ -41,7 +41,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     Vector3 headOriginOffset;
 
     [SerializeField]
-    Transform headorigin;
+    Transform headOrigin;
 
     void Start()
     {
@@ -75,7 +75,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     void LateUpdate () {
         vrDisplay.localScale = displaySize;
         vrDisplay.localPosition = displayOffset;
-        headorigin.localPosition = headOriginOffset;
+        headOrigin.localPosition = headOriginOffset;
 
         displayInfo.UpdateDisplayInfo();
         HMDScreenUL = displayInfo.Px_UpperLeft;

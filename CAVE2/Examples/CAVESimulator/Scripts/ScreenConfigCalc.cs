@@ -422,10 +422,30 @@ public class ScreenConfigCalc : MonoBehaviour {
             mesh2.vertices = CAVE2ScreenCoverVerticies.ToArray();
             mesh2.uv = CAVE2ScreenCoverUV.ToArray();
             mesh2.triangles = CAVE2ScreenCoverTriangles.ToArray();
+
+#if UNITY_EDITOR
+            if (generateScreenMaskAsset)
+            {
+                if (!Directory.Exists(Application.dataPath + "/Resources/"))
+                {
+                    UnityEditor.AssetDatabase.CreateFolder("Assets", "Resources");
+                }
+                UnityEditor.AssetDatabase.Refresh();
+                if (!Directory.Exists(Application.dataPath + "/Resources/CAVE2/"))
+                    UnityEditor.AssetDatabase.CreateFolder("Assets/Resources", "CAVE2");
+
+                UnityEditor.AssetDatabase.CreateAsset(mesh2, "Assets/Resources/CAVE2/CAVE2ScreenCover.asset");
+                UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.AssetDatabase.Refresh();
+
+                UnityEditor.PrefabUtility.CreatePrefab("Assets/Resources/CAVE2/CAVE2ScreenCover.prefab", screenMask2);
+            }
+#endif
+
         }
 
 
-        if(generateOutput != Output.displaysOnly && generateOutput != Output.maskAndDisplays)
+        if (generateOutput != Output.displaysOnly && generateOutput != Output.maskAndDisplays)
         {
             foreach(GameObject g in displayObjects)
             {
