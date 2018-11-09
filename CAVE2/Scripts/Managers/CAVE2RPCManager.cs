@@ -15,7 +15,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     // Remote Networking
     [Header("Message Server")]
     [SerializeField]
-    bool useMsgServer;
+    public bool useMsgServer;
 
     static short MessageID = 1104;
     NetworkServerSimple msgServer;
@@ -37,7 +37,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [Header("Message Client")]
     [SerializeField]
-    bool useMsgClient;
+    public bool useMsgClient;
 
     NetworkClient msgClient;
     NetworkMessageDelegate clientOnConnect;
