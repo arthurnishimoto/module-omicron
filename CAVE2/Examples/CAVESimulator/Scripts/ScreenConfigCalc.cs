@@ -39,7 +39,7 @@ public class ScreenConfigCalc : MonoBehaviour {
     public enum ConfigOutput { None, All, getReal3D };
     public ConfigOutput outputConfig = ConfigOutput.None;
 
-    public enum Output { None, maskOnly, displaysOnly, maskAndDisplays, invertedMask };
+    public enum Output { None, maskOnly, displaysOnly, maskAndDisplays, coverOnly, maskAndCover };
     public Output generateOutput = Output.maskAndDisplays;
 
     public bool generateScreenMaskAsset;
@@ -50,7 +50,13 @@ public class ScreenConfigCalc : MonoBehaviour {
     List<Vector2> CAVE2ScreenMaskUV;
     List<int> CAVE2ScreenMaskTriangles;
 
+    public Material displayMaterial;
+    List<Vector3> CAVE2ScreenCoverVerticies;
+    List<Vector2> CAVE2ScreenCoverUV;
+    List<int> CAVE2ScreenCoverTriangles;
+
     GameObject screenMask;
+    GameObject screenMask2;
 
     public enum RenderMode { None, Background, Overlay }
     public RenderMode renderMode = RenderMode.Background;
@@ -61,6 +67,11 @@ public class ScreenConfigCalc : MonoBehaviour {
         CAVE2ScreenMaskVerticies = new List<Vector3>();
         CAVE2ScreenMaskUV = new List<Vector2>();
         CAVE2ScreenMaskTriangles = new List<int>();
+
+        CAVE2ScreenCoverVerticies = new List<Vector3>();
+        CAVE2ScreenCoverUV = new List<Vector2>();
+        CAVE2ScreenCoverTriangles = new List<int>();
+
         GenerateCAVE2();
     } 
 
@@ -88,7 +99,7 @@ public class ScreenConfigCalc : MonoBehaviour {
 
         ArrayList getReal3DConfig = new ArrayList();
 
-        if (generateOutput == Output.maskAndDisplays || generateOutput == Output.maskOnly)
+        if (generateOutput == Output.maskAndDisplays || generateOutput == Output.maskOnly || generateOutput == Output.maskAndCover)
         {
             // Mesh Origin (Floor)
             CAVE2ScreenMaskVerticies.Add(Vector3.zero);
@@ -143,7 +154,7 @@ public class ScreenConfigCalc : MonoBehaviour {
 
                 GenerateGetReal3DScreenConfig(nodeNameLabel + currentNode, j, Px_UpperLeft, Px_LowerLeft, Px_LowerRight, ref getReal3DConfig);
 
-                if (generateOutput == Output.maskAndDisplays || generateOutput == Output.maskOnly)
+                if (generateOutput == Output.maskAndDisplays || generateOutput == Output.maskOnly || generateOutput == Output.maskAndCover)
                 {
                     // Mesh generation
                     Vector3 v = Vector3.zero;
@@ -245,6 +256,58 @@ public class ScreenConfigCalc : MonoBehaviour {
                         }
                     }
                 }
+                if (generateOutput == Output.coverOnly || generateOutput == Output.maskAndCover)
+                {
+                    // Mesh generation
+                    Vector3 v = Vector3.zero;
+                    Vector2 uv = Vector3.zero;
+                    if (j == 0) // Top screen
+                    {
+                        v = new Vector3(Px_UpperLeft.x, Px_UpperLeft.y, Px_UpperLeft.z) / 1000.0f;
+                        uv = new Vector2(Px_UpperLeft.x, Px_UpperLeft.y) / 1000.0f;
+                        CAVE2ScreenCoverVerticies.Add(v);
+                        CAVE2ScreenCoverUV.Add(uv);
+
+                        v = new Vector3(Px_UpperRight.x, Px_UpperRight.y, Px_UpperRight.z) / 1000.0f;
+                        uv = new Vector2(Px_UpperRight.x, Px_UpperRight.y) / 1000.0f;
+                        CAVE2ScreenCoverVerticies.Add(v);
+                        CAVE2ScreenCoverUV.Add(uv);
+                    }
+                    else if (j == displaysPerColumn - 1) // Bottom screen
+                    {
+                        v = new Vector3(Px_LowerLeft.x, Px_LowerLeft.y, Px_LowerLeft.z) / 1000.0f;
+                        uv = new Vector2(Px_LowerLeft.x, Px_LowerLeft.y) / 1000.0f;
+                        CAVE2ScreenCoverVerticies.Add(v);
+                        CAVE2ScreenCoverUV.Add(uv);
+
+                        v = new Vector3(Px_LowerRight.x, Px_LowerRight.y, Px_LowerRight.z) / 1000.0f;
+                        uv = new Vector2(Px_LowerRight.x, Px_LowerRight.y) / 1000.0f;
+                        CAVE2ScreenCoverVerticies.Add(v);
+                        CAVE2ScreenCoverUV.Add(uv);
+
+                        // Draw triangles between columns
+                        if (CAVE2ScreenCoverVerticies.Count >= 8)
+                        {
+                            CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 5); // Bottom display right bottom (prev. column)
+                            CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 7); // Top display right top (prev.column)
+                            CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 4); // Top display left top
+
+                            CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 5); // Bottom display right bottom (prev. column)
+                            CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 4); // Top display left top
+                            CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 2); // Bottom display left bottom
+                        }
+
+                        // Draw column triangles
+                        CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 2); // Bottom display left bottom
+                        CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 4); // Top display left top
+                        CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 3); // Top display right top
+
+                        CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 2); // Bottom display left bottom
+                        CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 3); // Top display right top
+                        CAVE2ScreenCoverTriangles.Add(CAVE2ScreenCoverVerticies.Count - 1); // Bottom display right bottom
+
+                    }
+                }
             }
             if (nodeArrangement == NodeArrangement.Sequential)
                 currentNode += 1;
@@ -252,7 +315,7 @@ public class ScreenConfigCalc : MonoBehaviour {
                 currentNode += 2;
         }
 
-        if (generateOutput == Output.maskAndDisplays || generateOutput == Output.maskOnly)
+        if (generateOutput == Output.maskAndDisplays || generateOutput == Output.maskOnly || generateOutput == Output.maskAndCover)
         {
             // Entrance
             Vector3 v2 = new Vector3(entranceVert[0].x, entranceVert[0].y, entranceVert[0].z) / 1000.0f;
@@ -317,6 +380,7 @@ public class ScreenConfigCalc : MonoBehaviour {
             mesh.vertices = CAVE2ScreenMaskVerticies.ToArray();
             mesh.uv = CAVE2ScreenMaskUV.ToArray();
             mesh.triangles = CAVE2ScreenMaskTriangles.ToArray();
+
 #if UNITY_EDITOR
             if (generateScreenMaskAsset)
             {
@@ -336,6 +400,39 @@ public class ScreenConfigCalc : MonoBehaviour {
             }
 #endif
         }
+        if(generateOutput == Output.coverOnly || generateOutput == Output.maskAndCover)
+        {
+            // Inv screen mask
+            screenMask2 = new GameObject("CAVE2 Inverted Screen Mask");
+            screenMask2.transform.parent = transform;
+            screenMask2.transform.localPosition = Vector3.zero;
+            screenMask2.transform.localRotation = Quaternion.identity;
+
+            if (screenMask2.GetComponent<MeshFilter>() == null)
+                screenMask2.AddComponent<MeshFilter>();
+            if (screenMask2.GetComponent<MeshRenderer>() == null)
+                screenMask2.AddComponent<MeshRenderer>();
+
+            Mesh mesh2 = screenMask2.GetComponent<MeshFilter>().mesh;
+            MeshRenderer meshRenderer2 = screenMask2.GetComponent<MeshRenderer>();
+
+            mesh2.Clear();
+            meshRenderer2.material = displayMaterial;
+
+            mesh2.vertices = CAVE2ScreenCoverVerticies.ToArray();
+            mesh2.uv = CAVE2ScreenCoverUV.ToArray();
+            mesh2.triangles = CAVE2ScreenCoverTriangles.ToArray();
+        }
+
+
+        if(generateOutput != Output.displaysOnly && generateOutput != Output.maskAndDisplays)
+        {
+            foreach(GameObject g in displayObjects)
+            {
+                Destroy(g);
+            }
+        }
+
         if (outputConfig == ConfigOutput.All || outputConfig == ConfigOutput.getReal3D)
         {
             string[] getReal3DConfigArray = (string[])getReal3DConfig.ToArray(typeof(string));
@@ -362,9 +459,22 @@ public class ScreenConfigCalc : MonoBehaviour {
                 Destroy(g);
             }
             displayObjects.Clear();
+
+            if(screenMask)
+            {
+                Destroy(screenMask);
+            }
             CAVE2ScreenMaskVerticies.Clear();
             CAVE2ScreenMaskUV.Clear();
             CAVE2ScreenMaskTriangles.Clear();
+
+            if (screenMask2)
+            {
+                Destroy(screenMask2);
+            }
+            CAVE2ScreenCoverVerticies.Clear();
+            CAVE2ScreenCoverUV.Clear();
+            CAVE2ScreenCoverTriangles.Clear();
 
             GenerateCAVE2();
             regenerateCAVE2 = false;
