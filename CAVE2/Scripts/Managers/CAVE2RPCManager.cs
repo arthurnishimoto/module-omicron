@@ -56,6 +56,8 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     RemoteTerminal remoteTerminal;
 
+    string defaultTargetObjectName;
+
     private void LogUI(string msg)
     {
         if (remoteTerminal)
@@ -196,7 +198,19 @@ public class CAVE2RPCManager : MonoBehaviour {
         string[] msgStrArray = msgString.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
 
         GameObject targetObj = null;
+        string targetObjectName = "";
         string functionName = msgStrArray[0];
+
+        // Starting index of data fields
+        // Assumes index:
+        // 0: Function Name
+        // 1: Target GameObject Name
+        // 2: Data parameters
+        // May change if a default GameObject is set i.e.
+        // 0: Function Name
+        //  : (GameObject name is not provided)
+        // 1: Data parameters
+        int startingDataIndex = 2;
 
         if (msgStrArray.Length < 2)
         {
@@ -204,7 +218,14 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
         else
         {
-            targetObj = GameObject.Find(msgStrArray[1]);
+            targetObjectName = msgStrArray[1];
+            targetObj = GameObject.Find(targetObjectName);
+            if(targetObj == null)
+            {
+                targetObjectName = defaultTargetObjectName;
+                targetObj = GameObject.Find(targetObjectName);
+                startingDataIndex = 1;
+            }
         }
 
         if (targetObj != null)
@@ -215,9 +236,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float x = 0;
                 float y = 0;
                 float z = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 targetObj.BroadcastMessage("SyncPosition", new Vector3(x, y, z));
             }
@@ -227,10 +248,10 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float y = 0;
                 float z = 0;
                 float w = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
-                float.TryParse(msgStrArray[5], out w);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+                float.TryParse(msgStrArray[startingDataIndex + 3], out w);
 
                 targetObj.BroadcastMessage("SyncRotation", new Quaternion(x, y, z, w));
             }
@@ -241,9 +262,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float x = 0;
                 float y = 0;
                 float z = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 if(msgStrArray.Length == 6)
                 {
@@ -266,9 +287,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float x = 0;
                 float y = 0;
                 float z = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 if (msgStrArray.Length == 6)
                 {
@@ -291,9 +312,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float x = 0;
                 float y = 0;
                 float z = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 targetObj.transform.position = new Vector3(x, y, z);
             }
@@ -302,9 +323,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float x = 0;
                 float y = 0;
                 float z = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 targetObj.transform.eulerAngles = new Vector3(x, y, z);
             }
@@ -314,8 +335,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float y = 0;
                 float z = 0;
                 float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 targetObj.transform.localPosition = new Vector3(x, y, z);
             }
@@ -324,9 +346,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float x = 0;
                 float y = 0;
                 float z = 0;
-                float.TryParse(msgStrArray[2], out x);
-                float.TryParse(msgStrArray[3], out y);
-                float.TryParse(msgStrArray[4], out z);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
                 targetObj.transform.localEulerAngles = new Vector3(x, y, z);
             }
@@ -338,18 +360,22 @@ public class CAVE2RPCManager : MonoBehaviour {
 
                 if (msgStrArray.Length == 3)
                 {
-                    float.TryParse(msgStrArray[2], out x);
+                    float.TryParse(msgStrArray[startingDataIndex], out x);
                     y = x;
                     z = x;
                 }
                 else
                 {
-                    float.TryParse(msgStrArray[2], out x);
-                    float.TryParse(msgStrArray[3], out y);
-                    float.TryParse(msgStrArray[4], out z);
+                    float.TryParse(msgStrArray[startingDataIndex], out x);
+                    float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                    float.TryParse(msgStrArray[startingDataIndex + 2], out z);
                 }
 
                 targetObj.transform.localScale = new Vector3(x, y, z);
+            }
+            else if (functionName.Equals("setTargetObject", System.StringComparison.OrdinalIgnoreCase))
+            {
+                defaultTargetObjectName = targetObjectName;
             }
 
             // Let the object handle the message
@@ -362,6 +388,10 @@ public class CAVE2RPCManager : MonoBehaviour {
                 }
                 targetObj.SendMessage(functionName, paramArray);
             }
+        }
+        else
+        {
+            LogUI("CAVE2RPCManager: Msg target object '" + msgStrArray[1] + "' not found");
         }
     }
 
