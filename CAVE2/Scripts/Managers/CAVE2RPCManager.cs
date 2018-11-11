@@ -12,6 +12,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     // Cluster Sync
     public int cave2RPCCallCount;
 
+    [SerializeField]
+    bool debugRPC = false;
+
     // Remote Networking
     [Header("Message Server")]
     [SerializeField]
@@ -48,7 +51,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     string serverIP;
 
     [SerializeField]
-    bool debug;
+    bool debugMsg;
 
     [SerializeField]
     RemoteTerminal remoteTerminal;
@@ -157,7 +160,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 writer.StartMessage(MessageID);
                 writer.Write(msgStr);
                 writer.FinishMessage();
-                if(debug)
+                if(debugMsg)
                     LogUI("sending: " + msgStr);
                 msgServer.SendWriterTo(client.connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
             }
@@ -175,7 +178,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         msg.reader.SeekZero();
 
         string msgString = msg.reader.ReadString();
-        if (debug)
+        if (debugMsg)
             LogUI("Msg Server: ServerOnRecvMsg '" + msgString + "'");
         ProcessMsg(msg);
 
@@ -192,8 +195,17 @@ public class CAVE2RPCManager : MonoBehaviour {
         char[] charSeparators = new char[] { '|' };
         string[] msgStrArray = msgString.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
 
-        GameObject targetObj = GameObject.Find(msgStrArray[1]);
+        GameObject targetObj = null;
         string functionName = msgStrArray[0];
+
+        if (msgStrArray.Length < 2)
+        {
+            LogUI(msg.conn.address + " sent unknown msg '" + msgString + "'");
+        }
+        else
+        {
+            targetObj = GameObject.Find(msgStrArray[1]);
+        }
 
         if (targetObj != null)
         {
@@ -355,7 +367,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
             LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
@@ -378,7 +390,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
             LogUI("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
@@ -401,7 +413,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
             LogUI("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
         }
@@ -424,7 +436,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
             LogUI("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
@@ -474,7 +486,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         cave2RPCCallCount++;
 
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -493,7 +505,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void SendCAVE2RPC4(string targetObjectName, string methodName, object param, object param2)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC4: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -512,7 +524,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void SendCAVE2RPC5(string targetObjectName, string methodName, object param, object param2, object param3)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC5: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -531,7 +543,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void SendCAVE2RPC6(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC6: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -550,7 +562,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void CAVE2DestroyRPC(string targetObjectName)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC: call 'Destroy' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
