@@ -36,12 +36,17 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     enum Mode { Simulator, Build };
 
+    [Header("Settings")]
     [SerializeField]
     Mode mode = Mode.Simulator;
 
     [SerializeField]
     bool simulateTracking = false;
 
+    [SerializeField]
+    bool hideCAVE2View = false;
+
+    [Header("Components")]
     [SerializeField]
     ScreenConfigCalc cave2Screen;
 
@@ -54,6 +59,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     CAVE2RPCManager cave2RPCManager;
 
+    [SerializeField]
+    GameObject CAVE2ScreenCover;
 
     private void Start()
     {
@@ -82,5 +89,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             holoLensCamera.cullingMask = 32;
             cave2RPCManager.useMsgClient = true;
         }
-	}
+
+        CAVE2ScreenCover.SetActive(hideCAVE2View);
+    }
 }
