@@ -46,6 +46,8 @@ public class RemoteTerminal : MonoBehaviour {
     ArrayList cmdHistory = new ArrayList();
     int currentCmdHistoryLine;
 
+    ArrayList terminalHistory = new ArrayList();
+
     [SerializeField]
     GameObject selectedObject;
 
@@ -107,9 +109,20 @@ public class RemoteTerminal : MonoBehaviour {
 
     public void PrintUI(object log)
     {
-        if(terminalTextLog)
+        terminalTextLog.text = "";
+        terminalHistory.Add(log.ToString());
+        if(terminalHistory.Count > 25)
         {
-            terminalTextLog.text += "\n" + log.ToString();
+            terminalHistory.RemoveRange(0, 1);
+        }
+        if (terminalTextLog)
+        {
+            int i = 0;
+            foreach(string s in terminalHistory)
+            {
+                terminalTextLog.text += "\n" + s;
+                i++;
+            }    
         }
         Debug.Log(log.ToString());
     }
