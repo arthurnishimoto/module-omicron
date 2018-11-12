@@ -336,7 +336,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     CAVE2RPCManager rpcManager;
 
     [SerializeField]
-    bool simulateAsClient;
+    public bool simulateAsClient;
 
     public void Init()
     {

@@ -44,6 +44,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     bool simulateTracking = false;
 
     [SerializeField]
+    bool showTerminal = false;
+
+    [SerializeField]
     bool enableCommandLine = false;
 
     [SerializeField]
@@ -66,6 +69,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     GameObject CAVE2ScreenCover;
 
     [SerializeField]
+    CAVE2Manager cave2Manager;
+
+    [SerializeField]
     CustomHMDPerspective hmdPerspective;
 
     [SerializeField]
@@ -79,6 +85,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     [SerializeField]
     GameObject commandLineTerminal;
+
+    [SerializeField]
+    RemoteTerminal remoteTerminal;
 
     private void Start()
     {
@@ -104,6 +113,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             serverHeadTracking.enabled = false;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
+            cave2Manager.simulateAsClient = false;
+
+            if (enableCommandLine)
+                remoteTerminal.StartClient();
         }
         else if (mode == Mode.Build)
         {
@@ -116,6 +129,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             serverHeadTracking.enabled = false;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
+            cave2Manager.simulateAsClient = true;
+
+            if (enableCommandLine)
+                remoteTerminal.StartClient();
         }
         else if (mode == Mode.CAVE2Server)
         {
@@ -128,11 +145,12 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             serverHeadTracking.enabled = true;
             cave2SimCamera.enabled = true;
             cave2ScreenMask.SetActive(true);
+            cave2Manager.simulateAsClient = false;
         }
 
         CAVE2ScreenCover.SetActive(hideCAVE2View);
 
-        commandLineTerminal.SetActive(enableCommandLine);
+        commandLineTerminal.SetActive(showTerminal);
     }
 
     void SetHeadProjectionOffset(object[] data)
