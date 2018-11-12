@@ -12,6 +12,7 @@ public class RemoteTerminal : MonoBehaviour {
     bool connectToServer;
 
     bool isServer;
+    bool connecting;
 
     // Server
     NetworkServerSimple server;
@@ -104,7 +105,15 @@ public class RemoteTerminal : MonoBehaviour {
 
     public void StartClient()
     {
-        ConnectToServer();
+        if (!connecting)
+        {
+            ConnectToServer();
+        }
+    }
+
+    public void ShowInputField(bool value)
+    {
+        commandLine.gameObject.SetActive(value);
     }
 
     public void PrintUI(object log)
@@ -176,6 +185,7 @@ public class RemoteTerminal : MonoBehaviour {
     {
         PrintUI("Client: Connecting to " + serverIP + ":" + serverListenPort);
         client.Connect(serverIP, serverListenPort);
+        connecting = true;
     }
 
     void ClientOnConnect(NetworkMessage msg)
@@ -186,6 +196,7 @@ public class RemoteTerminal : MonoBehaviour {
     void ClientOnDisconnect(NetworkMessage msg)
     {
         PrintUI("Client: Disconnected");
+        connecting = false;
     }
 
     void ClientOnData(NetworkMessage msg)

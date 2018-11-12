@@ -116,7 +116,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Manager.simulateAsClient = false;
 
             if (enableCommandLine)
+            {
                 remoteTerminal.StartClient();
+            }
         }
         else if (mode == Mode.Build)
         {
@@ -133,6 +135,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
             if (enableCommandLine)
                 remoteTerminal.StartClient();
+            remoteTerminal.ShowInputField(enableCommandLine);
         }
         else if (mode == Mode.CAVE2Server)
         {
@@ -181,7 +184,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     {
         if (CAVE2ScreenCover)
         {
-            CAVE2ScreenCover.SetActive((bool)data[0]);
+            if (data[0].ToString().Equals("true", System.StringComparison.OrdinalIgnoreCase))
+                hideCAVE2View = true;
+            else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
+                hideCAVE2View = false;
         }
     }
 }
