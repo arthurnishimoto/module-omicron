@@ -94,7 +94,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         }
     }
 
-    void SetHeadProjectionOffset(object[] data)
+    public void SetHeadProjectionOffset(object[] data)
     {
         float x = headProjectionOffset.x;
         float y = headProjectionOffset.y;
@@ -107,7 +107,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         headProjectionOffset = new Vector3(x, y, z);
     }
 
-    void SetDisplayOffset(object[] data)
+    public void SetDisplayOffset(object[] data)
     {
         float x = displayOffset.x;
         float y = displayOffset.y;
@@ -120,7 +120,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         displayOffset = new Vector3(x, y, z);
     }
 
-    void SetHeadOriginOffset(object[] data)
+    public void SetHeadOriginOffset(object[] data)
     {
         float x = displayOffset.x;
         float y = displayOffset.y;

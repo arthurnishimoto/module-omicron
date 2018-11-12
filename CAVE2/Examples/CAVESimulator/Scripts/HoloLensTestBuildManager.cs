@@ -34,7 +34,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class HoloLensTestBuildManager : MonoBehaviour {
 
-    enum Mode { Simulator, Build };
+    enum Mode { Simulator, Build, CAVE2Server };
 
     [Header("Settings")]
     [SerializeField]
@@ -42,6 +42,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     [SerializeField]
     bool simulateTracking = false;
+
+    [SerializeField]
+    bool enableCommandLine = false;
 
     [SerializeField]
     bool hideCAVE2View = false;
@@ -62,6 +65,21 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     GameObject CAVE2ScreenCover;
 
+    [SerializeField]
+    CustomHMDPerspective hmdPerspective;
+
+    [SerializeField]
+    getReal3DMocapUpdater serverHeadTracking;
+
+    [SerializeField]
+    Camera cave2SimCamera;
+
+    [SerializeField]
+    GameObject cave2ScreenMask;
+
+    [SerializeField]
+    GameObject commandLineTerminal;
+
     private void Start()
     {
         UpdateMode();
@@ -79,17 +97,73 @@ public class HoloLensTestBuildManager : MonoBehaviour {
         {
             cave2Screen.enabled = true;
             holoLensCamera.cullingMask = -1;
+            holoLensCamera.enabled = true;
             headTracking.enabled = !simulateTracking;
             cave2RPCManager.useMsgClient = !simulateTracking;
+
+            serverHeadTracking.enabled = false;
+            cave2SimCamera.enabled = false;
+            cave2ScreenMask.SetActive(false);
         }
-        else
+        else if (mode == Mode.Build)
         {
             cave2Screen.enabled = false;
             headTracking.enabled = true;
             holoLensCamera.cullingMask = 32;
+            holoLensCamera.enabled = true;
             cave2RPCManager.useMsgClient = true;
+
+            serverHeadTracking.enabled = false;
+            cave2SimCamera.enabled = false;
+            cave2ScreenMask.SetActive(false);
+        }
+        else if (mode == Mode.CAVE2Server)
+        {
+            cave2Screen.enabled = false;
+            headTracking.enabled = true;
+            holoLensCamera.enabled = false;
+            cave2RPCManager.useMsgClient = false;
+
+            cave2RPCManager.useMsgServer = true;
+            serverHeadTracking.enabled = true;
+            cave2SimCamera.enabled = true;
+            cave2ScreenMask.SetActive(true);
         }
 
         CAVE2ScreenCover.SetActive(hideCAVE2View);
+
+        commandLineTerminal.SetActive(enableCommandLine);
+    }
+
+    void SetHeadProjectionOffset(object[] data)
+    {
+        if(hmdPerspective)
+        {
+            hmdPerspective.SetHeadProjectionOffset(data);
+        }
+    }
+
+    void SetDisplayOffset(object[] data)
+    {
+        if (hmdPerspective)
+        {
+            hmdPerspective.SetDisplayOffset(data);
+        }
+    }
+
+    void SetHeadOriginOffset(object[] data)
+    {
+        if (hmdPerspective)
+        {
+            hmdPerspective.SetHeadOriginOffset(data);
+        }
+    }
+
+    void SetCAVE2DisplayCover(object[] data)
+    {
+        if (CAVE2ScreenCover)
+        {
+            CAVE2ScreenCover.SetActive((bool)data[0]);
+        }
     }
 }
