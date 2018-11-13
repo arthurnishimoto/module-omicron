@@ -113,10 +113,13 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
+
+            remoteTerminal.ShowInputField(enableCommandLine);
         }
         else if (mode == Mode.Build)
         {
             showTerminal = false;
+            enableCommandLine = false;
             cave2Screen.enabled = false;
             headTracking.enabled = true;
             holoLensCamera.cullingMask = 32;
