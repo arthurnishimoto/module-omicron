@@ -102,9 +102,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     private void Update()
     {
-#if UNITY_EDITOR
         UpdateMode();
-#endif
     }
     void UpdateMode () {
 		if(mode == Mode.Simulator)
