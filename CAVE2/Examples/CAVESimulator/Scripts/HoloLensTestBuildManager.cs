@@ -63,6 +63,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     Camera holoLensCamera;
 
     [SerializeField]
+    int currentHoloLensCameraMask;
+
+    [SerializeField]
     CAVE2TransformSync headTracking;
 
     [SerializeField]
@@ -103,9 +106,11 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     private void Update()
     {
         UpdateMode();
+        currentHoloLensCameraMask = holoLensCamera.cullingMask;
     }
+
     void UpdateMode () {
-		if(mode == Mode.Simulator)
+        if (mode == Mode.Simulator)
         {
             cave2Screen.enabled = true;
             holoLensCamera.cullingMask = -1;
@@ -126,7 +131,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             enableCommandLine = false;
             cave2Screen.enabled = false;
             headTracking.enabled = true;
-            holoLensCamera.cullingMask = 32;
+            holoLensCamera.cullingMask = 512;
             holoLensCamera.enabled = true;
             cave2RPCManager.useMsgClient = true;
 
