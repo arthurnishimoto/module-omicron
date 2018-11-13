@@ -33,6 +33,9 @@ public class RemoteTerminal : MonoBehaviour {
     [SerializeField]
     Text terminalTextLog;
 
+    [SerializeField]
+    Text secondaryTerminalText;
+
     // Client
     [SerializeField]
     string serverIP = "localhost";
@@ -131,7 +134,9 @@ public class RemoteTerminal : MonoBehaviour {
             {
                 terminalTextLog.text += "\n" + s;
                 i++;
-            }    
+            }
+            if (secondaryTerminalText)
+                secondaryTerminalText.text = terminalTextLog.text;
         }
         Debug.Log(log.ToString());
     }

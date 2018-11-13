@@ -52,6 +52,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     bool hideCAVE2View = false;
 
+    [SerializeField]
+    bool showHMDTerminal = false;
+
     [Header("Components")]
     [SerializeField]
     ScreenConfigCalc cave2Screen;
@@ -88,6 +91,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     [SerializeField]
     RemoteTerminal remoteTerminal;
+
+    [SerializeField]
+    GameObject hmdTerminalDisplay;
 
     private void Start()
     {
@@ -154,6 +160,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
         CAVE2ScreenCover.SetActive(hideCAVE2View);
 
         commandLineTerminal.SetActive(showTerminal);
+
+        hmdTerminalDisplay.SetActive(showHMDTerminal);
     }
 
     void SetHeadProjectionOffset(object[] data)
@@ -182,12 +190,17 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     void SetCAVE2DisplayCover(object[] data)
     {
-        if (CAVE2ScreenCover)
-        {
-            if (data[0].ToString().Equals("true", System.StringComparison.OrdinalIgnoreCase))
-                hideCAVE2View = true;
-            else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
-                hideCAVE2View = false;
-        }
+        if (data[0].ToString().Equals("true", System.StringComparison.OrdinalIgnoreCase))
+            hideCAVE2View = true;
+        else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
+            hideCAVE2View = false;
+    }
+
+    void ShowHMDTerminal(object[] data)
+    {
+        if (data[0].ToString().Equals("true", System.StringComparison.OrdinalIgnoreCase))
+            showHMDTerminal = true;
+        else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
+            showHMDTerminal = false;
     }
 }
