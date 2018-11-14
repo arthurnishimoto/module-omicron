@@ -55,6 +55,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     bool showHMDTerminal = false;
 
+    int lastShowHMDTerminalState;
+
     [Header("Components")]
     [SerializeField]
     ScreenConfigCalc cave2Screen;
@@ -107,6 +109,22 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     {
         UpdateMode();
         currentHoloLensCameraMask = holoLensCamera.cullingMask;
+
+        if(cave2RPCManager.IsReconnecting())
+        {
+            if (showHMDTerminal && lastShowHMDTerminalState == 0)
+            {
+                lastShowHMDTerminalState = 2;
+            }
+            else if (!showHMDTerminal && lastShowHMDTerminalState == 0)
+            {
+                showHMDTerminal = true;
+                lastShowHMDTerminalState = 1;
+            }
+        } else if (!cave2RPCManager.IsReconnecting() && lastShowHMDTerminalState == 1)
+        {
+            showHMDTerminal = false;
+        }
     }
 
     void UpdateMode () {

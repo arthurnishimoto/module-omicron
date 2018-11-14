@@ -53,6 +53,17 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     bool debugMsg;
 
+    bool connected = false;
+
+    [SerializeField]
+    bool autoReconnect = true;
+
+    [SerializeField]
+    float autoReconnectDelay = 5;
+
+    float autoReconnectTimer;
+    int reconnectAttemptCount;
+
     [SerializeField]
     RemoteTerminal remoteTerminal;
 
@@ -91,6 +102,29 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void Update()
     {
         msgServer.Update();
+
+        if(autoReconnect && !connected)
+        {
+            if (autoReconnectTimer < autoReconnectDelay)
+            {
+                autoReconnectTimer += Time.deltaTime;
+            }
+            else
+            {
+                reconnectAttemptCount++;
+                LogUI("Msg Client: Reconnecting to server " + serverIP + ":" + serverListenPort + " (Attempt: " + reconnectAttemptCount + ")");
+                msgClient.Disconnect();
+                msgClient.Connect(serverIP, serverListenPort);
+
+                autoReconnectTimer = 0;
+            }
+        }
+
+    }
+
+    public bool IsReconnecting()
+    {
+        return (reconnectAttemptCount > 0);
     }
 
     private void StartNetServer()
@@ -143,11 +177,14 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ClientOnConnect(NetworkMessage msg)
     {
         LogUI("Msg Client: Connected to " + serverIP);
+        connected = true;
+        reconnectAttemptCount = 0;
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
         LogUI("Msg Client: Disconnected");
+        connected = false;
     }
 
     void ServerSendMsgToClients(string msgStr, bool useReliable = true, NetworkConnection ignoreClient = null)
