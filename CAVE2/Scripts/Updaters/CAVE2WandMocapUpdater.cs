@@ -40,11 +40,11 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
             float timeSinceLastUpdate = CAVE2Manager.GetWandTimeSinceUpdate(wandID);
 
             // If position and rotation are zero, wand is not tracking, disable drawing and physics
-            if (transform.localPosition == Vector3.zero && transform.localRotation == Quaternion.identity && virtualWand.gameObject.activeSelf)
+            if ( timeSinceLastUpdate > 0.5f && virtualWand.gameObject.activeSelf)
             {
                 virtualWand.gameObject.SetActive(false);
             }
-            else if (transform.localPosition != Vector3.zero && transform.localRotation != Quaternion.identity && !virtualWand.gameObject.activeSelf)
+            else if ( timeSinceLastUpdate < 0.5f && !virtualWand.gameObject.activeSelf)
             {
                 virtualWand.gameObject.SetActive(true);
             }
