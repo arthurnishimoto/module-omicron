@@ -433,6 +433,11 @@ static CAVE2Manager CAVE2Manager_Instance;
         return CAVE2.Input.GetWandRotation(ID);
     }
 
+    public static float GetWandTimeSinceUpdate(int ID)
+    {
+        return CAVE2.Input.GetWandTimeSinceUpdate(ID);
+    }
+
     public static Vector3 GetMocapPosition(int ID)
     {
         return CAVE2.Input.GetMocapPosition(ID);

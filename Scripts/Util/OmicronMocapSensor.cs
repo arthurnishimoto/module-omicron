@@ -11,11 +11,18 @@ public class OmicronMocapSensor : OmicronEventClient
     public Quaternion orientation;
     public Vector3 positionMod = Vector3.one;
 
+    public float timeSinceLastUpdate;
+
     // Use this for initialization
     new void Start()
     {
         eventOptions = EventBase.ServiceType.ServiceTypeMocap;
         InitOmicron();
+    }
+
+    private void Update()
+    {
+        timeSinceLastUpdate += Time.deltaTime;
     }
 
     public override void OnEvent(EventData e)
@@ -24,6 +31,7 @@ public class OmicronMocapSensor : OmicronEventClient
         {
             position = new Vector3(e.posx * positionMod.x, e.posy * positionMod.y, e.posz * positionMod.z);
             orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);
+            timeSinceLastUpdate = 0;
         }
     }
 }

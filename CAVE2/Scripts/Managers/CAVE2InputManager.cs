@@ -183,6 +183,16 @@ public class CAVE2InputManager : OmicronEventClient
         return Quaternion.identity;
     }
 
+    public float GetMocapTimeSinceUpdate(int ID)
+    {
+        if (mocapSensors.ContainsKey(ID))
+        {
+            OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
+            return mocap.timeSinceLastUpdate;
+        }
+        return float.PositiveInfinity;
+    }
+
     public Vector3 GetHeadPosition(int ID)
     {
         int headID = 1;
@@ -225,6 +235,17 @@ public class CAVE2InputManager : OmicronEventClient
             case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
         }
         return GetMocapRotation(wandID);
+    }
+
+    public float GetWandTimeSinceUpdate(int ID)
+    {
+        int wandID = 1;
+        switch (ID)
+        {
+            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
+            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+        }
+        return GetMocapTimeSinceUpdate(wandID);
     }
 
     // Parses Omicron Input Data
