@@ -103,7 +103,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         msgServer.Update();
 
-        if(autoReconnect && !connected)
+        if(useMsgClient && autoReconnect && !connected)
         {
             if (autoReconnectTimer < autoReconnectDelay)
             {
