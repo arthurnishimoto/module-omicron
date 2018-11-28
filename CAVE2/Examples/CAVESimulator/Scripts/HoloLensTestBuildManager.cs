@@ -178,6 +178,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = true;
             cave2ScreenMask.SetActive(true);
             cave2Manager.simulateAsClient = false;
+
+            showTerminal = true;
         }
 
         // Ignore ExecuteInEditMode and only run when not server
