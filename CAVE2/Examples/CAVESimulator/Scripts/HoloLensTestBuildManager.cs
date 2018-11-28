@@ -144,8 +144,6 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
-
-            remoteTerminal.ShowInputField(enableCommandLine);
         }
         else if (mode == Mode.Build)
         {
@@ -163,8 +161,6 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
-
-            remoteTerminal.ShowInputField(enableCommandLine);
         }
         else if (mode == Mode.CAVE2Server)
         {
@@ -181,10 +177,12 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
             showTerminal = true;
         }
+        
+        remoteTerminal.ShowInputField(enableCommandLine);
 
-        // Ignore ExecuteInEditMode and only run when not server
-        if (Application.isPlaying && enableCommandLine && mode != Mode.CAVE2Server)
-            remoteTerminal.StartClient();
+        // Ignore ExecuteInEditMode and set local client mode if server
+        if (Application.isPlaying && enableCommandLine)
+            remoteTerminal.StartClient(mode == Mode.CAVE2Server);
 
         CAVE2ScreenCover.SetActive(hideCAVE2View);
 
