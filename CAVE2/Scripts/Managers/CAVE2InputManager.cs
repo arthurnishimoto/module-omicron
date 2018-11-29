@@ -145,6 +145,16 @@ public class CAVE2InputManager : OmicronEventClient
         return GetButtonUp(wandID, (CAVE2.Button)unityInputToOmicronInput[button]);
     }
 
+    public int GetButtonFlags(int wandID)
+    {
+        if (wandControllers.ContainsKey(wandID))
+        {
+            OmicronController wandController = (OmicronController)wandControllers[wandID];
+            return wandController.rawFlags;
+        }
+        return 0;
+    }
+
     public float GetAxis(int wandID, CAVE2.Axis axis)
     {
         if (wandControllers.ContainsKey(wandID))
