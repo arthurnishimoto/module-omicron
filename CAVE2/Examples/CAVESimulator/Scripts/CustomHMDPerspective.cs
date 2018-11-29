@@ -111,6 +111,16 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         headProjectionOffset = new Vector3(x, y, z);
     }
 
+    public void SetHeadProjectionOffset(Vector3 value)
+    {
+        headProjectionOffset = value;
+    }
+
+    public void SetHeadOriginOffset(Vector3 value)
+    {
+        headOriginOffset = value;
+    }
+
     public void SetDisplayOffset(object[] data)
     {
         float x = displayOffset.x;
@@ -135,5 +145,15 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         float.TryParse((string)data[2], out z);
 
         headOriginOffset = new Vector3(x, y, z);
+    }
+
+    public Vector3 GetHeadProjectionOffset()
+    {
+        return headProjectionOffset;
+    }
+
+    public Vector3 GetHeadOriginOffset()
+    {
+        return headOriginOffset;
     }
 }
