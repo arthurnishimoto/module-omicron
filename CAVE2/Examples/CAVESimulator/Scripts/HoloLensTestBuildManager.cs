@@ -34,7 +34,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class HoloLensTestBuildManager : MonoBehaviour {
 
-    enum Mode { Simulator, Build, CAVE2Server, Remote };
+    enum Mode { Simulator, Build, CAVE2Server, Remote, Playback };
 
     [Header("Settings")]
     [SerializeField]
@@ -144,6 +144,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     }
 
     void UpdateMode () {
+
+        headTracking.GetComponent<getReal3DMocapUpdater>().enabled = true;
+        cave2SimCamera.GetComponentInParent<CAVE2CameraController>().enabled = true;
+
         if (mode == Mode.Simulator)
         {
             cave2Screen.enabled = true;
@@ -218,6 +222,18 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Manager.simulateAsClient = true;
 
             showTerminal = true;
+        }
+        else if (mode == Mode.Playback)
+        {
+            headTracking.GetComponent<getReal3DMocapUpdater>().enabled = false;
+            cave2SimCamera.GetComponentInParent<CAVE2CameraController>().enabled = false;
+            cave2Manager.simulatorMode = true;
+            cave2Manager.mocapEmulation = true;
+
+            headTracking.enabled = false;
+
+            cave2RPCManager.useMsgClient = false;
+            cave2RPCManager.useMsgServer = false;
         }
 
         remoteTerminal.ShowInputField(enableCommandLine);
