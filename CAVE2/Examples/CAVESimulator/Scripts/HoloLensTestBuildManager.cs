@@ -103,6 +103,19 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     GameObject hmdTerminalDisplay;
 
+    [Header("Loggers")]
+    [SerializeField]
+    string logFilePath = "E:\\Dev\\Logs";
+
+    [SerializeField]
+    TransformLogger headLogger;
+
+    [SerializeField]
+    WandLogger wandLogger;
+
+    [SerializeField]
+    StudyProgressLogger studyLogger;
+
     private void Start()
     {
         UpdateMode();
@@ -144,6 +157,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
+
+            headLogger.enableLogging = false;
+            wandLogger.enableLogging = false;
+            studyLogger.enableLogging = false;
         }
         else if (mode == Mode.Build)
         {
@@ -161,6 +178,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
+
+            headLogger.enableLogging = false;
+            wandLogger.enableLogging = false;
+            studyLogger.enableLogging = false;
         }
         else if (mode == Mode.CAVE2Server)
         {
@@ -176,6 +197,12 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Manager.simulateAsClient = false;
 
             showTerminal = true;
+
+            if (Application.isPlaying) {
+                headLogger.StartLog(logFilePath);
+                wandLogger.StartLog(logFilePath);
+                studyLogger.StartLog(logFilePath);
+            }
         }
         else if (mode == Mode.Remote)
         {
