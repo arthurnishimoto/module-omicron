@@ -366,7 +366,7 @@ public class CAVE2InputManager : OmicronEventClient
                     wand2MocapSensor.orientation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
 #endif
                 }
-                else
+                else if(UnityEngine.XR.XRDevice.model.Length > 0)
                 {
                     // Hack: InputTracking isn't using some offset that the Main Camera is otherwise getting. Calculate the diff here:
                     Vector3 oculusRealHeadPosition = Camera.main.transform.localPosition;
