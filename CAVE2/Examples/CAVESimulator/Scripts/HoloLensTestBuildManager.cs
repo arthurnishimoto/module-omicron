@@ -57,6 +57,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     int lastShowHMDTerminalState;
 
+    [SerializeField]
+    bool showCalibrationObjects;
+
     [Header("Components")]
     [SerializeField]
     ScreenConfigCalc cave2Screen;
@@ -105,6 +108,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     [SerializeField]
     GameObject remoteUIControls;
+
+    [SerializeField]
+    GameObject calibrationObjects;
 
     [Header("Loggers")]
     [SerializeField]
@@ -254,6 +260,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
         commandLineTerminal.SetActive(showTerminal);
 
         hmdTerminalDisplay.SetActive(showHMDTerminal);
+
+        calibrationObjects.SetActive(showCalibrationObjects);
     }
 
     void SetHeadProjectionOffset(object[] data)
@@ -294,5 +302,13 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             showHMDTerminal = true;
         else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
             showHMDTerminal = false;
+    }
+
+    void ShowCalibrationObjects(object[] data)
+    {
+        if (data[0].ToString().Equals("true", System.StringComparison.OrdinalIgnoreCase))
+            showCalibrationObjects = true;
+        else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
+            showCalibrationObjects = false;
     }
 }
