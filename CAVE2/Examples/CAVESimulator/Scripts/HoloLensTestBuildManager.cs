@@ -103,6 +103,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     GameObject hmdTerminalDisplay;
 
+    [SerializeField]
+    GameObject remoteUIControls;
+
     [Header("Loggers")]
     [SerializeField]
     string logFilePath = "E:\\Dev\\Logs";
@@ -199,6 +202,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = true;
             cave2ScreenMask.SetActive(true);
             cave2Manager.simulateAsClient = false;
+            remoteUIControls.SetActive(false);
 
             showTerminal = true;
 
@@ -220,6 +224,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
+            remoteUIControls.SetActive(true);
 
             showTerminal = true;
             enableCommandLine = true;
@@ -235,6 +240,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
             cave2RPCManager.useMsgClient = false;
             cave2RPCManager.useMsgServer = false;
+            remoteUIControls.SetActive(false);
         }
 
         remoteTerminal.ShowInputField(enableCommandLine);
