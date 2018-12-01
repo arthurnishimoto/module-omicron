@@ -462,6 +462,11 @@ public class RemoteTerminal : MonoBehaviour {
         }
     }
 
+    public void SendCommandFromUI(string cmd)
+    {
+        SendCommand(cmd, true);
+    }
+
     public void SendCommand(string cmd, bool useReliable = true)
     {
         //Debug.Log("Sending: '" + cmd + "'");
