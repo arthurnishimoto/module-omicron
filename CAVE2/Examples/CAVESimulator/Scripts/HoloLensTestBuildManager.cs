@@ -222,6 +222,7 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Manager.simulateAsClient = true;
 
             showTerminal = true;
+            enableCommandLine = true;
         }
         else if (mode == Mode.Playback)
         {
