@@ -20,6 +20,8 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
 
     protected GameObject vrCamera;
 
+    public int virtualCameraCullingMask;
+
     // Set this to true if rendering to a virtual display
     // Disable if say rendering to an HMD display
     [SerializeField]
@@ -59,6 +61,8 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
 
         virtualCamera = vrCamera.AddComponent<Camera>();
+        virtualCamera.cullingMask = virtualCameraCullingMask;
+
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
@@ -107,6 +111,16 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         headProjectionOffset = new Vector3(x, y, z);
     }
 
+    public void SetHeadProjectionOffset(Vector3 value)
+    {
+        headProjectionOffset = value;
+    }
+
+    public void SetHeadOriginOffset(Vector3 value)
+    {
+        headOriginOffset = value;
+    }
+
     public void SetDisplayOffset(object[] data)
     {
         float x = displayOffset.x;
@@ -131,5 +145,15 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         float.TryParse((string)data[2], out z);
 
         headOriginOffset = new Vector3(x, y, z);
+    }
+
+    public Vector3 GetHeadProjectionOffset()
+    {
+        return headProjectionOffset;
+    }
+
+    public Vector3 GetHeadOriginOffset()
+    {
+        return headOriginOffset;
     }
 }

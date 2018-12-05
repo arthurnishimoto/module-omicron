@@ -43,6 +43,7 @@ public class RemoteTerminal : MonoBehaviour {
     NetworkMessageDelegate clientOnConnect;
     NetworkMessageDelegate clientOnDisconnect;
     NetworkMessageDelegate clientOnData;
+    bool localConnection = false; // Flag to disable cyclic events if connecting to a local msg server
 
     // Command Terminal
     [SerializeField]
@@ -106,11 +107,11 @@ public class RemoteTerminal : MonoBehaviour {
         PrintUI("Server: Starting on port " + serverListenPort);
     }
 
-    public void StartClient()
+    public void StartClient(bool local = false)
     {
         if (!connecting)
         {
-            ConnectToServer();
+            ConnectToServer(local);
         }
     }
 
@@ -186,11 +187,13 @@ public class RemoteTerminal : MonoBehaviour {
     }
 
     // Client Functions ---------------------------------------------------------------------------
-    void ConnectToServer()
+    void ConnectToServer(bool local = false)
     {
         PrintUI("Client: Connecting to " + serverIP + ":" + serverListenPort);
         client.Connect(serverIP, serverListenPort);
         connecting = true;
+
+        localConnection = local;
     }
 
     void ClientOnConnect(NetworkMessage msg)
@@ -214,7 +217,7 @@ public class RemoteTerminal : MonoBehaviour {
         //string[] msgArray = msgString.Split(' ');
         //ParseMessage(msgArray);
 
-        if (CAVE2.IsMaster())
+        if (CAVE2.IsMaster() && !localConnection)
         {
             CAVE2.BroadcastMessage(gameObject.name, "CAVE2ClusterMsg", msgString);
         }
@@ -457,6 +460,11 @@ public class RemoteTerminal : MonoBehaviour {
             }
             PrintUI(message);
         }
+    }
+
+    public void SendCommandFromUI(string cmd)
+    {
+        SendCommand(cmd, true);
     }
 
     public void SendCommand(string cmd, bool useReliable = true)

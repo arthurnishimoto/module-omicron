@@ -7,11 +7,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
     [SerializeField] int headID = 1;
     [SerializeField] int wandID = 1;
 
-    [SerializeField] CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
-    [SerializeField] CAVE2.Axis strafeAxis = CAVE2.Axis.LeftAnalogStickLR;
-    [SerializeField] CAVE2.Axis lookUDAxis = CAVE2.Axis.RightAnalogStickUD;
-    [SerializeField] CAVE2.Axis lookLRAxis = CAVE2.Axis.RightAnalogStickLR;
-    [SerializeField] CAVE2.Axis verticalAxis = CAVE2.Axis.AnalogTriggerL;
+    public CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
+    public CAVE2.Axis strafeAxis = CAVE2.Axis.LeftAnalogStickLR;
+    public CAVE2.Axis lookUDAxis = CAVE2.Axis.RightAnalogStickUD;
+    public CAVE2.Axis lookLRAxis = CAVE2.Axis.RightAnalogStickLR;
+    public CAVE2.Axis verticalAxis = CAVE2.Axis.AnalogTriggerL;
 
     [SerializeField] float forward;
     [SerializeField] float strafe;
@@ -208,7 +208,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
             nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90));
 
             transform.position = nextPos;
-            transform.Rotate(new Vector3(0, lookAround.y, 0) * Time.deltaTime * turnSpeed);
+            transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
@@ -217,7 +217,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
             transform.position = nextPos;
 
             transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime * turnSpeed);
-            transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
+            transform.Rotate(new Vector3(lookAround.x, strafe, 0) * Time.deltaTime * turnSpeed);
         }
 
         if (autoLevelMode == AutoLevelMode.OnGroundCollision)
@@ -299,13 +299,13 @@ public class CAVE2WandNavigator : MonoBehaviour {
             nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
 
             transform.position = nextPos;
-            transform.Rotate(new Vector3(0, lookAround.y, 0) * Time.deltaTime * turnSpeed);
+            transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
             transform.position = nextPos;
             transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime);
-            transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
+            transform.Rotate(new Vector3(lookAround.x, strafe, 0) * Time.deltaTime * turnSpeed);
         }
     }
 }

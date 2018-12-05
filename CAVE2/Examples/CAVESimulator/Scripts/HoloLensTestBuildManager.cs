@@ -34,7 +34,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class HoloLensTestBuildManager : MonoBehaviour {
 
-    enum Mode { Simulator, Build, CAVE2Server };
+    enum Mode { Simulator, Build, CAVE2Server, Remote, Playback };
 
     [Header("Settings")]
     [SerializeField]
@@ -57,6 +57,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     int lastShowHMDTerminalState;
 
+    [SerializeField]
+    bool showCalibrationObjects;
+
     [Header("Components")]
     [SerializeField]
     ScreenConfigCalc cave2Screen;
@@ -66,6 +69,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     [SerializeField]
     int currentHoloLensCameraMask;
+
+    [SerializeField]
+    int VRProjectionCameraMask;
 
     [SerializeField]
     CAVE2TransformSync headTracking;
@@ -100,6 +106,25 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     GameObject hmdTerminalDisplay;
 
+    [SerializeField]
+    GameObject remoteUIControls;
+
+    [SerializeField]
+    GameObject calibrationObjects;
+
+    [Header("Loggers")]
+    [SerializeField]
+    string logFilePath = "E:\\Dev\\Logs";
+
+    [SerializeField]
+    TransformLogger headLogger;
+
+    [SerializeField]
+    WandLogger wandLogger;
+
+    [SerializeField]
+    StudyProgressLogger studyLogger;
+
     private void Start()
     {
         UpdateMode();
@@ -128,6 +153,10 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     }
 
     void UpdateMode () {
+
+        headTracking.GetComponent<getReal3DMocapUpdater>().enabled = true;
+        cave2SimCamera.GetComponentInParent<CAVE2CameraController>().enabled = true;
+
         if (mode == Mode.Simulator)
         {
             cave2Screen.enabled = true;
@@ -136,12 +165,15 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             headTracking.enabled = !simulateTracking;
             cave2RPCManager.useMsgClient = !simulateTracking;
 
+            cave2RPCManager.useMsgServer = false;
             serverHeadTracking.enabled = false;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
 
-            remoteTerminal.ShowInputField(enableCommandLine);
+            headLogger.enableLogging = false;
+            wandLogger.enableLogging = false;
+            studyLogger.enableLogging = false;
         }
         else if (mode == Mode.Build)
         {
@@ -150,15 +182,19 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Screen.enabled = false;
             headTracking.enabled = true;
             holoLensCamera.cullingMask = 512;
+            hmdPerspective.virtualCameraCullingMask = VRProjectionCameraMask;
             holoLensCamera.enabled = true;
             cave2RPCManager.useMsgClient = true;
 
+            cave2RPCManager.useMsgServer = false;
             serverHeadTracking.enabled = false;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
             cave2Manager.simulateAsClient = true;
 
-            remoteTerminal.ShowInputField(enableCommandLine);
+            headLogger.enableLogging = false;
+            wandLogger.enableLogging = false;
+            studyLogger.enableLogging = false;
         }
         else if (mode == Mode.CAVE2Server)
         {
@@ -172,17 +208,60 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2SimCamera.enabled = true;
             cave2ScreenMask.SetActive(true);
             cave2Manager.simulateAsClient = false;
+            remoteUIControls.SetActive(false);
+
+            showTerminal = true;
+
+            if (Application.isPlaying) {
+                headLogger.StartLog(logFilePath);
+                wandLogger.StartLog(logFilePath);
+                studyLogger.StartLog(logFilePath);
+            }
+        }
+        else if (mode == Mode.Remote)
+        {
+            cave2Screen.enabled = false;
+            headTracking.enabled = true;
+            holoLensCamera.enabled = true;
+            cave2RPCManager.useMsgClient = true;
+
+            cave2RPCManager.useMsgServer = false;
+            serverHeadTracking.enabled = true;
+            cave2SimCamera.enabled = false;
+            cave2ScreenMask.SetActive(false);
+            cave2Manager.simulateAsClient = true;
+            remoteUIControls.SetActive(true);
+
+            showTerminal = true;
+            enableCommandLine = true;
+        }
+        else if (mode == Mode.Playback)
+        {
+            headTracking.GetComponent<getReal3DMocapUpdater>().enabled = false;
+            cave2SimCamera.GetComponentInParent<CAVE2CameraController>().enabled = false;
+            cave2Manager.simulatorMode = true;
+            cave2Manager.mocapEmulation = true;
+
+            headTracking.enabled = false;
+
+            cave2RPCManager.useMsgClient = false;
+            cave2RPCManager.useMsgServer = false;
+            remoteUIControls.SetActive(false);
         }
 
-        // Ignore ExecuteInEditMode and only run when not server
-        if (Application.isPlaying && enableCommandLine && mode != Mode.CAVE2Server)
-            remoteTerminal.StartClient();
+        remoteTerminal.ShowInputField(enableCommandLine);
+
+        // Ignore ExecuteInEditMode and set local client mode if server
+        if (Application.isPlaying && enableCommandLine)
+            remoteTerminal.StartClient(mode == Mode.CAVE2Server);
 
         CAVE2ScreenCover.SetActive(hideCAVE2View);
 
         commandLineTerminal.SetActive(showTerminal);
 
         hmdTerminalDisplay.SetActive(showHMDTerminal);
+
+        calibrationObjects.SetActive(showCalibrationObjects);
     }
 
     void SetHeadProjectionOffset(object[] data)
@@ -223,5 +302,13 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             showHMDTerminal = true;
         else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
             showHMDTerminal = false;
+    }
+
+    void ShowCalibrationObjects(object[] data)
+    {
+        if (data[0].ToString().Equals("true", System.StringComparison.OrdinalIgnoreCase))
+            showCalibrationObjects = true;
+        else if (data[0].ToString().Equals("false", System.StringComparison.OrdinalIgnoreCase))
+            showCalibrationObjects = false;
     }
 }

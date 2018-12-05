@@ -277,7 +277,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float.TryParse(msgStrArray[startingDataIndex + 1], out y);
                 float.TryParse(msgStrArray[startingDataIndex + 2], out z);
 
-                targetObj.BroadcastMessage("SyncPosition", new Vector3(x, y, z));
+                targetObj.SendMessage("SyncPosition", new Vector3(x, y, z));
             }
             else if (functionName.Equals("SyncRotation"))
             {
@@ -290,7 +290,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 float.TryParse(msgStrArray[startingDataIndex + 2], out z);
                 float.TryParse(msgStrArray[startingDataIndex + 3], out w);
 
-                targetObj.BroadcastMessage("SyncRotation", new Quaternion(x, y, z, w));
+                targetObj.SendMessage("SyncRotation", new Quaternion(x, y, z, w));
             }
 
             // Generic Transform functions
@@ -450,7 +450,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
@@ -473,7 +473,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
@@ -496,7 +496,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
@@ -519,7 +519,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
