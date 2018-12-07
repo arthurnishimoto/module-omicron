@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
+    static float CAVE2_RADIUS = 3.240f;
+    static float CAVE2_FLOOR_TO_BOTTOM_DISPLAY = 0.293f;
+    static float CAVE2_DISPLAY_W_BORDER_HEIGHT = 0.581f;
+
     public enum Axis
     {
         None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR,
@@ -261,6 +265,106 @@ public class CAVE2 : MonoBehaviour
     public static void LoadSceneAsync(string id)
     {
         RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+    }
+
+    public static bool IsPointingAtCAVE2Screens(Vector3 position, Quaternion rotation, out Vector3 intersectPoint)
+    {
+        return IsPointingAtCAVE2Screens(position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, out intersectPoint);
+    }
+
+    public static bool IsPointingAtCAVE2Screens(float x, float y, float z, float rx, float ry, float rz, float rw, out Vector3 intersectPoint)
+    {
+        Vector3 eulerAngles = Vector3.zero;
+        float radius = 3.240f;
+
+        // Quaternion to Euler ////////////////////////
+        // Rotation matrix Q multiplied by reference vector (0,0,1)
+        // 		| 1 - 2y^2 - 2z^2 , 2xy - 2zw, 2xz + 2yw	|		|0	|
+        // Q =	| 2xy + 2zw, 1 - 2x^2 - 2z^2, 2yz - 2xw		| * 	|0	|
+        // 		| 2xz - 2yw, 2yz + 2xw, 1 - 2x^2 - 2y^2		|		|1  |
+        eulerAngles.x = 1 * (2 * rx * rz + 2 * ry * rw);
+        eulerAngles.y = 1 * (2 * ry * rz - 2 * rx * rw);
+        eulerAngles.z = 1 * (1 - 2 * (rx * rx) - 2 * (ry * ry));
+
+        if (rx * ry + rz * rw == 0.5)
+        {
+            // North pole
+            eulerAngles.x = 2 * Mathf.Atan2(rx, rw);
+            eulerAngles.z = 0;
+        }
+        else if (rx * ry + rz * rw == -0.5)
+        {
+            // South pole
+            eulerAngles.x = -2 * Mathf.Atan2(rx, rw);
+            eulerAngles.z = 0;
+        }
+        // QuaternionToEuler ends ///////////////////
+
+        float h = 0; // x-coordinate of the center of the circle
+        float k = 0; // z-coordinate of the center of the circle
+        float ox = eulerAngles.x; // parametric slope of x, from orientation vector
+        float oy = eulerAngles.y; // parametric slope of y, from orientation vector
+        float oz = eulerAngles.z; // parametric slope of z, from orientation vector
+        float r = radius; // radius of cylinder
+
+        // A * t^2 + B * t + C
+        float A = ox * ox + oz * oz;
+        float B = 2 * ox * x + 2 * oz * z - 2 * h * ox - 2 * k * oz;
+        float C = x * x + z * z + h * h + k * k - r * r - 2 * h * x - 2 * k * z;
+
+        float t1 = (-B + Mathf.Sqrt(B * B - 4 * A * C)) / (2 * A);
+        float t2 = (-B - Mathf.Sqrt(B * B - 4 * A * C)) / (2 * A);
+        float t = 0;
+        if (t1 >= 0)
+        {
+            t = t1;
+        }
+        else if (t2 >= 0)
+        {
+            t = t2;
+        }
+
+        var x_pos = ox * t + x;
+        var y_pos = oy * t + y;
+        var z_pos = oz * t + z;
+        intersectPoint = new Vector3(x_pos, y_pos, z_pos);
+
+        // Check if over CAVE2 entrance
+        float angle = Mathf.Atan2(x_pos, -z_pos);
+        float radiansForDoor = 36 * Mathf.PI / 180;
+        float max_x_error = 0.005f; // fractional
+
+        if (angle < 0)
+        {
+            angle += 2 * Mathf.PI;
+        }
+        angle = 2 * Mathf.PI - angle;
+        angle -= radiansForDoor / 2;
+        x = angle / (2 * Mathf.PI - radiansForDoor);
+        x += 0.02777777777f;
+        if (x > 1)
+        {
+            if (x >= 1 + max_x_error)
+            {
+                return false;
+            }
+        }
+        if (x < 0)
+        {
+            if (x <- -max_x_error)
+            {
+                return false;
+            }
+        }
+
+        if (intersectPoint.y >= CAVE2_FLOOR_TO_BOTTOM_DISPLAY && intersectPoint.y <= CAVE2_FLOOR_TO_BOTTOM_DISPLAY + CAVE2_DISPLAY_W_BORDER_HEIGHT * 4)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
