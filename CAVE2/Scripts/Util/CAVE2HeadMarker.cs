@@ -23,6 +23,7 @@ public class CAVE2HeadMarker : MonoBehaviour {
 #if UNITY_5_5_OR_NEWER
             headToGroundLine.startWidth = 0.02f;
             headToGroundLine.endWidth = 0.02f;
+            headToGroundLine.generateLightingData = true;
 #else
             headToGroundLine.SetWidth(0.02f, 0.02f);
 #endif
@@ -35,6 +36,7 @@ public class CAVE2HeadMarker : MonoBehaviour {
 #if UNITY_5_5_OR_NEWER
             forwardLine.startWidth = 0.02f;
             forwardLine.endWidth = 0.02f;
+            forwardLine.generateLightingData = true;
 #else
             forwardLine.SetWidth(0.02f, 0.02f);
 #endif
