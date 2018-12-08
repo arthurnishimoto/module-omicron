@@ -267,6 +267,14 @@ public class CAVE2 : MonoBehaviour
         RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
     }
 
+    public static void PrintArray(object[] array)
+    {
+        for(int i = 0; i < array.Length; i++)
+        {
+            Debug.Log("[" + i + "]: '" + array[i] + "'");
+        }
+    }
+
     public static bool IsPointingAtCAVE2Screens(Vector3 position, Quaternion rotation, out Vector3 intersectPoint)
     {
         return IsPointingAtCAVE2Screens(position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, out intersectPoint);
