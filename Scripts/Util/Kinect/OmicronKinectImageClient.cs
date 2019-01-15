@@ -66,6 +66,13 @@ public class OmicronKinectImageClient : OmicronEventClient
 
     public override void OnEvent(EventData e)
     {
+        if((imageType == ImageType.Color && e.sourceId != 0) ||
+            (imageType == ImageType.Depth && e.sourceId != 1)
+            )
+        {
+            return;
+        }
+
         byte[] bitmapBytes = e.extraData;
         receivedExtraDataSize = (int)bitmapBytes.Length;
 
