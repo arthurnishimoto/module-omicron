@@ -11,17 +11,23 @@ public class OmicronKinectImageClient : OmicronEventClient
     public enum ImageType { Color, Depth};
     public ImageType imageType = ImageType.Color;
 
+    public int numberOfPacketsPerImage = 32;
+    int totalImagePixelCount;
+
+    public int imageWidth = 1920;
+    public int imageHeight = 1080;
+
     public int sourceID = -1; // -1 for any
 
-    public int lastEventFlag;
-    public int extraDataSize;
+    public int receivedExtraDataSize;
+    public int calculatedExtraDataSize;
 
     public Texture2D texture;
     public Material outputMaterial;
 
-    public int[] byteSample = new int[4];
-    public int x;
-    public int y;
+    int[] byteSample = new int[4];
+    int x;
+    int y;
 
     Color[] colorArray;
 
@@ -31,25 +37,26 @@ public class OmicronKinectImageClient : OmicronEventClient
         eventOptions = EventBase.ServiceType.ServiceTypeGeneric;
         InitOmicron();
 
-        int width = 1920;
-        int height = 1080;
-
         if (imageType == ImageType.Color)
         {
-            width = 1920;
-            height = 1080;
+            imageWidth = 1920;
+            imageHeight = 1080;
+
+            numberOfPacketsPerImage = 270;
         }
         else if (imageType == ImageType.Depth)
         {
-            width = 512;
-            height = 424;
+            imageWidth = 512;
+            imageHeight = 424;
+
+            numberOfPacketsPerImage = 32;
         }
 
-        texture = new Texture2D(width, height);
+        texture = new Texture2D(imageWidth, imageHeight);
         outputMaterial.mainTexture = texture;
 
-        int pixelCount = width * height;
-        colorArray = new Color[pixelCount];
+        totalImagePixelCount = imageWidth * imageHeight;
+        colorArray = new Color[totalImagePixelCount];
     }
 
     public void Update()
@@ -59,57 +66,53 @@ public class OmicronKinectImageClient : OmicronEventClient
 
     public override void OnEvent(EventData e)
     {
-        lastEventFlag = (int)e.flags;
-
         byte[] bitmapBytes = e.extraData;
-        extraDataSize = (int)bitmapBytes.Length;
+        receivedExtraDataSize = (int)bitmapBytes.Length;
 
-        int packetID = (int)e.flags; // 0 to 8640
+        // Total pixels * RGBA channels (byte per channel)
+        int bytesPerImage = totalImagePixelCount * 4;
+        int bytesPerPacket = bytesPerImage / numberOfPacketsPerImage;
+        calculatedExtraDataSize = bytesPerPacket;
 
-        if (imageType == ImageType.Color)
+        int packetID = (int)e.flags; // Packet number 0 - (numberOfPacketsPerImage - 1)
+
+        int extraDataSize = calculatedExtraDataSize;
+
+        // Calculate the pixel (x,y) position from segment of a
+        // linear array representing all the pixels
+        int pixelsPerPacket = extraDataSize / 4;
+        int linesPerPacket = pixelsPerPacket / imageWidth;
+
+        // Determine if the packet of pixels ends in the middle
+        // of a horizontal line and determine the offset/shift
+        // that needs to be applied
+        int packetShift = 0;
+        int lineOffset = pixelsPerPacket % imageWidth;
+        if (lineOffset != 0)
+            packetShift = packetID % (imageWidth / lineOffset);
+
+        x = packetShift * lineOffset;
+        y = packetID * linesPerPacket;
+
+        // Read through all the bytes in the array
+        // Pulling out every 4 bytes (each RGBA element)
+        for (int i = 0; i < extraDataSize; i += 4)
         {
-            y = packetID / 8;
-            x = (packetID % 8) * 240; // 8 segments of 240 pixels per line
+            Array.Copy(bitmapBytes, i, byteSample, 0, 4);
 
-            for (int i = 0; i < extraDataSize; i += 4)
+            // Format from Kinect is BGRA (not RGBA)
+            Color color = new Color(byteSample[2] / 255.0f, byteSample[1] / 255.0f, byteSample[0] / 255.0f);
+
+            // If pixel array reaches end of image width, next line
+            if (x >= imageWidth)
             {
-                int pixelID = i * (extraDataSize / 4);
-                Array.Copy(bitmapBytes, i, byteSample, 0, 4);
-
-                Color color = new Color(byteSample[2] / 255.0f, byteSample[1] / 255.0f, byteSample[0] / 255.0f);
-
-                //int overallImageID = packetID * (extraDataSize / 4) + pixelID;
-                //Debug.Log(overallImageID);
-                //colorArray[overallImageID] = color;
-
-                //Debug.Log(byteSample[0] + " " + byteSample[1] + " " + byteSample[2] + " " + byteSample[3]);
-                texture.SetPixel(x, y, color);
-                x++;
+                x = 0;
+                y++;
             }
+
+            texture.SetPixel(x, y, color);
+            x++;
         }
-        else if( imageType == ImageType.Depth)
-        {
-            y = packetID / 4;
-            x = (packetID % 4) * 128;
 
-            extraDataSize = 848;
-
-            for (int i = 0; i < extraDataSize; i += 4)
-            {
-                int pixelID = i * (extraDataSize / 4);
-                Array.Copy(bitmapBytes, i, byteSample, 0, 4);
-
-                Color color = new Color(byteSample[2] / 255.0f, byteSample[1] / 255.0f, byteSample[0] / 255.0f);
-
-                //int overallImageID = packetID * (extraDataSize / 4) + pixelID;
-                //Debug.Log(overallImageID);
-                //colorArray[overallImageID] = color;
-
-                //Debug.Log(byteSample[0] + " " + byteSample[1] + " " + byteSample[2] + " " + byteSample[3]);
-                texture.SetPixel(x, y, color);
-                x++;
-            }
-        }
-        
     }
 }
