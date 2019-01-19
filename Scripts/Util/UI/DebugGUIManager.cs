@@ -33,9 +33,6 @@ public class DebugGUIManager : MonoBehaviour {
 		omgManager = GetComponent<OmicronManager>();
         // cave2manager = GetComponent<CAVE2Manager>();
 
-        if (GetComponent<GUIText>() == null)
-            gameObject.AddComponent<GUIText>();
-
         transform.position = new Vector3(0.01f, 0.04f, 0);
 	}
 
@@ -56,24 +53,12 @@ public class DebugGUIManager : MonoBehaviour {
 				// display two fractional digits (f2 format)
 				float fps = accum/frames;
 				string format = System.String.Format("{0:F2} FPS",fps);
-                GetComponent<GUIText>().text = format;
-				
-				if(fps < 30)
-                    GetComponent<GUIText>().material.color = Color.yellow;
-				else 
-					if(fps < 10)
-                    GetComponent<GUIText>().material.color = Color.red;
-				else
-                    GetComponent<GUIText>().material.color = Color.green;
+
 				//	DebugConsole.Log(format,level);
 				timeleft = FPS_updateInterval;
 				accum = 0.0F;
 				frames = 0;
 			}
-		}
-		else
-		{
-            GetComponent<GUIText>().text = "";
 		}
 	}
 

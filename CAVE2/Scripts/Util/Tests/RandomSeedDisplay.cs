@@ -15,7 +15,7 @@ public class RandomSeedDisplay : MonoBehaviour {
 	void Update () {
 	    if(uiText != null)
         {
-            uiText.text = "Random Seed: " + Random.seed;
+            uiText.text = "Random Seed: " + Random.state;
         }
 	}
 }
