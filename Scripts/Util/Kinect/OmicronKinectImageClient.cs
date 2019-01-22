@@ -8,7 +8,7 @@ using System;
 
 public class OmicronKinectImageClient : OmicronEventClient
 {
-    public enum ImageType { Color, Depth};
+    public enum ImageType { Color, Depth };
     public ImageType imageType = ImageType.Color;
 
     public int numberOfPacketsPerImage = 32;
@@ -22,7 +22,7 @@ public class OmicronKinectImageClient : OmicronEventClient
     public int receivedExtraDataSize;
     public int calculatedExtraDataSize;
 
-    public Texture2D texture;
+    Texture2D texture;
     public Material outputMaterial;
 
     int[] byteSample = new int[4];
@@ -30,6 +30,28 @@ public class OmicronKinectImageClient : OmicronEventClient
     int y;
 
     Color[] colorArray;
+
+    public bool forceCompleteFrames = false;
+    float lastZeroFrameTime;
+
+
+    struct FrameObject
+    {
+        public Texture2D texture;
+        public int[] packetsReceived;
+        public int packetsReady;
+    }
+
+    int frameBufferSize = 5;
+    FrameObject[] frames;
+    Hashtable frameIndexLookup = new Hashtable();
+    int nextFrameIndex;
+    FrameObject currentFrameObject;
+
+    [SerializeField]
+    int[] readyFrames;
+
+    float completeFrameTime;
 
     // Use this for initialization
     new void Start()
@@ -53,26 +75,56 @@ public class OmicronKinectImageClient : OmicronEventClient
         }
 
         texture = new Texture2D(imageWidth, imageHeight);
-        outputMaterial.mainTexture = texture;
+
+        frames = new FrameObject[frameBufferSize];
+        for (int i = 0; i < frameBufferSize; i++)
+        {
+            frames[i].texture = new Texture2D(imageWidth, imageHeight);
+            frames[i].packetsReceived = new int[numberOfPacketsPerImage];
+            frames[i].packetsReady = 0;
+        }
+
+
+        outputMaterial.mainTexture = frames[0].texture;
 
         totalImagePixelCount = imageWidth * imageHeight;
         colorArray = new Color[totalImagePixelCount];
+        readyFrames = new int[frameBufferSize];
     }
 
+    int drawFrame;
     public void Update()
     {
-        texture.Apply();
+        if (forceCompleteFrames)
+        {
+            for (int i = 0; i < frames.Length; i++)
+            {
+                readyFrames[i] = frames[i].packetsReady;
+                if (readyFrames[i] == numberOfPacketsPerImage)
+                {
+                    frames[i].texture.Apply();
+                    outputMaterial.mainTexture = frames[i].texture;
+                    Debug.Log("Frame complete: " + (Time.time - completeFrameTime));
+                    completeFrameTime = Time.time;
+                    frames[i].packetsReady = 0;
+                }
+            }
+        }
+        else
+        {
+            texture.Apply();
+            outputMaterial.mainTexture = texture;
+        }
     }
 
     public override void OnEvent(EventData e)
     {
-        if((imageType == ImageType.Color && e.sourceId != 0) ||
-            (imageType == ImageType.Depth && e.sourceId != 1)
+        if ((imageType == ImageType.Color && (int)e.posz != 0) ||
+            (imageType == ImageType.Depth && (int)e.posz != -1)
             )
         {
             return;
         }
-
         byte[] bitmapBytes = e.extraData;
         receivedExtraDataSize = (int)bitmapBytes.Length;
 
@@ -82,6 +134,40 @@ public class OmicronKinectImageClient : OmicronEventClient
         calculatedExtraDataSize = bytesPerPacket;
 
         int packetID = (int)e.flags; // Packet number 0 - (numberOfPacketsPerImage - 1)
+
+        int frameID = (int)e.sourceId;
+
+        if (forceCompleteFrames)
+        {
+            if (frameIndexLookup.ContainsKey(frameID))
+            {
+                int currentFrameIndex = (int)frameIndexLookup[frameID];
+                currentFrameObject = frames[currentFrameIndex];
+
+                currentFrameObject.packetsReceived[packetID] = 1;
+                currentFrameObject.packetsReady = currentFrameObject.packetsReady + 1;
+
+                frames[currentFrameIndex] = currentFrameObject;
+
+                // Debug.Log("Updated timestamp " + frameID + " index " + currentFrameIndex + " " + packetID + "/" + numberOfPacketsPerImage);
+            }
+            else
+            {
+                // Debug.Log("New timestamp " + frameID + " added to frame index " + nextFrameIndex);
+
+                frameIndexLookup.Add(frameID, nextFrameIndex);
+                currentFrameObject = frames[nextFrameIndex];
+                currentFrameObject.texture = new Texture2D(imageWidth, imageHeight);
+                currentFrameObject.packetsReceived = new int[numberOfPacketsPerImage];
+                currentFrameObject.packetsReady = 1;
+                frames[nextFrameIndex] = currentFrameObject;
+
+                if (nextFrameIndex < frameBufferSize - 1)
+                    nextFrameIndex++;
+                else
+                    nextFrameIndex = 0;
+            }
+        }
 
         int extraDataSize = calculatedExtraDataSize;
 
@@ -117,9 +203,11 @@ public class OmicronKinectImageClient : OmicronEventClient
                 y++;
             }
 
-            texture.SetPixel(x, y, color);
+            if (forceCompleteFrames)
+                currentFrameObject.texture.SetPixel(x, y, color);
+            else
+                texture.SetPixel(x, y, color);
             x++;
         }
-
     }
 }

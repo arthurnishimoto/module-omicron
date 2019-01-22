@@ -450,6 +450,7 @@ namespace omicronConnector
 
                     // Create the UDP socket data will be received on
                     udpClient = new UdpClient(dataPort);
+                    udpClient.Client.ReceiveBufferSize = 15360000;
 
                     // Send the handshake message to the server.
                     streamToServer.Write(data, 0, data.Length);
@@ -506,6 +507,12 @@ namespace omicronConnector
             }
 	    }
 
+        public struct UdpState
+        {
+            public UdpClient u;
+            public IPEndPoint e;
+        }
+
         private static void Listen()
         {
             //Debug.Log("InputService: Ready to receive data");
@@ -517,7 +524,7 @@ namespace omicronConnector
                 // Blocks until a message returns on this socket from a remote host.
                 Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
                 //Console.WriteLine("receiveBytes length: " + receiveBytes.Length);
-				//Debug.Log("receiveBytes length: " + receiveBytes.Length);
+                //Debug.Log("receiveBytes length: " + receiveBytes.Length);
 
                 //#define OI_READBUF(type, buf, offset, val) val = *((type*)&buf[offset]); offset += sizeof(type);
                 listener.onEvent(ByteArrayToEventData(receiveBytes));
