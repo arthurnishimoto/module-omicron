@@ -27,9 +27,18 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
 	    
         switch(renderMode)
         {
-            case (RenderMode.Background): GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 2); break;
-            case (RenderMode.None): GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 1); break;
-            case (RenderMode.Overlay): GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 0); break;
+            case (RenderMode.Background):
+                GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 2);
+                GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 2);
+                break;
+            case (RenderMode.None):
+                GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 1);
+                GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
+                break;
+            case (RenderMode.Overlay):
+                GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 0);
+                GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
+                break;
         }
 	}
 }

@@ -20,6 +20,8 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
 
     protected GameObject vrCamera;
 
+    public int virtualCameraCullingMask;
+
     // Set this to true if rendering to a virtual display
     // Disable if say rendering to an HMD display
     [SerializeField]
@@ -37,6 +39,12 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     [SerializeField]
     Vector3 headProjectionOffset;
 
+    [SerializeField]
+    Vector3 headOriginOffset;
+
+    [SerializeField]
+    Transform headOrigin;
+
     void Start()
     {
         displayInfo = GetComponent<DisplayInfo>();
@@ -53,6 +61,8 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
 
         virtualCamera = vrCamera.AddComponent<Camera>();
+        virtualCamera.cullingMask = virtualCameraCullingMask;
+
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
@@ -69,6 +79,9 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     void LateUpdate () {
         vrDisplay.localScale = displaySize;
         vrDisplay.localPosition = displayOffset;
+        headOrigin.localPosition = headOriginOffset;
+
+        displayInfo.UpdateDisplayInfo();
         HMDScreenUL = displayInfo.Px_UpperLeft;
         HMDScreenLL = displayInfo.Px_LowerLeft;
         HMDScreenLR = displayInfo.Px_LowerRight;
@@ -85,7 +98,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         }
     }
 
-    void SetHeadProjectionOffset(object[] data)
+    public void SetHeadProjectionOffset(object[] data)
     {
         float x = headProjectionOffset.x;
         float y = headProjectionOffset.y;
@@ -96,5 +109,51 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         float.TryParse((string)data[2], out z);
 
         headProjectionOffset = new Vector3(x, y, z);
+    }
+
+    public void SetHeadProjectionOffset(Vector3 value)
+    {
+        headProjectionOffset = value;
+    }
+
+    public void SetHeadOriginOffset(Vector3 value)
+    {
+        headOriginOffset = value;
+    }
+
+    public void SetDisplayOffset(object[] data)
+    {
+        float x = displayOffset.x;
+        float y = displayOffset.y;
+        float z = displayOffset.z;
+
+        float.TryParse((string)data[0], out x);
+        float.TryParse((string)data[1], out y);
+        float.TryParse((string)data[2], out z);
+
+        displayOffset = new Vector3(x, y, z);
+    }
+
+    public void SetHeadOriginOffset(object[] data)
+    {
+        float x = displayOffset.x;
+        float y = displayOffset.y;
+        float z = displayOffset.z;
+
+        float.TryParse((string)data[0], out x);
+        float.TryParse((string)data[1], out y);
+        float.TryParse((string)data[2], out z);
+
+        headOriginOffset = new Vector3(x, y, z);
+    }
+
+    public Vector3 GetHeadProjectionOffset()
+    {
+        return headProjectionOffset;
+    }
+
+    public Vector3 GetHeadOriginOffset()
+    {
+        return headOriginOffset;
     }
 }

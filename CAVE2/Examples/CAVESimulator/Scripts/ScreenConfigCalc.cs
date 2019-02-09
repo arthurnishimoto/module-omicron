@@ -5,44 +5,65 @@ using System.IO;
 
 public class ScreenConfigCalc : MonoBehaviour {
 
-    public GameObject display;
     ArrayList displayObjects;
-    public bool regenerateCAVE2;
+    [SerializeField] bool regenerateDisplayWall;
 
-    // New CAVE2 parameters
-    public string nodeName = "lyra";
+    [Header("Display Parameters")]
+    [SerializeField] GameObject display;
+    [SerializeField] float displayWidthIncBorders = 1027; // mm
+    [SerializeField] float displayHeightIncBorders = 581; // mm
 
-    public float displayWidthIncBorders = 1027; // mm
-    public float displayHeightIncBorders = 581; // mm
+    [SerializeField] float borderTop = 4; // mm
+    [SerializeField] float borderBottom = 2; // mm
+    [SerializeField] float borderLeft = 4; // mm
+    [SerializeField] float borderRight = 2; // mm
 
-    public float frontDisplayToTrackingOrigin = 3240;
-    public float displayToFloor = 293; // mm
+    [Header("Wall Parameters")]
+    [SerializeField] float frontDisplayToTrackingOrigin = 3240; // mm
+    [SerializeField] float displayToFloor = 293; // mm
 
-    public float borderTop = 4; // mm
-    public float borderBottom = 2; // mm
-    public float borderLeft = 4; // mm
-    public float borderRight = 2; // mm
+    [SerializeField] int nDisplayColumns = 18;
+    [SerializeField] int centerColumnOffset = -9;
+    [SerializeField] int displaysPerColumn = 4;
 
-    public int nDisplayColumns = 18;
-    public int centerColumnOffset = -9;
-    public int displaysPerColumn = 4;
+    [Header("Flat Wall Mode")]
+    [SerializeField] bool flatWall;
+    [SerializeField] float wallOffset; // mm
+
     float angle;
+
     float originX;
     float originY;
     float originZ;
 
-    public float angleOffset = 0.01f;
+    [SerializeField] float angleOffset = 0.01f;
 
-    public enum NodeArrangement { Sequential, Even, Odd };
-    public NodeArrangement nodeArrangement = NodeArrangement.Sequential;
+    [Header("Rendering")]
+    [SerializeField]
+    bool simulateDisplays;
+    bool last_simulateDisplaysState;
+
+    [SerializeField]
+    Material floorMaterial;
+
+    [SerializeField]
+    CAVE2ScreenMaskRenderer.RenderMode floorRenderMode = CAVE2ScreenMaskRenderer.RenderMode.Background;
+    CAVE2ScreenMaskRenderer.RenderMode last_floorRenderMode;
 
     public enum ConfigOutput { None, All, getReal3D };
+    public enum NodeArrangement { Sequential, Even, Odd };
+
+    [Header("Display Config Generator")]
+    
+    [SerializeField] NodeArrangement nodeArrangement = NodeArrangement.Sequential;
+
+    [SerializeField] string nodeName = "lyra";
     public ConfigOutput outputConfig = ConfigOutput.None;
 
     public bool generateScreenMaskAsset;
+    GameObject screenMask;
 
     // Mesh Generation
-    public Material floorMaterial;
     List<Vector3> CAVE2ScreenMaskVerticies;
     List<Vector2> CAVE2ScreenMaskUV;
     List<int> CAVE2ScreenMaskTriangles;
@@ -69,6 +90,9 @@ public class ScreenConfigCalc : MonoBehaviour {
             transform.position = initPosition;
             transform.rotation = initRotation;
         }
+
+        last_floorRenderMode = floorRenderMode;
+        last_simulateDisplaysState = simulateDisplays;
     } 
 
     void GenerateCAVE2() {
@@ -78,7 +102,7 @@ public class ScreenConfigCalc : MonoBehaviour {
         }
 
         angle = 2.0f * Mathf.Atan(displayWidthIncBorders / 2.0f / frontDisplayToTrackingOrigin);
-
+        
         float displayPixelWidth = displayWidthIncBorders - borderLeft - borderRight;
         float displayPixelHeight = displayHeightIncBorders - borderTop - borderBottom;
 
@@ -112,6 +136,13 @@ public class ScreenConfigCalc : MonoBehaviour {
             float originY = frontDisplayToTrackingOrigin * (Mathf.Cos(ang));
             float h = ang * 360.0f / (2.0f * Mathf.PI);
 
+            if (flatWall)
+            {
+                originX = wallOffset + displayWidthIncBorders * i;
+                originY = frontDisplayToTrackingOrigin;
+                h = 0;
+            }
+
             // Convert to CAVE2 coordinate system
             originX *= -1;
             originX /= 1000.0f;
@@ -133,6 +164,7 @@ public class ScreenConfigCalc : MonoBehaviour {
                 g.transform.parent = transform;
                 g.transform.localPosition = new Vector3(-originX, originZ, originY);
                 g.transform.localRotation = Quaternion.Euler(0, h, 0);
+                g.GetComponent<CAVE2Display>().enabled = simulateDisplays;
 
                 g.name = "Display " + nodeNameLabel + currentNode + " " + j;
 
@@ -300,7 +332,7 @@ public class ScreenConfigCalc : MonoBehaviour {
         CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
         CAVE2ScreenMaskTriangles.Add(lastCeilingVertIndex);
 
-        GameObject screenMask = new GameObject("CAVE2 Screen Mask");
+        screenMask = new GameObject("CAVE2 Screen Mask");
         screenMask.transform.parent = transform;
         screenMask.transform.localPosition = Vector3.zero;
         screenMask.transform.localRotation = Quaternion.identity;
@@ -360,19 +392,60 @@ public class ScreenConfigCalc : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if( regenerateCAVE2 )
+		if(regenerateDisplayWall)
         {
             foreach( GameObject g in displayObjects )
             {
                 Destroy(g);
             }
+            Destroy(screenMask);
             displayObjects.Clear();
             CAVE2ScreenMaskVerticies.Clear();
             CAVE2ScreenMaskUV.Clear();
             CAVE2ScreenMaskTriangles.Clear();
 
             GenerateCAVE2();
-            regenerateCAVE2 = false;
+            UpdateScreenMask();
+            regenerateDisplayWall = false;
         }
-	}
+
+        if (last_floorRenderMode != floorRenderMode)
+        {
+            UpdateScreenMask();
+            last_floorRenderMode = floorRenderMode;
+        }
+
+        if(last_simulateDisplaysState != simulateDisplays)
+        {
+            foreach (GameObject g in displayObjects)
+            {
+                g.GetComponent<CAVE2Display>().enabled = simulateDisplays;
+                if(!simulateDisplays)
+                    g.GetComponent<CAVE2Display>().RemoveDisplayTexture();
+                else
+                    g.GetComponent<CAVE2Display>().CreateDisplayTexture();
+            }
+
+            last_simulateDisplaysState = simulateDisplays;
+        }
+    }
+
+    void UpdateScreenMask()
+    {
+        switch (floorRenderMode)
+        {
+            case (CAVE2ScreenMaskRenderer.RenderMode.Background):
+                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 2);
+                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 2);
+                break;
+            case (CAVE2ScreenMaskRenderer.RenderMode.None):
+                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 1);
+                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
+                break;
+            case (CAVE2ScreenMaskRenderer.RenderMode.Overlay):
+                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 0);
+                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
+                break;
+        }
+    }
 }

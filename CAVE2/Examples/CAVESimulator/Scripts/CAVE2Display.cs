@@ -45,6 +45,9 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     [SerializeField]
     protected bool renderTextureToVRCamera = true;
 
+    Material originalMaterial;
+    Material displayMat;
+
     // Use this for initialization
     void Start () {
         displayInfo = GetComponent<DisplayInfo>();
@@ -61,17 +64,30 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
 
         virtualCamera = vrCamera.AddComponent<Camera>();
+
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
-        if(renderTextureToVRCamera)
+        if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
 
-        Material displayMat = new Material(Shader.Find("Unlit/Texture"));
+        displayMat = new Material(Shader.Find("Unlit/Texture"));
         displayMat.name = gameObject.name + " (VR Camera Material)";
         displayMat.mainTexture = cameraRT;
 
         Transform displaySpace = transform.Find("Borders/PixelSpace");
+        originalMaterial = displaySpace.GetComponent<MeshRenderer>().material;
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
         displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
     }
 
+    public void RemoveDisplayTexture()
+    {
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().material = originalMaterial;
+    }
+
+    public void CreateDisplayTexture()
+    {
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().material = displayMat;
+    }
 }

@@ -145,6 +145,16 @@ public class CAVE2InputManager : OmicronEventClient
         return GetButtonUp(wandID, (CAVE2.Button)unityInputToOmicronInput[button]);
     }
 
+    public int GetButtonFlags(int wandID)
+    {
+        if (wandControllers.ContainsKey(wandID))
+        {
+            OmicronController wandController = (OmicronController)wandControllers[wandID];
+            return wandController.rawFlags;
+        }
+        return 0;
+    }
+
     public float GetAxis(int wandID, CAVE2.Axis axis)
     {
         if (wandControllers.ContainsKey(wandID))
@@ -377,7 +387,7 @@ public class CAVE2InputManager : OmicronEventClient
                     wand2MocapSensor.orientation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
 #endif
                 }
-                else
+                else if(UnityEngine.XR.XRDevice.model.Length > 0)
                 {
                     // Hack: InputTracking isn't using some offset that the Main Camera is otherwise getting. Calculate the diff here:
                     Vector3 oculusRealHeadPosition = Camera.main.transform.localPosition;
@@ -865,11 +875,14 @@ public class CAVE2InputManager : OmicronEventClient
 #endif
         }
 
-        wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
-        wandController.rawFlags = wand1_flags;
+        if (!CAVE2.IsSimulatorMode() || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled)
+        {
+            wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
+            wandController.rawFlags = wand1_flags;
 
-        wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
-        wandController2.rawFlags = wand2_flags;
+            wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
+            wandController2.rawFlags = wand2_flags;
+        }
 
         /*
         // If Omicron server is enabled, let Omicron handle tracker/controller data instead of getReal3D
@@ -883,5 +896,15 @@ public class CAVE2InputManager : OmicronEventClient
             wandController2.rawFlags = wand2_flags;
         }
         */
+    }
+
+    public void UpdateWandController(int wandID, Vector2 analog1, Vector2 analog2, Vector2 analog3, Vector2 analog4, int buttonFlags)
+    {
+        OmicronController wand = (OmicronController)wandControllers[wandID];
+        if(wand != null)
+        {
+            wand.UpdateAnalog(analog1, analog2, analog3, analog4);
+            wand.rawFlags = buttonFlags;
+        }
     }
 }

@@ -15,6 +15,11 @@ public class DisplayInfo : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        UpdateDisplayInfo();
+    }
+
+    public void UpdateDisplayInfo()
+    {
         Px_UpperLeft = gameObject.transform.Find("Borders/PixelSpace/Px-UpperLeft").position;
         Px_LowerLeft = gameObject.transform.Find("Borders/PixelSpace/Px-LowerLeft").position;
         Px_LowerRight = gameObject.transform.Find("Borders/PixelSpace/Px-LowerRight").position;

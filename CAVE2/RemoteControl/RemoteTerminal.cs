@@ -12,6 +12,7 @@ public class RemoteTerminal : MonoBehaviour {
     bool connectToServer;
 
     bool isServer;
+    bool connecting;
 
     // Server
     NetworkServerSimple server;
@@ -32,6 +33,9 @@ public class RemoteTerminal : MonoBehaviour {
     [SerializeField]
     Text terminalTextLog;
 
+    [SerializeField]
+    Text secondaryTerminalText;
+
     // Client
     [SerializeField]
     string serverIP = "localhost";
@@ -39,12 +43,15 @@ public class RemoteTerminal : MonoBehaviour {
     NetworkMessageDelegate clientOnConnect;
     NetworkMessageDelegate clientOnDisconnect;
     NetworkMessageDelegate clientOnData;
+    bool localConnection = false; // Flag to disable cyclic events if connecting to a local msg server
 
     // Command Terminal
     [SerializeField]
     InputField commandLine;
     ArrayList cmdHistory = new ArrayList();
     int currentCmdHistoryLine;
+
+    ArrayList terminalHistory = new ArrayList();
 
     [SerializeField]
     GameObject selectedObject;
@@ -100,16 +107,37 @@ public class RemoteTerminal : MonoBehaviour {
         PrintUI("Server: Starting on port " + serverListenPort);
     }
 
-    public void StartClient()
+    public void StartClient(bool local = false)
     {
-        ConnectToServer();
+        if (!connecting)
+        {
+            ConnectToServer(local);
+        }
+    }
+
+    public void ShowInputField(bool value)
+    {
+        commandLine.gameObject.SetActive(value);
     }
 
     public void PrintUI(object log)
     {
-        if(terminalTextLog)
+        terminalTextLog.text = "";
+        terminalHistory.Add(log.ToString());
+        if(terminalHistory.Count > 25)
         {
-            terminalTextLog.text += "\n" + log.ToString();
+            terminalHistory.RemoveRange(0, 1);
+        }
+        if (terminalTextLog)
+        {
+            int i = 0;
+            foreach(string s in terminalHistory)
+            {
+                terminalTextLog.text += "\n" + s;
+                i++;
+            }
+            if (secondaryTerminalText)
+                secondaryTerminalText.text = terminalTextLog.text;
         }
         Debug.Log(log.ToString());
     }
@@ -159,10 +187,13 @@ public class RemoteTerminal : MonoBehaviour {
     }
 
     // Client Functions ---------------------------------------------------------------------------
-    void ConnectToServer()
+    void ConnectToServer(bool local = false)
     {
         PrintUI("Client: Connecting to " + serverIP + ":" + serverListenPort);
         client.Connect(serverIP, serverListenPort);
+        connecting = true;
+
+        localConnection = local;
     }
 
     void ClientOnConnect(NetworkMessage msg)
@@ -173,6 +204,7 @@ public class RemoteTerminal : MonoBehaviour {
     void ClientOnDisconnect(NetworkMessage msg)
     {
         PrintUI("Client: Disconnected");
+        connecting = false;
     }
 
     void ClientOnData(NetworkMessage msg)
@@ -185,7 +217,7 @@ public class RemoteTerminal : MonoBehaviour {
         //string[] msgArray = msgString.Split(' ');
         //ParseMessage(msgArray);
 
-        if (CAVE2.IsMaster())
+        if (CAVE2.IsMaster() && !localConnection)
         {
             CAVE2.BroadcastMessage(gameObject.name, "CAVE2ClusterMsg", msgString);
         }
@@ -428,6 +460,11 @@ public class RemoteTerminal : MonoBehaviour {
             }
             PrintUI(message);
         }
+    }
+
+    public void SendCommandFromUI(string cmd)
+    {
+        SendCommand(cmd, true);
     }
 
     public void SendCommand(string cmd, bool useReliable = true)

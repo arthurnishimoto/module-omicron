@@ -75,4 +75,11 @@ public class OmicronStatusGUI : MonoBehaviour {
     {
         connectionState = state;
     }
+
+    void UpdateOmicronConnectionState(object[] data)
+    {
+        // Placeholder to prevent error if CAVE2RPC Message Server is calling this function
+        // In practice this shouldn't happen, since the CAVE2RPC via getReal3D will call the
+        // above function
+    }
 }
