@@ -83,11 +83,15 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     {
         Transform displaySpace = transform.Find("Borders/PixelSpace");
         displaySpace.GetComponent<MeshRenderer>().material = originalMaterial;
+        if (vrCamera)
+            vrCamera.SetActive(false);
     }
 
     public void CreateDisplayTexture()
     {
         Transform displaySpace = transform.Find("Borders/PixelSpace");
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
+        if(vrCamera)
+            vrCamera.SetActive(true);
     }
 }

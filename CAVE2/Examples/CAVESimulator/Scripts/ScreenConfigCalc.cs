@@ -138,9 +138,9 @@ public class ScreenConfigCalc : MonoBehaviour {
 
             if (flatWall)
             {
-                originX = wallOffset + displayWidthIncBorders * i;
+                originX = wallOffset - displayWidthIncBorders * i;
                 originY = frontDisplayToTrackingOrigin;
-                h = 0;
+                h = angleOffset;
             }
 
             // Convert to CAVE2 coordinate system
@@ -354,7 +354,8 @@ public class ScreenConfigCalc : MonoBehaviour {
             mesh.vertices = CAVE2ScreenMaskVerticies.ToArray();
             mesh.uv = CAVE2ScreenMaskUV.ToArray();
             mesh.triangles = CAVE2ScreenMaskTriangles.ToArray();
-        
+
+            UpdateScreenMask();
 #if UNITY_EDITOR
             if (generateScreenMaskAsset)
             {
@@ -377,8 +378,8 @@ public class ScreenConfigCalc : MonoBehaviour {
         if (outputConfig == ConfigOutput.All || outputConfig == ConfigOutput.getReal3D)
         {
             string[] getReal3DConfigArray = (string[])getReal3DConfig.ToArray(typeof(string));
-            Debug.Log(Application.dataPath + "/getReal3D_screenconfig.xml");
-            System.IO.File.WriteAllLines(Application.dataPath + "/getReal3D_screenconfig.xml", getReal3DConfigArray);
+            Debug.Log(Application.dataPath + "/getReal3D_" + nodeName + "_screenconfig.xml");
+            System.IO.File.WriteAllLines(Application.dataPath + "/getReal3D_" + nodeName + "_screenconfig.xml", getReal3DConfigArray);
         }
     }
 	
@@ -421,7 +422,7 @@ public class ScreenConfigCalc : MonoBehaviour {
             foreach (GameObject g in displayObjects)
             {
                 g.GetComponent<CAVE2Display>().enabled = simulateDisplays;
-                if(!simulateDisplays)
+                if (!simulateDisplays)
                     g.GetComponent<CAVE2Display>().RemoveDisplayTexture();
                 else
                     g.GetComponent<CAVE2Display>().CreateDisplayTexture();
