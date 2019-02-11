@@ -164,7 +164,8 @@ public class ScreenConfigCalc : MonoBehaviour {
                 g.transform.parent = transform;
                 g.transform.localPosition = new Vector3(-originX, originZ, originY);
                 g.transform.localRotation = Quaternion.Euler(0, h, 0);
-                g.GetComponent<CAVE2Display>().enabled = simulateDisplays;
+                if(g.GetComponent<CAVE2Display>())
+                    g.GetComponent<CAVE2Display>().enabled = simulateDisplays;
 
                 g.name = "Display " + nodeNameLabel + currentNode + " " + j;
 
@@ -432,20 +433,23 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     void UpdateScreenMask()
     {
-        switch (floorRenderMode)
+        if (screenMask)
         {
-            case (CAVE2ScreenMaskRenderer.RenderMode.Background):
-                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 2);
-                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 2);
-                break;
-            case (CAVE2ScreenMaskRenderer.RenderMode.None):
-                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 1);
-                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
-                break;
-            case (CAVE2ScreenMaskRenderer.RenderMode.Overlay):
-                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 0);
-                screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
-                break;
+            switch (floorRenderMode)
+            {
+                case (CAVE2ScreenMaskRenderer.RenderMode.Background):
+                    screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 2);
+                    screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 2);
+                    break;
+                case (CAVE2ScreenMaskRenderer.RenderMode.None):
+                    screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 1);
+                    screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
+                    break;
+                case (CAVE2ScreenMaskRenderer.RenderMode.Overlay):
+                    screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_ZTest", 0);
+                    screenMask.GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
+                    break;
+            }
         }
     }
 }
