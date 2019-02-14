@@ -14,10 +14,10 @@ public class OmicronController : OmicronEventClient
     Vector2 rawAnalogInput4;
     float deadzone = 0.001f;
 
-    Vector2 analogInput1;
-    Vector2 analogInput2;
-    Vector2 analogInput3;
-    Vector2 analogInput4;
+    [SerializeField] Vector2 analogInput1;
+    [SerializeField] Vector2 analogInput2;
+    [SerializeField] Vector2 analogInput3;
+    [SerializeField] Vector2 analogInput4;
 
     public enum ButtonState { Idle, Down, Held, Up };
     ButtonState Button1;

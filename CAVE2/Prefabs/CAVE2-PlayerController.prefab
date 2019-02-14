@@ -5205,9 +5205,10 @@ MonoBehaviour:
   lookAround: {x: 0, y: 0}
   walkUsesFlyGlobalSpeedScale: 0
   globalSpeedMod: 1
-  movementScale: 2
-  flyMovementScale: 2
+  movementScale: 5
+  flyMovementScale: 5
   turnSpeed: 20
+  smoothMovementTime: 0.5
   moveDirection: {x: 0, y: 0, z: 0}
   navMode: 1
   freeFlyToggleButton: 16

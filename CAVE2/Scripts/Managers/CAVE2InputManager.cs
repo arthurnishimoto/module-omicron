@@ -874,8 +874,8 @@ public class CAVE2InputManager : OmicronEventClient
             wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
 #endif
         }
-
-        if (!CAVE2.IsSimulatorMode() || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled)
+        
+        if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled)
         {
             wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
             wandController.rawFlags = wand1_flags;

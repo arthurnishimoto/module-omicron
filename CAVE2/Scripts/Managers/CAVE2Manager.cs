@@ -753,7 +753,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains("LYRA") && !IsMaster())
+        if (machineName.Contains("ORION") && !IsMaster())
         {
             return true;
         }
@@ -769,7 +769,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains("LYRA-WIN") )
+        if (machineName.Contains("ORION-WIN") )
         {
             return true;
         }

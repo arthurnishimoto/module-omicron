@@ -326,7 +326,7 @@ namespace omicronConnector
         public float orz;
         public float orw;
 
-        public const int ExtraDataSize = 41472;
+        public const int ExtraDataSize = 51200;
         public omicron.EventBase.ExtraDataType extraDataType;
         public uint extraDataItems;
         public uint extraDataMask;

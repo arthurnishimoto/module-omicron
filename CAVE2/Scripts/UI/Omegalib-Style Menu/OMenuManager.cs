@@ -57,17 +57,11 @@ public class OMenuManager : MonoBehaviour {
         {
            if(CAVE2.IsMaster())
            {
-            CAVE2.BroadcastMessage(mainMenu.name, "ToggleMenu");
-            //mainMenu.ToggleMenu();
+                    angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
+                    CAVE2.BroadcastMessage(gameObject.name, "SetWandAngle", angleOffset);
+                    CAVE2.BroadcastMessage(mainMenu.name, "ToggleMenu");
+                    //mainMenu.ToggleMenu();
            }
-
-
-            if (followWand)
-            {
-                angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
-                transform.localEulerAngles = angleOffset;
-                transform.localPosition = Vector3.zero + Quaternion.Euler(angleOffset) * distOffset;
-            }
         }
 
         CAVE2.Input.SetWandMenuLock(menuWandID, openMenus > 0);
@@ -95,5 +89,14 @@ public class OMenuManager : MonoBehaviour {
     {
         audioSource.clip = selectMenuSound;
         audioSource.Play();
+    }
+
+    public void SetWandAngle(Vector3 angleOffset)
+    {
+        if (followWand)
+        {
+            transform.localEulerAngles = angleOffset;
+            transform.localPosition = Vector3.zero + Quaternion.Euler(angleOffset) * distOffset;
+        }
     }
 }
