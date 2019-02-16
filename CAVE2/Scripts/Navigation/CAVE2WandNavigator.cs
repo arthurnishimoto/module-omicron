@@ -68,6 +68,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
     Quaternion initialRotation;
     NavigationMode initMode;
 
+    public bool hasInput;
+
     public void Reset()
     {
         transform.position = initialPosition;
@@ -122,39 +124,38 @@ public class CAVE2WandNavigator : MonoBehaviour {
 	// Update is called once per frame
 	void Update()
     {
-        if (CAVE2.IsMaster())
+        float speedMod = 1;
+        if (walkUsesFlyGlobalSpeedScale)
         {
-            float speedMod = 1;
-            if (walkUsesFlyGlobalSpeedScale)
-            {
-                speedMod = globalSpeedMod;
-            }
+            speedMod = globalSpeedMod;
+        }
 
-            forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
-            forward *= movementScale * speedMod;
+        forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
+        forward *= movementScale * speedMod;
 
-            strafe = CAVE2.GetAxis(wandID, strafeAxis);
-            strafe *= movementScale;
+        strafe = CAVE2.GetAxis(wandID, strafeAxis);
+        strafe *= movementScale;
 
-            lookAround.x = CAVE2.GetAxis(wandID, lookUDAxis);
-            lookAround.x *= movementScale;
-            lookAround.y = CAVE2.GetAxis(wandID, lookLRAxis);
-            lookAround.y *= movementScale;
+        lookAround.x = CAVE2.GetAxis(wandID, lookUDAxis);
+        lookAround.x *= movementScale;
+        lookAround.y = CAVE2.GetAxis(wandID, lookLRAxis);
+        lookAround.y *= movementScale;
 
-            vertical = CAVE2.GetAxis(wandID, verticalAxis);
-            vertical *= movementScale * speedMod;
+        vertical = CAVE2.GetAxis(wandID, verticalAxis);
+        vertical *= movementScale * speedMod;
 
-            freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
+        freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
 
-            if (CAVE2.GetButtonDown(wandID, freeFlyToggleButton))
-            {
-                if (navMode == NavigationMode.Walk)
-                    SetNavigationMode((int)NavigationMode.Drive);
-                else if (navMode == NavigationMode.Drive)
-                    SetNavigationMode((int)NavigationMode.Freefly);
-                else
-                    SetNavigationMode((int)NavigationMode.Walk);
-            }
+        hasInput = (forward != 0 || strafe != 0 || lookAround.magnitude > 0 || vertical != 0 || freeflyButtonDown);
+
+        if (CAVE2.GetButtonDown(wandID, freeFlyToggleButton))
+        {
+            if (navMode == NavigationMode.Walk)
+                SetNavigationMode((int)NavigationMode.Drive);
+            else if (navMode == NavigationMode.Drive)
+                SetNavigationMode((int)NavigationMode.Freefly);
+            else
+                SetNavigationMode((int)NavigationMode.Walk);
         }
     }
 
@@ -285,7 +286,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
             nextPos += transform.localRotation * movementVector * flyMovementScale * globalSpeedMod;
             if (navMode == NavigationMode.Freefly)
-                transform.Rotate(new Vector3(rX, rY, rZ));
+            {
+                transform.Rotate( CAVE2.GetWandObject(wandID).transform.localRotation * new Vector3(rX, rY, rZ));
+            }
         }
 
         float forwardAngle = transform.eulerAngles.y;

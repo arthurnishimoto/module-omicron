@@ -4533,8 +4533,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe53fd68588e4549bb39fd5a7155ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateMode: 1
-  updateSpeed: 0.05
+  updateMode: 2
+  updateSpeed: 0.01
   syncPosition: 1
   syncRotation: 1
   testSyncObject: {fileID: 0}
@@ -5218,6 +5218,7 @@ MonoBehaviour:
   autoLevelMode: 1
   autoLevelButton: 5
   bodyCollider: {fileID: 136000012870809268}
+  hasInput: 0
 --- !u!114 &114000012059257072
 MonoBehaviour:
   m_ObjectHideFlags: 1
