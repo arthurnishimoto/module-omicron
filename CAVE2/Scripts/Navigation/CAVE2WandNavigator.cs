@@ -235,19 +235,19 @@ public class CAVE2WandNavigator : MonoBehaviour {
         }
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
-            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle);
-            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle);
+            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * movementScale;
+            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * movementScale;
 
-            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90));
-            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90));
+            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * movementScale;
+            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * movementScale;
 
             transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
             transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
-            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle);
-            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle);
+            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * movementScale;
+            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * movementScale;
             transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
 
             transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
