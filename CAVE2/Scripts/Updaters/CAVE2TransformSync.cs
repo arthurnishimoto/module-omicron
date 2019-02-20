@@ -30,7 +30,7 @@ using System.Collections;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
-    enum UpdateMode { Update, Fixed, Late};
+    enum UpdateMode { Manual, Update, Fixed, Late};
 
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
