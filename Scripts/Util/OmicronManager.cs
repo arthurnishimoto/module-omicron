@@ -352,7 +352,9 @@ class OmicronManager : MonoBehaviour
             eventList.Add(e);
             if (debug)
             {
-                Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
+                //Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
+                if( e.serviceType == EventBase.ServiceType.ServiceTypeWand)
+                    Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
             }
         };
     }

@@ -75,13 +75,13 @@ public class CAVE2InputManager : OmicronEventClient
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton2] = CAVE2.Button.Button2;
         unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton6] = CAVE2.Button.Button6;
 
-        if (VRDevice.model == "Vive MV")
+        if (UnityEngine.XR.XRDevice.model == "Vive MV")
         {
             vrModel = VRModel.Vive;
         }
-        else if (VRDevice.model.Length > 0)
+        else if (UnityEngine.XR.XRDevice.model.Length > 0)
         {
-            Debug.Log("CAVE2InputManager: Detected VRDevice '" + VRDevice.model + "'.");
+            Debug.Log("CAVE2InputManager: Detected VRDevice '" + UnityEngine.XR.XRDevice.model + "'.");
         }
 
         OmicronMocapSensor[] mocapSensors = GetComponents<OmicronMocapSensor>();
@@ -172,6 +172,16 @@ public class CAVE2InputManager : OmicronEventClient
         return GetButtonUp(wandID, (CAVE2.Button)unityInputToOmicronInput[button]);
     }
 
+    public int GetButtonFlags(int wandID)
+    {
+        if (wandControllers.ContainsKey(wandID))
+        {
+            OmicronController wandController = (OmicronController)wandControllers[wandID];
+            return wandController.rawFlags;
+        }
+        return 0;
+    }
+
     public float GetAxis(int wandID, CAVE2.Axis axis)
     {
         if (wandControllers.ContainsKey(wandID))
@@ -208,6 +218,16 @@ public class CAVE2InputManager : OmicronEventClient
             return mocap.orientation;
         }
         return Quaternion.identity;
+    }
+
+    public float GetMocapTimeSinceUpdate(int ID)
+    {
+        if (mocapSensors.ContainsKey(ID))
+        {
+            OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
+            return mocap.timeSinceLastUpdate;
+        }
+        return float.PositiveInfinity;
     }
 
     public Vector3 GetHeadPosition(int ID)
@@ -252,6 +272,17 @@ public class CAVE2InputManager : OmicronEventClient
             case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
         }
         return GetMocapRotation(wandID);
+    }
+
+    public float GetWandTimeSinceUpdate(int ID)
+    {
+        int wandID = 1;
+        switch (ID)
+        {
+            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
+            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+        }
+        return GetMocapTimeSinceUpdate(wandID);
     }
 
     // Parses Omicron Input Data
@@ -368,44 +399,46 @@ public class CAVE2InputManager : OmicronEventClient
         // Mocap
         if (CAVE2.GetCAVE2Manager().mocapEmulation)
         {
-            if (UnityEngine.VR.VRSettings.enabled)
+            if (UnityEngine.XR.XRSettings.enabled)
             {
 
-                if (VRDevice.model == "Vive MV")
+                if (UnityEngine.XR.XRDevice.model == "Vive MV")
                 {
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head);
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head);
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
 #if UNITY_5_5_OR_NEWER
-                    CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand);
-                    CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
 
-                    wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand);
-                    wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
+                    wand2MocapSensor.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
+                    wand2MocapSensor.orientation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
 #endif
                 }
-                else
+                else if(UnityEngine.XR.XRDevice.model.Length > 0)
                 {
                     // Hack: InputTracking isn't using some offset that the Main Camera is otherwise getting. Calculate the diff here:
                     Vector3 oculusRealHeadPosition = Camera.main.transform.localPosition;
-                    Vector3 positionOffset = oculusRealHeadPosition - InputTracking.GetLocalPosition(VRNode.Head);
+                    Vector3 positionOffset = oculusRealHeadPosition - UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head);
 
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = InputTracking.GetLocalPosition(VRNode.Head) + positionOffset;
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = InputTracking.GetLocalRotation(VRNode.Head).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head) + positionOffset;
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
 #if UNITY_5_5_OR_NEWER
-                    CAVE2.GetCAVE2Manager().simulatorWandPosition = InputTracking.GetLocalPosition(VRNode.LeftHand) + positionOffset;
-                    CAVE2.GetCAVE2Manager().simulatorWandRotation = InputTracking.GetLocalRotation(VRNode.LeftHand).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand) + positionOffset;
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
 
-                    wand2MocapSensor.position = InputTracking.GetLocalPosition(VRNode.RightHand) + positionOffset;
-                    wand2MocapSensor.orientation = InputTracking.GetLocalRotation(VRNode.RightHand);
+                    wand2MocapSensor.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand) + positionOffset;
+                    wand2MocapSensor.orientation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
 #endif
                 }
             }
 
             mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
             mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
+            mainHeadSensor.timeSinceLastUpdate = 0;
 
             wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
+            wandMocapSensor.timeSinceLastUpdate = 0;
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
         {
@@ -414,9 +447,11 @@ public class CAVE2InputManager : OmicronEventClient
 
             mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
             mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
+            mainHeadSensor.timeSinceLastUpdate = 0;
 
             wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
+            wandMocapSensor.timeSinceLastUpdate = 0;
         }
 
         // Wand Buttons
@@ -542,7 +577,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
         
 #endif
-        if (UnityEngine.VR.VRSettings.enabled)
+        if (UnityEngine.XR.XRSettings.enabled)
         {
             wand1_flags = 0;
             wand2_flags = 0;
@@ -866,12 +901,15 @@ public class CAVE2InputManager : OmicronEventClient
             wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
 #endif
         }
+        
+        if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled)
+        {
+            wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
+            wandController.rawFlags = wand1_flags;
 
-        wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
-        wandController.rawFlags = wand1_flags;
-
-        wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
-        wandController2.rawFlags = wand2_flags;
+            wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
+            wandController2.rawFlags = wand2_flags;
+        }
 
         /*
         // If Omicron server is enabled, let Omicron handle tracker/controller data instead of getReal3D
@@ -885,5 +923,15 @@ public class CAVE2InputManager : OmicronEventClient
             wandController2.rawFlags = wand2_flags;
         }
         */
+    }
+
+    public void UpdateWandController(int wandID, Vector2 analog1, Vector2 analog2, Vector2 analog3, Vector2 analog4, int buttonFlags)
+    {
+        OmicronController wand = (OmicronController)wandControllers[wandID];
+        if(wand != null)
+        {
+            wand.UpdateAnalog(analog1, analog2, analog3, analog4);
+            wand.rawFlags = buttonFlags;
+        }
     }
 }

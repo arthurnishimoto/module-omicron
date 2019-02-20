@@ -61,19 +61,6 @@ public class RPCUpdateRateUI : MonoBehaviour {
                 float fps = frames / accum;
                 string format = System.String.Format("{0:F2} RPC Calls/Second", fps);
 
-                if (GetComponent<GUIText>())
-                {
-                    GUIText text = GetComponent<GUIText>();
-                    text.text = format;
-
-                    if (fps < 100)
-                        text.material.color = Color.yellow;
-                    else
-                        if (fps < 10)
-                            text.material.color = Color.green;
-                    else
-                        text.material.color = Color.red;
-                }
                 if (GetComponent<TextMesh>())
                 {
                     TextMesh text = GetComponent<TextMesh>();
@@ -108,8 +95,6 @@ public class RPCUpdateRateUI : MonoBehaviour {
         }
         else
         {
-            if (GetComponent<GUIText>())
-                GetComponent<GUIText>().text = "";
             if (GetComponent<TextMesh>())
                 GetComponent<TextMesh>().text = "";
             if (GetComponent<UnityEngine.UI.Text>())

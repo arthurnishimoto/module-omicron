@@ -61,19 +61,6 @@ public class FramerateUI : MonoBehaviour {
                 float fps = accum / frames;
                 string format = System.String.Format("{0:F2} FPS", fps);
 
-                if (GetComponent<GUIText>())
-                {
-                    GUIText text = GetComponent<GUIText>();
-                    text.text = format;
-
-                    if (fps < 30)
-                        text.material.color = Color.yellow;
-                    else
-                        if (fps < 10)
-                            text.material.color = Color.red;
-                    else
-                        text.material.color = Color.green;
-                }
                 if (GetComponent<TextMesh>())
                 {
                     TextMesh text = GetComponent<TextMesh>();
@@ -109,8 +96,6 @@ public class FramerateUI : MonoBehaviour {
         }
         else
         {
-            if (GetComponent<GUIText>())
-                GetComponent<GUIText>().text = "";
             if (GetComponent<TextMesh>())
                 GetComponent<TextMesh>().text = "";
             if (GetComponent<UnityEngine.UI.Text>())

@@ -326,7 +326,7 @@ namespace omicronConnector
         public float orz;
         public float orw;
 
-        public const int ExtraDataSize = 1024;
+        public const int ExtraDataSize = 51200;
         public omicron.EventBase.ExtraDataType extraDataType;
         public uint extraDataItems;
         public uint extraDataMask;
@@ -398,6 +398,7 @@ namespace omicronConnector
 
 	class OmicronConnectorClient
     {
+#if !UNITY_WSA || UNITY_EDITOR
         // TCP Connection
         TcpClient client;
         NetworkStream streamToServer;
@@ -427,6 +428,9 @@ namespace omicronConnector
 
         public bool Connect(string serverIP, int msgPort, int dataPort)
         {
+#if UNITY_WSA
+            Debug.LogWarning("Universal Windows Platform not supported. Will only work in Unity editor!");
+#endif
             if (EnableInputService)
             {
                 //dgrams = new ArrayList();
@@ -446,6 +450,7 @@ namespace omicronConnector
 
                     // Create the UDP socket data will be received on
                     udpClient = new UdpClient(dataPort);
+                    udpClient.Client.ReceiveBufferSize = 15360000;
 
                     // Send the handshake message to the server.
                     streamToServer.Write(data, 0, data.Length);
@@ -502,6 +507,12 @@ namespace omicronConnector
             }
 	    }
 
+        public struct UdpState
+        {
+            public UdpClient u;
+            public IPEndPoint e;
+        }
+
         private static void Listen()
         {
             //Debug.Log("InputService: Ready to receive data");
@@ -513,7 +524,7 @@ namespace omicronConnector
                 // Blocks until a message returns on this socket from a remote host.
                 Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
                 //Console.WriteLine("receiveBytes length: " + receiveBytes.Length);
-				//Debug.Log("receiveBytes length: " + receiveBytes.Length);
+                //Debug.Log("receiveBytes length: " + receiveBytes.Length);
 
                 //#define OI_READBUF(type, buf, offset, val) val = *((type*)&buf[offset]); offset += sizeof(type);
                 listener.onEvent(ByteArrayToEventData(receiveBytes));
@@ -637,5 +648,22 @@ namespace omicronConnector
 			//System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
 			//return new string(chars);
 		}
+#else
+        public OmicronConnectorClient(IOmicronConnectorClientListener clistener)
+        {
+            Debug.LogWarning("Platform not supported");
+        }
+
+        public bool Connect(string serverIP, int msgPort, int dataPort)
+        {
+            Debug.LogWarning("Platform not supported");
+            return false;
+        }// CTOR
+
+        public void Dispose()
+        {
+            Debug.LogWarning("Platform not supported");
+        }
+#endif
     }
 }

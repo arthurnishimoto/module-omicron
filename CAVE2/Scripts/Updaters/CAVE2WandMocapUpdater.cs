@@ -42,7 +42,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
 
     void Start()
     {
-        if(virtualWand && wandID == 1)
+        if (virtualWand && wandID == 1)
         {
             virtualWand.localPosition = CAVE2.Input.wandTrackingOffset[wandID - 1];
         }
@@ -54,7 +54,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
     void FixedUpdate()
     {
         // Runtime check in case of reset (i.e. update in editor)
-        if(!CAVE2.IsWandRegistered(wandID, gameObject))
+        if (!CAVE2.IsWandRegistered(wandID, gameObject))
         {
             Debug.LogWarning("CAVE2WandMocapUpdater: Re-registering ID " + wandID);
             CAVE2.RegisterWandObject(wandID, gameObject);
@@ -64,13 +64,14 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
         {
             transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
             transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
+            float timeSinceLastUpdate = CAVE2Manager.GetWandTimeSinceUpdate(wandID);
 
             // If position and rotation are zero, wand is not tracking, disable drawing and physics
-            if (transform.localPosition == Vector3.zero && transform.localRotation == Quaternion.identity && virtualWand.gameObject.activeSelf)
+            if ( timeSinceLastUpdate > 0.5f && virtualWand.gameObject.activeSelf)
             {
                 virtualWand.gameObject.SetActive(false);
             }
-            else if (transform.localPosition != Vector3.zero && transform.localRotation != Quaternion.identity && !virtualWand.gameObject.activeSelf)
+            else if ( timeSinceLastUpdate < 0.5f && !virtualWand.gameObject.activeSelf)
             {
                 virtualWand.gameObject.SetActive(true);
             }

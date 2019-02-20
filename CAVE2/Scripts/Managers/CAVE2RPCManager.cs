@@ -39,22 +39,35 @@ public class CAVE2RPCManager : MonoBehaviour {
     // Cluster Sync
     public int cave2RPCCallCount;
 
+    [SerializeField]
+    bool debugRPC = false;
+
     // Remote Networking
     [Header("Message Server")]
     [SerializeField]
-    bool useMsgServer;
+    public bool useMsgServer;
 
     static short MessageID = 1104;
     NetworkServerSimple msgServer;
     NetworkMessageDelegate serverOnClientConnect;
     NetworkMessageDelegate serverOnClientDisconnect;
+    NetworkMessageDelegate serverOnData;
 
     [SerializeField]
     int serverListenPort = 9105;
 
+    [SerializeField]
+    int reliableChannelId;
+
+    [SerializeField]
+    int unreliableChannelId;
+
+    [SerializeField]
+    int maxConnections = 100;
+
     [Header("Message Client")]
     [SerializeField]
-    bool useMsgClient;
+    public bool useMsgClient;
 
     NetworkClient msgClient;
     NetworkMessageDelegate clientOnConnect;
@@ -65,12 +78,43 @@ public class CAVE2RPCManager : MonoBehaviour {
     string serverIP;
 
     [SerializeField]
-    bool debug;
+    bool debugMsg;
+
+    bool connected = false;
+
+    [SerializeField]
+    bool autoReconnect = true;
+
+    [SerializeField]
+    float autoReconnectDelay = 5;
+
+    float autoReconnectTimer;
+    int reconnectAttemptCount;
+
+    [SerializeField]
+    RemoteTerminal remoteTerminal;
+
+    string defaultTargetObjectName;
+
+    private void LogUI(string msg)
+    {
+        if (remoteTerminal)
+            remoteTerminal.PrintUI(msg);
+        else
+            Debug.Log(msg);
+    }
 
     private void Start()
     {
         msgServer = new NetworkServerSimple();
         msgClient = new NetworkClient();
+
+        ConnectionConfig myConfig = new ConnectionConfig();
+        reliableChannelId = myConfig.AddChannel(QosType.Reliable);
+        unreliableChannelId = myConfig.AddChannel(QosType.Unreliable);
+
+        msgServer.Configure(myConfig, maxConnections);
+        msgClient.Configure(myConfig, maxConnections);
 
         if (useMsgServer)
         {
@@ -85,23 +129,48 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void Update()
     {
         msgServer.Update();
+
+        if(useMsgClient && autoReconnect && !connected)
+        {
+            if (autoReconnectTimer < autoReconnectDelay)
+            {
+                autoReconnectTimer += Time.deltaTime;
+            }
+            else
+            {
+                reconnectAttemptCount++;
+                LogUI("Msg Client: Reconnecting to server " + serverIP + ":" + serverListenPort + " (Attempt: " + reconnectAttemptCount + ")");
+                msgClient.Disconnect();
+                msgClient.Connect(serverIP, serverListenPort);
+
+                autoReconnectTimer = 0;
+            }
+        }
+
+    }
+
+    public bool IsReconnecting()
+    {
+        return (reconnectAttemptCount > 0);
     }
 
     private void StartNetServer()
     {
         serverOnClientConnect += ServerOnClientConnect;
         serverOnClientDisconnect += ServerOnClientDisconnect;
+        serverOnData += ServerOnRecvMsg;
 
         msgServer.RegisterHandler(MsgType.Connect, serverOnClientConnect);
         msgServer.RegisterHandler(MsgType.Disconnect, serverOnClientDisconnect);
-
+        msgServer.RegisterHandler(MessageID, serverOnData);
+        
         msgServer.Listen(serverListenPort);
-        Debug.Log("Starting message server on port " + serverListenPort);
+        LogUI("Starting message server on port " + serverListenPort);
     }
 
     private void StartNetClient()
     {
-        Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
+        LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
         msgClient.Connect(serverIP, serverListenPort);
 
         clientOnConnect += ClientOnConnect;
@@ -116,33 +185,36 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ServerOnClientConnect(NetworkMessage msg)
     {
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
-        Debug.Log("Msg Server: Client connected. Total " + connections.Count);
+        LogUI("Msg Server: Client connected. Total " + connections.Count);
 
         foreach (NetworkConnection client in connections)
         {
             if(client != null)
             {
-                Debug.Log("Msg Server: Client ID " + client.connectionId + " '" + client.address + "' connected");
+                LogUI("Msg Server: Client ID " + client.connectionId + " '" + client.address + "' connected");
             }
         } 
     }
 
     void ServerOnClientDisconnect(NetworkMessage msg)
     {
-        Debug.Log("Msg Server: Client disconnected");
+        LogUI("Msg Server: Client disconnected");
     }
 
     void ClientOnConnect(NetworkMessage msg)
     {
-        Debug.Log("Msg Client: Connected to " + serverIP);
+        LogUI("Msg Client: Connected to " + serverIP);
+        connected = true;
+        reconnectAttemptCount = 0;
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
-        Debug.Log("Msg Client: Disconnected");
+        LogUI("Msg Client: Disconnected");
+        connected = false;
     }
 
-    void ServerSendMsgToClients(string msgStr)
+    void ServerSendMsgToClients(string msgStr, bool useReliable = true, NetworkConnection ignoreClient = null)
     {
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
 
@@ -154,34 +226,247 @@ public class CAVE2RPCManager : MonoBehaviour {
                 writer.StartMessage(MessageID);
                 writer.Write(msgStr);
                 writer.FinishMessage();
-                Debug.Log("sending: " + msgStr);
-                msgServer.SendWriterTo(client.connectionId, writer, 0);
+                if(debugMsg)
+                    LogUI("sending: " + msgStr);
+                msgServer.SendWriterTo(client.connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
             }
         }
     }
 
     void ClientOnRecvMsg(NetworkMessage msg)
     {
+        ProcessMsg(msg);
+    }
+
+    void ServerOnRecvMsg(NetworkMessage msg)
+    {
         // Reset reader index
         msg.reader.SeekZero();
 
         string msgString = msg.reader.ReadString();
-        string[] msgStrArray = msgString.Split('|');
+        if (debugMsg)
+            LogUI("Msg Server: ServerOnRecvMsg '" + msgString + "'");
+        ProcessMsg(msg);
 
-        for(int i = 0; i < msgStrArray.Length; i++)
+        // Forward message to clients (except sender client);
+        ServerSendMsgToClients(msgString, true, msg.conn);
+    }
+
+    public void ProcessMsg(NetworkMessage msg)
+    {
+        // Reset reader index
+        msg.reader.SeekZero();
+
+        string msgString = msg.reader.ReadString();
+        char[] charSeparators = new char[] { '|' };
+        string[] msgStrArray = msgString.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
+
+        GameObject targetObj = null;
+        string targetObjectName = "";
+        string functionName = msgStrArray[0];
+
+        // Starting index of data fields
+        // Assumes index:
+        // 0: Function Name
+        // 1: Target GameObject Name
+        // 2: Data parameters
+        // May change if a default GameObject is set i.e.
+        // 0: Function Name
+        //  : (GameObject name is not provided)
+        // 1: Data parameters
+        int startingDataIndex = 2;
+
+        if (msgStrArray.Length < 2)
         {
-            Debug.Log("[" + i + "] = '" + msgStrArray[i] + "'");
+            LogUI(msg.conn.address + " sent unknown msg '" + msgString + "'");
+        }
+        else
+        {
+            targetObjectName = msgStrArray[1];
+            targetObj = GameObject.Find(targetObjectName);
+            if(targetObj == null)
+            {
+                targetObjectName = defaultTargetObjectName;
+                targetObj = GameObject.Find(targetObjectName);
+                startingDataIndex = 1;
+            }
+        }
+
+        if (targetObj != null)
+        {
+            // CAVE2 Transform Sync
+            if (functionName.Equals("SyncPosition"))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                targetObj.SendMessage("SyncPosition", new Vector3(x, y, z));
+            }
+            else if (functionName.Equals("SyncRotation"))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float w = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+                float.TryParse(msgStrArray[startingDataIndex + 3], out w);
+
+                targetObj.SendMessage("SyncRotation", new Quaternion(x, y, z, w));
+            }
+
+            // Generic Transform functions
+            else if (functionName.Equals("translate", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                if(msgStrArray.Length == 6)
+                {
+                    if(msgStrArray[5].Equals("self", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetObj.transform.Translate(x, y, z, Space.Self);
+                    }
+                    else if (msgStrArray[5].Equals("world", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetObj.transform.Translate(x, y, z, Space.World);
+                    }
+                }
+                else
+                {
+                    targetObj.transform.Translate(x, y, z, Space.Self);
+                }
+            }
+            else if (functionName.Equals("rotate", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                if (msgStrArray.Length == 6)
+                {
+                    if (msgStrArray[5].Equals("self", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetObj.transform.Rotate(x, y, z, Space.Self);
+                    }
+                    else if (msgStrArray[5].Equals("world", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        targetObj.transform.Rotate(x, y, z, Space.World);
+                    }
+                }
+                else
+                {
+                    targetObj.transform.Rotate(x, y, z, Space.Self);
+                }
+            }
+            else if (functionName.Equals("setPosition", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                targetObj.transform.position = new Vector3(x, y, z);
+            }
+            else if (functionName.Equals("setEulerAngles", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                targetObj.transform.eulerAngles = new Vector3(x, y, z);
+            }
+            else if (functionName.Equals("setLocalPosition", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[2], out x);
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                targetObj.transform.localPosition = new Vector3(x, y, z);
+            }
+            else if (functionName.Equals("setLocalEulerAngles", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+                float.TryParse(msgStrArray[startingDataIndex], out x);
+                float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+
+                targetObj.transform.localEulerAngles = new Vector3(x, y, z);
+            }
+            else if (functionName.Equals("setLocalScale", System.StringComparison.OrdinalIgnoreCase))
+            {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+
+                if (msgStrArray.Length == 3)
+                {
+                    float.TryParse(msgStrArray[startingDataIndex], out x);
+                    y = x;
+                    z = x;
+                }
+                else
+                {
+                    float.TryParse(msgStrArray[startingDataIndex], out x);
+                    float.TryParse(msgStrArray[startingDataIndex + 1], out y);
+                    float.TryParse(msgStrArray[startingDataIndex + 2], out z);
+                }
+
+                targetObj.transform.localScale = new Vector3(x, y, z);
+            }
+            else if (functionName.Equals("setTargetObject", System.StringComparison.OrdinalIgnoreCase))
+            {
+                defaultTargetObjectName = targetObjectName;
+            }
+
+            // Let the object handle the message
+            else
+            {
+                string[] paramArray = new string[msgStrArray.Length - 2];
+                for(int i = 0; i < paramArray.Length; i++)
+                {
+                    paramArray[i] = msgStrArray[i + 2];
+                }
+                targetObj.SendMessage(functionName, paramArray);
+            }
+        }
+        else
+        {
+            LogUI("CAVE2RPCManager: Msg target object '" + msgStrArray[1] + "' not found");
         }
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
@@ -192,19 +477,19 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
@@ -215,19 +500,19 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2 + "|" + param3);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
@@ -238,19 +523,19 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        if (debug)
+        if (debugRPC)
         {
-            Debug.Log("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
 
-        ServerSendMsgToClients(targetObjectName + "|" + methodName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4, useReliable);
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
@@ -261,15 +546,15 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.BroadcastMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName)
+    public void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        ServerSendMsgToClients(targetObjectName + "|" + methodName);
-        BroadcastMessage(targetObjectName, methodName, 0);
+        ServerSendMsgToClients(methodName + "|" + targetObjectName, useReliable);
+        BroadcastMessage(targetObjectName, methodName, 0, useReliable);
     }
 
     public void Destroy(string targetObjectName)
@@ -295,7 +580,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         cave2RPCCallCount++;
 
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -314,7 +599,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void SendCAVE2RPC4(string targetObjectName, string methodName, object param, object param2)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC4: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -333,7 +618,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void SendCAVE2RPC5(string targetObjectName, string methodName, object param, object param2, object param3)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC5: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -352,7 +637,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void SendCAVE2RPC6(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC6: call '" +methodName +"' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);
@@ -371,7 +656,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void CAVE2DestroyRPC(string targetObjectName)
     {
         cave2RPCCallCount++;
-        if (debug)
+        if (debugRPC)
             Debug.Log ("SendCAVE2RPC: call 'Destroy' on "+targetObjectName);
 
         GameObject targetObject = GameObject.Find(targetObjectName);

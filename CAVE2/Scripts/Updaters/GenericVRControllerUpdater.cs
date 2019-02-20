@@ -82,7 +82,7 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        vrModelString = VRDevice.model;
+        vrModelString = UnityEngine.XR.XRDevice.model;
 
         if (vrModelString == "Vive MV")
         {
@@ -93,11 +93,11 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 #if UNITY_5_5_OR_NEWER
-        wand1_position = InputTracking.GetLocalPosition(VRNode.LeftHand);
-        wand1_rotation = InputTracking.GetLocalRotation(VRNode.LeftHand);
+        wand1_position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
+        wand1_rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
 
-        wand2_position = InputTracking.GetLocalPosition(VRNode.RightHand);
-        wand2_rotation = InputTracking.GetLocalRotation(VRNode.RightHand);
+        wand2_position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
+        wand2_rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
 #endif
         ProcessVRInput();
     }

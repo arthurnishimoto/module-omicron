@@ -34,11 +34,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
     [SerializeField] int headID = 1;
     [SerializeField] int wandID = 1;
 
-    [SerializeField] CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
-    [SerializeField] CAVE2.Axis strafeAxis = CAVE2.Axis.LeftAnalogStickLR;
-    [SerializeField] CAVE2.Axis lookUDAxis = CAVE2.Axis.RightAnalogStickUD;
-    [SerializeField] CAVE2.Axis lookLRAxis = CAVE2.Axis.RightAnalogStickLR;
-    [SerializeField] CAVE2.Axis verticalAxis = CAVE2.Axis.AnalogTriggerL;
+    public CAVE2.Axis forwardAxis = CAVE2.Axis.LeftAnalogStickUD;
+    public CAVE2.Axis strafeAxis = CAVE2.Axis.LeftAnalogStickLR;
+    public CAVE2.Axis lookUDAxis = CAVE2.Axis.RightAnalogStickUD;
+    public CAVE2.Axis lookLRAxis = CAVE2.Axis.RightAnalogStickLR;
+    public CAVE2.Axis verticalAxis = CAVE2.Axis.AnalogTriggerL;
 
     [SerializeField] float forward;
     [SerializeField] float strafe;
@@ -48,9 +48,10 @@ public class CAVE2WandNavigator : MonoBehaviour {
     [Header("Movement Speed")]
     [SerializeField] bool walkUsesFlyGlobalSpeedScale = false;
     public float globalSpeedMod = 1.0f;
-    [SerializeField] float movementScale = 2;
-    [SerializeField] float flyMovementScale = 10;
+    [SerializeField] float movementScale = 5;
+    [SerializeField] float flyMovementScale = 5;
     [SerializeField] float turnSpeed = 20;
+    [SerializeField] float smoothMovementTime = 0.5f;
 
     public Vector3 moveDirection;
 
@@ -93,6 +94,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
     Vector3 initialPosition;
     Quaternion initialRotation;
     NavigationMode initMode;
+
+    public bool hasInput;
 
     public void Reset()
     {
@@ -149,7 +152,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 	void Update()
     {
         float speedMod = 1;
-        if(walkUsesFlyGlobalSpeedScale)
+        if (walkUsesFlyGlobalSpeedScale)
         {
             speedMod = globalSpeedMod;
         }
@@ -169,6 +172,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
         vertical *= movementScale * speedMod;
 
         freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
+
+        hasInput = (forward != 0 || strafe != 0 || lookAround.magnitude > 0 || vertical != 0 || freeflyButtonDown);
 
         if (CAVE2.GetButtonDown(wandID, freeFlyToggleButton))
         {
@@ -211,6 +216,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
         horizontalMovementMode = HorizonalMovementMode.Turn;
     }
 
+    private Vector3 velocity = Vector3.zero;
+
     void UpdateWalkMovement()
     {
         GetComponent<Rigidbody>().isKinematic = false;
@@ -234,17 +241,16 @@ public class CAVE2WandNavigator : MonoBehaviour {
             nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90));
             nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90));
 
-            transform.position = nextPos;
-            transform.Rotate(new Vector3(0, lookAround.y, 0) * Time.deltaTime * turnSpeed);
+            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
             nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle);
             nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle);
-            transform.position = nextPos;
+            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
 
-            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime * turnSpeed);
-            transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
         }
 
         if (autoLevelMode == AutoLevelMode.OnGroundCollision)
@@ -255,6 +261,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void UpdateFreeflyMovement()
     {
+        Vector3 nextPos = transform.position;
+
         bodyCollider.GetComponent<Rigidbody>().useGravity = false;
         bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
@@ -303,12 +311,13 @@ public class CAVE2WandNavigator : MonoBehaviour {
             float rY = -(vx * fly_x.x + vy * fly_x.y + vz * fly_x.z) * Time.deltaTime * turnSpeed;
             float rZ = (wx * fly_x.x + wy * fly_x.y + wz * fly_x.z) * Time.deltaTime * turnSpeed;
 
-            transform.Translate(movementVector * flyMovementScale * globalSpeedMod);
+            nextPos += transform.localRotation * movementVector * flyMovementScale * globalSpeedMod;
             if (navMode == NavigationMode.Freefly)
-                transform.Rotate(new Vector3(rX, rY, rZ));
+            {
+                transform.Rotate( CAVE2.GetWandObject(wandID).transform.localRotation * new Vector3(rX, rY, rZ));
+            }
         }
 
-        Vector3 nextPos = transform.position;
         float forwardAngle = transform.eulerAngles.y;
 
         if (forwardReference == ForwardRef.Head)
@@ -316,23 +325,24 @@ public class CAVE2WandNavigator : MonoBehaviour {
         else if (forwardReference == ForwardRef.Wand)
             forwardAngle = CAVE2.GetWandObject(wandID).transform.eulerAngles.y;
 
-        nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
-        nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
-        nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
+        //nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
+        //nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
+        //nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
+
+        nextPos += CAVE2.GetWandObject(wandID).transform.rotation * Vector3.forward * forward * Time.deltaTime * flyMovementScale;
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
             nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
             nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
 
-            transform.position = nextPos;
-            transform.Rotate(new Vector3(0, lookAround.y, 0) * Time.deltaTime * turnSpeed);
+            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
-            transform.position = nextPos;
-            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID) * 2, Vector3.up, strafe * Time.deltaTime);
-            transform.Rotate(new Vector3(0, strafe, 0) * Time.deltaTime * turnSpeed);
+            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
         }
     }
 }

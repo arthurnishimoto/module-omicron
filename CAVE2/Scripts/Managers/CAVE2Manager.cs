@@ -31,6 +31,10 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
+    static float CAVE2_RADIUS = 3.240f;
+    static float CAVE2_FLOOR_TO_BOTTOM_DISPLAY = 0.293f;
+    static float CAVE2_DISPLAY_W_BORDER_HEIGHT = 0.581f;
+
     public enum Axis
     {
         None, LeftAnalogStickLR, LeftAnalogStickUD, RightAnalogStickLR, RightAnalogStickUD, AnalogTriggerL, AnalogTriggerR,
@@ -239,29 +243,29 @@ public class CAVE2 : MonoBehaviour
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
-    public static void BroadcastMessage(string targetObjectName, string methodName)
+    public static void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, useReliable);
     }
 
-    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4);
+        GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
     }
 
     public static void Destroy(string targetObjectName)
@@ -290,8 +294,117 @@ public class CAVE2 : MonoBehaviour
         RpcManager.BroadcastMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
     }
 
+    public static void PrintArray(object[] array)
+    {
+        for(int i = 0; i < array.Length; i++)
+        {
+            Debug.Log("[" + i + "]: '" + array[i] + "'");
+        }
+    }
+
+    public static bool IsPointingAtCAVE2Screens(Vector3 position, Quaternion rotation, out Vector3 intersectPoint)
+    {
+        return IsPointingAtCAVE2Screens(position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, out intersectPoint);
+    }
+
+    public static bool IsPointingAtCAVE2Screens(float x, float y, float z, float rx, float ry, float rz, float rw, out Vector3 intersectPoint)
+    {
+        Vector3 eulerAngles = Vector3.zero;
+        float radius = 3.240f;
+
+        // Quaternion to Euler ////////////////////////
+        // Rotation matrix Q multiplied by reference vector (0,0,1)
+        // 		| 1 - 2y^2 - 2z^2 , 2xy - 2zw, 2xz + 2yw	|		|0	|
+        // Q =	| 2xy + 2zw, 1 - 2x^2 - 2z^2, 2yz - 2xw		| * 	|0	|
+        // 		| 2xz - 2yw, 2yz + 2xw, 1 - 2x^2 - 2y^2		|		|1  |
+        eulerAngles.x = 1 * (2 * rx * rz + 2 * ry * rw);
+        eulerAngles.y = 1 * (2 * ry * rz - 2 * rx * rw);
+        eulerAngles.z = 1 * (1 - 2 * (rx * rx) - 2 * (ry * ry));
+
+        if (rx * ry + rz * rw == 0.5)
+        {
+            // North pole
+            eulerAngles.x = 2 * Mathf.Atan2(rx, rw);
+            eulerAngles.z = 0;
+        }
+        else if (rx * ry + rz * rw == -0.5)
+        {
+            // South pole
+            eulerAngles.x = -2 * Mathf.Atan2(rx, rw);
+            eulerAngles.z = 0;
+        }
+        // QuaternionToEuler ends ///////////////////
+
+        float h = 0; // x-coordinate of the center of the circle
+        float k = 0; // z-coordinate of the center of the circle
+        float ox = eulerAngles.x; // parametric slope of x, from orientation vector
+        float oy = eulerAngles.y; // parametric slope of y, from orientation vector
+        float oz = eulerAngles.z; // parametric slope of z, from orientation vector
+        float r = radius; // radius of cylinder
+
+        // A * t^2 + B * t + C
+        float A = ox * ox + oz * oz;
+        float B = 2 * ox * x + 2 * oz * z - 2 * h * ox - 2 * k * oz;
+        float C = x * x + z * z + h * h + k * k - r * r - 2 * h * x - 2 * k * z;
+
+        float t1 = (-B + Mathf.Sqrt(B * B - 4 * A * C)) / (2 * A);
+        float t2 = (-B - Mathf.Sqrt(B * B - 4 * A * C)) / (2 * A);
+        float t = 0;
+        if (t1 >= 0)
+        {
+            t = t1;
+        }
+        else if (t2 >= 0)
+        {
+            t = t2;
+        }
+
+        var x_pos = ox * t + x;
+        var y_pos = oy * t + y;
+        var z_pos = oz * t + z;
+        intersectPoint = new Vector3(x_pos, y_pos, z_pos);
+
+        // Check if over CAVE2 entrance
+        float angle = Mathf.Atan2(x_pos, -z_pos);
+        float radiansForDoor = 36 * Mathf.PI / 180;
+        float max_x_error = 0.005f; // fractional
+
+        if (angle < 0)
+        {
+            angle += 2 * Mathf.PI;
+        }
+        angle = 2 * Mathf.PI - angle;
+        angle -= radiansForDoor / 2;
+        x = angle / (2 * Mathf.PI - radiansForDoor);
+        x += 0.02777777777f;
+        if (x > 1)
+        {
+            if (x >= 1 + max_x_error)
+            {
+                return false;
+            }
+        }
+        if (x < 0)
+        {
+            if (x <- -max_x_error)
+            {
+                return false;
+            }
+        }
+
+        if (intersectPoint.y >= CAVE2_FLOOR_TO_BOTTOM_DISPLAY && intersectPoint.y <= CAVE2_FLOOR_TO_BOTTOM_DISPLAY + CAVE2_DISPLAY_W_BORDER_HEIGHT * 4)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     // ---------------------------------------------------------------------------------------------
 }
+
 [RequireComponent(typeof(CAVE2AdvancedTrackingSimulator))]
 [RequireComponent(typeof(CAVE2InputManager))]
 [RequireComponent(typeof(CAVE2RPCManager))]
@@ -363,7 +476,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     CAVE2RPCManager rpcManager;
 
     [SerializeField]
-    bool simulateAsClient;
+    public bool simulateAsClient;
 
     public void Init()
     {
@@ -377,7 +490,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 
         cameraControllers = new ArrayList();
 
-        machineName = System.Environment.MachineName;
+        machineName = GetMachineName();
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
 
         Random.InitState(1138);
@@ -406,7 +519,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && !UnityEngine.VR.VRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
+        if( !UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
         {
             if (mainCameraController)
             {
@@ -457,6 +570,11 @@ static CAVE2Manager CAVE2Manager_Instance;
     public static Quaternion GetWandRotation(int ID)
     {
         return CAVE2.Input.GetWandRotation(ID);
+    }
+
+    public static float GetWandTimeSinceUpdate(int ID)
+    {
+        return CAVE2.Input.GetWandTimeSinceUpdate(ID);
     }
 
     public static Vector3 GetMocapPosition(int ID)
@@ -647,13 +765,22 @@ static CAVE2Manager CAVE2Manager_Instance;
 #endif
     }
 
+    public static string GetMachineName()
+    {
+#if !UNITY_WSA
+        return System.Environment.MachineName;
+#else
+        return "";
+#endif
+    }
+
     public static bool OnCAVE2Display()
     {
         if (CAVE2Manager_Instance.simulateAsClient)
             return true;
 
-        machineName = System.Environment.MachineName;
-        if (machineName.Contains("LYRA") && !IsMaster())
+        machineName = GetMachineName();
+        if (machineName.Contains("ORION") && !IsMaster())
         {
             return true;
         }
@@ -668,8 +795,8 @@ static CAVE2Manager CAVE2Manager_Instance;
         if (CAVE2Manager_Instance.simulateAsClient)
             return true;
 
-        machineName = System.Environment.MachineName;
-        if (machineName.Contains("LYRA-WIN") )
+        machineName = GetMachineName();
+        if (machineName.Contains("ORION-WIN") )
         {
             return true;
         }
@@ -779,29 +906,29 @@ static CAVE2Manager CAVE2Manager_Instance;
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
-    public void BroadcastMessage(string targetObjectName, string methodName, object param)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName)
+    public void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0);
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, 0, useReliable);
     }
 
     public void Destroy(string targetObjectName)

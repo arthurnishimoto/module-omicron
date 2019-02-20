@@ -1,11 +1,13 @@
 ﻿/**************************************************************************************************
-* THE OMICRON PROJECT
+ * StereoscopicCamera.cs
+ * 
+ * Generates a stereoscopic camera from a main camera/
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2018, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -24,7 +26,7 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *************************************************************************************************/
- 
+
 using UnityEngine;
 using System.Collections;
 

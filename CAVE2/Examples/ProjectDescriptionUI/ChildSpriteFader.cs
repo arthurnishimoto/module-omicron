@@ -27,11 +27,11 @@ public class ChildSpriteFader : MonoBehaviour {
         }
         if( alpha == 1)
         {
-            fadeOut = false;
+            fadeOut = true;
         }
         else
         {
-            fadeOut = true;
+            fadeOut = false;
         }
     }
 	
