@@ -37,8 +37,8 @@ public class DebugGUIManager : MonoBehaviour {
 
     public DebugWindow currentWindow = DebugWindow.App;
 
-	OmicronManager omgManager;
-	// CAVE2Manager cave2manager;
+    OmicronManager omgManager;
+    // CAVE2Manager cave2manager;
 
     public MonoBehaviour appMenu;
 
@@ -54,8 +54,19 @@ public class DebugGUIManager : MonoBehaviour {
 	private float accum   = 0; // FPS accumulated over the interval
 	private int   frames  = 0; // Frames drawn over the interval
 	private float timeleft; // Left time for current interval
+    float curFPS;
+    Vector2 minMaxFPS = new Vector2(10000, 0);
+    Vector2 minMaxFPSTime = new Vector2();
+    Vector2 avgFPS = new Vector2();
+    float avgFPSStartTime = 0;
 
-	void Start()
+    [SerializeField]
+    float avgFPSTimeLimit = 15;
+
+    [SerializeField]
+    bool resetAvgFPSTimer;
+
+    void Start()
 	{
 		omgManager = GetComponent<OmicronManager>();
         // cave2manager = GetComponent<CAVE2Manager>();
@@ -65,28 +76,54 @@ public class DebugGUIManager : MonoBehaviour {
 
 	void Update()
 	{
-		if ( (Input.GetKey(KeyCode.LeftAlt)||Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
-			showGUI = !showGUI;
+        if (CAVE2.IsMaster())
+        {
+            if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
+                showGUI = !showGUI;
 
-		if( showFPS )
-		{
-			timeleft -= Time.deltaTime;
-			accum += Time.timeScale/Time.deltaTime;
-			++frames;
-			
-			// Interval ended - update GUI text and start new interval
-			if( timeleft <= 0.0 )
-			{
-				// display two fractional digits (f2 format)
-				float fps = accum/frames;
-				string format = System.String.Format("{0:F2} FPS",fps);
+            timeleft -= Time.deltaTime;
+            accum += Time.timeScale / Time.deltaTime;
+            ++frames;
 
-				//	DebugConsole.Log(format,level);
-				timeleft = FPS_updateInterval;
-				accum = 0.0F;
-				frames = 0;
-			}
-		}
+            // Interval ended - update GUI text and start new interval
+            if (timeleft <= 0.0)
+            {
+                // display two fractional digits (f2 format)
+                curFPS = accum / frames;
+                // formattedFPS = System.String.Format("{0:F2} FPS",fps);
+                if (curFPS < minMaxFPS.x)
+                {
+                    minMaxFPS.x = curFPS;
+                    minMaxFPSTime.x = Time.time;
+                }
+                if (curFPS > minMaxFPS.y)
+                {
+                    minMaxFPS.y = curFPS;
+                    minMaxFPSTime.y = Time.time;
+                }
+
+                if (avgFPSTimeLimit > 0 && Time.time - avgFPSStartTime <= avgFPSTimeLimit)
+                {
+                    avgFPS.x += curFPS;
+                    avgFPS.y++;
+                }
+
+                if(resetAvgFPSTimer)
+                {
+                    avgFPSStartTime = Time.time;
+                }
+
+                //	DebugConsole.Log(format,level);
+                timeleft = FPS_updateInterval;
+                accum = 0.0F;
+                frames = 0;
+            }
+
+            if (showFPS)
+            {
+                
+            }
+        }
 	}
 
 	void OnGUI() {
@@ -110,10 +147,15 @@ public class DebugGUIManager : MonoBehaviour {
 				omgManager.SetGUIOffSet(new Vector2(0,50));
                 omgManager.OnWindow(windowID);
 
-                showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
-                showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
-	        }
-	        else
+                // showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
+                // showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
+                GUI.Label(new Rect(20, 28 * 6.5f, 250, 20), "Time: " + System.String.Format("{0:F2}", Time.time));
+                GUI.Label(new Rect(20, 28 * 7, 250, 20), "FPS: " + System.String.Format("{0:F2}", curFPS));
+                GUI.Label(new Rect(20, 28 * 7.5f, 250, 20), "   Min (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.x, minMaxFPSTime.x));
+                GUI.Label(new Rect(20, 28 * 8.0f, 250, 20), "   Avg (Time): " + System.String.Format("{0:F2}", avgFPS.x / avgFPS.y));
+                GUI.Label(new Rect(20, 28 * 8.5f, 250, 20), "   Max (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.y, minMaxFPSTime.y));
+            }
+            else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
 		}
 		else if (currentWindow == DebugWindow.CAVE2 )

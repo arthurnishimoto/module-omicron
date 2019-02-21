@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 114000013635550908}
   - component: {fileID: 114000013279299626}
   - component: {fileID: 114000010049079728}
+  - component: {fileID: 114066525207233616}
   m_Layer: 0
   m_Name: CAVE2-Manager
   m_TagString: Untagged
@@ -166,3 +167,22 @@ MonoBehaviour:
   - {x: -0.007781088, y: -0.04959464, z: -0.07368752}
   debug: 0
   vrModel: 0
+--- !u!114 &114066525207233616
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012201446588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2133cfaacaabbf444b83846bb36c7690, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWindow: 1
+  appMenu: {fileID: 0}
+  showGUI: 0
+  showFPS: 0
+  showOnlyOnMaster: 0
+  FPS_updateInterval: 0.5
+  avgFPSTimeLimit: 15
+  resetAvgFPSTimer: 0
