@@ -220,7 +220,7 @@ class OmicronManager : MonoBehaviour
 	OmicronConnectorClient omicronManager;
 
     [SerializeField]
-	bool connectToServer = false;
+	public bool connectToServer = false;
 
     public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
 

@@ -509,6 +509,11 @@ static CAVE2Manager CAVE2Manager_Instance;
             wandMousePointerEmulation = false;
             usingKinectTrackingSimulator = false;
 #endif
+            if (OnCAVE2Display())
+            {
+                OmicronManager omg = GetComponent<OmicronManager>();
+                omg.connectToServer = false;
+            }
         }
     }
 
