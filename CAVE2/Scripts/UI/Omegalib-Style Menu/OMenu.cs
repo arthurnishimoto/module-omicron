@@ -70,6 +70,33 @@ public class OMenu : MonoBehaviour {
         {
             newScale = 0;
         }
+
+        if(GetComponent<UndockMenu>())
+        {
+            if(GetComponent<UndockMenu>().undocked)
+            {
+                newScale = maxScale;
+                showMenu = false;
+
+                if (activeMenu)
+                {
+                    transform.Translate(Vector3.right);
+                    if (previousMenu)
+                    {
+                        previousMenu.showMenu = true;
+                        menuManager.currentMenu = previousMenu;
+                    }
+                    activeMenu = false;
+                    menuManager.openMenus--;
+                    menuManager.PlayCloseMenuSound();
+                }
+                return;
+            }
+            else if(!showMenu)
+            {
+                newScale = 0;
+            }
+        }
         UpdateScale();
 
         if (newScale > 0)
@@ -89,41 +116,41 @@ public class OMenu : MonoBehaviour {
         {
             if (currentItem < menuItems.Length - 1 && menuItems[currentItem + 1].IsActive() )
             {
-                CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemDown");
+                CAVE2.SendMessage(gameObject.name, "MenuNextItemDown");
             }
             else if(currentItem >= menuItems.Length - 1)
             {
-                CAVE2.BroadcastMessage(gameObject.name, "MenuSetItem", 0);
+                CAVE2.SendMessage(gameObject.name, "MenuSetItem", 0);
             }
         }
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonUp))
         {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
-                CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemUp");
+                CAVE2.SendMessage(gameObject.name, "MenuNextItemUp");
             }
             else if (currentItem <= 0)
             {
-                CAVE2.BroadcastMessage(gameObject.name, "MenuSetItem", menuItems.Length - 1);
+                CAVE2.SendMessage(gameObject.name, "MenuSetItem", menuItems.Length - 1);
             }
         }
 
         if(CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.selectButton))
         {
-            CAVE2.BroadcastMessage(gameObject.name, "MenuSelectItem");
+            CAVE2.SendMessage(gameObject.name, "MenuSelectItem");
         }
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.menuBackButton))
         {
-            CAVE2.BroadcastMessage(gameObject.name, "ToggleMenu");
+            CAVE2.SendMessage(gameObject.name, "ToggleMenu");
         }
 
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonLeft))
         {
-            CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemLeft");
+            CAVE2.SendMessage(gameObject.name, "MenuNextItemLeft");
         }
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonRight))
         {
-            CAVE2.BroadcastMessage(gameObject.name, "MenuNextItemRight");
+            CAVE2.SendMessage(gameObject.name, "MenuNextItemRight");
         }
     }
 
@@ -149,6 +176,11 @@ public class OMenu : MonoBehaviour {
 
     public void ToggleMenu()
     {
+        if (GetComponent<UndockMenu>() && GetComponent<UndockMenu>().undocked)
+        {
+            GetComponent<UndockMenu>().undocked = false;
+        }
+
         showMenu = !showMenu;
         if( showMenu )
         {

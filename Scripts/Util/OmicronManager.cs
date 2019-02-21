@@ -395,7 +395,7 @@ class OmicronManager : MonoBehaviour
 
         StartCoroutine("SendEventsToClients");
 
-        // CAVE2.BroadcastMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
+        // CAVE2.SendMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
     }
 
     void UpdateDebugTextRPC(int connectStatus)
@@ -429,7 +429,7 @@ class OmicronManager : MonoBehaviour
                 if (getReal3D.Cluster.isMaster)
                 {
                     //getReal3D.RpcManager.call("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
-                    // Commented out because risk of double events - use CAVE2.BroadcastMessage to sync actions instead
+                    // Commented out because risk of double events - use CAVE2.SendMessage to sync actions instead
                 }
 #endif
 

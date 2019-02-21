@@ -30,7 +30,7 @@ using System.Collections;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
-    enum UpdateMode { Manual, Update, Fixed, Late};
+    enum UpdateMode {Manual, Update, Fixed, Late, Adaptive};
 
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
@@ -46,14 +46,38 @@ public class CAVE2TransformSync : MonoBehaviour {
     Vector3 nextPosition;
     Quaternion nextRotation;
 
+    bool gotFirstUpdateFromMaster;
+
+    [SerializeField]
+    UnityEngine.UI.Text adaptiveDebugText;
+
     public void Update()
     {
         if (updateMode == UpdateMode.Update)
             UpdateSync();
+
+        if(adaptiveDebugText && updateMode == UpdateMode.Adaptive)
+        {
+            adaptiveDebugText.text = "Master:\n(" + nextPosition.x.ToString("F2") + ", " + nextPosition.y.ToString("F2") + ", " + nextPosition.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "   (" + nextRotation.eulerAngles.x.ToString("F2") + ", " + nextRotation.eulerAngles.y.ToString("F2") + ", " + nextRotation.eulerAngles.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "Client:\n(" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "   (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
+
+            Vector3 posDiff = nextPosition - transform.position;
+            Vector3 rotDiff = nextRotation.eulerAngles - transform.rotation.eulerAngles;
+
+            adaptiveDebugText.text += "Drift:\n(" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "   (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
+
+        }
+        else if(adaptiveDebugText)
+        {
+            adaptiveDebugText.text = "";
+        }
     }
     public void FixedUpdate()
     {
-        if (updateMode == UpdateMode.Fixed)
+        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive)
             UpdateSync();
     }
 
@@ -69,13 +93,17 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             if (updateTimer < 0)
             {
-                if (syncPosition)
+                if(syncPosition && syncRotation)
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncPosRot", transform.position.x, transform.position.y, transform.position.z, transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
                 }
-                if (syncRotation)
+                else if (syncPosition)
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z, false);
+                }
+                else if(syncRotation)
+                {
+                    CAVE2.SendMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
                 }
 
                 updateTimer = updateSpeed;
@@ -83,10 +111,13 @@ public class CAVE2TransformSync : MonoBehaviour {
 
             updateTimer -= Time.fixedDeltaTime;
         }
-        else
+        else if(gotFirstUpdateFromMaster)
         {
-            transform.position = nextPosition;
-            transform.rotation = nextRotation;
+            if (updateMode != UpdateMode.Adaptive)
+            {
+                transform.position = nextPosition;
+                transform.rotation = nextRotation;
+            }
         }
 
         if (testSyncObject)
@@ -99,6 +130,7 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void SyncPosition(Vector3 position)
     {
         nextPosition = position;
+        gotFirstUpdateFromMaster = true;
     }
 
     public void SyncPosition(object[] data)
@@ -109,10 +141,17 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void SyncRotation(Quaternion rotation)
     {
         nextRotation = rotation;
+        gotFirstUpdateFromMaster = true;
     }
 
     public void SyncRotation(object[] data)
     {
         SyncRotation(new Quaternion((float)data[0], (float)data[1], (float)data[2], (float)data[3]));
+    }
+
+    public void SyncPosRot(object[] data)
+    {
+        SyncPosition(new Vector3((float)data[0], (float)data[1], (float)data[2]));
+        SyncRotation(new Quaternion((float)data[3], (float)data[4], (float)data[5], (float)data[6]));
     }
 }

@@ -62,7 +62,7 @@ public class OmicronSpeechStatusGUI : OmicronEventClient {
 
             if(CAVE2.IsMaster())
             {
-                CAVE2.BroadcastMessage(gameObject.name, "UpdateOmicronSpeechStatus", lastEventText.text);
+                CAVE2.SendMessage(gameObject.name, "UpdateOmicronSpeechStatus", lastEventText.text);
             }
         }
     }

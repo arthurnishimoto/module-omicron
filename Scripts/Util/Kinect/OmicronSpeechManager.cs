@@ -59,7 +59,7 @@ public class OmicronSpeechManager : OmicronEventClient {
 			debugText += "\nMin confidence: "+minimumSpeechConfidence.ToString("F2");
             //Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
 
-            CAVE2.BroadcastMessage(gameObject.name, "SetHUDSpeechDebugText", debugText);
+            CAVE2.SendMessage(gameObject.name, "SetHUDSpeechDebugText", debugText);
 
 			if( speechConfidence >= minimumSpeechConfidence )
 			{

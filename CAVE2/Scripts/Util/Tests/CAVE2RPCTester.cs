@@ -53,19 +53,19 @@ public class CAVE2RPCTester : MonoBehaviour {
                     switch(testMode)
                     {
                         case (0):
-                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent");
+                            CAVE2.SendMessage(gameObject.name, "ProcessRPCEvent");
                             break;
                         case (1):
-                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent1", 1);
+                            CAVE2.SendMessage(gameObject.name, "ProcessRPCEvent1", 1);
                             break;
                         case (2):
-                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent2", 2, "Two");
+                            CAVE2.SendMessage(gameObject.name, "ProcessRPCEvent2", 2, "Two");
                             break;
                         case (3):
-                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent3", 3, "Three", new Vector3(1, 2, 3));
+                            CAVE2.SendMessage(gameObject.name, "ProcessRPCEvent3", 3, "Three", new Vector3(1, 2, 3));
                             break;
                         case (4):
-                            CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEvent4", 1, "Two", new Vector3(3, 3.2f, 3.3f), 4.0f);
+                            CAVE2.SendMessage(gameObject.name, "ProcessRPCEvent4", 1, "Two", new Vector3(3, 3.2f, 3.3f), 4.0f);
                             break;
                         case (5):
                             CallRPCFromFunction();
@@ -82,7 +82,7 @@ public class CAVE2RPCTester : MonoBehaviour {
 
     public void CallRPCFromFunction()
     {
-        CAVE2.BroadcastMessage(gameObject.name, "ProcessRPCEventFunc");
+        CAVE2.SendMessage(gameObject.name, "ProcessRPCEventFunc");
     }
 
     void ProcessRPCEvent()

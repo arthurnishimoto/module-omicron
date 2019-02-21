@@ -58,7 +58,7 @@ public class OmicronStatusGUI : MonoBehaviour {
             {
                 if (CAVE2.IsMaster())
                 {
-                    CAVE2.BroadcastMessage(gameObject.name, "UpdateOmicronConnectionState", omicronManager.GetConnectionState());
+                    CAVE2.SendMessage(gameObject.name, "UpdateOmicronConnectionState", omicronManager.GetConnectionState());
 
                     if (connectionState == OmicronManager.ConnectionState.Connected)
                     {

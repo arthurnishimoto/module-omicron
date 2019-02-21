@@ -182,7 +182,7 @@ public class RemoteTerminal : MonoBehaviour {
 
         if (CAVE2.IsMaster())
         {
-            CAVE2.BroadcastMessage(gameObject.name, "CAVE2ClusterMsg", msgString);
+            CAVE2.SendMessage(gameObject.name, "CAVE2ClusterMsg", msgString);
         }
     }
 
@@ -219,7 +219,7 @@ public class RemoteTerminal : MonoBehaviour {
 
         if (CAVE2.IsMaster() && !localConnection)
         {
-            CAVE2.BroadcastMessage(gameObject.name, "CAVE2ClusterMsg", msgString);
+            CAVE2.SendMessage(gameObject.name, "CAVE2ClusterMsg", msgString);
         }
     }
 

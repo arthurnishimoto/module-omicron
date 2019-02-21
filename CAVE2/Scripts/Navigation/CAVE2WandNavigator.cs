@@ -51,9 +51,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
     [SerializeField] float movementScale = 5;
     [SerializeField] float flyMovementScale = 5;
     [SerializeField] float turnSpeed = 20;
+
+    [SerializeField] bool smoothMovement = true;
     [SerializeField] float smoothMovementTime = 0.5f;
 
-    public Vector3 moveDirection;
+    Vector3 moveDirection;
 
     // Walk - Analog stick movement with physics
     // Fly - 6DoF movement with no physics
@@ -235,21 +237,35 @@ public class CAVE2WandNavigator : MonoBehaviour {
         }
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
-            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * movementScale;
-            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * movementScale;
+            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * (smoothMovement ? movementScale * 20 : movementScale);
+            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * (smoothMovement ? movementScale * 20 : movementScale);
 
-            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * movementScale;
-            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * movementScale;
+            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * (smoothMovement ? movementScale * 20 : movementScale);
+            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * (smoothMovement ? movementScale * 20 : movementScale);
 
-            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            if (smoothMovement)
+            {
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            }
+            else
+            {
+                transform.position = nextPos;
+            }
             transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
-            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * movementScale;
-            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * movementScale;
-            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * (smoothMovement ? movementScale * 20 : movementScale);
+            nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * (smoothMovement ? movementScale * 20 : movementScale);
 
+            if (smoothMovement)
+            {
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            }
+            else
+            {
+                transform.position = nextPos;
+            }
             transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
         }
 
@@ -329,19 +345,33 @@ public class CAVE2WandNavigator : MonoBehaviour {
         //nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
         //nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
 
-        nextPos += CAVE2.GetWandObject(wandID).transform.rotation * Vector3.forward * forward * Time.deltaTime * flyMovementScale;
+        nextPos += CAVE2.GetWandObject(wandID).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {
-            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
-            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * flyMovementScale;
+            nextPos.z += strafe * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * (forwardAngle + 90)) * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            nextPos.x += strafe * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * (forwardAngle + 90)) * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
 
-            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            if (smoothMovement)
+            {
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            }
+            else
+            {
+                transform.position = nextPos;
+            }
             transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
-            transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            if (smoothMovement)
+            {
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
+            }
+            else
+            {
+                transform.position = nextPos;
+            }
             transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
         }
     }

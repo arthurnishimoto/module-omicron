@@ -20,8 +20,8 @@ Material:
     m_TexEnvs: []
     m_Floats:
     - <noninit>: 2
-    - _Cull: 2
-    - _ZTest: 2
+    - _Cull: 0
+    - _ZTest: 0
     m_Colors:
     - <noninit>: {r: 0.18999997, g: 0.29999998, b: 0.4699999, a: 1}
     - _Color: {r: 0.19, g: 0.3, b: 0.47, a: 1}
