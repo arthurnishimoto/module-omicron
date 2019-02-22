@@ -33,16 +33,16 @@ using System.Collections;
 public class StereoscopicCamera : MonoBehaviour {
 
     [SerializeField]
+    Material stereoscopicMaterial;
+
+    [SerializeField]
     bool generateCameras = false;
 
     [SerializeField]
-    float eyeSeparation;
+    float eyeSeparation = 0.065f;
 
     GameObject leftEye;
     GameObject rightEye;
-
-    [SerializeField]
-    Material stereoscopicMaterial;
 
     RenderTexture leftTexture;
     RenderTexture rightTexture;
@@ -68,8 +68,8 @@ public class StereoscopicCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
-	}
+
+    }
 
     void SetupStereoCameras()
     {
@@ -97,8 +97,11 @@ public class StereoscopicCamera : MonoBehaviour {
         leftEye.GetComponent<Camera>().targetTexture = leftTexture;
         rightEye.GetComponent<Camera>().targetTexture = rightTexture;
 
-        // Temp
-        leftEye.GetComponent<GeneralizedPerspectiveProjection>().UseProjection(false);
-        rightEye.GetComponent<GeneralizedPerspectiveProjection>().UseProjection(false);
+        // Disable the perspective position offset for eyes since we're setting it
+        // above for eye separation (GeneralizedPerspectiveProjection on Camera should be managing it)
+        if (leftEye.GetComponent<GeneralizedPerspectiveProjection>())
+            leftEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
+        if (rightEye.GetComponent<GeneralizedPerspectiveProjection>())
+            rightEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
     }
 }

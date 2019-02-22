@@ -53,6 +53,8 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     [SerializeField]
     protected Camera virtualCamera;
 
+    bool setPosition = true;
+
     // Use this for initialization
     void Start () {
 
@@ -127,11 +129,20 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
         M[3, 2] = -1.0f;
 
         virtualCamera.projectionMatrix = M;
-        virtualCamera.transform.localPosition = pe;
+
+        if (setPosition)
+        {
+            virtualCamera.transform.localPosition = pe;
+        }
     }
 
     public void UseProjection(bool value)
     {
         useProjection = value;
+    }
+
+    public void DisablePosition()
+    {
+        setPosition = false;
     }
 }

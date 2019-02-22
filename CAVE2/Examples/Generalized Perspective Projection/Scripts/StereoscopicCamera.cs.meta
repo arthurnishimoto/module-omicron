@@ -1,10 +1,11 @@
 fileFormatVersion: 2
 guid: c32a16c178ae0aa45ab80acbb5438801
-timeCreated: 1516829763
-licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - stereoscopicMaterial: {fileID: 2100000, guid: 24f09a7ad4e9b2b40b9d14c46269c66c,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
