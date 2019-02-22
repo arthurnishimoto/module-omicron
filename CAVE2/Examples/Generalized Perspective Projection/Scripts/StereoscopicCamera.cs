@@ -39,6 +39,9 @@ public class StereoscopicCamera : MonoBehaviour {
     bool generateCameras = false;
 
     [SerializeField]
+    Vector2 outputResolution = new Vector2(1366, 768);
+
+    [SerializeField]
     float eyeSeparation = 0.065f;
 
     GameObject leftEye;
@@ -68,7 +71,14 @@ public class StereoscopicCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        leftEye.transform.localPosition = Vector3.left * eyeSeparation / 2.0f;
+        rightEye.transform.localPosition = Vector3.right * eyeSeparation / 2.0f;
 
+        if (GetComponent<GeneralizedPerspectiveProjection>())
+        {
+            leftEye.GetComponent<GeneralizedPerspectiveProjection>().SetOffset(leftEye.transform.localPosition);
+            rightEye.GetComponent<GeneralizedPerspectiveProjection>().SetOffset(rightEye.transform.localPosition);
+        }
     }
 
     void SetupStereoCameras()
@@ -82,6 +92,15 @@ public class StereoscopicCamera : MonoBehaviour {
         rightEye = Instantiate(leftEye, transform) as GameObject;
         rightEye.name = "rightEye";
 
+        // If this object has a GeneralizedPerspectiveProjection
+        // Set head position to eyes
+        if (GetComponent<GeneralizedPerspectiveProjection>())
+        {
+            // Disable head offset since eyes since we're calculating that above to include eye separation
+            leftEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
+            rightEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
+        }
+
         // Set the eye separation
         leftEye.transform.localPosition = Vector3.left * eyeSeparation / 2.0f;
         rightEye.transform.localPosition = Vector3.right * eyeSeparation / 2.0f;
@@ -91,17 +110,30 @@ public class StereoscopicCamera : MonoBehaviour {
         Destroy(rightEye.GetComponent<AudioListener>());
 
         // Setup stereo materials and render textures
-        leftTexture = stereoscopicMaterial.GetTexture("_LeftTex") as RenderTexture;
-        rightTexture = stereoscopicMaterial.GetTexture("_RightTex") as RenderTexture;
+        leftTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
+        rightTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
+
+        stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
+        stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
+
+        stereoscopicMaterial.SetFloat("_RenderWidth", outputResolution.x);
+        stereoscopicMaterial.SetFloat("_RenderHeight", outputResolution.y);
+
+        // Set render textures to match output screen resolution
+        leftTexture.width = (int)outputResolution.x;
+        leftTexture.height = (int)outputResolution.y;
+
+        rightTexture.width = (int)outputResolution.x;
+        rightTexture.height = (int)outputResolution.y;
 
         leftEye.GetComponent<Camera>().targetTexture = leftTexture;
-        rightEye.GetComponent<Camera>().targetTexture = rightTexture;
+        rightEye.GetComponent<Camera>().targetTexture = rightTexture;        
+    }
 
-        // Disable the perspective position offset for eyes since we're setting it
-        // above for eye separation (GeneralizedPerspectiveProjection on Camera should be managing it)
-        if (leftEye.GetComponent<GeneralizedPerspectiveProjection>())
-            leftEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
-        if (rightEye.GetComponent<GeneralizedPerspectiveProjection>())
-            rightEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
+    void OnRenderImage(RenderTexture src, RenderTexture dest)
+    {
+        // Copy the source Render Texture to the destination,
+        // applying the material along the way.
+        Graphics.Blit(src, dest, stereoscopicMaterial);
     }
 }
