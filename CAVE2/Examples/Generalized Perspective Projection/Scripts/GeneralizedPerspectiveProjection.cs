@@ -151,4 +151,88 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     {
         offset = viewer;
     }
+
+    public Vector3 GetScreenUL()
+    {
+        return screenUL;
+    }
+
+    public Vector3 GetScreenLL()
+    {
+        return screenLL;
+    }
+
+    public Vector3 GetScreenLR()
+    {
+        return screenLR;
+    }
+
+    public void UpdateScreenUL_x(string value)
+    {
+        float.TryParse(value, out screenUL.x);
+        BroadcastMessage("SetScreenUL", screenUL);
+    }
+
+    public void UpdateScreenUL_y(string value)
+    {
+        float.TryParse(value, out screenUL.y);
+        BroadcastMessage("SetScreenUL", screenUL);
+    }
+
+    public void UpdateScreenUL_z(string value)
+    {
+        float.TryParse(value, out screenUL.z);
+        BroadcastMessage("SetScreenUL", screenUL);
+    }
+
+    public void SetScreenUL(Vector3 newUL)
+    {
+        screenUL = newUL;
+    }
+
+    public void UpdateScreenLL_x(string value)
+    {
+        float.TryParse(value, out screenLL.x);
+        BroadcastMessage("SetScreenLL", screenLL);
+    }
+
+    public void UpdateScreenLL_y(string value)
+    {
+        float.TryParse(value, out screenLL.y);
+        BroadcastMessage("SetScreenLL", screenLL);
+    }
+
+    public void UpdateScreenLL_z(string value)
+    {
+        float.TryParse(value, out screenLL.z);
+        BroadcastMessage("SetScreenLL", screenLL);
+    }
+
+    public void SetScreenLL(Vector3 newLL)
+    {
+        screenLL = newLL;
+    }
+
+    public void UpdateScreenLR_x(string value)
+    {
+        float.TryParse(value, out screenLR.x);
+        BroadcastMessage("SetScreenLR", screenLR);
+    }
+
+    public void UpdateScreenLR_y(string value)
+    {
+        float.TryParse(value, out screenLR.y);
+        BroadcastMessage("SetScreenLR", screenLR);
+    }
+
+    public void UpdateScreenLR_z(string value)
+    {
+        float.TryParse(value, out screenLR.z);
+        BroadcastMessage("SetScreenLR", screenLR);
+    }
+
+    public void SetScreenLR(Vector3 newLR)
+    {
+        screenLR = newLR;
+    }
 }

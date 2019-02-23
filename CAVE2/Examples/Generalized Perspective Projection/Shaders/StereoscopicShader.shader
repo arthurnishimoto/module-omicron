@@ -9,6 +9,7 @@
 		_RenderHeight("Render Height", Float) = 768
 
 		[KeywordEnum(LeftOnly, RightOnly, Interleaved, Checkerboard)] _StereoMode("Stereo mode", Float) = 0
+		_InvertEyes("Invert Eyes", Float) = 0
 	}
 	SubShader
 	{
@@ -47,6 +48,7 @@
 			uniform float _RenderWidth;
 			uniform float _RenderHeight;
 			uniform float _StereoMode;
+			uniform float _InvertEyes;
 
 			v2f vert(appdata v)
 			{
@@ -78,18 +80,24 @@
 					// Interleaved
 					if ((i.uv.y *_RenderHeight) % 2.0f > 1)
 					{
-						return float4(left, 1.0f);
+						if(_InvertEyes == 1)
+							return float4(right, 1.0f);
+						else
+							return float4(left, 1.0f);
 					}
 					else
 					{
-						return float4(right, 1.0f);
+						if (_InvertEyes == 1)
+							return float4(left, 1.0f);
+						else
+							return float4(right, 1.0f);
 					}
 				}
 				else if (_StereoMode == 3)
 				{
 					// Checkerboard
 					int x = fmod(floor(i.uv.x*_RenderWidth) + floor(i.uv.y*_RenderHeight), 2) < 1;
-					float4 color = float4(lerp(left, right, x), 0.0);
+					float4 color = float4(lerp(_InvertEyes == 0 ? left : right, _InvertEyes == 0 ? right : left, x), 0.0);
 					return color;
 				}
 

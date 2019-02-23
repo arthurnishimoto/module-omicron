@@ -38,6 +38,10 @@ public class StereoscopicCamera : MonoBehaviour {
     [SerializeField]
     bool generateCameras = false;
 
+    public enum StereoscopicMode { Left, Right, Interleaved, Checkerboard, };
+    [SerializeField]
+    StereoscopicMode stereoMode = StereoscopicMode.Interleaved;
+
     [SerializeField]
     Vector2 outputResolution = new Vector2(1366, 768);
 
@@ -49,6 +53,15 @@ public class StereoscopicCamera : MonoBehaviour {
 
     RenderTexture leftTexture;
     RenderTexture rightTexture;
+
+    [SerializeField]
+    Vector2 textureScale = Vector2.one;
+
+    [SerializeField]
+    Vector2 textureOffset;
+
+    [SerializeField]
+    bool invertEyes;
 
     // Use this for initialization
     void Start () {
@@ -79,6 +92,15 @@ public class StereoscopicCamera : MonoBehaviour {
             leftEye.GetComponent<GeneralizedPerspectiveProjection>().SetOffset(leftEye.transform.localPosition);
             rightEye.GetComponent<GeneralizedPerspectiveProjection>().SetOffset(rightEye.transform.localPosition);
         }
+
+        stereoscopicMaterial.SetTextureOffset("_LeftTex", textureOffset);
+        stereoscopicMaterial.SetTextureOffset("_RightTex", textureOffset);
+        stereoscopicMaterial.SetTextureScale("_LeftTex", textureScale);
+        stereoscopicMaterial.SetTextureScale("_RightTex", textureScale);
+        stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
+        stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
+
+        stereoscopicMaterial.SetFloat("_InvertEyes", invertEyes ? 1.0f : 0.0f);
     }
 
     void SetupStereoCameras()
@@ -113,6 +135,10 @@ public class StereoscopicCamera : MonoBehaviour {
         leftTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
         rightTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
 
+        stereoscopicMaterial.SetTextureOffset("_LeftTex", textureOffset);
+        stereoscopicMaterial.SetTextureOffset("_RightTex", textureOffset);
+        stereoscopicMaterial.SetTextureScale("_LeftTex", textureScale);
+        stereoscopicMaterial.SetTextureScale("_RightTex", textureScale);
         stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
         stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
 
@@ -135,5 +161,90 @@ public class StereoscopicCamera : MonoBehaviour {
         // Copy the source Render Texture to the destination,
         // applying the material along the way.
         Graphics.Blit(src, dest, stereoscopicMaterial);
+    }
+
+    public void SetStereoMode(int value)
+    {
+        SetStereoMode((StereoscopicMode)value);
+    }
+
+    public void SetStereoMode(StereoscopicMode value)
+    {
+        stereoMode = value;
+        switch (value)
+        {
+            case (StereoscopicMode.Interleaved):
+                stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.Interleaved);
+                break;
+            case (StereoscopicMode.Checkerboard):
+                stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.Checkerboard);
+                break;
+            case (StereoscopicMode.Right):
+                stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.Right);
+                break;
+            default:
+                stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.Left);
+                break;
+        }
+    }
+
+    public StereoscopicMode GetStereoMode()
+    {
+        return stereoMode;
+    }
+
+    public bool IsStereoInverted()
+    {
+        return invertEyes;
+    }
+
+    public void SetStereoInverted(bool value)
+    {
+        invertEyes = value;
+    }
+
+    public void InvertStereo()
+    {
+        invertEyes = !invertEyes;
+    }
+
+    public void UpdateScreenScale_x(string value)
+    {
+        float.TryParse(value, out textureScale.x);
+    }
+
+    public void UpdateScreenScale_y(string value)
+    {
+        float.TryParse(value, out textureScale.y);
+    }
+
+    public void UpdateScreenOffset_x(string value)
+    {
+        float.TryParse(value, out textureOffset.x);
+    }
+
+    public void UpdateScreenOffset_y(string value)
+    {
+        float.TryParse(value, out textureOffset.y);
+    }
+
+    public Vector2 GetScreenScale()
+    {
+        return textureScale;
+    }
+
+    public Vector2 GetScreenOffset()
+    {
+        return textureOffset;
+    }
+
+    public void SetScreenScale(Vector2 value)
+    {
+        textureScale = value;
+    }
+
+    public void SetScreenOffset(Vector2 value)
+    {
+        textureOffset = value;
     }
 }
