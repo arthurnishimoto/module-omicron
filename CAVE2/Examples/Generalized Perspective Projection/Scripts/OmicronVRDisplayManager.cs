@@ -98,6 +98,16 @@ public class OmicronVRDisplayManager : MonoBehaviour {
     void Start () {
         configPath = Application.dataPath + "/OmicronVR.cfg";
 
+        string[] cmdArgs = Environment.GetCommandLineArgs();
+        for(int i = 0; i < cmdArgs.Length; i++)
+        {
+            if(cmdArgs[i].Equals("-ovrconfig") && i + 1 < cmdArgs.Length)
+            {
+                configPath = Environment.CurrentDirectory + "/" + cmdArgs[i + 1];
+            }
+        }
+        
+
         panel.SetActive(showUI);
 
         // Read from config (if it exists, else create on quit)

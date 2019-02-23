@@ -38,6 +38,8 @@ using omicronConnector;
 using omicron;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System;
+using System.IO;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class TouchPoint{
@@ -216,11 +218,11 @@ class OmicronManager : MonoBehaviour
 #endif
 {
     static OmicronManager omicronManagerInstance;
-	EventListener omicronListener;
-	OmicronConnectorClient omicronManager;
+    EventListener omicronListener;
+    OmicronConnectorClient omicronManager;
 
     [SerializeField]
-	public bool connectToServer = false;
+    public bool connectToServer = false;
 
     public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
 
@@ -228,8 +230,8 @@ class OmicronManager : MonoBehaviour
     ConnectionState connectionState = ConnectionState.NotConnected;
 
     public string serverIP = "localhost";
-	public int serverMsgPort = 28000;
-	public int dataPort = 7013;
+    public int serverMsgPort = 28000;
+    public int dataPort = 7013;
 
     [SerializeField]
     bool debug = false;
@@ -239,17 +241,30 @@ class OmicronManager : MonoBehaviour
 
     // Use mouse clicks to emulate touches
     public bool mouseTouchEmulation = false;
-	
-	// List storing events since we have multiple threads
-	private ArrayList eventList;
-	
-	private ArrayList omicronClients;
+
+    // List storing events since we have multiple threads
+    private ArrayList eventList;
+
+    private ArrayList omicronClients;
 
     [SerializeField]
     UnityEngine.UI.Text statusCanvasText;
 
     [SerializeField]
     SimpleCanvasTouch testTouchCanvas;
+
+    string configPath;
+
+    [Serializable]
+    public class OmicronConfig
+    {
+        public bool connectToServer;
+        public string serverIP;
+        public int serverMsgPort;
+        public int dataPort;
+    }
+
+    OmicronConfig config;
 
     public static OmicronManager GetOmicronManager()
     {
@@ -283,8 +298,36 @@ class OmicronManager : MonoBehaviour
         eventList = new ArrayList();
     }
 
-    public void Start()
-	{
+    // Use this for initialization
+    void Start()
+    {
+        configPath = Application.dataPath + "/omicron.cfg";
+        string[] cmdArgs = Environment.GetCommandLineArgs();
+        for (int i = 0; i < cmdArgs.Length; i++)
+        {
+            if (cmdArgs[i].Equals("-oconfig") && i + 1 < cmdArgs.Length)
+            {
+                configPath = Environment.CurrentDirectory + "/" + cmdArgs[i + 1];
+            }
+        }
+
+        // Read from config (if it exists, else create on quit)
+        try
+        {
+            StreamReader reader = new StreamReader(configPath);
+            config = JsonUtility.FromJson<OmicronConfig>(reader.ReadToEnd());
+
+            connectToServer = config.connectToServer;
+            serverIP = config.serverIP;
+            serverMsgPort = config.serverMsgPort;
+            dataPort = config.dataPort;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning(e);
+            config = new OmicronConfig();
+        }
+
         if (connectToServer)
         {
             StartCoroutine("ConnectToServer");
@@ -462,9 +505,22 @@ class OmicronManager : MonoBehaviour
 
 	void OnApplicationQuit()
     {
-		if( connectToServer ){
-			DisconnectServer();
-		}
+		
+        config.connectToServer = connectToServer;
+        config.serverIP = serverIP;
+        config.serverMsgPort = serverMsgPort;
+        config.dataPort = dataPort;
+
+        string sfgJson = JsonUtility.ToJson(config, true);
+
+        StreamWriter writer = new StreamWriter(configPath);
+        writer.WriteLine(sfgJson);
+        writer.Close();
+
+        if (connectToServer)
+        {
+            DisconnectServer();
+        }
     }
 
 	void OnDestroy() {
