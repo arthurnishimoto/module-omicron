@@ -164,6 +164,7 @@ public class ScreenConfigCalc : MonoBehaviour {
                 g.transform.parent = transform;
                 g.transform.localPosition = new Vector3(-originX, originZ, originY);
                 g.transform.localRotation = Quaternion.Euler(0, h, 0);
+                g.transform.Find("Borders").localScale = new Vector3(displayWidthIncBorders / 1000.0f, displayHeightIncBorders / 1000.0f, 0.05f);
                 if(g.GetComponent<CAVE2Display>())
                     g.GetComponent<CAVE2Display>().enabled = simulateDisplays;
 
