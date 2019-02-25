@@ -138,9 +138,9 @@ public class ScreenConfigCalc : MonoBehaviour {
 
             if (flatWall)
             {
-                originX = wallOffset - displayWidthIncBorders * i;
-                originY = frontDisplayToTrackingOrigin;
-                h = angleOffset;
+                originX = (wallOffset - displayWidthIncBorders * i) * Mathf.Cos(angleOffset) + frontDisplayToTrackingOrigin * Mathf.Sin(angleOffset);
+                originY = (wallOffset - displayWidthIncBorders * i) * Mathf.Sin(angleOffset) + frontDisplayToTrackingOrigin * Mathf.Cos(angleOffset);
+                h = angleOffset * Mathf.Rad2Deg;
             }
 
             // Convert to CAVE2 coordinate system
