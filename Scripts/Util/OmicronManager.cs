@@ -254,6 +254,7 @@ class OmicronManager : MonoBehaviour
     SimpleCanvasTouch testTouchCanvas;
 
     string configPath;
+    bool hasConfig;
 
     [Serializable]
     public class OmicronConfig
@@ -303,11 +304,13 @@ class OmicronManager : MonoBehaviour
     {
         configPath = Application.dataPath + "/omicron.cfg";
         string[] cmdArgs = Environment.GetCommandLineArgs();
+
         for (int i = 0; i < cmdArgs.Length; i++)
         {
             if (cmdArgs[i].Equals("-oconfig") && i + 1 < cmdArgs.Length)
             {
                 configPath = Environment.CurrentDirectory + "/" + cmdArgs[i + 1];
+                hasConfig = true;
             }
         }
 
@@ -321,11 +324,11 @@ class OmicronManager : MonoBehaviour
             serverIP = config.serverIP;
             serverMsgPort = config.serverMsgPort;
             dataPort = config.dataPort;
+            hasConfig = true;
         }
-        catch (Exception e)
+        catch
         {
-            Debug.LogWarning(e);
-            config = new OmicronConfig();
+
         }
 
         if (connectToServer)
@@ -505,18 +508,6 @@ class OmicronManager : MonoBehaviour
 
 	void OnApplicationQuit()
     {
-		
-        config.connectToServer = connectToServer;
-        config.serverIP = serverIP;
-        config.serverMsgPort = serverMsgPort;
-        config.dataPort = dataPort;
-
-        string sfgJson = JsonUtility.ToJson(config, true);
-
-        StreamWriter writer = new StreamWriter(configPath);
-        writer.WriteLine(sfgJson);
-        writer.Close();
-
         if (connectToServer)
         {
             DisconnectServer();
