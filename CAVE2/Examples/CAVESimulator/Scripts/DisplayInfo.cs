@@ -13,9 +13,21 @@ public class DisplayInfo : MonoBehaviour {
     public Vector3 origin; // pixel origin
     public float h; // Screen rotation
 
+
+    Transform trackingOrigin;
+
+    [SerializeField]
+    Vector3 trackingOriginPos;
+
     // Use this for initialization
-    void Start () {
+    void Start() {
         UpdateDisplayInfo();
+
+        if (GetComponentInParent<VRDisplayManager>())
+        {
+            trackingOrigin = GetComponentInParent<VRDisplayManager>().headTrackedUser.parent;
+            trackingOriginPos = trackingOrigin.position;
+        }
     }
 
     public void UpdateDisplayInfo()
@@ -26,5 +38,18 @@ public class DisplayInfo : MonoBehaviour {
 
         origin = gameObject.transform.Find("Borders/PixelSpace").position;
         h = gameObject.transform.Find("Borders/PixelSpace").eulerAngles.y;
+
+        // Convert from world space to local tracker space
+        if (GetComponentInParent<VRDisplayManager>())
+        {
+            trackingOrigin = GetComponentInParent<VRDisplayManager>().headTrackedUser.parent;
+            trackingOriginPos = trackingOrigin.position;
+
+            Px_UpperLeft = Px_UpperLeft - trackingOriginPos;
+            Px_LowerLeft = Px_LowerLeft - trackingOriginPos;
+            Px_LowerRight = Px_LowerRight - trackingOriginPos;
+
+            origin = trackingOrigin.InverseTransformPoint(origin);
+        }
     }
 }
