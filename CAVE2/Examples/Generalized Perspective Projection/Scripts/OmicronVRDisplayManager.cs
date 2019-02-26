@@ -17,6 +17,8 @@ public class OmicronVRDisplayManager : MonoBehaviour {
         public Vector2 screenOffset;
         public bool stereoInverted;
         public StereoscopicCamera.StereoscopicMode stereoMode;
+        public Vector2 stereoResolution;
+        public float eyeSeparation;
     }
 
     OmicronVRDisplayManagerConfig config = new OmicronVRDisplayManagerConfig();
@@ -87,6 +89,20 @@ public class OmicronVRDisplayManager : MonoBehaviour {
     [SerializeField]
     InputField screenOffset_y;
 
+    [SerializeField]
+    InputField resolution_x;
+
+    [SerializeField]
+    InputField resolution_y;
+
+    Vector2 stereoResolution = new Vector2(1366, 768);
+
+    [SerializeField]
+    Button useCurrentResolution;
+
+    [SerializeField]
+    InputField eyeSeparation;
+
     Vector2 screenScale;
     Vector2 screenOffset;
     bool stereoInverted;
@@ -124,7 +140,8 @@ public class OmicronVRDisplayManager : MonoBehaviour {
 
             stereoScript.SetStereoInverted(config.stereoInverted);
             stereoScript.SetStereoMode(config.stereoMode);
-
+            stereoScript.SetStereoResolution(config.stereoResolution);
+            stereoScript.SetEyeSeparation(config.eyeSeparation);
         }
         catch(Exception e)
         {
@@ -154,6 +171,13 @@ public class OmicronVRDisplayManager : MonoBehaviour {
         invertStereo.onClick.AddListener(delegate { stereoScript.InvertStereo(); });
         invertStereo.onClick.AddListener(delegate { CheckState(); });
 
+        resolution_x.onEndEdit.AddListener(delegate { stereoScript.UpdateStereoResolution_x(resolution_x.text); });
+        resolution_y.onEndEdit.AddListener(delegate { stereoScript.UpdateStereoResolution_y(resolution_y.text); });
+
+        useCurrentResolution.onClick.AddListener(delegate { stereoScript.SetStereoResolution(new Vector2(Screen.width, Screen.height)); });
+
+        eyeSeparation.onEndEdit.AddListener(delegate { stereoScript.UpdateEyeSeparation(eyeSeparation.text); });
+
         // Set initial UI values
         screenUL = projection.GetScreenUL();
         screenUL_x.text = screenUL.x.ToString();
@@ -177,6 +201,12 @@ public class OmicronVRDisplayManager : MonoBehaviour {
         screenOffset = stereoScript.GetScreenOffset();
         screenOffset_x.text = screenOffset.x.ToString();
         screenOffset_y.text = screenOffset.y.ToString();
+
+        stereoResolution = stereoScript.GetStereoResolution();
+        resolution_x.text = stereoResolution.x.ToString();
+        resolution_y.text = stereoResolution.y.ToString();
+
+        eyeSeparation.text = stereoScript.GetEyeSeparation().ToString();
 
         CheckState();
     }
@@ -216,6 +246,8 @@ public class OmicronVRDisplayManager : MonoBehaviour {
         config.screenOffset = stereoScript.GetScreenOffset();
         config.stereoInverted = stereoScript.IsStereoInverted();
         config.stereoMode = stereoScript.GetStereoMode();
+        config.stereoResolution = stereoScript.GetStereoResolution();
+        config.eyeSeparation = stereoScript.GetEyeSeparation();
 
         string sfgJson = JsonUtility.ToJson(config, true);
 

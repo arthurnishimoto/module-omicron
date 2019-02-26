@@ -63,6 +63,9 @@ public class StereoscopicCamera : MonoBehaviour {
     [SerializeField]
     bool invertEyes;
 
+    [SerializeField]
+    bool regenerate;
+
     // Use this for initialization
     void Start () {
         if (generateCameras && transform.parent.GetComponent<StereoscopicCamera>() == null)
@@ -82,8 +85,29 @@ public class StereoscopicCamera : MonoBehaviour {
         }
     }
 	
-	// Update is called once per frame
-	void Update () {
+    void RebuildTextures()
+    {
+        // Setup stereo materials and render textures
+        leftTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
+        rightTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
+
+        leftEye.GetComponent<Camera>().targetTexture = leftTexture;
+        rightEye.GetComponent<Camera>().targetTexture = rightTexture;
+
+        stereoscopicMaterial.SetFloat("_RenderWidth", outputResolution.x);
+        stereoscopicMaterial.SetFloat("_RenderHeight", outputResolution.y);
+
+        stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
+        stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
+    }
+
+    // Update is called once per frame
+    void Update () {
+        if(regenerate)
+        {
+            RebuildTextures();
+            regenerate = false;
+        }
         leftEye.transform.localPosition = Vector3.left * eyeSeparation / 2.0f;
         rightEye.transform.localPosition = Vector3.right * eyeSeparation / 2.0f;
 
@@ -144,13 +168,6 @@ public class StereoscopicCamera : MonoBehaviour {
 
         stereoscopicMaterial.SetFloat("_RenderWidth", outputResolution.x);
         stereoscopicMaterial.SetFloat("_RenderHeight", outputResolution.y);
-
-        // Set render textures to match output screen resolution
-        leftTexture.width = (int)outputResolution.x;
-        leftTexture.height = (int)outputResolution.y;
-
-        rightTexture.width = (int)outputResolution.x;
-        rightTexture.height = (int)outputResolution.y;
 
         leftEye.GetComponent<Camera>().targetTexture = leftTexture;
         rightEye.GetComponent<Camera>().targetTexture = rightTexture;        
@@ -246,5 +263,43 @@ public class StereoscopicCamera : MonoBehaviour {
     public void SetScreenOffset(Vector2 value)
     {
         textureOffset = value;
+    }
+
+    public Vector2 GetStereoResolution()
+    {
+        return outputResolution;
+    }
+
+    public void SetStereoResolution(Vector2 value)
+    {
+        outputResolution = value;
+        RebuildTextures();
+    }
+
+    public void UpdateStereoResolution_x(string value)
+    {
+        float.TryParse(value, out outputResolution.x);
+        RebuildTextures();
+    }
+
+    public void UpdateStereoResolution_y(string value)
+    {
+        float.TryParse(value, out outputResolution.y);
+        RebuildTextures();
+    }
+
+    public float GetEyeSeparation()
+    {
+        return eyeSeparation;
+    }
+
+    public void UpdateEyeSeparation(string value)
+    {
+        float.TryParse(value, out eyeSeparation);
+    }
+
+    public void SetEyeSeparation(float value)
+    {
+        eyeSeparation = value;
     }
 }
