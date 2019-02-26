@@ -96,7 +96,7 @@ public class DebugGUIManager : MonoBehaviour {
                     minMaxFPS.x = curFPS;
                     minMaxFPSTime.x = Time.time;
                 }
-                if (curFPS > minMaxFPS.y)
+                if (Time.time > 1 && curFPS > minMaxFPS.y)
                 {
                     minMaxFPS.y = curFPS;
                     minMaxFPSTime.y = Time.time;
