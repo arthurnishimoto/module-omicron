@@ -39,6 +39,7 @@ public class NavSpeedUI : MonoBehaviour {
     // Use this for initialization
     void Start () {
         navController = GetComponentInParent<CAVE2WandNavigator>();
+        slider.value = Mathf.Log10(navController.globalSpeedMod) + 5;
     }
 
     public void UpdateNavSpeed()
