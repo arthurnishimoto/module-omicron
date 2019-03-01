@@ -245,58 +245,164 @@ public class CAVE2 : MonoBehaviour
     // CAVE2 Synchronization Management ------------------------------------------------------------
     public static void SendMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
-        GetCAVE2Manager().SendMessage(targetObjectName, methodName, useReliable);
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     public static void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
-        GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, useReliable);
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     public static void SendMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
     {
-        GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, useReliable);
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     public static void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
     {
-        GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, useReliable);
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     public static void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
     {
-        GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     public static void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, bool useReliable = true)
     {
-        GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, useReliable);
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 
     public static void Destroy(string targetObjectName)
     {
-        GetCAVE2Manager().Destroy(targetObjectName);
-
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().Destroy(targetObjectName);
+        }
+        else
+        {
+            Destroy(targetObjectName);
+        }
     }
 
     public static void LoadScene(int id)
     {
-        RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadScene", id);
+        if (RpcManager && GetCAVE2Manager())
+        {
+            RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadScene", id);
+        }
+        else
+        {
+            LoadScene(id);
+        }
     }
 
     public static void LoadScene(string id)
     {
-        RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadScene", id);
+        if (RpcManager && GetCAVE2Manager())
+        {
+            RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadScene", id);
+        }
+        else
+        {
+            LoadScene(id);
+        }
     }
 
     public static void LoadSceneAsync(int id)
     {
-        RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+        if (RpcManager && GetCAVE2Manager())
+        {
+            RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+        }
+        else
+        {
+            LoadSceneAsync(id);
+        }
     }
 
     public static void LoadSceneAsync(string id)
     {
-        RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+        if (RpcManager && GetCAVE2Manager())
+        {
+            RpcManager.SendMessage(GetCAVE2Manager().name, "CAVE2LoadSceneAsync", id);
+        }
+        else
+        {
+            LoadSceneAsync(id);
+        }
     }
 
     public static void PrintArray(object[] array)
@@ -740,16 +846,19 @@ static CAVE2Manager CAVE2Manager_Instance;
         if(CAVE2Manager_Instance == null)
         {
             GameObject cave2Manager = GameObject.Find("CAVE2-Manager");
-            CAVE2Manager_Instance = cave2Manager.GetComponent<CAVE2Manager>();
+            if (cave2Manager)
+            {
+                CAVE2Manager_Instance = cave2Manager.GetComponent<CAVE2Manager>();
 
-            if (CAVE2Manager_Instance == null)
-            {
-                Debug.LogWarning("CAVE2Manager_Instance is NULL - SHOULD NOT HAPPEN!");
-            }
-            else
-            {
-                Debug.LogWarning("Reintializing CAVE2Manager_Instance");
-                CAVE2Manager_Instance.Init();
+                if (CAVE2Manager_Instance == null)
+                {
+                    Debug.LogWarning("CAVE2Manager_Instance is NULL - SHOULD NOT HAPPEN!");
+                }
+                else
+                {
+                    Debug.LogWarning("Reintializing CAVE2Manager_Instance");
+                    CAVE2Manager_Instance.Init();
+                }
             }
             //GameObject cave2Manager = new GameObject("CAVE2-Manager");
             //cave2Manager.AddComponent<OmicronManager>();

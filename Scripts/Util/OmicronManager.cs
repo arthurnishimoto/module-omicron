@@ -256,6 +256,37 @@ class OmicronManager : MonoBehaviour
     string configPath;
     bool hasConfig;
 
+    [Header("Requested Service Types")]
+    [SerializeField] bool enablePointer = true;
+    [SerializeField] bool enableMocap = true;
+    [SerializeField] bool enableKeyboard = true;
+    [SerializeField] bool enableController = true;
+    [SerializeField] bool enableUI = true;
+    [SerializeField] bool enableGeneric = true;
+    [SerializeField] bool enableBrain = true;
+    [SerializeField] bool enableWand = true;
+    [SerializeField] bool enableSpeech = true;
+    [SerializeField] bool enableImage = false;
+    [SerializeField] bool enableAudio = true;
+
+    enum ClientFlags
+    {
+        DataIn = 1 << 0,
+        ServiceTypePointer = 1 << 1,
+        ServiceTypeMocap = 1 << 2,
+        ServiceTypeKeyboard = 1 << 3,
+        ServiceTypeController = 1 << 4,
+        ServiceTypeUi = 1 << 5,
+        ServiceTypeGeneric = 1 << 6,
+        ServiceTypeBrain = 1 << 7,
+        ServiceTypeWand = 1 << 8,
+        ServiceTypeSpeech = 1 << 9,
+        ServiceTypeImage = 1 << 10,
+        AlwaysTCP = 1 << 11,
+        AlwaysUDP = 1 << 12,
+        ServiceTypeAudio = 1 << 13
+    }
+
     [Serializable]
     public class OmicronConfig
     {
@@ -336,13 +367,28 @@ class OmicronManager : MonoBehaviour
             StartCoroutine("ConnectToServer");
         }
 
+        omicronClients = new ArrayList();
         //DontDestroyOnLoad(gameObject);
     }// start
 
 	public bool ConnectToServer()
 	{
+        int flags = 0; // Use server defaults
+
+        flags += enablePointer ? (int)ClientFlags.ServiceTypePointer : 0;
+        flags += enableMocap ? (int)ClientFlags.ServiceTypeMocap : 0;
+        flags += enableKeyboard ? (int)ClientFlags.ServiceTypeKeyboard : 0;
+        flags += enableController ? (int)ClientFlags.ServiceTypeController : 0;
+        flags += enableUI ? (int)ClientFlags.ServiceTypeUi : 0;
+        flags += enableGeneric ? (int)ClientFlags.ServiceTypeGeneric : 0;
+        flags += enableBrain ? (int)ClientFlags.ServiceTypeBrain : 0;
+        flags += enableWand ? (int)ClientFlags.ServiceTypeWand : 0;
+        flags += enableSpeech ? (int)ClientFlags.ServiceTypeSpeech : 0;
+        flags += enableImage ? (int)ClientFlags.ServiceTypeImage : 0;
+        flags += enableAudio ? (int)ClientFlags.ServiceTypeAudio : 0;
+
 #if !UNITY_WEBGL
-        connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort );
+        connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort, flags);
 #endif
         connectionState = connectToServer ? ConnectionState.Connected : ConnectionState.FailedToConnect;
 
@@ -398,9 +444,9 @@ class OmicronManager : MonoBehaviour
             eventList.Add(e);
             if (debug)
             {
-                //Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
-                if( e.serviceType == EventBase.ServiceType.ServiceTypeWand)
-                    Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
+                Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
+                //if( e.serviceType == EventBase.ServiceType.ServiceTypeWand)
+                //    Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
             }
         };
     }
@@ -480,9 +526,12 @@ class OmicronManager : MonoBehaviour
 #endif
 
                 // -zPos -xRot -yRot for Omicron->Unity coordinate conversion
-                e.posz = -e.posz;
-                e.orx = -e.orx;
-                e.ory = -e.ory;
+                if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap || e.serviceType == EventBase.ServiceType.ServiceTypeWand)
+                {
+                    e.posz = -e.posz;
+                    e.orx = -e.orx;
+                    e.ory = -e.ory;
+                }
 
                 foreach (OmicronEventClient c in omicronClients)
                 {

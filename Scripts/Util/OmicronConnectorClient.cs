@@ -110,6 +110,8 @@ namespace omicron
             ServiceTypeBrain,
             ServiceTypeWand,
             ServiceTypeSpeech,
+            ServiceTypeImage,
+            ServiceTypeAudio,
             ServiceTypeAny = -1,
         };
 
@@ -426,7 +428,7 @@ namespace omicronConnector
             listener = clistener;
         }
 
-        public bool Connect(string serverIP, int msgPort, int dataPort)
+        public bool Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
         {
 #if UNITY_WSA
             Debug.LogWarning("Universal Windows Platform not supported. Will only work in Unity editor!");
@@ -443,7 +445,7 @@ namespace omicronConnector
                     client = new TcpClient(serverIP, msgPort);
 
                     // Translate the passed message into ASCII and store it as a Byte array.
-                    String message = "omicronV2_data_on," + dataPort;
+                    String message = "omicronV3_data_on," + dataPort + "," + flags;
                     Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
 
                     streamToServer = client.GetStream();
