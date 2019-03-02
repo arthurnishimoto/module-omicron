@@ -526,6 +526,8 @@ static CAVE2Manager CAVE2Manager_Instance;
     CAVE2InputManager inputManager;
 
     static string machineName;
+    static string masterNodeName = "ORION-WIN";
+    static string displayNodeName = "ORION";
 
     public int head1MocapID = 0;
     public int wand1MocapID = 1;
@@ -877,9 +879,9 @@ static CAVE2Manager CAVE2Manager_Instance;
 #if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 #else
-        if (machineName.Contains("LYRA") && !machineName.Equals("LYRA-WIN"))
+        if (machineName.Contains(displayNodeName) && !machineName.Equals(masterNodeName))
             return false;
-        else // Assumes on LYRA-WIN or development machine
+        else // Assumes master or development machine
             return true;
 #endif
     }
@@ -899,7 +901,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains("ORION") && !IsMaster())
+        if (machineName.Contains(displayNodeName) && !IsMaster())
         {
             return true;
         }
@@ -915,7 +917,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains("ORION-WIN") )
+        if (machineName.Contains(masterNodeName) )
         {
             return true;
         }
