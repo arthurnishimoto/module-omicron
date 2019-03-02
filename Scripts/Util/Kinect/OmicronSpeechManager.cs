@@ -37,15 +37,30 @@ public class OmicronSpeechManager : OmicronEventClient {
 
 	public UnityEngine.UI.Text debugText;
 
+    [SerializeField]
+    float audioEnergy;
+
+    [SerializeField]
+    float audioAngle;
+
+    [SerializeField]
+    float angleConfidence;
+
+    Vector3[] recentAngles = new Vector3[10];
+    int currentIndex;
+
 	// Use this for initialization
 	new void Start () {
-        eventOptions = EventBase.ServiceType.ServiceTypeSpeech;
+        eventOptions = EventBase.ServiceType.ServiceTypeAny;
 		InitOmicron ();
 	}
 
 	// Update is called once per frame
 	void Update () {
-
+        for(int i = 0; i < recentAngles.Length; i++)
+        {
+            Debug.DrawLine(transform.position,  transform.position + transform.localRotation * recentAngles[i], Color.magenta, 5);
+        }
     }
 
     public override void OnEvent( EventData e )
@@ -54,9 +69,12 @@ public class OmicronSpeechManager : OmicronEventClient {
 		{
 			string speechString = e.getExtraDataString();
 			float speechConfidence = e.posx;
+            float speechAngle = e.posy;
+            float angleConfidence = e.posz;
 
-			string debugText = "Received: '" + speechString + "' at " +speechConfidence.ToString("F2")+ " confidence";
-			debugText += "\nMin confidence: "+minimumSpeechConfidence.ToString("F2");
+            string debugText = "Received: '" + speechString + "' at " +speechConfidence.ToString("F2")+ " confidence";
+            debugText += "\nAngle: " + speechAngle.ToString("F2") + " at " + angleConfidence.ToString("F2") + "confidence";
+            debugText += "\nMin confidence: "+minimumSpeechConfidence.ToString("F2");
             //Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
 
             CAVE2.SendMessage(gameObject.name, "SetHUDSpeechDebugText", debugText);
@@ -69,7 +87,30 @@ public class OmicronSpeechManager : OmicronEventClient {
 				}
 			}
 		}
-	}
+        else if (e.serviceType == EventBase.ServiceType.ServiceTypeAudio)
+        {
+            audioEnergy = e.posx;
+            audioAngle = e.posy;
+            angleConfidence = e.posz;
+
+            string debugText = "Received: " + audioEnergy + " db at angle " + audioAngle.ToString("F2") + " at " + angleConfidence.ToString("F2") + " confidence";
+            // debugText += "\nMin confidence: " + minimumSpeechConfidence.ToString("F2");
+            //Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
+
+            //CAVE2.SendMessage(gameObject.name, "SetHUDSpeechDebugText", debugText);
+
+            Vector3 angleVector = Vector3.zero;
+            angleVector.x = angleConfidence * Mathf.Sin(-audioAngle * Mathf.Deg2Rad);
+            angleVector.z = angleConfidence * Mathf.Cos(-audioAngle * Mathf.Deg2Rad);
+
+            recentAngles[currentIndex] = angleVector;
+            currentIndex++;
+            if(currentIndex > recentAngles.Length - 1)
+            {
+                currentIndex = 0;
+            }
+        }
+    }
 
 	void SetHUDSpeechDebugText(string s)
 	{
