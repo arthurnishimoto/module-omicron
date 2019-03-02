@@ -40,13 +40,16 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public bool syncPosition = true;
     public bool syncRotation;
+    public bool syncScale;
 
     public Transform testSyncObject;
 
     Vector3 nextPosition;
     Quaternion nextRotation;
+    Vector3 nextScale;
 
     bool gotFirstUpdateFromMaster;
+    bool hasScaleFromMaster;
 
     [SerializeField]
     UnityEngine.UI.Text adaptiveDebugText;
@@ -105,6 +108,10 @@ public class CAVE2TransformSync : MonoBehaviour {
                 {
                     CAVE2.SendMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
                 }
+                else if (syncScale)
+                {
+                    CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, false);
+                }
 
                 updateTimer = updateSpeed;
             }
@@ -118,6 +125,11 @@ public class CAVE2TransformSync : MonoBehaviour {
                 transform.position = nextPosition;
                 transform.rotation = nextRotation;
             }
+        }
+
+        if (hasScaleFromMaster)
+        {
+            transform.localScale = nextScale;
         }
 
         if (testSyncObject)
@@ -153,5 +165,16 @@ public class CAVE2TransformSync : MonoBehaviour {
     {
         SyncPosition(new Vector3((float)data[0], (float)data[1], (float)data[2]));
         SyncRotation(new Quaternion((float)data[3], (float)data[4], (float)data[5], (float)data[6]));
+    }
+
+    public void SyncScale(Vector3 value)
+    {
+        nextScale = value;
+        hasScaleFromMaster = true;
+    }
+
+    public void SyncScale(object[] data)
+    {
+        SyncScale(new Vector3((float)data[0], (float)data[1], (float)data[2]));
     }
 }
