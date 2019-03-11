@@ -35,4 +35,9 @@ public class CAVE2PlayerIdentity : MonoBehaviour
 
     public int[] wandIDs;
     public Transform[] wandObjects;
+
+    private void Start()
+    {
+        CAVE2.AddPlayerController(1, gameObject);
+    }
 }
