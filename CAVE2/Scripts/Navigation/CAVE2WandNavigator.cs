@@ -84,9 +84,6 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     Vector3 fly_x, fly_y, fly_z;
 
-    [SerializeField]
-    Vector3 translationVector;
-
     public enum AutoLevelMode { Disabled, OnGroundCollision };
 
     [Header("Collisions")]
@@ -246,7 +243,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
         bodyCollider.GetComponent<Rigidbody>().useGravity = true;
         bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 
-        Vector3 nextPos = translationVector;
+        Vector3 nextPos = transform.position;
         float forwardAngle = transform.eulerAngles.y;
 
         if (forwardReference == ForwardRef.Head)
@@ -265,13 +262,13 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
             if (smoothMovement)
             {
-                translationVector = Vector3.SmoothDamp(translationVector, nextPos, ref velocity, smoothMovementTime);
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
             }
             else
             {
-                translationVector = nextPos;
+                transform.position = nextPos;
             }
-            SetPosition(translationVector);
+
             transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
@@ -281,14 +278,14 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
             if (smoothMovement)
             {
-                translationVector = Vector3.SmoothDamp(translationVector, nextPos, ref velocity, smoothMovementTime);
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
             }
             else
             {
-                translationVector = nextPos;
+                transform.position = nextPos;
             }
-            SetPosition(translationVector);
-            transform.RotateAround(translationVector + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
+
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
         }
 
         if (autoLevelMode == AutoLevelMode.OnGroundCollision)
@@ -299,7 +296,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void UpdateFreeflyMovement()
     {
-        Vector3 nextPos = translationVector;
+        Vector3 nextPos = transform.position;
 
         bodyCollider.GetComponent<Rigidbody>().useGravity = false;
         bodyCollider.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
@@ -376,27 +373,27 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
             if (smoothMovement)
             {
-                translationVector = Vector3.SmoothDamp(translationVector, nextPos, ref velocity, smoothMovementTime);
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
             }
             else
             {
-                translationVector = nextPos;
+                transform.position = nextPos;
             }
-            SetPosition(translationVector);
+
             transform.Rotate(new Vector3(lookAround.x, lookAround.y, 0) * Time.deltaTime * turnSpeed);
         }
         else if (horizontalMovementMode == HorizonalMovementMode.Turn)
         {
             if (smoothMovement)
             {
-                translationVector = Vector3.SmoothDamp(translationVector, nextPos, ref velocity, smoothMovementTime);
+                transform.position = Vector3.SmoothDamp(transform.position, nextPos, ref velocity, smoothMovementTime);
             }
             else
             {
-                translationVector = nextPos;
+                transform.position = nextPos;
             }
-            SetPosition(translationVector);
-            transform.RotateAround(translationVector + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
+
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
         }
     }
 }
