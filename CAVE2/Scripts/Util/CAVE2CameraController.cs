@@ -30,12 +30,25 @@ using System.Collections;
 
 public class CAVE2CameraController : MonoBehaviour {
 
+    int leftEyeLayer;
+    int rightEyeLayer;
+    int cameraLayer;
+
     [SerializeField]
+    bool setCameraEyeLayerMasks = false;
+
+    [SerializeField]
+    string leftEyeLayerName = "LeftEye";
+
+    [SerializeField]
+    string rightEyeLayerName = "RightEye";
+
     Camera mainCamera;
 
-	// Use this for initialization
-	void Start () {
-		CAVE2.AddCameraController(this);
+    // Use this for initialization
+    void Start()
+    {
+        CAVE2.AddCameraController(this);
 
         if (mainCamera == null)
         {
@@ -52,6 +65,30 @@ public class CAVE2CameraController : MonoBehaviour {
             mainCamera.gameObject.AddComponent<getRealCameraUpdater>();
         }
 #endif
+        if (setCameraEyeLayerMasks)
+        {
+            leftEyeLayer = 1 << LayerMask.NameToLayer(leftEyeLayerName);
+            rightEyeLayer = 1 << LayerMask.NameToLayer(rightEyeLayerName);
+
+            cameraLayer = mainCamera.cullingMask;
+        }
+    }
+
+    // Update is called once per frame
+    void LateUpdate()
+    {
+        if (setCameraEyeLayerMasks)
+        {
+            Camera[] cameras = GetComponentsInChildren<Camera>();
+
+            // Found stereo pair
+            if (cameras.Length == 2)
+            {
+                // Use original culling mask minus other eye layer
+                cameras[1].cullingMask = cameraLayer - rightEyeLayer;   // Left
+                cameras[0].cullingMask = cameraLayer - leftEyeLayer;    // Right
+            }
+        }
     }
 
     void Update()
