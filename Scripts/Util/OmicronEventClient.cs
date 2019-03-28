@@ -34,7 +34,7 @@ public abstract class OmicronEventClient : getReal3D.MonoBehaviourWithRpc {
 #else
 public abstract class OmicronEventClient : MonoBehaviour {
 #endif
-    OmicronManager omicronManager;
+    protected OmicronManager omicronManager;
     
     protected EventBase.ServiceType eventOptions = EventBase.ServiceType.ServiceTypeAny;
 

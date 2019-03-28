@@ -212,7 +212,7 @@ class EventListener : IOmicronConnectorClientListener
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #if USING_GETREAL3D
-class OmicronManager : getReal3D.MonoBehaviourWithRpc
+public class OmicronManager : getReal3D.MonoBehaviourWithRpc
 #else
 class OmicronManager : MonoBehaviour
 #endif
@@ -553,6 +553,11 @@ class OmicronManager : MonoBehaviour
             eventList.Clear();
         }
         yield return null;
+    }
+
+    public bool WandEventsEnabled()
+    {
+        return enableWand;
     }
 
 	void OnApplicationQuit()
