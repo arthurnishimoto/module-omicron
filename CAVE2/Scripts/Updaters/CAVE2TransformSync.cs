@@ -54,29 +54,28 @@ public class CAVE2TransformSync : MonoBehaviour {
     [SerializeField]
     UnityEngine.UI.Text adaptiveDebugText;
 
+    Vector3 posDiff;
+    Vector3 rotDiff;
+
     public void Update()
     {
         if (updateMode == UpdateMode.Update)
             UpdateSync();
 
-        if(adaptiveDebugText && updateMode == UpdateMode.Adaptive)
+        posDiff = nextPosition - transform.position;
+        rotDiff = nextRotation.eulerAngles - transform.rotation.eulerAngles;
+
+        if (adaptiveDebugText)
         {
             adaptiveDebugText.text = "Master:\n(" + nextPosition.x.ToString("F2") + ", " + nextPosition.y.ToString("F2") + ", " + nextPosition.z.ToString("F2") + ")\n";
             adaptiveDebugText.text += "   (" + nextRotation.eulerAngles.x.ToString("F2") + ", " + nextRotation.eulerAngles.y.ToString("F2") + ", " + nextRotation.eulerAngles.z.ToString("F2") + ")\n";
             adaptiveDebugText.text += "Client:\n(" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
             adaptiveDebugText.text += "   (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
 
-            Vector3 posDiff = nextPosition - transform.position;
-            Vector3 rotDiff = nextRotation.eulerAngles - transform.rotation.eulerAngles;
-
             adaptiveDebugText.text += "Drift:\n(" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
             adaptiveDebugText.text += "   (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
-
         }
-        else if(adaptiveDebugText)
-        {
-            adaptiveDebugText.text = "";
-        }
+        
     }
     public void FixedUpdate()
     {

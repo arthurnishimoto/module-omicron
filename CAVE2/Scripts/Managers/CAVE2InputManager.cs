@@ -98,6 +98,8 @@ public class CAVE2InputManager : OmicronEventClient
             //wandControllers[c.sourceID] = c;
             Debug.LogWarning("CAVE2InputManager: Found existing controllers id '" + c.sourceID + "'.");
         }
+
+        omicronManager = CAVE2.GetCAVE2Manager().GetComponent<OmicronManager>();
     }
     public bool IsWandMenuLocked(int wandID)
     {
@@ -902,7 +904,7 @@ public class CAVE2InputManager : OmicronEventClient
 #endif
         }
         
-        if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled)
+        if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled || (CAVE2.UsingOmicronServer() && !omicronManager.WandEventsEnabled()))
         {
             wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
             wandController.rawFlags = wand1_flags;

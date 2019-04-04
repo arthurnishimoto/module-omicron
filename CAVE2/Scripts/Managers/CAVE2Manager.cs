@@ -243,6 +243,23 @@ public class CAVE2 : MonoBehaviour
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
+    public static void BroadcastMessage(string targetObjectName, string methodName, bool useReliable = true)
+    {
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.BroadcastMessage(methodName, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
     public static void SendMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
         if (GetCAVE2Manager())
@@ -1027,6 +1044,11 @@ static CAVE2Manager CAVE2Manager_Instance;
 
 
     // CAVE2 Synchronization Management ------------------------------------------------------------
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, useReliable);
+    }
+
     public void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
         CAVE2.RpcManager.SendMessage(targetObjectName, methodName, param, useReliable);

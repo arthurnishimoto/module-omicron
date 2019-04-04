@@ -459,11 +459,34 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
         if (debugRPC)
         {
             LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
+        }
+
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param, useReliable);
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("BroadcastCAVE2RPC", targetObjectName, methodName, param);
+        else
+            BroadcastCAVE2RPC(targetObjectName, methodName, param);
+#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
+#endif
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
+    {
+        if (debugRPC)
+        {
+            LogUI("CAVE2 SendMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param, useReliable);
@@ -486,7 +509,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debugRPC)
         {
-            LogUI("CAVE2 BroadcastMessage (Param 4)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 SendMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2, useReliable);
@@ -509,7 +532,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debugRPC)
         {
-            LogUI("CAVE2 BroadcastMessage (Param 5)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 SendMessage (Param 5)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3, useReliable);
@@ -532,7 +555,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debugRPC)
         {
-            LogUI("CAVE2 BroadcastMessage (Param 6)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4, useReliable);
@@ -555,7 +578,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         if (debugRPC)
         {
-            LogUI("CAVE2 BroadcastMessage (Param 9)'" + methodName + "' on " + targetObjectName);
+            LogUI("CAVE2 SendMessage (Param 9)'" + methodName + "' on " + targetObjectName);
         }
 
         ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4 + "|" + param5 + "|" + param6 + "|" + param7, useReliable);
@@ -598,6 +621,26 @@ public class CAVE2RPCManager : MonoBehaviour {
     }
 
 #if USING_GETREAL3D
+    [getReal3D.RPC]
+    public void BroadcastCAVE2RPC(string targetObjectName, string methodName, object param)
+    {
+        cave2RPCCallCount++;
+
+        if (debugRPC)
+            Debug.Log("BroadcastCAVE2RPC: call '" + methodName + "' on " + targetObjectName);
+
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2RPCManager: BroadcastCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
+        }
+    }
+
     [getReal3D.RPC]
     public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
     {
