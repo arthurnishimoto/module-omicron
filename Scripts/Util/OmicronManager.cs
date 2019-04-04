@@ -214,7 +214,7 @@ class EventListener : IOmicronConnectorClientListener
 #if USING_GETREAL3D
 public class OmicronManager : getReal3D.MonoBehaviourWithRpc
 #else
-class OmicronManager : MonoBehaviour
+public class OmicronManager : MonoBehaviour
 #endif
 {
     static OmicronManager omicronManagerInstance;
