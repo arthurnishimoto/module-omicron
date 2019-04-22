@@ -83,7 +83,7 @@ public class CAVE2PlayerCollider : MonoBehaviour {
     void UpdatePlayerCollider()
     {
         bodyCollider.radius = bodyRadius;
-        playerHeadPosition = CAVE2.GetHeadPosition(1);
+        playerHeadPosition = CAVE2.GetHeadPosition(GetComponent<CAVE2PlayerIdentity>().headID);
 
         // Prevent collider from height = 0, which causes falling through floors
         if (playerHeadPosition.y < 0.1f)

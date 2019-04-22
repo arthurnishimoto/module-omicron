@@ -30,6 +30,8 @@ using System.Collections;
 
 public class CAVE2PlayerIdentity : MonoBehaviour
 {
+    public int playerID = 1;
+
     public int headID;
     public Transform headObject;
 
@@ -38,6 +40,6 @@ public class CAVE2PlayerIdentity : MonoBehaviour
 
     private void Start()
     {
-        CAVE2.AddPlayerController(1, gameObject);
+        CAVE2.AddPlayerController(playerID, gameObject);
     }
 }
