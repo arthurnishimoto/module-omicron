@@ -355,6 +355,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             wandController = gameObject.AddComponent<OmicronController>();
             wandController.sourceID = wandID;
+            wandController.SetAsWand();
             wandControllers[wandID] = wandController;
         }
         else
@@ -381,6 +382,7 @@ public class CAVE2InputManager : OmicronEventClient
         {
             wandController2 = gameObject.AddComponent<OmicronController>();
             wandController2.sourceID = wand2ID;
+            wandController2.SetAsWand();
             wandControllers[wand2ID] = wandController2;
         }
         else

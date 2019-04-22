@@ -672,29 +672,12 @@ static CAVE2Manager CAVE2Manager_Instance;
     // CAVE2 Tracking Management -------------------------------------------------------------------
     public static Vector3 GetHeadPosition(int ID)
     {
-        int sensorID = 0;
-        Vector3 pos = Vector3.zero;
-
-        if (ID == 1)
-        {
-            sensorID = GetCAVE2Manager().head1MocapID;
-            
-        }
-        pos = CAVE2.Input.GetMocapPosition(sensorID);
-        return pos;
+        return CAVE2.Input.GetHeadPosition(ID);
     }
 
     public static Quaternion GetHeadRotation(int ID)
     {
-        int sensorID = 0;
-        Quaternion rot = Quaternion.identity;
-        if (ID == 1)
-        {
-            sensorID = GetCAVE2Manager().head1MocapID;
-        }
-
-        rot = CAVE2.Input.GetMocapRotation(sensorID);
-        return rot;
+        return CAVE2.Input.GetHeadRotation(ID);
     }
 
     public static Vector3 GetWandPosition(int ID)

@@ -66,10 +66,17 @@ public class OmicronController : OmicronEventClient
     ButtonState ButtonLeft;
     ButtonState ButtonRight;
 
+    EventBase.ServiceType defaultType = EventBase.ServiceType.ServiceTypeController;
+
+    public void SetAsWand()
+    {
+        defaultType = EventBase.ServiceType.ServiceTypeWand;
+    }
+
     // Use this for initialization
     new void Start()
     {
-        eventOptions = EventBase.ServiceType.ServiceTypeWand;
+        eventOptions = defaultType;
         InitOmicron();
     }
 

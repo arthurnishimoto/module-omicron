@@ -82,8 +82,8 @@ public class CAVE2HeadMarker : MonoBehaviour {
             CAVE2.RegisterHeadObject(headID, gameObject);
         }
 
-        transform.localPosition = CAVE2.GetHeadPosition(1);
-        transform.localRotation = CAVE2.GetHeadRotation(1);
+        transform.localPosition = CAVE2.GetHeadPosition(headID);
+        transform.localRotation = CAVE2.GetHeadRotation(headID);
 
         if (!CAVE2.OnCAVE2Display())
         {
