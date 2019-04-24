@@ -41,5 +41,16 @@ public class CAVE2PlayerIdentity : MonoBehaviour
     private void Start()
     {
         CAVE2.AddPlayerController(playerID, gameObject);
+
+        Transform[] children = GetComponentsInChildren<Transform>();
+
+        // If PlayerController is not unique append ID to separate objects for CAVE2.SendMessage()
+        if (GameObject.Find(transform.name) != gameObject)
+        {
+            foreach (Transform t in children)
+            {
+                t.name = t.name + " (PlayerID " + playerID + ")";
+            }
+        }
     }
 }

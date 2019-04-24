@@ -45,6 +45,12 @@ public class CAVE2CameraController : MonoBehaviour {
 
     Camera mainCamera;
 
+    [SerializeField]
+    Transform leftCameraParent;
+
+    [SerializeField]
+    Transform rightCameraParent;
+
     // Use this for initialization
     void Start()
     {
@@ -87,6 +93,15 @@ public class CAVE2CameraController : MonoBehaviour {
                 // Use original culling mask minus other eye layer
                 cameras[1].cullingMask = cameraLayer - rightEyeLayer;   // Left
                 cameras[0].cullingMask = cameraLayer - leftEyeLayer;    // Right
+
+                if(leftCameraParent != null)
+                {
+                    cameras[1].transform.parent = leftCameraParent;
+                }
+                if (rightCameraParent != null)
+                {
+                    cameras[0].transform.parent = rightCameraParent;
+                }
             }
         }
     }

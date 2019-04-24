@@ -42,6 +42,9 @@ public class CAVE2TransformSync : MonoBehaviour {
     public bool syncRotation;
     public bool syncScale;
 
+    [SerializeField]
+    bool useLocal = false;
+
     public Transform testSyncObject;
 
     Vector3 nextPosition;
@@ -62,8 +65,8 @@ public class CAVE2TransformSync : MonoBehaviour {
         if (updateMode == UpdateMode.Update)
             UpdateSync();
 
-        posDiff = nextPosition - transform.position;
-        rotDiff = nextRotation.eulerAngles - transform.rotation.eulerAngles;
+        posDiff = nextPosition - (useLocal ? transform.localPosition : transform.position);
+        rotDiff = nextRotation.eulerAngles - (useLocal ? transform.localRotation.eulerAngles : transform.rotation.eulerAngles);
 
         if (adaptiveDebugText)
         {
@@ -95,17 +98,20 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             if (updateTimer < 0)
             {
-                if(syncPosition && syncRotation)
+                Vector3 position = (useLocal ? transform.localPosition : transform.position);
+                Quaternion rotation = (useLocal ? transform.localRotation : transform.rotation);
+
+                if (syncPosition && syncRotation)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncPosRot", transform.position.x, transform.position.y, transform.position.z, transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, false);
                 }
                 else if (syncPosition)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncPosition", transform.position.x, transform.position.y, transform.position.z, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, false);
                 }
                 else if(syncRotation)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncRotation", transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, false);
                 }
                 else if (syncScale)
                 {
@@ -121,8 +127,16 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             if (updateMode != UpdateMode.Adaptive)
             {
-                transform.position = nextPosition;
-                transform.rotation = nextRotation;
+                if (useLocal)
+                {
+                    transform.localPosition = nextPosition;
+                    transform.localRotation = nextRotation;
+                }
+                else
+                {
+                    transform.position = nextPosition;
+                    transform.rotation = nextRotation;
+                }
             }
         }
 
