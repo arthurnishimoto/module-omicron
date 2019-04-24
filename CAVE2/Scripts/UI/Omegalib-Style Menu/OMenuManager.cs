@@ -84,10 +84,9 @@ public class OMenuManager : MonoBehaviour {
         {
            if(CAVE2.IsMaster())
            {
-                    angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
-                    CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
-                    CAVE2.SendMessage(mainMenu.name, "ToggleMenu");
-                    //mainMenu.ToggleMenu();
+                angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
+                CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
+                CAVE2.SendMessage(mainMenu.name, "ToggleMenu");
            }
         }
 

@@ -68,6 +68,8 @@ public class OmicronController : OmicronEventClient
 
     EventBase.ServiceType defaultType = EventBase.ServiceType.ServiceTypeController;
 
+    bool buttonsChanged;
+
     public void SetAsWand()
     {
         defaultType = EventBase.ServiceType.ServiceTypeWand;
@@ -81,7 +83,17 @@ public class OmicronController : OmicronEventClient
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
+
+        if (CAVE2.IsMaster())
+        {
+            UpdateButtons(rawFlags);
+            CAVE2.SendMessage(gameObject.name, "UpdateButtonStates", Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight);
+        }
+    }
+
+    void LateUpdate()
+    {
         UpdateButtons(rawFlags);
     }
 
@@ -145,11 +157,10 @@ public class OmicronController : OmicronEventClient
         if (e.sourceId == sourceID || sourceID == -1)
         {
             //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);
-            
-            // Process button flags
-            rawFlags = (int)e.flags;
+            if ((int)e.flags != rawFlags)
+                buttonsChanged = true;
 
-            // Process analog inputs
+            rawFlags = (int)e.flags;
             rawAnalogInput1 = new Vector2(e.getExtraDataFloat(0), e.getExtraDataFloat(1));
             rawAnalogInput2 = new Vector2(e.getExtraDataFloat(2), e.getExtraDataFloat(3));
             rawAnalogInput3 = new Vector2(e.getExtraDataFloat(4), e.getExtraDataFloat(5));
@@ -163,6 +174,9 @@ public class OmicronController : OmicronEventClient
             // Flip Up/Down analog stick values
             analogInput1.y *= -1;
             analogInput2.y *= -1;
+
+            CAVE2.SendMessage(gameObject.name, "UpdateAnalogC2", analogInput1, analogInput2, analogInput3, analogInput4);
+            //CAVE2.SendMessage(gameObject.name, "UpdateRawFlagsC2", (int)e.flags);
         }
     }
 
@@ -188,6 +202,19 @@ public class OmicronController : OmicronEventClient
         analogInput4 = analog4;
     }
 
+    public void UpdateRawFlagsC2(int flags)
+    {
+        rawFlags = flags;
+    }
+
+    public void UpdateAnalogC2(object[] param)
+    {
+        analogInput1 = (Vector2)param[0];
+        analogInput2 = (Vector2)param[1];
+        analogInput3 = (Vector2)param[2];
+        analogInput4 = (Vector2)param[3];
+    }
+
     public void UpdateButtons(int flags)
     {
         UpdateButton(ref Button1, EventBase.Flags.Button1, flags);
@@ -208,6 +235,30 @@ public class OmicronController : OmicronEventClient
         UpdateButton(ref ButtonDown, EventBase.Flags.ButtonDown, flags);
         UpdateButton(ref ButtonLeft, EventBase.Flags.ButtonLeft, flags);
         UpdateButton(ref ButtonRight, EventBase.Flags.ButtonRight, flags);
+    }
+
+    void UpdateButtonStates(object[] param)
+    {
+        Button1 = (ButtonState)param[0];
+        Button2 = (ButtonState)param[1];
+        Button3 = (ButtonState)param[2];
+        Button4 = (ButtonState)param[3];
+        Button5 = (ButtonState)param[4];
+        Button6 = (ButtonState)param[5];
+        Button7 = (ButtonState)param[6];
+        Button8 = (ButtonState)param[7];
+        Button9 = (ButtonState)param[8];
+
+        SpecialButton1 = (ButtonState)param[9];
+        SpecialButton2 = (ButtonState)param[10];
+        SpecialButton3 = (ButtonState)param[11];
+
+        ButtonUp = (ButtonState)param[12];
+        ButtonDown = (ButtonState)param[13];
+        ButtonLeft = (ButtonState)param[14];
+        ButtonRight = (ButtonState)param[15];
+
+        buttonsChanged = true;
     }
 
     void UpdateButton(ref ButtonState button, EventBase.Flags buttonFlag, int flags)

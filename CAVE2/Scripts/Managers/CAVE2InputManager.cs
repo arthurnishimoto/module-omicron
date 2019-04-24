@@ -295,7 +295,9 @@ public class CAVE2InputManager : OmicronEventClient
         {
             if (!mocapSensors.ContainsKey((int)e.sourceId))
             {
-                OmicronMocapSensor mocapManager = gameObject.AddComponent<OmicronMocapSensor>();
+                GameObject g = new GameObject("OmicronMocapSensor " + (int)e.sourceId);
+                g.transform.parent = transform;
+                OmicronMocapSensor mocapManager = g.AddComponent<OmicronMocapSensor>();
                 mocapManager.sourceID = (int)e.sourceId;
                 if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
                 {
@@ -308,7 +310,9 @@ public class CAVE2InputManager : OmicronEventClient
         {
             if ( !wandControllers.ContainsKey((int)e.sourceId) )
             {
-                OmicronController wandController = gameObject.AddComponent<OmicronController>();
+                GameObject g = new GameObject("OmicronController " + (int)e.sourceId);
+                g.transform.parent = transform;
+                OmicronController wandController = g.AddComponent<OmicronController>();
                 wandController.sourceID = (int)e.sourceId;
                 wandControllers[(int)e.sourceId] = wandController;
             }
@@ -327,7 +331,9 @@ public class CAVE2InputManager : OmicronEventClient
         OmicronMocapSensor mainHeadSensor;
         if (!mocapSensors.ContainsKey(headMocapID))
         {
-            mainHeadSensor = gameObject.AddComponent<OmicronMocapSensor>();
+            GameObject g = new GameObject("OmicronMocapSensor " + headMocapID);
+            g.transform.parent = transform;
+            mainHeadSensor = g.AddComponent<OmicronMocapSensor>();
             mainHeadSensor.sourceID = headMocapID;
             mocapSensors[headMocapID] = mainHeadSensor;
         }
@@ -340,7 +346,9 @@ public class CAVE2InputManager : OmicronEventClient
         OmicronMocapSensor wandMocapSensor;
         if (!mocapSensors.ContainsKey(wandMocapID))
         {
-            wandMocapSensor = gameObject.AddComponent<OmicronMocapSensor>();
+            GameObject g = new GameObject("OmicronMocapSensor " + wandMocapID);
+            g.transform.parent = transform;
+            wandMocapSensor = g.AddComponent<OmicronMocapSensor>();
             wandMocapSensor.sourceID = wandMocapID;
             mocapSensors[wandMocapID] = wandMocapSensor;
         }
@@ -353,7 +361,9 @@ public class CAVE2InputManager : OmicronEventClient
         OmicronController wandController;
         if (!wandControllers.ContainsKey(wandID))
         {
-            wandController = gameObject.AddComponent<OmicronController>();
+            GameObject g = new GameObject("OmicronController " + wandID);
+            g.transform.parent = transform;
+            wandController = g.AddComponent<OmicronController>();
             wandController.sourceID = wandID;
             wandController.SetAsWand();
             wandControllers[wandID] = wandController;
@@ -367,7 +377,9 @@ public class CAVE2InputManager : OmicronEventClient
         OmicronMocapSensor wand2MocapSensor;
         if (!mocapSensors.ContainsKey(wand2MocapID))
         {
-            wand2MocapSensor = gameObject.AddComponent<OmicronMocapSensor>();
+            GameObject g = new GameObject("OmicronMocapSensor " + wand2MocapID);
+            g.transform.parent = transform;
+            wand2MocapSensor = g.AddComponent<OmicronMocapSensor>();
             wand2MocapSensor.sourceID = wand2MocapID;
             mocapSensors[wand2MocapID] = wand2MocapSensor;
         }
@@ -380,7 +392,9 @@ public class CAVE2InputManager : OmicronEventClient
         OmicronController wandController2;
         if (!wandControllers.ContainsKey(wand2ID))
         {
-            wandController2 = gameObject.AddComponent<OmicronController>();
+            GameObject g = new GameObject("OmicronController " + wand2ID);
+            g.transform.parent = transform;
+            wandController2 = g.AddComponent<OmicronController>();
             wandController2.sourceID = wand2ID;
             wandController2.SetAsWand();
             wandControllers[wand2ID] = wandController2;

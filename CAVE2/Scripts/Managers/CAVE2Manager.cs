@@ -345,6 +345,23 @@ public class CAVE2 : MonoBehaviour
         }
     }
 
+    public static void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, bool useReliable = true)
+    {
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5}, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
     public static void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, bool useReliable = true)
     {
         if (GetCAVE2Manager())
@@ -358,6 +375,40 @@ public class CAVE2 : MonoBehaviour
             {
                 //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
                 targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
+    public static void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, bool useReliable = true)
+    {
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
+    public static void SendMessage(string targetObjectName, string methodName, object[] paramArr, bool useReliable = true)
+    {
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().SendMessage(targetObjectName, methodName, paramArr, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.SendMessage(methodName, paramArr, SendMessageOptions.DontRequireReceiver);
             }
         }
     }
@@ -1052,9 +1103,24 @@ static CAVE2Manager CAVE2Manager_Instance;
         CAVE2.RpcManager.SendMessage(targetObjectName, methodName, param, param2, param3, param4, useReliable);
     }
 
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, bool useReliable = true)
+    {
+        CAVE2.RpcManager.SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, useReliable);
+    }
+
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, bool useReliable = true)
     {
         CAVE2.RpcManager.SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, useReliable);
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, bool useReliable = true)
+    {
+        CAVE2.RpcManager.SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16, useReliable);
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object[] paramArr, bool useReliable = true)
+    {
+        CAVE2.RpcManager.SendMessage(targetObjectName, methodName, paramArr, useReliable);
     }
 
     public void SendMessage(string targetObjectName, string methodName, bool useReliable = true)

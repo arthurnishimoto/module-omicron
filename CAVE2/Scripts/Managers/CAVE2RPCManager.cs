@@ -574,6 +574,29 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, bool useReliable = true)
+    {
+        if (debugRPC)
+        {
+            LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
+        }
+
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4 + "|" + param5, useReliable);
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC7", targetObjectName, methodName, param, param2, param3, param4, param5);
+        else
+            SendCAVE2RPC7(targetObjectName, methodName, param, param2, param3, param4, param5);
+#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
+        }
+#endif
+    }
+
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, bool useReliable = true)
     {
         if (debugRPC)
@@ -587,6 +610,29 @@ public class CAVE2RPCManager : MonoBehaviour {
             getReal3D.RpcManager.call("SendCAVE2RPC9", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
         else
             SendCAVE2RPC9(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
+#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
+        }
+#endif
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, bool useReliable = true)
+    {
+        if (debugRPC)
+        {
+            LogUI("CAVE2 SendMessage (Param 18)'" + methodName + "' on " + targetObjectName);
+        }
+
+        //ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param + "|" + param2 + "|" + param3 + "|" + param4 + "|" + param5 + "|" + param6 + "|" + param7, useReliable);
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC18", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
+        else
+            SendCAVE2RPC18(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
 #else
         GameObject targetObject = GameObject.Find(targetObjectName);
         if (targetObject != null)
@@ -719,6 +765,25 @@ public class CAVE2RPCManager : MonoBehaviour {
     }
 
     [getReal3D.RPC]
+    public void SendCAVE2RPC7(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5)
+    {
+        cave2RPCCallCount++;
+        if (debugRPC)
+            Debug.Log("SendCAVE2RPC7: call '" + methodName + "' on " + targetObjectName);
+
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5 }, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC7 failed to find gameObject '" + targetObjectName + "'");
+        }
+    }
+
+    [getReal3D.RPC]
     public void SendCAVE2RPC9(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7)
     {
         cave2RPCCallCount++;
@@ -734,6 +799,25 @@ public class CAVE2RPCManager : MonoBehaviour {
         else
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC9 failed to find gameObject '" + targetObjectName + "'");
+        }
+    }
+
+    [getReal3D.RPC]
+    public void SendCAVE2RPC18(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16)
+    {
+        cave2RPCCallCount++;
+        if (debugRPC)
+            Debug.Log("SendCAVE2RPC18: call '" + methodName + "' on " + targetObjectName);
+
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 }, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC18 failed to find gameObject '" + targetObjectName + "'");
         }
     }
 

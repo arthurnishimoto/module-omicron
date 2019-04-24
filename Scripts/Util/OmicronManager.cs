@@ -515,15 +515,14 @@ public class OmicronManager : MonoBehaviour
         {
             foreach (EventData e in eventList)
             {
-#if USING_GETREAL3D
                 // Send Omicron events to display client
                 // Note we're doing this before coordinate conversion since display clients will do that calculation
-                if (getReal3D.Cluster.isMaster)
+                if (CAVE2.IsMaster())
                 {
                     //getReal3D.RpcManager.call("AddStringEvent", OmicronConnectorClient.EventDataToString(e));
                     // Commented out because risk of double events - use CAVE2.SendMessage to sync actions instead
                 }
-#endif
+
 
                 // -zPos -xRot -yRot for Omicron->Unity coordinate conversion
                 if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap || e.serviceType == EventBase.ServiceType.ServiceTypeWand)
@@ -544,6 +543,7 @@ public class OmicronManager : MonoBehaviour
                     if (!c.IsFlaggedForRemoval() && (clientType == EventBase.ServiceType.ServiceTypeAny || eType == clientType))
                     {
                         //c.BroadcastMessage("OnEvent", e, SendMessageOptions.DontRequireReceiver);
+                        //CAVE2.SendMessage(c.gameObject.name, "OnEvent", e);
                         c.OnEvent(e);
                     }
                 }
@@ -554,6 +554,9 @@ public class OmicronManager : MonoBehaviour
         }
         yield return null;
     }
+
+
+
 
     public bool WandEventsEnabled()
     {

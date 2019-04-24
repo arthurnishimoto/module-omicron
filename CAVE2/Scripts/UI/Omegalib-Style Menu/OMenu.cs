@@ -106,8 +106,10 @@ public class OMenu : MonoBehaviour {
                 activeMenu = true;
         }
 
-        if (CAVE2.IsMaster() && showMenu && activeMenu && menuProgress > 0.5f)
+        if (showMenu && activeMenu && menuProgress > 0.5f && CAVE2.IsMaster())
+        {
             OnInput();
+        }
     }
 
     void OnInput()

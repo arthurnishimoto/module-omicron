@@ -128,7 +128,6 @@ public class CAVE2WandVisualUpdater : MonoBehaviour
 
         SetLit(buttonSelect, CAVE2.GetButtonState(wandID, CAVE2.Button.SpecialButton1));
         SetLit(buttonStart, CAVE2.GetButtonState(wandID, CAVE2.Button.SpecialButton2));
-
     }
 
     void SetLit(Transform g, OmicronController.ButtonState state)
