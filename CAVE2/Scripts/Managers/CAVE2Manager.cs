@@ -260,6 +260,40 @@ public class CAVE2 : MonoBehaviour
         }
     }
 
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
+    {
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
+    public static void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
+    {
+        if (GetCAVE2Manager())
+        {
+            GetCAVE2Manager().BroadcastMessage(targetObjectName, methodName, param, param2, useReliable);
+        }
+        else
+        {
+            GameObject targetObject = GameObject.Find(targetObjectName);
+            if (targetObject != null)
+            {
+                //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+                targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
     public static void SendMessage(string targetObjectName, string methodName, bool useReliable = true)
     {
         if (GetCAVE2Manager())
@@ -1081,6 +1115,11 @@ static CAVE2Manager CAVE2Manager_Instance;
     public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
         CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, useReliable);
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
+    {
+        CAVE2.RpcManager.BroadcastMessage(targetObjectName, methodName, param, param2, useReliable);
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)

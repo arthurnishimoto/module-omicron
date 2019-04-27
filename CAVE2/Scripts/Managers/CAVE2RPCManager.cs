@@ -482,6 +482,29 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
+    {
+        if (debugRPC)
+        {
+            LogUI("CAVE2 BroadcastMessage (Param 4) '" + methodName + "' on " + targetObjectName);
+        }
+
+        ServerSendMsgToClients(methodName + "|" + targetObjectName + "|" + param, useReliable);
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("BroadcastCAVE2RPC4", targetObjectName, methodName, param, param2);
+        else
+            BroadcastCAVE2RPC4(targetObjectName, methodName, param, param2);
+#else
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
+#endif
+    }
+
     public void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
     {
         if (debugRPC)
@@ -680,6 +703,26 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2RPCManager: BroadcastCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
+        }
+    }
+
+    [getReal3D.RPC]
+    public void BroadcastCAVE2RPC4(string targetObjectName, string methodName, object param, object param2)
+    {
+        cave2RPCCallCount++;
+
+        if (debugRPC)
+            Debug.Log("BroadcastCAVE2RPC4: call '" + methodName + "' on " + targetObjectName);
+
+        GameObject targetObject = GameObject.Find(targetObjectName);
+        if (targetObject != null)
+        {
+            //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
+            targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
         else
         {
