@@ -661,7 +661,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (targetObject != null)
         {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 }, SendMessageOptions.DontRequireReceiver);
         }
 #endif
     }
