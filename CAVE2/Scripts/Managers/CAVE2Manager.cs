@@ -959,7 +959,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public static bool IsMaster()
     {
-        if (CAVE2Manager_Instance.simulateAsClient)
+        if (CAVE2Manager_Instance != null && CAVE2Manager_Instance.simulateAsClient)
             return false;
 #if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
