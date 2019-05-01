@@ -176,7 +176,7 @@ public class OmicronController : OmicronEventClient
             analogInput2.y *= -1;
 
             CAVE2.SendMessage(gameObject.name, "UpdateAnalogC2", analogInput1, analogInput2, analogInput3, analogInput4);
-            //CAVE2.SendMessage(gameObject.name, "UpdateRawFlagsC2", (int)e.flags);
+            CAVE2.SendMessage(gameObject.name, "UpdateRawFlagsC2", (int)e.flags);
         }
     }
 

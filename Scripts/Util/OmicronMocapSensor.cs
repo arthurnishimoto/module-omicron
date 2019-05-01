@@ -67,8 +67,19 @@ public class OmicronMocapSensor : OmicronEventClient
     {
         if (e.sourceId == sourceID || sourceID == -1)
         {
-            position = new Vector3(e.posx * positionMod.x, e.posy * positionMod.y, e.posz * positionMod.z);
-            orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);            
+            UpdateTransform( new Vector3(e.posx * positionMod.x, e.posy * positionMod.y, e.posz * positionMod.z), new Quaternion(e.orx, e.ory, e.orz, e.orw));
+
         }
+    }
+
+    public void UpdateTransform(Vector3 pos, Quaternion rot)
+    {
+        CAVE2.SendMessage(gameObject.name, "SendTransformInfo", pos, rot);
+    }
+
+    public void SendTransformInfo(object[] param)
+    {
+        position = (Vector3)param[0];
+        orientation = (Quaternion)param[1];
     }
 }

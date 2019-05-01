@@ -915,8 +915,8 @@ public class CAVE2InputManager : OmicronEventClient
             wandMocapSensor.position = getReal3D.Input.wand.position;
             wandMocapSensor.orientation = getReal3D.Input.wand.rotation;
 
-            wand2MocapSensor.position = getReal3D.Input.GetSensor("Wand2").position;
-            wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
+            //wand2MocapSensor.position = getReal3D.Input.GetSensor("Wand2").position;
+            //wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
 #endif
         }
         

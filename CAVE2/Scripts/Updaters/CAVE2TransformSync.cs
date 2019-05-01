@@ -70,13 +70,13 @@ public class CAVE2TransformSync : MonoBehaviour {
 
         if (adaptiveDebugText)
         {
-            adaptiveDebugText.text = "Master:\n(" + nextPosition.x.ToString("F2") + ", " + nextPosition.y.ToString("F2") + ", " + nextPosition.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "   (" + nextRotation.eulerAngles.x.ToString("F2") + ", " + nextRotation.eulerAngles.y.ToString("F2") + ", " + nextRotation.eulerAngles.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "Client:\n(" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "   (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text = "Master:\t (" + nextPosition.x.ToString("F2") + ", " + nextPosition.y.ToString("F2") + ", " + nextPosition.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "\t\t\t (" + nextRotation.eulerAngles.x.ToString("F2") + ", " + nextRotation.eulerAngles.y.ToString("F2") + ", " + nextRotation.eulerAngles.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "Client:\t (" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "\t\t\t (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
 
-            adaptiveDebugText.text += "Drift:\n(" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "   (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "Drift:\t\t (" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "\t\t\t (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
         }
         
     }

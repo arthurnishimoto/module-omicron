@@ -35,8 +35,8 @@ public class TransformUI : MonoBehaviour {
 
     public bool local;
 
-    Vector3 position;
-    Vector3 eulerAngles;
+    protected Vector3 position;
+    protected Vector3 eulerAngles;
 
     // Use this for initialization
     void Start () {
