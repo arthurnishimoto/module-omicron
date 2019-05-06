@@ -58,6 +58,13 @@ public class OMenu : MonoBehaviour {
 
         if(menuItems.Length > 0)
             menuItems[currentItem].OnSelect(pointerData);
+
+        if(!showMenu)
+        {
+            transform.localScale = Vector3.zero;
+            menuProgress = 0;
+            activeMenu = false;
+        }
     }
 	
 	// Update is called once per frame
