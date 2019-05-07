@@ -63,6 +63,11 @@ public class CAVE2WandVisualUpdater : MonoBehaviour
     public Transform buttonSelect;
     public Transform buttonStart;
 
+    MeshRenderer[] meshRenderers;
+
+    [SerializeField]
+    bool wandVisible;
+
     // Use this for initialization
     void Start()
     {
@@ -87,6 +92,31 @@ public class CAVE2WandVisualUpdater : MonoBehaviour
 
         buttonSelect = transform.Find("Select");
         buttonStart = transform.Find("Start");
+
+        meshRenderers = GetComponentsInChildren<MeshRenderer>();
+
+        if (!CAVE2.OnCAVE2Display())
+        {
+            SetWandVisible(true);
+        }
+        else
+        {
+            SetWandVisible(wandVisible);
+        }
+    }
+
+    public void SetWandVisible(bool value)
+    {
+        foreach(MeshRenderer r in meshRenderers)
+        {
+            r.enabled = value;
+        }
+        wandVisible = value;
+    }
+
+   public void ToggleWandVisible()
+    {
+        SetWandVisible(!wandVisible);
     }
 
     // Update is called once per frame

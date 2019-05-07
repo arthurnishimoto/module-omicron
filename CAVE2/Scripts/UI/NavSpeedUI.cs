@@ -39,14 +39,31 @@ public class NavSpeedUI : MonoBehaviour {
     // Use this for initialization
     void Start () {
         navController = GetComponentInParent<CAVE2WandNavigator>();
-        slider.value = Mathf.Log10(navController.globalSpeedMod) + 5;
+        slider.value = Mathf.Log10(navController.globalSpeedMod) + 4;
     }
 
     public void UpdateNavSpeed()
     {
         float sliderVal = slider.value;
-        sliderVal = Mathf.Pow(10,(sliderVal - 5));
+        // value: 0 - 10
+        // 0 = 0.00001; 10 = 100000
+        // sliderVal = Mathf.Pow(10,(sliderVal - 5)); // Omegalib scale
 
+        // New Scale
+        switch((int)sliderVal)
+        {
+            case (0): sliderVal = 0.0001f; break;
+            case (1): sliderVal = 0.001f; break;
+            case (2): sliderVal = 0.01f; break;
+            case (3): sliderVal = 0.1f; break;
+            case (4): sliderVal = 1.0f; break;
+            case (5): sliderVal = 10.0f; break;
+            case (6): sliderVal = 50.0f; break;
+            case (7): sliderVal = 100.0f; break;
+            case (8): sliderVal = 1000.0f; break;
+            case (9): sliderVal = 10000.0f; break;
+            case (10): sliderVal = 100000.0f; break;
+        }
         if (navController)
         {
             label.text = "Navigation Speed: " + sliderVal + "x";

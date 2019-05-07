@@ -60,10 +60,18 @@ public class CAVE2TransformSync : MonoBehaviour {
     Vector3 posDiff;
     Vector3 rotDiff;
 
+    float timeSinceLastChange;
+
+    [SerializeField]
+    float adaptiveThreshold = 0.05f; // Drift allowed before correction (meters)
+
     public void Update()
     {
         if (updateMode == UpdateMode.Update)
+        {
+            timeSinceLastChange += Time.deltaTime;
             UpdateSync();
+        }
 
         posDiff = nextPosition - (useLocal ? transform.localPosition : transform.position);
         rotDiff = nextRotation.eulerAngles - (useLocal ? transform.localRotation.eulerAngles : transform.rotation.eulerAngles);
@@ -77,19 +85,26 @@ public class CAVE2TransformSync : MonoBehaviour {
 
             adaptiveDebugText.text += "Drift:\t\t (" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
             adaptiveDebugText.text += "\t\t\t (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
+            adaptiveDebugText.text += "Time since last change: " + timeSinceLastChange.ToString("F3");
         }
         
     }
     public void FixedUpdate()
     {
         if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive)
+        {
+            timeSinceLastChange += Time.fixedDeltaTime;
             UpdateSync();
+        }
     }
 
     public void LateUpdate()
     {
         if (updateMode == UpdateMode.Late)
-            UpdateSync();
+        {
+            timeSinceLastChange += Time.deltaTime;
+            UpdateSync();   
+        }
     }
 
     void UpdateSync()
@@ -138,6 +153,22 @@ public class CAVE2TransformSync : MonoBehaviour {
                     transform.rotation = nextRotation;
                 }
             }
+            else
+            {
+                /*
+                if(timeSinceLastChange > updateSpeed && Vector3.Magnitude(useLocal ? transform.localPosition : transform.position - nextPosition) > adaptiveThreshold)
+                {
+                    if (useLocal)
+                    {
+                        transform.localPosition = Vector3.Lerp(transform.localPosition, nextPosition, Time.deltaTime);
+                    }
+                    else
+                    {
+                        transform.position = Vector3.Lerp(transform.position, nextPosition, Time.deltaTime);
+                    }
+                }
+                */
+            }
         }
 
         if (hasScaleFromMaster)
@@ -154,6 +185,10 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public void SyncPosition(Vector3 position)
     {
+        if(Vector3.Magnitude(nextPosition - position) > 0.01f )
+        {
+            timeSinceLastChange = 0;
+        }
         nextPosition = position;
         gotFirstUpdateFromMaster = true;
     }
