@@ -224,7 +224,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1459938132966076}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -237,7 +237,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1079611420036434}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -508,18 +508,19 @@ MonoBehaviour:
   borderLeft: 4
   borderRight: 2
   frontDisplayToTrackingOrigin: -6841
-  displayToFloor: 268
+  displayToFloor: 278
   nDisplayColumns: 4
-  centerColumnOffset: -1
+  centerColumnOffset: -2
   displaysPerColumn: 4
   flatWall: 1
-  wallOffset: 98
-  angleOffset: 180
+  wallOffset: 10
+  displayRotation: 180
+  angleOffset: 0
   simulateDisplays: 0
   floorMaterial: {fileID: 2100000, guid: bc6ee1c2a9632344eb8cec23144d958c, type: 2}
   floorRenderMode: 0
   nodeArrangement: 0
-  nodeName: lyra-backwall
+  nodeName: orion
   outputConfig: 2
   generateScreenMaskAsset: 0
 --- !u!114 &114749728142945236
@@ -533,10 +534,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c32a16c178ae0aa45ab80acbb5438801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generateCameras: 1
-  eyeSeparation: 0.65
   stereoscopicMaterial: {fileID: 2100000, guid: 24f09a7ad4e9b2b40b9d14c46269c66c,
     type: 2}
+  generateCameras: 1
+  stereoMode: 2
+  outputResolution: {x: 1366, y: 768}
+  eyeSeparation: 0.65
+  textureScale: {x: 1, y: 1}
+  textureOffset: {x: 0, y: 0}
+  invertEyes: 0
+  regenerate: 0
 --- !u!114 &114797393019457012
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -563,6 +570,7 @@ MonoBehaviour:
   displaysPerColumn: 4
   flatWall: 0
   wallOffset: 0
+  displayRotation: 0
   angleOffset: 0.01
   simulateDisplays: 0
   floorMaterial: {fileID: 2100000, guid: bc6ee1c2a9632344eb8cec23144d958c, type: 2}

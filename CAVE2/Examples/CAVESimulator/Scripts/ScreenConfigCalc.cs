@@ -29,6 +29,7 @@ public class ScreenConfigCalc : MonoBehaviour {
     [Header("Flat Wall Mode")]
     [SerializeField] bool flatWall;
     [SerializeField] float wallOffset; // mm
+    [SerializeField] float displayRotation; // mm
 
     float angle;
 
@@ -140,7 +141,7 @@ public class ScreenConfigCalc : MonoBehaviour {
             {
                 originX = (wallOffset - displayWidthIncBorders * i) * Mathf.Cos(angleOffset) + frontDisplayToTrackingOrigin * Mathf.Sin(angleOffset);
                 originY = (wallOffset - displayWidthIncBorders * i) * Mathf.Sin(angleOffset) + frontDisplayToTrackingOrigin * Mathf.Cos(angleOffset);
-                h = angleOffset * Mathf.Rad2Deg;
+                h = displayRotation;
             }
 
             // Convert to CAVE2 coordinate system
