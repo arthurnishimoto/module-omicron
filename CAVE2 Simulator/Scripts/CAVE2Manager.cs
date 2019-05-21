@@ -184,7 +184,7 @@ public class CAVE2Manager : OmicronEventClient {
         wandStates.Add(Wand1MocapID, new WandState(1, Wand1MocapID));
 
 		machineName = System.Environment.MachineName;
-
+        /*
 		if ((OnCAVE2Master() && Application.platform != RuntimePlatform.WindowsEditor) || OnCAVE2Display())
         {
 			#if USING_GETREAL3D
@@ -222,6 +222,7 @@ public class CAVE2Manager : OmicronEventClient {
             }
             #endif
         }
+        */
     }
 
     void Awake()
@@ -316,7 +317,7 @@ public class CAVE2Manager : OmicronEventClient {
 		#if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 		#else
-        if (System.Environment.MachineName.Contains("LYRA") && !System.Environment.MachineName.Equals("LYRA-WIN"))
+        if (System.Environment.MachineName.Contains("ORION") && !System.Environment.MachineName.Equals("ORION-WIN"))
 			return false;
 		else // Assumes on LYRA-WIN or development machine
 			return true;
@@ -339,7 +340,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public static bool OnCAVE2Master()
 	{
 		machineName = System.Environment.MachineName;
-		if( machineName.Equals("LYRA-WIN") )
+		if( machineName.Equals("ORION-WIN") )
 		{
 			return true;
 		}
@@ -352,7 +353,7 @@ public class CAVE2Manager : OmicronEventClient {
 	public static bool OnCAVE2Display()
 	{
 		machineName = System.Environment.MachineName;
-		if( machineName.Contains("LYRA") && !IsMaster() )
+		if( machineName.Contains("ORION") && !IsMaster() )
 		{
 			return true;
 		}
@@ -478,15 +479,6 @@ public class CAVE2Manager : OmicronEventClient {
         Application.targetFrameRate = framerateCap;
         if (simulatorMode)
         {
-#if USING_GETREAL3D
-			if( Camera.main != null && Camera.main.GetComponent<getRealCameraUpdater>() )
-			{
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadPosition = false;
-            	Camera.main.GetComponent<getRealCameraUpdater>().applyHeadRotation = false;
-           		Camera.main.GetComponent<getRealCameraUpdater>().applyCameraProjection = false;
-			}
-#endif
-
             keyboardEventEmulation = true;
             wandMousePointerEmulation = true;
             mocapEmulation = true;
