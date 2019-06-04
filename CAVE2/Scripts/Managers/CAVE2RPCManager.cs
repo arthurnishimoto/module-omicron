@@ -294,12 +294,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         connected = false;
     }
 
-    void ServerSendMsgToClients(byte[] writerData)
+    void ServerSendMsgToClients(byte[] writerData, bool useReliable)
     {
         foreach (int clientId in clientIDs)
         {
             byte error;
-            NetworkTransport.Send(hostId, clientId, reliableChannelId, writerData, writerData.Length, out error);
+            NetworkTransport.Send(hostId, clientId, useReliable ? reliableChannelId : unreliableChannelId, writerData, writerData.Length, out error);
         }
 
         /*
@@ -608,7 +608,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -638,7 +638,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -667,7 +667,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -697,7 +697,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -728,7 +728,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -760,7 +760,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -793,7 +793,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -828,7 +828,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -872,7 +872,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray());
+        ServerSendMsgToClients(writer.ToArray(), useReliable);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
