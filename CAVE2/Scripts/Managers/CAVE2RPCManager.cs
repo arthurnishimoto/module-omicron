@@ -43,6 +43,10 @@ public class CAVE2RPCManager : MonoBehaviour {
     bool debugRPC = false;
 
     // Remote Networking
+    HostTopology topology;
+    [SerializeField] int hostId;
+    [SerializeField] int connectionId;
+
     [Header("Message Server")]
     [SerializeField]
     public bool useMsgServer;
@@ -106,6 +110,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void Start()
     {
+        /*
         msgServer = new NetworkServerSimple();
         msgClient = new NetworkClient();
 
@@ -115,6 +120,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         msgServer.Configure(myConfig, maxConnections);
         msgClient.Configure(myConfig, maxConnections);
+        */
+        SetupNetworking();
 
         if (useMsgServer)
         {
@@ -128,6 +135,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void Update()
     {
+        /*
         msgServer.Update();
 
         if(useMsgClient && autoReconnect && !connected)
@@ -146,7 +154,9 @@ public class CAVE2RPCManager : MonoBehaviour {
                 autoReconnectTimer = 0;
             }
         }
+        */
 
+        UpdateNetwork();
     }
 
     public bool IsReconnecting()
@@ -154,8 +164,24 @@ public class CAVE2RPCManager : MonoBehaviour {
         return (reconnectAttemptCount > 0);
     }
 
+    private void SetupNetworking()
+    {
+        GlobalConfig gConfig = new GlobalConfig();
+        //gConfig.MaxPacketSize = 500;
+
+        NetworkTransport.Init(gConfig);
+
+        ConnectionConfig config = new ConnectionConfig();
+        reliableChannelId = config.AddChannel(QosType.Reliable);
+        unreliableChannelId = config.AddChannel(QosType.Unreliable);
+
+        topology = new HostTopology(config, maxConnections);
+        hostId = NetworkTransport.AddHost(topology, serverListenPort);
+    }
+
     private void StartNetServer()
     {
+        /*
         serverOnClientConnect += ServerOnClientConnect;
         serverOnClientDisconnect += ServerOnClientDisconnect;
         serverOnData += ServerOnRecvMsg;
@@ -166,11 +192,17 @@ public class CAVE2RPCManager : MonoBehaviour {
         
         msgServer.Listen(serverListenPort);
         LogUI("Starting message server on port " + serverListenPort);
+        */
     }
 
     private void StartNetClient()
     {
         LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
+
+        byte error;
+        connectionId = NetworkTransport.Connect(hostId, serverIP, serverListenPort, 0, out error);
+
+        /*
         msgClient.Connect(serverIP, serverListenPort);
 
         clientOnConnect += ClientOnConnect;
@@ -180,28 +212,60 @@ public class CAVE2RPCManager : MonoBehaviour {
         msgClient.RegisterHandler(MsgType.Connect, clientOnConnect);
         msgClient.RegisterHandler(MsgType.Disconnect, clientOnDisconnect);
         msgClient.RegisterHandler(MessageID, clientOnData);
+        */
     }
 
-    void ServerOnClientConnect(NetworkMessage msg)
+    void UpdateNetwork()
     {
-        System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
-        LogUI("Msg Server: Client connected. Total " + connections.Count);
-
-        foreach (NetworkConnection client in connections)
+        int recHostId;
+        int recConnectionId;
+        int channelId;
+        int bufferSize = 1024;
+        byte[] recBuffer = new byte[bufferSize];
+        int dataSize;
+        byte error;
+        NetworkEventType recData = NetworkTransport.Receive(out recHostId, out recConnectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
+        switch (recData)
         {
-            if(client != null)
-            {
-                LogUI("Msg Server: Client ID " + client.connectionId + " '" + client.address + "' connected");
-            }
-        } 
+            case NetworkEventType.Nothing: break;
+            case NetworkEventType.ConnectEvent:
+                Debug.Log("ConnectEvent");
+                if (connectionId == recConnectionId)
+                {
+                    ClientOnConnect();
+                }
+                else
+                {
+                    ServerOnClientConnect(recConnectionId);
+                }
+                break;
+            case NetworkEventType.DataEvent:
+                Debug.Log("DataEvent");
+                break;
+            case NetworkEventType.DisconnectEvent:
+                Debug.Log("DisconnectEvent");
+                if (connectionId != recConnectionId)
+                {
+                    ServerOnClientDisconnect(recConnectionId);
+                }
+                break;
+            case NetworkEventType.BroadcastEvent:
+                Debug.Log("BroadcastEvent");
+                break;
+        }
     }
 
-    void ServerOnClientDisconnect(NetworkMessage msg)
+    void ServerOnClientConnect(int clientConnectionId)
     {
-        LogUI("Msg Server: Client disconnected");
+        LogUI("Msg Server: Client " + clientConnectionId  + " connected.");
     }
 
-    void ClientOnConnect(NetworkMessage msg)
+    void ServerOnClientDisconnect(int clientConnectionId)
+    {
+        LogUI("Msg Server: Client " + clientConnectionId + " disconnected.");
+    }
+
+    void ClientOnConnect()
     {
         LogUI("Msg Client: Connected to " + serverIP);
         connected = true;
@@ -216,6 +280,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void ServerSendMsgToClients(string msgStr, bool useReliable = true, NetworkConnection ignoreClient = null)
     {
+        /*
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
 
         foreach (NetworkConnection client in connections)
@@ -231,6 +296,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 msgServer.SendWriterTo(client.connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
             }
         }
+        */
     }
 
     void ClientOnRecvMsg(NetworkMessage msg)
