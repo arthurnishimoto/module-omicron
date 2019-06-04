@@ -28,6 +28,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 
 #if USING_GETREAL3D
 public class CAVE2RPCManager : getReal3D.MonoBehaviourWithRpc
@@ -46,6 +47,8 @@ public class CAVE2RPCManager : MonoBehaviour {
     HostTopology topology;
     [SerializeField] int hostId;
     [SerializeField] int connectionId;
+
+    HashSet<int> clientIDs = new HashSet<int>();
 
     [Header("Message Server")]
     [SerializeField]
@@ -240,7 +243,6 @@ public class CAVE2RPCManager : MonoBehaviour {
                 }
                 break;
             case NetworkEventType.DataEvent:
-                Debug.Log("DataEvent");
                 NetworkReader networkReader = new NetworkReader(recBuffer);
 
                 byte[] readerMsgTypeData = networkReader.ReadBytes(2);
@@ -270,11 +272,13 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ServerOnClientConnect(int clientConnectionId)
     {
         LogUI("Msg Server: Client " + clientConnectionId  + " connected.");
+        clientIDs.Add(clientConnectionId);
     }
 
     void ServerOnClientDisconnect(int clientConnectionId)
     {
         LogUI("Msg Server: Client " + clientConnectionId + " disconnected.");
+        clientIDs.Remove(clientConnectionId);
     }
 
     void ClientOnConnect()
@@ -292,8 +296,11 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void ServerSendMsgToClients(byte[] writerData)
     {
-        byte error;
-        NetworkTransport.Send(hostId, connectionId, reliableChannelId, writerData, writerData.Length, out error);
+        foreach (int clientId in clientIDs)
+        {
+            byte error;
+            NetworkTransport.Send(hostId, clientId, reliableChannelId, writerData, writerData.Length, out error);
+        }
 
         /*
         System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = msgServer.connections;
@@ -552,6 +559,11 @@ public class CAVE2RPCManager : MonoBehaviour {
             writer.Write("Vector3");
             writer.Write((Vector3)param);
         }
+        else if (param is System.Single)
+        {
+            writer.Write("Single");
+            writer.Write((System.Single)param);
+        }
         else
         {
             Debug.LogWarning("CAVE2RPCManager: Unknown param " + param.GetType());
@@ -569,6 +581,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             return networkReader.ReadVector3();
         }
+        else if (type == "Single")
+        {
+            return networkReader.ReadSingle();
+        }
         else
         {
             return null;
@@ -583,12 +599,16 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
 
         NetworkWriter writer = new NetworkWriter();
-        writer.StartMessage(100);
+        writer.StartMessage(101);
         writer.Write(targetObjectName);
         writer.Write(methodName);
-        Debug.Log(param.GetType());
-        //writer.Write(new object[] { param });
+        writer.Write(1);
+
+        ParamToByte(writer, param);
+
         writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -606,6 +626,19 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 BroadcastMessage (Param 4) '" + methodName + "' on " + targetObjectName);
         }
+
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(102);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(2);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -625,7 +658,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
 
         NetworkWriter writer = new NetworkWriter();
-        writer.StartMessage(200);
+        writer.StartMessage(201);
         writer.Write(targetObjectName);
         writer.Write(methodName);
         writer.Write(1);
@@ -653,6 +686,19 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 SendMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
 
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(202);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(2);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
+
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
@@ -669,6 +715,20 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 SendMessage (Param 5)'" + methodName + "' on " + targetObjectName);
         }
+
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(203);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(3);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+        ParamToByte(writer, param3);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -687,6 +747,21 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
 
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(204);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(4);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+        ParamToByte(writer, param3);
+        ParamToByte(writer, param4);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
+
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
@@ -703,6 +778,22 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
         }
+
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(205);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(5);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+        ParamToByte(writer, param3);
+        ParamToByte(writer, param4);
+        ParamToByte(writer, param5);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -721,6 +812,24 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 SendMessage (Param 9)'" + methodName + "' on " + targetObjectName);
         }
 
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(207);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(7);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+        ParamToByte(writer, param3);
+        ParamToByte(writer, param4);
+        ParamToByte(writer, param5);
+        ParamToByte(writer, param6);
+        ParamToByte(writer, param7);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
+
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
             getReal3D.RpcManager.call("SendCAVE2RPC9", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
@@ -737,6 +846,33 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 SendMessage (Param 18)'" + methodName + "' on " + targetObjectName);
         }
+
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(216);
+        writer.Write(targetObjectName);
+        writer.Write(methodName);
+        writer.Write(16);
+
+        ParamToByte(writer, param);
+        ParamToByte(writer, param2);
+        ParamToByte(writer, param3);
+        ParamToByte(writer, param4);
+        ParamToByte(writer, param5);
+        ParamToByte(writer, param6);
+        ParamToByte(writer, param7);
+        ParamToByte(writer, param8);
+        ParamToByte(writer, param9);
+        ParamToByte(writer, param10);
+        ParamToByte(writer, param11);
+        ParamToByte(writer, param12);
+        ParamToByte(writer, param13);
+        ParamToByte(writer, param14);
+        ParamToByte(writer, param15);
+        ParamToByte(writer, param16);
+
+        writer.FinishMessage();
+
+        ServerSendMsgToClients(writer.ToArray());
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
