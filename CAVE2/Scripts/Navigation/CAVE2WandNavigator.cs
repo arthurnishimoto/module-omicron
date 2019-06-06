@@ -207,32 +207,38 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void SetNavigationMode(int val)
     {
-        navMode = (NavigationMode)val;
+        if(Time.timeSinceLevelLoad > 1) // Prevent Unity 2019.1.2 bug where UI triggers all of these these at start
+            navMode = (NavigationMode)val;
     }
 
     public void SetNavModeWalk(bool val)
     {
-        navMode = NavigationMode.Walk;
+        if (Time.timeSinceLevelLoad > 1)
+            navMode = NavigationMode.Walk;
     }
 
     public void SetNavModeDrive(bool val)
     {
-        navMode = NavigationMode.Drive;
+        if (Time.timeSinceLevelLoad > 1)
+            navMode = NavigationMode.Drive;
     }
 
     public void SetNavModeFreefly(bool val)
     {
-        navMode = NavigationMode.Freefly;
+        if (Time.timeSinceLevelLoad > 1)
+            navMode = NavigationMode.Freefly;
     }
 
     public void SetNavModeStrafe(bool val)
     {
-        horizontalMovementMode = HorizonalMovementMode.Strafe;
+        if (Time.timeSinceLevelLoad > 1)
+            horizontalMovementMode = HorizonalMovementMode.Strafe;
     }
 
     public void SetNavModeRotate(bool val)
     {
-        horizontalMovementMode = HorizonalMovementMode.Turn;
+        if (Time.timeSinceLevelLoad > 1)
+            horizontalMovementMode = HorizonalMovementMode.Turn;
     }
 
     private Vector3 velocity = Vector3.zero;
