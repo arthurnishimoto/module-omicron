@@ -220,53 +220,113 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void UpdateNetwork()
     {
-        int recHostId;
-        int recConnectionId;
-        int channelId;
-        int bufferSize = 1024;
-        byte[] recBuffer = new byte[bufferSize];
-        int dataSize;
-        byte error;
-        NetworkEventType recData = NetworkTransport.Receive(out recHostId, out recConnectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
-        switch (recData)
+        NetworkEventType recData;
+        do
         {
-            case NetworkEventType.Nothing: break;
-            case NetworkEventType.ConnectEvent:
-                Debug.Log("ConnectEvent");
-                if (connectionId == recConnectionId)
-                {
-                    ClientOnConnect();
-                }
-                else
-                {
-                    ServerOnClientConnect(recConnectionId);
-                }
-                break;
-            case NetworkEventType.DataEvent:
-                NetworkReader networkReader = new NetworkReader(recBuffer);
+            int recHostId;
+            int recConnectionId;
+            int channelId;
+            int bufferSize = 1024;
+            byte[] recBuffer = new byte[bufferSize];
+            int dataSize;
+            byte error;
+            recData = NetworkTransport.Receive(out recHostId, out recConnectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
+            switch (recData)
+            {
+                case NetworkEventType.Nothing: break;
+                case NetworkEventType.ConnectEvent:
+                    Debug.Log("ConnectEvent");
+                    if (connectionId == recConnectionId)
+                    {
+                        ClientOnConnect();
+                    }
+                    else
+                    {
+                        ServerOnClientConnect(recConnectionId);
+                    }
+                    break;
+                case NetworkEventType.DataEvent:
+                    NetworkReader networkReader = new NetworkReader(recBuffer);
 
-                byte[] readerMsgTypeData = networkReader.ReadBytes(2);
-                short readerMsgType = (short)((readerMsgTypeData[1] << 8) + readerMsgTypeData[0]);
+                    byte[] readerMsgSizeData = networkReader.ReadBytes(2);
+                    short readerMsgSize = (short)((readerMsgSizeData[1] << 8) + readerMsgSizeData[0]);
 
-                string targetObjectName = networkReader.ReadString();
-                string methodName = networkReader.ReadString();
+                    byte[] readerMsgTypeData = networkReader.ReadBytes(2);
+                    short readerMsgType = (short)((readerMsgTypeData[1] << 8) + readerMsgTypeData[0]);
 
-                switch (readerMsgType)
-                {
-                    case (200): SendCAVE2RPC(targetObjectName, methodName, ReaderToObject(networkReader)); break;
-                }
-                break;
-            case NetworkEventType.DisconnectEvent:
-                Debug.Log("DisconnectEvent");
-                if (connectionId != recConnectionId)
-                {
-                    ServerOnClientDisconnect(recConnectionId);
-                }
-                break;
-            case NetworkEventType.BroadcastEvent:
-                Debug.Log("BroadcastEvent");
-                break;
-        }
+                    string targetObjectName = networkReader.ReadString();
+                    string methodName = networkReader.ReadString();
+                    int paramCount = networkReader.ReadInt32();
+
+                    switch (readerMsgType)
+                    {
+                        case (101): BroadcastCAVE2RPC(targetObjectName, methodName, ReaderToObject(networkReader)); break;
+                        case (102): BroadcastCAVE2RPC4(targetObjectName, methodName, ReaderToObject(networkReader), ReaderToObject(networkReader)); break;
+                        case (201): SendCAVE2RPC(targetObjectName, methodName, ReaderToObject(networkReader)); break;
+                        case (202):
+                            SendCAVE2RPC4(targetObjectName, methodName,
+                    ReaderToObject(networkReader),
+                    ReaderToObject(networkReader)); break;
+                        case (203):
+                            SendCAVE2RPC5(targetObjectName, methodName,
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader)); break;
+                        case (204):
+                            SendCAVE2RPC6(targetObjectName, methodName,
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader)); break;
+                        case (205):
+                            SendCAVE2RPC7(targetObjectName, methodName,
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader)); break;
+                        case (207):
+                            SendCAVE2RPC9(targetObjectName, methodName,
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader)); break;
+                        case (216):
+                            SendCAVE2RPC18(targetObjectName, methodName,
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader)); break;
+                    }
+                    break;
+                case NetworkEventType.DisconnectEvent:
+                    Debug.Log("DisconnectEvent");
+                    if (connectionId != recConnectionId)
+                    {
+                        ServerOnClientDisconnect(recConnectionId);
+                    }
+                    break;
+                case NetworkEventType.BroadcastEvent:
+                    Debug.Log("BroadcastEvent");
+                    break;
+            }
+
+        } while (recData != NetworkEventType.Nothing);
     }
 
     void ServerOnClientConnect(int clientConnectionId)
