@@ -118,19 +118,19 @@ public class CAVE2TransformSync : MonoBehaviour {
 
                 if (syncPosition && syncRotation)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
                 }
                 else if (syncPosition)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, CAVE2RPCManager.MsgType.StateUpdate);
                 }
                 else if(syncRotation)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
                 }
                 else if (syncScale)
                 {
-                    CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, false);
+                    CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, CAVE2RPCManager.MsgType.StateUpdate);
                 }
 
                 updateTimer = updateSpeed;

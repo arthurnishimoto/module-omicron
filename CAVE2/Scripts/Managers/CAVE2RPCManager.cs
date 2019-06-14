@@ -70,7 +70,12 @@ public class CAVE2RPCManager : MonoBehaviour {
     int unreliableChannelId;
 
     [SerializeField]
+    int stateUpdateChannelId;
+
+    [SerializeField]
     int maxConnections = 100;
+
+    public enum MsgType { Reliable, Unreliable, StateUpdate };
 
     [Header("Message Client")]
     [SerializeField]
@@ -177,6 +182,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         ConnectionConfig config = new ConnectionConfig();
         reliableChannelId = config.AddChannel(QosType.Reliable);
         unreliableChannelId = config.AddChannel(QosType.Unreliable);
+        stateUpdateChannelId = config.AddChannel(QosType.StateUpdate);
 
         topology = new HostTopology(config, maxConnections);
         hostId = NetworkTransport.AddHost(topology, serverListenPort);
@@ -354,12 +360,20 @@ public class CAVE2RPCManager : MonoBehaviour {
         connected = false;
     }
 
-    void ServerSendMsgToClients(byte[] writerData, bool useReliable)
+    void ServerSendMsgToClients(byte[] writerData, MsgType msgType)
     {
+        int channelId = reliableChannelId;
+        switch(msgType)
+        {
+            case (MsgType.Reliable): channelId = reliableChannelId; break;
+            case (MsgType.Unreliable): channelId = unreliableChannelId; break;
+            case (MsgType.StateUpdate): channelId = stateUpdateChannelId; break;
+        }
+
         foreach (int clientId in clientIDs)
         {
             byte error;
-            NetworkTransport.Send(hostId, clientId, useReliable ? reliableChannelId : unreliableChannelId, writerData, writerData.Length, out error);
+            NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
         }
 
         /*
@@ -651,7 +665,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -668,7 +682,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -680,7 +694,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -698,7 +712,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -710,7 +724,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -727,7 +741,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -739,7 +753,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, object param2, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -757,7 +771,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -769,7 +783,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -788,7 +802,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -800,7 +814,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -820,7 +834,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -832,7 +846,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -853,7 +867,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -865,7 +879,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -888,7 +902,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -900,7 +914,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, MsgType msgType = MsgType.Reliable)
     {
         if (debugRPC)
         {
@@ -932,7 +946,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         writer.FinishMessage();
 
-        ServerSendMsgToClients(writer.ToArray(), useReliable);
+        ServerSendMsgToClients(writer.ToArray(), msgType);
 
 #if USING_GETREAL3D
         if (getReal3D.Cluster.isMaster)
@@ -944,9 +958,9 @@ public class CAVE2RPCManager : MonoBehaviour {
 #endif
     }
 
-    public void SendMessage(string targetObjectName, string methodName, bool useReliable = true)
+    public void SendMessage(string targetObjectName, string methodName, MsgType msgType = MsgType.Reliable)
     {
-        SendMessage(targetObjectName, methodName, 0, useReliable);
+        SendMessage(targetObjectName, methodName, 0, msgType);
     }
 
     public void Destroy(string targetObjectName)
