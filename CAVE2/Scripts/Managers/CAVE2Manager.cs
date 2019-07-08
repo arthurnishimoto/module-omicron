@@ -46,6 +46,8 @@ public class CAVE2 : MonoBehaviour
     public static CAVE2InputManager Input;
     public static CAVE2RPCManager RpcManager;
 
+    public static bool simulatorMode;
+
     public struct WandEvent
     {
         public CAVE2PlayerIdentity playerID;
@@ -631,27 +633,17 @@ static CAVE2Manager CAVE2Manager_Instance;
     static string masterNodeName = "ORION-WIN";
     static string displayNodeName = "ORION";
 
-    public int head1MocapID = 0;
-    public int wand1MocapID = 1;
-    public int wand1ControllerID = 1;
-
-    public int head2MocapID = 2;
-    public int wand2MocapID = 3;
-    public int wand2ControllerID = 2;
+    public Hashtable headObjects = new Hashtable();
+    public Hashtable wandObjects = new Hashtable();
 
     ArrayList cameraControllers;
     public CAVE2CameraController mainCameraController;
-    public Hashtable headObjects = new Hashtable();
-    public Hashtable wandObjects = new Hashtable();
+
 
     public Hashtable playerControllers = new Hashtable();
 
     // Simulator
-    public bool simulatorMode;
-    public bool mocapEmulation;
-    public bool keyboardEventEmulation;
-    public bool wandMousePointerEmulation;
-    public bool usingKinectTrackingSimulator;
+
     
     public Vector3 simulatorHeadPosition = new Vector3(0.0f, 1.6f, 0.0f);
     public Vector3 simulatorHeadRotation = new Vector3(0.0f, 0.0f, 0.0f);
@@ -734,12 +726,14 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     void Update()
     {
+        CAVE2.simulatorMode = CAVE2.Input.simulatorMode;
+
         if(CAVE2Manager_Instance == null)
         {
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
+        if( !UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (CAVE2.Input.mocapEmulation || CAVE2.Input.usingKinectTrackingSimulator) )
         {
             if (mainCameraController)
             {
@@ -1026,7 +1020,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     // CAVE2 Simulator Management ------------------------------------------------------------------
     public static bool IsSimulatorMode()
     {
-        return GetCAVE2Manager().simulatorMode;
+        return CAVE2.Input.simulatorMode;
     }
 
     // public Vector3 GetMouseDeltaPos()

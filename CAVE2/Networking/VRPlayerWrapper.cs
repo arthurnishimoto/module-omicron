@@ -58,7 +58,7 @@ public class VRPlayerWrapper : MonoBehaviour {
 
     public string GetVRTypeLabel()
     {
-        if (CAVE2Manager.GetCAVE2Manager().simulatorMode)
+        if (CAVE2.simulatorMode)
         {
             VRTypeLabel = "CAVE2 Simulator";
         }

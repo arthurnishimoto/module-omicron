@@ -33,6 +33,20 @@ using omicronConnector;
 using UnityEngine.VR;
 public class CAVE2InputManager : OmicronEventClient
 {
+    public int head1MocapID = 0;
+    public int wand1MocapID = 1;
+    public int wand1ControllerID = 1;
+
+    public int head2MocapID = 2;
+    public int wand2MocapID = 3;
+    public int wand2ControllerID = 2;
+
+    public bool simulatorMode;
+    public bool mocapEmulation;
+    public bool keyboardEventEmulation;
+    public bool wandMousePointerEmulation;
+    public bool usingKinectTrackingSimulator;
+
     Hashtable mocapSensors = new Hashtable();
     Hashtable wandControllers = new Hashtable();
 
@@ -241,8 +255,8 @@ public class CAVE2InputManager : OmicronEventClient
         int headID = 1;
         switch(ID)
         {
-            case (1): headID = CAVE2.GetCAVE2Manager().head1MocapID; break;
-            case (2): headID = CAVE2.GetCAVE2Manager().head2MocapID; break;
+            case (1): headID = head1MocapID; break;
+            case (2): headID = head2MocapID; break;
         }
         return GetMocapPosition(headID);
     }
@@ -252,8 +266,8 @@ public class CAVE2InputManager : OmicronEventClient
         int headID = 1;
         switch (ID)
         {
-            case (1): headID = CAVE2.GetCAVE2Manager().head1MocapID; break;
-            case (2): headID = CAVE2.GetCAVE2Manager().head2MocapID; break;
+            case (1): headID = head1MocapID; break;
+            case (2): headID = head2MocapID; break;
         }
         return GetMocapRotation(headID);
     }
@@ -263,8 +277,8 @@ public class CAVE2InputManager : OmicronEventClient
         int wandID = 1;
         switch (ID)
         {
-            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
-            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+            case (1): wandID = wand1MocapID; break;
+            case (2): wandID = wand2MocapID; break;
         }
         return GetMocapPosition(wandID);
     }
@@ -274,8 +288,8 @@ public class CAVE2InputManager : OmicronEventClient
         int wandID = 1;
         switch (ID)
         {
-            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
-            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+            case (1): wandID = wand1MocapID; break;
+            case (2): wandID = wand2MocapID; break;
         }
         return GetMocapRotation(wandID);
     }
@@ -285,8 +299,8 @@ public class CAVE2InputManager : OmicronEventClient
         int wandID = 1;
         switch (ID)
         {
-            case (1): wandID = CAVE2.GetCAVE2Manager().wand1MocapID; break;
-            case (2): wandID = CAVE2.GetCAVE2Manager().wand2MocapID; break;
+            case (1): wandID = wand1MocapID; break;
+            case (2): wandID = wand2MocapID; break;
         }
         return GetMocapTimeSinceUpdate(wandID);
     }
@@ -303,7 +317,7 @@ public class CAVE2InputManager : OmicronEventClient
                 g.transform.parent = transform;
                 OmicronMocapSensor mocapManager = g.AddComponent<OmicronMocapSensor>();
                 mocapManager.sourceID = (int)e.sourceId;
-                if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
+                if (usingKinectTrackingSimulator)
                 {
                     mocapManager.positionMod = new Vector3(1, 1, -1);
                 }
@@ -325,11 +339,10 @@ public class CAVE2InputManager : OmicronEventClient
 
     void FixedUpdate()
     {
-        int headMocapID = CAVE2.GetCAVE2Manager().head1MocapID;
-        int wandMocapID = CAVE2.GetCAVE2Manager().wand1MocapID;
-        int wand2MocapID = CAVE2.GetCAVE2Manager().wand2MocapID;
-        int wandID = CAVE2.GetCAVE2Manager().wand1ControllerID;
-        int wand2ID = CAVE2.GetCAVE2Manager().wand2ControllerID;
+        int headMocapID = head1MocapID;
+        int wandMocapID = wand1MocapID;
+        int wandID = wand1ControllerID;
+        int wand2ID = wand2ControllerID;
 
         // Get/Create Primary Head
         OmicronMocapSensor mainHeadSensor;
@@ -419,7 +432,7 @@ public class CAVE2InputManager : OmicronEventClient
         int wand2_flags = 0;
         
         // Mocap
-        if (CAVE2.GetCAVE2Manager().mocapEmulation)
+        if (mocapEmulation)
         {
             if (UnityEngine.XR.XRSettings.enabled)
             {
@@ -462,7 +475,7 @@ public class CAVE2InputManager : OmicronEventClient
             wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
             wandMocapSensor.timeSinceLastUpdate = 0;
         }
-        else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
+        else if( usingKinectTrackingSimulator )
         {
             CAVE2.GetCAVE2Manager().simulatorHeadPosition = GetHeadPosition(1);
             CAVE2.GetCAVE2Manager().simulatorWandPosition = GetWandPosition(1);
@@ -477,7 +490,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
 
         // Wand Buttons
-        if (CAVE2.GetCAVE2Manager().keyboardEventEmulation)
+        if (keyboardEventEmulation)
         {
             float wand1_analogUD = Input.GetAxis(CAVE2.GetCAVE2Manager().wandSimulatorAnalogUD);
             float wand1_analogLR = Input.GetAxis(CAVE2.GetCAVE2Manager().wandSimulatorAnalogLR);
@@ -638,7 +651,7 @@ public class CAVE2InputManager : OmicronEventClient
 #endif
         }
         
-        if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled || (CAVE2.UsingOmicronServer() && !omicronManager.WandEventsEnabled()))
+        if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled || (CAVE2.UsingOmicronServer() && !omicronManager.WandEventsEnabled()))
         {
             wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
             wandController.rawFlags = wand1_flags;

@@ -210,6 +210,12 @@ class EventListener : IOmicronConnectorClientListener
 	
 }// EventListener
 
+
+public class Omicron : MonoBehaviour
+{
+    public static CAVE2InputManager Input;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #if USING_GETREAL3D
 public class OmicronManager : getReal3D.MonoBehaviourWithRpc
@@ -324,6 +330,8 @@ public class OmicronManager : MonoBehaviour
     public void Awake()
     {
         omicronManagerInstance = this;
+        Omicron.Input = GetComponent<CAVE2InputManager>();
+
         omicronListener = new EventListener(this);
         omicronManager = new OmicronConnectorClient(omicronListener);
 

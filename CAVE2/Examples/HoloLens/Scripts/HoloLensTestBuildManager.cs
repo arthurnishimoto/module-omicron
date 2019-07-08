@@ -220,8 +220,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
             headTracking.GetComponent<getReal3DMocapUpdater>().enabled = false;
             cave2SimCamera.GetComponentInParent<CAVE2CameraController>().enabled = false;
-            cave2Manager.simulatorMode = true;
-            cave2Manager.mocapEmulation = true;
+            CAVE2.simulatorMode = true;
+            CAVE2.Input.mocapEmulation = true;
 
             headTracking.enabled = false;
 

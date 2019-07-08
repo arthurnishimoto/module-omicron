@@ -10,4 +10,11 @@ The key components of this module are:
 * <b>CAVE2Manager</b> - Manages input events and provides 'CAVE2 Simulator Mode' tools for offline development
 * <b>OmicronPlayerController</b> - PlayerController designed to take advantage of the user-tracked virtual environment
 
+<b>Unity 2019 and above</b>
+
+Requires the Multiplayer HLAPI Unity package to be installed.
+
+In the Unity Editor go to Window/Package Manager/Multiplayer HLAPI and click Install.
+
+
 CAVE2 is a trademark of the University of Illinois Board of Trustees.
