@@ -156,7 +156,7 @@ public class OmicronController : OmicronEventClient
     {
         if (e.sourceId == sourceID || sourceID == -1)
         {
-            //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);
+            Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);
             if ((int)e.flags != rawFlags)
                 buttonsChanged = true;
 
@@ -184,6 +184,20 @@ public class OmicronController : OmicronEventClient
     {
         Vector2 output = input;
         if(Mathf.Abs(input.x) < deadzone)
+        {
+            output.x = 0;
+        }
+        if (Mathf.Abs(input.y) < deadzone)
+        {
+            output.y = 0;
+        }
+        return output;
+    }
+
+    public static Vector2 ApplyDeadzone(Vector2 input, float deadzone)
+    {
+        Vector2 output = input;
+        if (Mathf.Abs(input.x) < deadzone)
         {
             output.x = 0;
         }

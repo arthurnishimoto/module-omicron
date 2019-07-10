@@ -32,8 +32,8 @@ public class TrackedObject : MonoBehaviour
                 transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(node);
                 break;
             case (TrackerType.Omicron):
-                transform.localPosition = Omicron.Input.GetMocapPosition(sourceID);
-                transform.localRotation = Omicron.Input.GetMocapRotation(sourceID);
+                transform.localPosition = Omicron.GetMocapPosition(sourceID);
+                transform.localRotation = Omicron.GetMocapRotation(sourceID);
                 break;
         }
     }

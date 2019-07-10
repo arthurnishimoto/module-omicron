@@ -24,7 +24,7 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *************************************************************************************************/
- 
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -393,7 +393,7 @@ public class CAVE2 : MonoBehaviour
             if (targetObject != null)
             {
                 //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
-                targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5}, SendMessageOptions.DontRequireReceiver);
+                targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5 }, SendMessageOptions.DontRequireReceiver);
             }
         }
     }
@@ -511,7 +511,7 @@ public class CAVE2 : MonoBehaviour
 
     public static void PrintArray(object[] array)
     {
-        for(int i = 0; i < array.Length; i++)
+        for (int i = 0; i < array.Length; i++)
         {
             Debug.Log("[" + i + "]: '" + array[i] + "'");
         }
@@ -601,7 +601,7 @@ public class CAVE2 : MonoBehaviour
         }
         if (x < 0)
         {
-            if (x <- -max_x_error)
+            if (x < - -max_x_error)
             {
                 return false;
             }
@@ -624,27 +624,38 @@ public class CAVE2 : MonoBehaviour
 [RequireComponent(typeof(CAVE2InputManager))]
 [RequireComponent(typeof(CAVE2RPCManager))]
 
-public class CAVE2Manager : MonoBehaviour {
+public class CAVE2Manager : MonoBehaviour
+{
 
-static CAVE2Manager CAVE2Manager_Instance;
+    static CAVE2Manager CAVE2Manager_Instance;
     CAVE2InputManager inputManager;
 
     static string machineName;
     static string masterNodeName = "ORION-WIN";
     static string displayNodeName = "ORION";
 
-    public Hashtable headObjects = new Hashtable();
-    public Hashtable wandObjects = new Hashtable();
+    public int head1MocapID = 0;
+    public int wand1MocapID = 1;
+    public int wand1ControllerID = 1;
+
+    public int head2MocapID = 2;
+    public int wand2MocapID = 3;
+    public int wand2ControllerID = 2;
 
     ArrayList cameraControllers;
     public CAVE2CameraController mainCameraController;
-
+    public Hashtable headObjects = new Hashtable();
+    public Hashtable wandObjects = new Hashtable();
 
     public Hashtable playerControllers = new Hashtable();
 
     // Simulator
+    public bool simulatorMode;
+    public bool mocapEmulation;
+    public bool keyboardEventEmulation;
+    public bool wandMousePointerEmulation;
+    public bool usingKinectTrackingSimulator;
 
-    
     public Vector3 simulatorHeadPosition = new Vector3(0.0f, 1.6f, 0.0f);
     public Vector3 simulatorHeadRotation = new Vector3(0.0f, 0.0f, 0.0f);
 
@@ -689,7 +700,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         CAVE2Manager_Instance = this;
         inputManager = GetComponent<CAVE2InputManager>();
-        
+
         CAVE2.Input = inputManager;
         CAVE2.RpcManager = GetComponent<CAVE2RPCManager>();
 
@@ -706,7 +717,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         Init();
 
-        if ( OnCAVE2Display() || OnCAVE2Master() )
+        if (OnCAVE2Display() || OnCAVE2Master())
         {
 #if UNITY_EDITOR
 #else
@@ -726,14 +737,14 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     void Update()
     {
-        CAVE2.simulatorMode = CAVE2.Input.simulatorMode;
+        CAVE2.simulatorMode = simulatorMode;
 
-        if(CAVE2Manager_Instance == null)
+        if (CAVE2Manager_Instance == null)
         {
             CAVE2Manager_Instance = this;
         }
 
-        if( !UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (CAVE2.Input.mocapEmulation || CAVE2.Input.usingKinectTrackingSimulator) )
+        if (!UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator))
         {
             if (mainCameraController)
             {
@@ -742,7 +753,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             }
         }
 
-        if( debugCanvas )
+        if (debugCanvas)
         {
             debugCanvas.SetActive(showDebugCanvas);
         }
@@ -852,7 +863,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 */
     public static CAVE2.Button GetReal3DToCAVE2Button(string name)
     {
-        switch(name)
+        switch (name)
         {
             case "WandButton": return CAVE2.Button.Button3;
             case "ChangeWand": return CAVE2.Button.Button2;
@@ -924,7 +935,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     // CAVE2 Cluster Management --------------------------------------------------------------------
     public static CAVE2Manager GetCAVE2Manager()
     {
-        if(CAVE2Manager_Instance == null)
+        if (CAVE2Manager_Instance == null)
         {
             GameObject cave2Manager = GameObject.Find("CAVE2-Manager");
             if (cave2Manager)
@@ -958,7 +969,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 #if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 #else
-        if (machineName.Contains(displayNodeName) && !machineName.Equals(masterNodeName))
+        if (GetMachineName().Contains(displayNodeName) && !GetMachineName().Equals(masterNodeName))
             return false;
         else // Assumes master or development machine
             return true;
@@ -996,7 +1007,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains(masterNodeName) )
+        if (machineName.Contains(masterNodeName))
         {
             return true;
         }
@@ -1020,7 +1031,7 @@ static CAVE2Manager CAVE2Manager_Instance;
     // CAVE2 Simulator Management ------------------------------------------------------------------
     public static bool IsSimulatorMode()
     {
-        return CAVE2.Input.simulatorMode;
+        return GetCAVE2Manager().simulatorMode;
     }
 
     // public Vector3 GetMouseDeltaPos()
@@ -1038,7 +1049,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             GetCAVE2Manager().cameraControllers = new ArrayList();
         }
 
-        if(GetCAVE2Manager().cameraControllers.Count == 0)
+        if (GetCAVE2Manager().cameraControllers.Count == 0)
             GetCAVE2Manager().mainCameraController = cam;
 
         GetCAVE2Manager().cameraControllers.Add(cam);

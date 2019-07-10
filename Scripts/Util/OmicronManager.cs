@@ -210,10 +210,25 @@ class EventListener : IOmicronConnectorClientListener
 	
 }// EventListener
 
-
 public class Omicron : MonoBehaviour
 {
-    public static CAVE2InputManager Input;
+    public static OmicronManager Input;
+
+
+    public static Vector3 GetMocapPosition(int sourceID)
+    {
+        return OmicronManager.GetMocapPosition(sourceID);
+    }
+
+    public static Quaternion GetMocapRotation(int sourceID)
+    {
+        return OmicronManager.GetMocapRotation(sourceID);
+    }
+
+    public static float GetAxis(int sourceID, CAVE2.Axis axis)
+    {
+        return OmicronManager.GetAxis(sourceID, axis);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,6 +265,9 @@ public class OmicronManager : MonoBehaviour
 
     // List storing events since we have multiple threads
     private ArrayList eventList;
+
+    private Hashtable eventMocapTable;
+    private Hashtable eventWandTable;
 
     private ArrayList omicronClients;
 
@@ -330,7 +348,7 @@ public class OmicronManager : MonoBehaviour
     public void Awake()
     {
         omicronManagerInstance = this;
-        Omicron.Input = GetComponent<CAVE2InputManager>();
+        Omicron.Input = omicronManagerInstance;
 
         omicronListener = new EventListener(this);
         omicronManager = new OmicronConnectorClient(omicronListener);
@@ -376,6 +394,8 @@ public class OmicronManager : MonoBehaviour
         }
 
         omicronClients = new ArrayList();
+        eventMocapTable = new Hashtable();
+        eventWandTable = new Hashtable();
         //DontDestroyOnLoad(gameObject);
     }// start
 
@@ -450,6 +470,17 @@ public class OmicronManager : MonoBehaviour
         lock (eventList.SyncRoot)
         {
             eventList.Add(e);
+
+            // Inserts/replaces event by sourceID
+            if (e.serviceType == EventBase.ServiceType.ServiceTypeMocap)
+            {
+                eventMocapTable[(int)e.sourceId] = e;
+            }
+            else if (e.serviceType == EventBase.ServiceType.ServiceTypeWand ||
+                e.serviceType == EventBase.ServiceType.ServiceTypeController )
+            {
+                omicronManagerInstance.eventWandTable[(int)e.sourceId] = e;
+            }
             if (debug)
             {
                 Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
@@ -457,6 +488,72 @@ public class OmicronManager : MonoBehaviour
                 //    Debug.Log("OmicronManager: Received New event ID: " + e.sourceId + " of type " + e.serviceType);
             }
         };
+    }
+
+    public static Vector3 GetMocapPosition(int sourceID)
+    {
+        lock (omicronManagerInstance.eventList.SyncRoot)
+        {
+            if(omicronManagerInstance.eventMocapTable.ContainsKey(sourceID))
+            {
+                EventData evt = (EventData)omicronManagerInstance.eventMocapTable[sourceID];
+                return new Vector3(evt.posx, evt.posy, evt.posz);
+            }
+        }
+        return Vector3.zero;
+    }
+
+    public static Quaternion GetMocapRotation(int sourceID)
+    {
+        lock (omicronManagerInstance.eventList.SyncRoot)
+        {
+            if (omicronManagerInstance.eventMocapTable.ContainsKey(sourceID))
+            {
+                EventData evt = (EventData)omicronManagerInstance.eventMocapTable[sourceID];
+                return new Quaternion(evt.orx, evt.ory, evt.orz, evt.orw);
+            }
+        }
+        return Quaternion.identity;
+    }
+
+    public static float GetAxis(int sourceID, CAVE2.Axis axis)
+    {
+        lock (omicronManagerInstance.eventList.SyncRoot)
+        {
+            if (omicronManagerInstance.eventWandTable.ContainsKey(sourceID))
+            {
+                EventData e = (EventData)(omicronManagerInstance.eventWandTable[sourceID]);
+
+                int rawFlags = (int)e.flags;
+                Vector2 rawAnalogInput1 = new Vector2(e.getExtraDataFloat(0), e.getExtraDataFloat(1));
+                Vector2 rawAnalogInput2 = new Vector2(e.getExtraDataFloat(2), e.getExtraDataFloat(3));
+                Vector2 rawAnalogInput3 = new Vector2(e.getExtraDataFloat(4), e.getExtraDataFloat(5));
+                Vector2 rawAnalogInput4 = new Vector2(e.getExtraDataFloat(6), e.getExtraDataFloat(7));
+
+                Vector2 analogInput1 = OmicronController.ApplyDeadzone(rawAnalogInput1, 0.001f);
+                Vector2 analogInput2 = OmicronController.ApplyDeadzone(rawAnalogInput2, 0.001f);
+                Vector2 analogInput3 = rawAnalogInput3;
+                Vector2 analogInput4 = rawAnalogInput4;
+
+                // Flip Up/Down analog stick values
+                analogInput1.y *= -1;
+                analogInput2.y *= -1;
+
+                switch (axis)
+                {
+                    case CAVE2.Axis.LeftAnalogStickLR: return analogInput1.x;
+                    case CAVE2.Axis.LeftAnalogStickUD: return analogInput1.y;
+                    case CAVE2.Axis.RightAnalogStickLR: return analogInput2.x;
+                    case CAVE2.Axis.RightAnalogStickUD: return analogInput2.x;
+                    case CAVE2.Axis.AnalogTriggerL: return analogInput3.x;
+
+                    case CAVE2.Axis.LeftAnalogStickLR_Inverted: return -analogInput1.x;
+                    case CAVE2.Axis.LeftAnalogStickUD_Inverted: return -analogInput1.y;
+                    case CAVE2.Axis.AnalogTriggerL_Inverted: return -analogInput3.x;
+                }
+            }
+        }
+        return 0;
     }
 
 #if USING_GETREAL3D
