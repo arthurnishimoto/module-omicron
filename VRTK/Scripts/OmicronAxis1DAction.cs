@@ -5,6 +5,7 @@ using UnityEngine;
 namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
 {
     using UnityEngine;
+#if USING_VRTK
     using Malimbe.PropertySerializationAttribute;
     using Malimbe.XmlDocumentationAttribute;
     using Zinnia.Action;
@@ -29,4 +30,5 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
             Receive(value);
         }
     }
+#endif
 }

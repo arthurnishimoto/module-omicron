@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 516c35fec02585943988338ce1471876
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mocapMarkerPrefab: {fileID: 1500601644496126, guid: cac798390fa381f4681d44e5b5c6f602,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

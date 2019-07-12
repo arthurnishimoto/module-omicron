@@ -24,64 +24,48 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *************************************************************************************************/
- 
+
 using UnityEngine;
 using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class OmicronMocapObject : OmicronEventClient
+public class MocapVisualizer : OmicronEventClient
 {
-    public int sourceID = 1; // -1 for any
+    Hashtable mocapObjects;
 
-    public Vector3 position;
-    public Quaternion orientation;
+    [SerializeField]
+    int activeObjectCount;
 
-    public bool hideIfNotTracked = false;
-    public float timeSinceLastUpdate;
+    [SerializeField]
+    GameObject mocapMarkerPrefab;
 
-    MeshRenderer[] renderers;
     // Use this for initialization
     new void Start()
     {
+        mocapObjects = new Hashtable();
+
         eventOptions = EventBase.ServiceType.ServiceTypeMocap;
         InitOmicron();
-
-        renderers = GetComponentsInChildren<MeshRenderer>();
     }
 
     public override void OnEvent(EventData e)
     {
-        if (e.sourceId == sourceID || sourceID == -1)
+        if(mocapObjects[(int)e.sourceId] == null)
         {
-            position = new Vector3(e.posx, e.posy, e.posz);
-            orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);
-            timeSinceLastUpdate = 0;
+            GameObject marker = Instantiate(mocapMarkerPrefab);
+            marker.transform.parent = transform;
+            marker.name = "Mocap Object " + (int)e.sourceId;
+
+            OmicronMocapObject markerInfo = marker.GetComponent<OmicronMocapObject>();
+            markerInfo.sourceID = (int)e.sourceId;
+
+            mocapObjects[(int)e.sourceId] = marker;
         }
     }
 
     private void Update()
     {
-        transform.localPosition = position;
-        transform.localRotation = orientation;
-        timeSinceLastUpdate += Time.deltaTime;
-
-        bool hideMarker = (hideIfNotTracked && timeSinceLastUpdate > 1);
-        foreach (MeshRenderer r in renderers)
-        {
-            // Hide marker
-            r.enabled = hideMarker ? false : true;
-
-            /* // Shrink and hide most of object
-            if (r.transform != transform)
-            {
-                r.enabled = hideMarker ? false : true;
-            }
-            else
-            {
-                transform.localScale = Vector3.one * (hideMarker ? 0.025f : 0.1f);
-            }
-            */
-        }
+        activeObjectCount = mocapObjects.Count;
     }
 }
