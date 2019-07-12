@@ -30,5 +30,16 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
             Receive(value);
         }
     }
+#else
+    public class OmicronAxis1DAction : MonoBehaviour
+    {
+        [SerializeField]
+        int sourceID;
+
+        [SerializeField]
+        CAVE2.Axis axis;
+
+        [SerializeField]
+        float value;
 #endif
 }
