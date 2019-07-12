@@ -24,13 +24,14 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *************************************************************************************************/
- 
+
 using UnityEngine;
 using System.Collections;
 using omicron;
 using omicronConnector;
 
-public class OmicronMocapObject : OmicronEventClient
+// Alternate method of getting Omicron mocap information using Input Manager instead of EventClient
+public class OmicronInputManagerMocapObject : MonoBehaviour
 {
     public int sourceID = 1; // -1 for any
 
@@ -41,31 +42,34 @@ public class OmicronMocapObject : OmicronEventClient
     public float timeSinceLastUpdate;
 
     MeshRenderer[] renderers;
+    TextMesh label;
 
     // Use this for initialization
-    new void Start()
+    void Start()
     {
-        eventOptions = EventBase.ServiceType.ServiceTypeMocap;
-        InitOmicron();
-
         renderers = GetComponentsInChildren<MeshRenderer>();
-    }
-
-    public override void OnEvent(EventData e)
-    {
-        if (e.sourceId == sourceID || sourceID == -1)
-        {
-            position = new Vector3(e.posx, e.posy, e.posz);
-            orientation = new Quaternion(e.orx, e.ory, e.orz, e.orw);
-            timeSinceLastUpdate = 0;
-        }
+        label = GetComponentInChildren<TextMesh>();
     }
 
     private void Update()
     {
-        transform.localPosition = position;
-        transform.localRotation = orientation;
-        timeSinceLastUpdate += Time.deltaTime;
+        if (Omicron.GetMocapPosition(sourceID) != Vector3.zero)
+        {
+            transform.localPosition = Omicron.GetMocapPosition(sourceID);
+            transform.localRotation = Omicron.GetMocapRotation(sourceID);
+            timeSinceLastUpdate = 0;
+        }
+        else
+        {
+            timeSinceLastUpdate += Time.deltaTime;
+        }
+
+        if(label != null)
+        {
+            label.text = sourceID.ToString();
+            label.transform.LookAt(Camera.main.transform.position);
+            label.transform.Rotate(Vector3.up, 180);
+        }
 
         bool hideMarker = (hideIfNotTracked && timeSinceLastUpdate > 1);
         foreach (MeshRenderer r in renderers)
