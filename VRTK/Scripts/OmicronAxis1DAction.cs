@@ -15,6 +15,12 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
     /// </summary>
     public class OmicronAxis1DAction : FloatAction
     {
+        public enum TrackerType { UnityXR, Omicron };
+
+        [SerializeField]
+        TrackerType trackerSource = TrackerType.UnityXR;
+
+        [Header("Omicron Config")]
         [SerializeField]
         int sourceID;
 
@@ -26,8 +32,17 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
 
         protected virtual void Update()
         {
-            value = Omicron.GetAxis(sourceID, axis);
-            Receive(value);
+            switch (trackerSource)
+            {
+                case (TrackerType.UnityXR):
+                    GetComponent<UnityAxis1DAction>().enabled = true;
+                    break;
+                case (TrackerType.Omicron):
+                    GetComponent<UnityAxis1DAction>().enabled = false;
+                    value = Omicron.GetAxis(sourceID, axis);
+                    Receive(value);
+                    break;
+            }
         }
     }
 #else
@@ -41,5 +56,6 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
 
         [SerializeField]
         float value;
+    }
 #endif
 }

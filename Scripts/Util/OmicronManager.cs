@@ -229,6 +229,11 @@ public class Omicron : MonoBehaviour
     {
         return OmicronManager.GetAxis(sourceID, axis);
     }
+
+    public static bool GetKey(int sourceID, CAVE2.Button key)
+    {
+        return OmicronManager.GetButton(sourceID, key);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -554,6 +559,42 @@ public class OmicronManager : MonoBehaviour
             }
         }
         return 0;
+    }
+
+    public static bool GetButton(int sourceID, CAVE2.Button button)
+    {
+        EventBase.Flags buttonFlag = EventBase.Flags.User;
+        switch(button)
+        {
+            case (CAVE2.Button.Button1): buttonFlag = EventBase.Flags.Button1; break;
+            case (CAVE2.Button.Button2): buttonFlag = EventBase.Flags.Button2; break;
+            case (CAVE2.Button.Button3): buttonFlag = EventBase.Flags.Button3; break;
+            case (CAVE2.Button.Button4): buttonFlag = EventBase.Flags.Button4; break;
+            case (CAVE2.Button.Button5): buttonFlag = EventBase.Flags.Button5; break;
+            case (CAVE2.Button.Button6): buttonFlag = EventBase.Flags.Button6; break;
+            case (CAVE2.Button.Button7): buttonFlag = EventBase.Flags.Button7; break;
+            case (CAVE2.Button.Button8): buttonFlag = EventBase.Flags.Button8; break;
+            case (CAVE2.Button.Button9): buttonFlag = EventBase.Flags.Button9; break;
+            case (CAVE2.Button.ButtonDown): buttonFlag = EventBase.Flags.ButtonDown; break;
+            case (CAVE2.Button.ButtonLeft): buttonFlag = EventBase.Flags.ButtonLeft; break;
+            case (CAVE2.Button.ButtonRight): buttonFlag = EventBase.Flags.ButtonRight; break;
+            case (CAVE2.Button.ButtonUp): buttonFlag = EventBase.Flags.ButtonUp; break;
+            case (CAVE2.Button.SpecialButton1): buttonFlag = EventBase.Flags.SpecialButton1; break;
+            case (CAVE2.Button.SpecialButton2): buttonFlag = EventBase.Flags.SpecialButton2; break;
+            case (CAVE2.Button.SpecialButton3): buttonFlag = EventBase.Flags.SpecialButton3; break;
+        }
+
+        lock (omicronManagerInstance.eventList.SyncRoot)
+        {
+            if (omicronManagerInstance.eventWandTable.ContainsKey(sourceID))
+            {
+                EventData e = (EventData)(omicronManagerInstance.eventWandTable[sourceID]);
+
+                int rawFlags = (int)e.flags;
+                return ((int)(rawFlags & (int)buttonFlag) != 0);
+            }
+        }
+        return false;
     }
 
 #if USING_GETREAL3D

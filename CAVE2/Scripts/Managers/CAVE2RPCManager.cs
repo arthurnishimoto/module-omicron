@@ -640,7 +640,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
         else
         {
-            Debug.LogWarning("CAVE2RPCManager: Unknown param " + param.GetType());
+            //Debug.LogWarning("CAVE2RPCManager: Unknown param " + param.GetType());
         }
     }
 
