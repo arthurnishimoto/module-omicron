@@ -37,6 +37,8 @@ public class OmicronEditorMode : MonoBehaviour
     const string OCULUS_NAME = "Omicron/Configure for Oculus";
     const string VIVE_NAME = "Omicron/Configure for Vive";
     const string VR_NAME = "Omicron/Disable VR HMDs";
+    const string CONTINUUM_3D = "Omicron/Configure for Continuum 3D Wall";
+    const string CONTINUUM_MAIN = "Omicron/Configure for Continuum Main Wall";
 
     [MenuItem(CAVE2SIM_NAME)]
     static void ConfigCAVE2Simulator()
@@ -49,7 +51,9 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(CAVE2_NAME, false);
 
         if (Camera.main)
+        {
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
+        }
     }
 
     [MenuItem(CAVE2_NAME)]
@@ -109,5 +113,68 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(VIVE_NAME, false);
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
+    }
+
+    [MenuItem(CONTINUUM_3D)]
+    static void ConfigContinuum3D()
+    {
+        if (Camera.main)
+        {
+            Camera.main.transform.localEulerAngles = Vector3.up * 0;
+
+            GeneralizedPerspectiveProjection projection = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
+            if (projection == null)
+            {
+                projection = Camera.main.gameObject.AddComponent<GeneralizedPerspectiveProjection>();
+            }
+
+            projection.SetScreenUL(new Vector3(-2.051f, 2.627f, 6.043f));
+            projection.SetScreenLL(new Vector3(-2.051f, 0.309f, 6.043f));
+            projection.SetScreenLR(new Vector3(2.051f, 0.309f, 6.043f));
+            projection.SetVirtualCamera(Camera.main);
+
+            StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
+            if (stereoCamera == null)
+            {
+                stereoCamera = Camera.main.gameObject.AddComponent<StereoscopicCamera>();
+            }
+
+            stereoCamera.EnableStereo(true);
+            stereoCamera.SetStereoResolution(new Vector2(7680f, 4320f), false);
+            stereoCamera.SetStereoInverted(true);
+
+            projection.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
+        }
+
+        Debug.Log("Configured for Continuum Main Wall");
+    }
+
+    [MenuItem(CONTINUUM_MAIN)]
+    static void ConfigContinuumMain()
+    {
+        if (Camera.main)
+        {
+            Camera.main.transform.localEulerAngles = Vector3.up * 90;
+
+            GeneralizedPerspectiveProjection projection = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
+            if (projection == null)
+            {
+                projection = Camera.main.gameObject.AddComponent<GeneralizedPerspectiveProjection>();
+            }
+
+            projection.SetScreenUL(new Vector3(3.579f, 2.527f, 3.642f));
+            projection.SetScreenLL(new Vector3(3.579f, 0.479f, 3.642f));
+            projection.SetScreenLR(new Vector3(3.579f, 0.479f, -3.642f));
+            projection.SetVirtualCamera(Camera.main);
+
+            StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
+            if (stereoCamera != null)
+            {
+                DestroyImmediate(stereoCamera);
+            }
+            projection.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
+        }
+
+        Debug.Log("Configured for Continuum Main Wall");
     }
 }

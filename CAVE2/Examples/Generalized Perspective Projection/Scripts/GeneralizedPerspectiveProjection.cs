@@ -235,4 +235,14 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     {
         screenLR = newLR;
     }
+
+    public void SetVirtualCamera(Camera c)
+    {
+        virtualCamera = c;
+    }
+
+    public void SetHeadTracker(Transform h)
+    {
+        head = h;
+    }
 }

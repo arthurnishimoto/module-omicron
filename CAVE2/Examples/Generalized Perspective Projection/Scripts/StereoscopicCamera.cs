@@ -255,6 +255,11 @@ public class StereoscopicCamera : MonoBehaviour {
         return textureOffset;
     }
 
+    public void EnableStereo(bool value)
+    {
+        generateCameras = value;
+    }
+
     public void SetScreenScale(Vector2 value)
     {
         textureScale = value;
@@ -270,10 +275,11 @@ public class StereoscopicCamera : MonoBehaviour {
         return outputResolution;
     }
 
-    public void SetStereoResolution(Vector2 value)
+    public void SetStereoResolution(Vector2 value, bool rebuild = true)
     {
         outputResolution = value;
-        RebuildTextures();
+        if(rebuild)
+            RebuildTextures();
     }
 
     public void UpdateStereoResolution_x(string value)
