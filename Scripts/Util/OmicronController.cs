@@ -156,7 +156,7 @@ public class OmicronController : OmicronEventClient
     {
         if (e.sourceId == sourceID || sourceID == -1)
         {
-            Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);
+            // Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);
             if ((int)e.flags != rawFlags)
                 buttonsChanged = true;
 

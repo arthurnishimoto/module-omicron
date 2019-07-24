@@ -20,12 +20,18 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
         [SerializeField]
         TrackerType trackerSource = TrackerType.UnityXR;
 
+        [SerializeField]
+        string AxisName;
+
         [Header("Omicron Config")]
         [SerializeField]
         int sourceID;
 
         [SerializeField]
         CAVE2.Axis axis;
+
+        [SerializeField]
+        CAVE2.Button button = CAVE2.Button.None;
 
         [SerializeField]
         float value;
@@ -35,14 +41,22 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
             switch (trackerSource)
             {
                 case (TrackerType.UnityXR):
-                    GetComponent<UnityAxis1DAction>().enabled = true;
+                    //GetComponent<UnityAxis1DAction>().enabled = true;
+                    value = Input.GetAxis(AxisName);
                     break;
                 case (TrackerType.Omicron):
-                    GetComponent<UnityAxis1DAction>().enabled = false;
-                    value = Omicron.GetAxis(sourceID, axis);
-                    Receive(value);
+                    //GetComponent<UnityAxis1DAction>().enabled = false;
+                    if (button == CAVE2.Button.None)
+                    {
+                        value = Omicron.GetAxis(sourceID, axis);
+                    }
+                    else
+                    {
+                        value = Omicron.GetKey(sourceID, button) ? 1 : 0;
+                    }
                     break;
             }
+            Receive(value);
         }
     }
 #else
