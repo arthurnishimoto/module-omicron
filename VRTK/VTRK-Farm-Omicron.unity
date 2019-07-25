@@ -3589,7 +3589,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   defaultValue: 0
   sources:
-  - {fileID: 200783201}
+  - {fileID: 200783202}
   Activated:
     m_PersistentCalls:
       m_Calls: []
@@ -4098,7 +4098,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 332
   sourceID: 1
   button: 1
@@ -5566,7 +5566,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 345
   sourceID: 2
   button: 6
@@ -8584,8 +8584,8 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
-  AxisName: 
+  trackerSource: 0
+  AxisName: VRTK_Axis5_RightVertical
   sourceID: 2
   axis: 8
   button: 16
@@ -9499,7 +9499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29485eede199e54787dadf97fbf3282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackerSource: 1
+  trackerSource: 0
   node: 3
   sourceID: 0
 --- !u!1 &232389147 stripped
@@ -12802,8 +12802,8 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
-  AxisName: 
+  trackerSource: 0
+  AxisName: Horizontal
   sourceID: 1
   axis: 1
   button: 16
@@ -23210,7 +23210,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 330
   sourceID: 0
   button: 1
@@ -26269,8 +26269,8 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
-  AxisName: 
+  trackerSource: 0
+  AxisName: Vertical
   sourceID: 1
   axis: 2
   button: 16
@@ -27856,7 +27856,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 347
   sourceID: 2
   button: 4
@@ -28552,7 +28552,7 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
+  trackerSource: 0
   AxisName: VRTK_Axis11_LeftGrip
   sourceID: 1
   axis: 5
@@ -33604,7 +33604,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 344
   sourceID: 1
   button: 6
@@ -41548,7 +41548,7 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
+  trackerSource: 0
   AxisName: VRTK_Axis9_LeftTrigger
   sourceID: 1
   axis: 5
@@ -45514,7 +45514,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 339
   sourceID: 2
   button: 5
@@ -46807,8 +46807,8 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
-  AxisName: 
+  trackerSource: 0
+  AxisName: VRTK_Axis10_RightTrigger
   sourceID: 2
   axis: 5
   button: 16
@@ -50439,7 +50439,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   defaultValue: 0
   sources:
-  - {fileID: 1620960231}
+  - {fileID: 1620960232}
   Activated:
     m_PersistentCalls:
       m_Calls: []
@@ -53643,7 +53643,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 346
   sourceID: 1
   button: 4
@@ -55259,7 +55259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29485eede199e54787dadf97fbf3282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackerSource: 1
+  trackerSource: 0
   node: 5
   sourceID: 2
 --- !u!4 &1492792205 stripped
@@ -56262,7 +56262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c29485eede199e54787dadf97fbf3282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trackerSource: 1
+  trackerSource: 0
   node: 4
   sourceID: 1
 --- !u!114 &1537421396 stripped
@@ -60832,8 +60832,8 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
-  AxisName: 
+  trackerSource: 0
+  AxisName: VRTK_Axis4_RightHorizontal
   sourceID: 2
   axis: 1
   button: 16
@@ -71651,6 +71651,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1917868038}
+  - component: {fileID: 1917868039}
   m_Layer: 0
   m_Name: VRTK Setup
   m_TagString: Untagged
@@ -71675,6 +71676,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1917868039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917868037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 035088ec4535b1344a79e78b1dadd2a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trackerSource: 0
 --- !u!1 &1918585495
 GameObject:
   m_ObjectHideFlags: 0
@@ -73296,7 +73310,7 @@ MonoBehaviour:
     m_TypeName: Zinnia.Action.FloatAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   equalityTolerance: 1e-45
-  trackerSource: 1
+  trackerSource: 0
   AxisName: VRTK_Axis12_RightGrip
   sourceID: 2
   axis: 5
@@ -78838,7 +78852,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Zinnia.Action.BooleanAction+UnityEvent, Zinnia.Runtime, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  trackerSource: 1
+  trackerSource: 0
   KeyCode: 338
   sourceID: 1
   button: 5

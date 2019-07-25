@@ -52,6 +52,16 @@
             }
             Receive(value);
         }
+
+        public void SetAsOmicron()
+        {
+            trackerSource = TrackerType.Omicron;
+        }
+
+        public void SetAsUnityXR()
+        {
+            trackerSource = TrackerType.UnityXR;
+        }
     }
 #else
 #endif

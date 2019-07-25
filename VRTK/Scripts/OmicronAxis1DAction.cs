@@ -58,10 +58,25 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
             }
             Receive(value);
         }
+
+        public void SetAsOmicron()
+        {
+            trackerSource = TrackerType.Omicron;
+        }
+
+        public void SetAsUnityXR()
+        {
+            trackerSource = TrackerType.UnityXR;
+        }
     }
 #else
     public class OmicronAxis1DAction : MonoBehaviour
     {
+    public enum TrackerType { UnityXR, Omicron };
+
+        [SerializeField]
+        TrackerType trackerSource = TrackerType.UnityXR;
+
         [SerializeField]
         int sourceID;
 
@@ -70,6 +85,16 @@ namespace VRTK.Prefabs.CameraRig.UnityXRCameraRig.Input
 
         [SerializeField]
         float value;
+
+        public void SetAsOmicron()
+        {
+            trackerSource = TrackerType.Omicron;
+        }
+
+        public void SetAsUnityXR()
+        {
+            trackerSource = TrackerType.UnityXR;
+        }
     }
 #endif
 }

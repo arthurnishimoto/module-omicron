@@ -40,4 +40,14 @@ public class TrackedObject : MonoBehaviour
                 break;
         }
     }
+
+    public void SetAsOmicron()
+    {
+        trackerSource = TrackerType.Omicron;
+    }
+
+    public void SetAsUnityXR()
+    {
+        trackerSource = TrackerType.UnityXR;
+    }
 }
