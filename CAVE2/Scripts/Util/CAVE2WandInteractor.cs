@@ -38,6 +38,14 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
     CAVE2PlayerIdentity playerID;
 
+    [SerializeField]
+    bool wandPointing;
+
+    [SerializeField]
+    bool wandTouching;
+
+    GameObject touchingObject;
+
     // Use this for initialization
     void Start () {
         playerID = GetComponentInParent<CAVE2PlayerIdentity>();
@@ -58,10 +66,10 @@ public class CAVE2WandInteractor : MonoBehaviour {
         RaycastHit hit;
 
         // Get the first collider that was hit by the ray
-        bool wandHit = Physics.Raycast(ray, out hit, 100, wandLayerMask);
+        wandPointing = Physics.Raycast(ray, out hit, 100, wandLayerMask);
         Debug.DrawLine(ray.origin, hit.point); // Draws a line in the editor
 
-        if (wandHit) // The wand is pointed at a collider
+        if (wandPointing) // The wand is pointed at a collider
         {
             CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Pointing);
 
@@ -70,6 +78,13 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
             ProcessButtons(hit.collider.gameObject, playerInfo);
         }
+
+        // Button interaction for touching is here since it needs to be in Update to correctly trigger
+        if(wandTouching && touchingObject)
+        {
+            CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Touching);
+            ProcessButtons(touchingObject, playerInfo);
+        }
     }
 
     void OnTriggerStay(Collider collider)
@@ -77,9 +92,22 @@ public class CAVE2WandInteractor : MonoBehaviour {
         CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Touching);
 
         // Send a message to the hit object telling it that the wand is hovering over it
-        collider.gameObject.SendMessage("OnWandOver", playerInfo, SendMessageOptions.DontRequireReceiver);
+        collider.gameObject.SendMessage("OnWandTouching", playerInfo, SendMessageOptions.DontRequireReceiver);
 
-        ProcessButtons(collider.gameObject, playerInfo);
+        if (collider.GetComponent<CAVE2Interactable>())
+        {
+            touchingObject = collider.gameObject;
+            wandTouching = true;
+        }
+    }
+
+    void OnTriggerExit(Collider collider)
+    {
+        if (collider.GetComponent<CAVE2Interactable>())
+        {
+            touchingObject = null;
+            wandTouching = false;
+        }
     }
 
     void ProcessButtons(GameObject interactedObject, CAVE2.WandEvent playerInfo)
@@ -87,8 +115,8 @@ public class CAVE2WandInteractor : MonoBehaviour {
         foreach(CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
         {
             playerInfo.button = currentButton;
-
-             // OnWandButtonDown
+            
+            // OnWandButtonDown
             if (CAVE2Manager.GetButtonDown(wandID, currentButton))
             {
                 interactedObject.SendMessage("OnWandButtonDown", playerInfo, SendMessageOptions.DontRequireReceiver);

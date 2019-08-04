@@ -31,12 +31,12 @@ using System.Collections;
 public class CAVE2Interactable : MonoBehaviour {
 
     [SerializeField]
-    protected bool wandOver = false;
-
-    [SerializeField]
     protected bool wandPointing = false;
 
-    protected float lastWandOverTime;
+    [SerializeField]
+    protected bool wandTouching = false;
+
+    protected float lastWandTouchingTime;
     protected float lastWandPointingTime;
 
     float wandOverTimeout = 0.05f;
@@ -48,9 +48,9 @@ public class CAVE2Interactable : MonoBehaviour {
 
     protected void UpdateWandOverTimer()
     {
-        if (Time.time - lastWandOverTime > wandOverTimeout)
+        if (Time.time - lastWandTouchingTime > wandOverTimeout)
         {
-            wandOver = false;
+            wandTouching = false;
         }
         if (Time.time - lastWandPointingTime > wandOverTimeout)
         {
@@ -88,20 +88,20 @@ public class CAVE2Interactable : MonoBehaviour {
         //Debug.Log("OnWandButtonUp: " + playerID.name + " " + wandID + " " + button);
     }
 
-    public void OnWandOver(CAVE2.WandEvent eventInfo)
+    public void OnWandTouching(CAVE2.WandEvent eventInfo)
     {
-        OnWandOverEvent();
+        OnWandTouchEvent();
     }
 
-    public void OnWandOver()
+    public void OnWandTouching()
     {
-        OnWandOverEvent();
+        OnWandTouchEvent();
     }
 
-    protected void OnWandOverEvent()
+    protected void OnWandTouchEvent()
     {
-        lastWandOverTime = Time.time;
-        wandOver = true;
+        lastWandTouchingTime = Time.time;
+        wandTouching = true;
     }
 
     public void OnWandPointing(CAVE2.WandEvent eventInfo)

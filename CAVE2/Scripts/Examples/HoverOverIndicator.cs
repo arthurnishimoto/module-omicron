@@ -116,7 +116,7 @@ public class HoverOverIndicator : CAVE2Interactable
             renderer.enabled = true;
         }
 
-        if((showHoverOver && wandOver) || (showPointingOver && wandPointing))
+        if((showHoverOver && wandTouching) || (showPointingOver && wandPointing))
         {
             hoverOverMaterial.color = originalHoverMatColor;
             renderer.enabled = true;
@@ -139,7 +139,7 @@ public class HoverOverIndicator : CAVE2Interactable
 
     public bool IsControllerOver()
     {
-        return wandOver;
+        return wandTouching;
     }
 
     public void SetStrobe(bool value, float speed)

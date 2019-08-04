@@ -31,10 +31,16 @@ using System.Collections;
 public class GrabbableObject : CAVE2Interactable {
 
     [SerializeField]
+    bool grabbed;
+
+    [SerializeField]
     CAVE2.Button grabButton = CAVE2.Button.Button3;
 
     [SerializeField]
     CAVE2.InteractionType grabStyle = CAVE2.InteractionType.Any;
+
+    [SerializeField]
+    bool allowWandCollision = true;
 
     bool usedGravity;
 
@@ -42,9 +48,6 @@ public class GrabbableObject : CAVE2Interactable {
     RigidbodyConstraints constraints;
 
     FixedJoint joint;
-
-    [SerializeField]
-    bool grabbed;
 
     bool wasGrabbed;
 
@@ -54,15 +57,123 @@ public class GrabbableObject : CAVE2Interactable {
 
     int grabbingWandID;
 
+    [Header("Visuals")]
+    GameObject pointingOverHighlight;
+    new MeshRenderer renderer;
+
+    [SerializeField]
+    bool showPointingOver = true;
+
+    [SerializeField]
+    float highlightScaler = 1.05f;
+
+    [SerializeField]
+    Mesh defaultMesh;
+
+    [SerializeField]
+    Material pointingOverMaterial;
+
+    Color originalPointingMatColor;
+
+    [SerializeField]
+    bool showTouchingOver = true;
+
+    [SerializeField]
+    Material touchingOverMaterial;
+
+    Color originalTouchingMatColor;
+
+    private void Start()
+    {
+        // Visuals
+        pointingOverHighlight = new GameObject("wandHighlight");
+        pointingOverHighlight.transform.parent = transform;
+        pointingOverHighlight.transform.position = transform.position;
+        pointingOverHighlight.transform.rotation = transform.rotation;
+        pointingOverHighlight.transform.localScale = Vector3.one * highlightScaler;
+
+        if (defaultMesh == null)
+        {
+            defaultMesh = GetComponent<MeshFilter>().mesh;
+        }
+        pointingOverHighlight.AddComponent<MeshFilter>().mesh = defaultMesh;
+        MeshCollider wandCollider = gameObject.AddComponent<MeshCollider>();
+        wandCollider.convex = true;
+        wandCollider.inflateMesh = defaultMesh;
+        wandCollider.isTrigger = true;
+
+        renderer = pointingOverHighlight.AddComponent<MeshRenderer>();
+
+        if (pointingOverMaterial == null)
+        {
+            // Create a basic highlight material
+            pointingOverMaterial = new Material(Shader.Find("Standard"));
+            pointingOverMaterial.SetColor("_Color", new Color(0, 1, 1, 0.25f));
+            pointingOverMaterial.SetFloat("_Mode", 3); // Transparent
+            pointingOverMaterial.SetFloat("_Glossiness", 0);
+        }
+        else
+        {
+            pointingOverMaterial = new Material(pointingOverMaterial);
+        }
+        if (touchingOverMaterial == null)
+        {
+            // Create a basic highlight material
+            touchingOverMaterial = new Material(Shader.Find("Standard"));
+            touchingOverMaterial.SetColor("_Color", new Color(0, 1, 1, 0.25f));
+            touchingOverMaterial.SetFloat("_Mode", 3); // Transparent
+            touchingOverMaterial.SetFloat("_Glossiness", 0);
+        }
+        else
+        {
+            touchingOverMaterial = new Material(touchingOverMaterial);
+        }
+        originalPointingMatColor = pointingOverMaterial.color;
+        originalTouchingMatColor = touchingOverMaterial.color;
+
+        renderer.sharedMaterial = pointingOverMaterial;
+
+        renderer.enabled = false;
+    }
     void Update()
     {
+        // Interaction
         UpdateWandOverTimer();
 
         if( CAVE2.Input.GetButtonUp(grabbingWandID, grabButton) && grabbed )
         {
             OnWandGrabRelease();
         }
+
+        // Visuals
+        if (showPointingOver)
+        {
+            if (wandPointing)
+            {
+                renderer.sharedMaterial = pointingOverMaterial;
+                pointingOverMaterial.color = originalPointingMatColor;
+                renderer.enabled = true;
+            }
+            else
+            {
+                renderer.enabled = false;
+            }
+        }
+        if (showTouchingOver)
+        {
+            if (wandTouching)
+            {
+                renderer.sharedMaterial = touchingOverMaterial;
+                touchingOverMaterial.color = originalTouchingMatColor;
+                renderer.enabled = true;
+            }
+            else if(!wandPointing)
+            {
+                renderer.enabled = false;
+            }
+        }
     }
+
     void FixedUpdate()
     {
         if( grabbed )
@@ -138,5 +249,18 @@ public class GrabbableObject : CAVE2Interactable {
 
         grabbed = false;
         wasGrabbed = true;
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!allowWandCollision && collision.gameObject.GetComponent<CAVE2WandInteractor>())
+        {
+            Collider[] grabberColliders = collision.transform.root.GetComponentsInChildren<Collider>();
+            foreach (Collider c in grabberColliders)
+            {
+                Physics.IgnoreCollision(c, GetComponent<Collider>(), true);
+            }
+        }
     }
 }

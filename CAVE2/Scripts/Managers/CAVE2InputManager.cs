@@ -39,6 +39,20 @@ public class CAVE2InputManager : OmicronEventClient
     // [SerializeField]
     // float axisSensitivity = 1f;
 
+    [Header("Simulator Input Mapping")]
+    // CAVE2 Simulator to Wand button bindings
+    public string wandSimulatorAnalogUD = "Vertical";
+    public string wandSimulatorAnalogLR = "Horizontal";
+    public string wandSimulatorButton3 = "Fire1"; // PS3 Navigation Cross
+    public string wandSimulatorButton2 = "Fire2"; // PS3 Navigation Circle
+    public KeyCode wandSimulatorDPadUp = KeyCode.UpArrow;
+    public KeyCode wandSimulatorDPadDown = KeyCode.DownArrow;
+    public KeyCode wandSimulatorDPadLeft = KeyCode.LeftArrow;
+    public KeyCode wandSimulatorDPadRight = KeyCode.RightArrow;
+    public string wandSimulatorButton5 = "space"; // PS3 Navigation L1
+    public string wandSimulatorButton6 = "Fire3"; // PS3 Navigation L3
+    public string wandSimulatorButton7 = "space"; // PS3 Navigation L2
+
     [SerializeField]
     float axisDeadzone = 0.2f;
 
@@ -69,11 +83,11 @@ public class CAVE2InputManager : OmicronEventClient
     {
         base.Start();
 
-        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorAnalogUD] = CAVE2.Axis.LeftAnalogStickUD;
-        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorAnalogLR] = CAVE2.Axis.LeftAnalogStickLR;
-        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton3] = CAVE2.Button.Button3;
-        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton2] = CAVE2.Button.Button2;
-        unityInputToOmicronInput[CAVE2.GetCAVE2Manager().wandSimulatorButton6] = CAVE2.Button.Button6;
+        unityInputToOmicronInput[wandSimulatorAnalogUD] = CAVE2.Axis.LeftAnalogStickUD;
+        unityInputToOmicronInput[wandSimulatorAnalogLR] = CAVE2.Axis.LeftAnalogStickLR;
+        unityInputToOmicronInput[wandSimulatorButton3] = CAVE2.Button.Button3;
+        unityInputToOmicronInput[wandSimulatorButton2] = CAVE2.Button.Button2;
+        unityInputToOmicronInput[wandSimulatorButton6] = CAVE2.Button.Button6;
 
         if (UnityEngine.XR.XRDevice.model == "Vive MV")
         {
@@ -479,29 +493,29 @@ public class CAVE2InputManager : OmicronEventClient
         // Wand Buttons
         if (CAVE2.GetCAVE2Manager().keyboardEventEmulation)
         {
-            float wand1_analogUD = Input.GetAxis(CAVE2.GetCAVE2Manager().wandSimulatorAnalogUD);
-            float wand1_analogLR = Input.GetAxis(CAVE2.GetCAVE2Manager().wandSimulatorAnalogLR);
+            float wand1_analogUD = Input.GetAxis(wandSimulatorAnalogUD);
+            float wand1_analogLR = Input.GetAxis(wandSimulatorAnalogLR);
             //bool turn = CAVE2.GetCAVE2Manager().simulatorWandStrafeAsTurn;
 
             wand1_analog1 = new Vector2(wand1_analogLR, wand1_analogUD);
 
-            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorDPadUp))
+            if (Input.GetKey(wandSimulatorDPadUp))
                 wand1_flags += (int)EventBase.Flags.ButtonUp;
-            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorDPadDown))
+            if (Input.GetKey(wandSimulatorDPadDown))
                 wand1_flags += (int)EventBase.Flags.ButtonDown;
-            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorDPadLeft))
+            if (Input.GetKey(wandSimulatorDPadLeft))
                 wand1_flags += (int)EventBase.Flags.ButtonLeft;
-            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorDPadRight))
+            if (Input.GetKey(wandSimulatorDPadRight))
                 wand1_flags += (int)EventBase.Flags.ButtonRight;
 
             // Wand Button 1 (Triangle/Y)
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
             //    flags += (int)EventBase.Flags.Button1;
             // F -> Wand Button 2 (Circle/B)
-            if (Input.GetButton(CAVE2.GetCAVE2Manager().wandSimulatorButton2))
+            if (wandSimulatorButton2.Length > 0 && Input.GetButton(wandSimulatorButton2))
                 wand1_flags += (int)EventBase.Flags.Button2;
             // R -> Wand Button 3 (Cross/A)
-            if (Input.GetButton(CAVE2.GetCAVE2Manager().wandSimulatorButton3))
+            if (wandSimulatorButton3.Length > 0 && Input.GetButton(wandSimulatorButton3))
                 wand1_flags += (int)EventBase.Flags.Button3;
             // Wand Button 4 (Square/X)
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
@@ -510,13 +524,13 @@ public class CAVE2InputManager : OmicronEventClient
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
             //    flags += (int)EventBase.Flags.SpecialButton3;
             // Wand Button 5 (L1/LB)
-            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorButton5))
+            if (wandSimulatorButton5.Length > 0 && Input.GetButton(wandSimulatorButton5))
                 wand1_flags += (int)EventBase.Flags.Button5;
             // Wand Button 6 (L3)
-            if (Input.GetButton(CAVE2.GetCAVE2Manager().wandSimulatorButton6))
+            if (wandSimulatorButton6.Length > 0 && Input.GetButton(wandSimulatorButton6))
                 wand1_flags += (int)EventBase.Flags.Button6;
             // Wand Button 7 (L2)
-            if (Input.GetKey(CAVE2.GetCAVE2Manager().wandSimulatorButton7))
+            if (wandSimulatorButton7.Length > 0 && Input.GetButton(wandSimulatorButton7))
                 wand1_flags += (int)EventBase.Flags.Button7;
             // Wand Button 8 (R2)
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))

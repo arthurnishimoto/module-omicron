@@ -659,19 +659,6 @@ static CAVE2Manager CAVE2Manager_Instance;
     public Vector3 simulatorWandPosition = new Vector3(0.16f, 1.43f, 0.4f);
     public Vector3 simulatorWandRotation = new Vector3(0.0f, 0.0f, 0.0f);
 
-    // CAVE2 Simulator to Wand button bindings
-    public string wandSimulatorAnalogUD = "Vertical";
-    public string wandSimulatorAnalogLR = "Horizontal";
-    public string wandSimulatorButton3 = "Fire1"; // PS3 Navigation Cross
-    public string wandSimulatorButton2 = "Fire2"; // PS3 Navigation Circle
-    public KeyCode wandSimulatorDPadUp = KeyCode.UpArrow;
-    public KeyCode wandSimulatorDPadDown = KeyCode.DownArrow;
-    public KeyCode wandSimulatorDPadLeft = KeyCode.LeftArrow;
-    public KeyCode wandSimulatorDPadRight = KeyCode.RightArrow;
-    public KeyCode wandSimulatorButton5 = KeyCode.Space; // PS3 Navigation L1
-    public string wandSimulatorButton6 = "Fire3"; // PS3 Navigation L3
-    public KeyCode wandSimulatorButton7 = KeyCode.LeftShift; // PS3 Navigation L2
-
     public enum TrackerEmulated { CAVE, Head, Wand };
     public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
     // string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
