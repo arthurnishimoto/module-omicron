@@ -46,6 +46,9 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
     GameObject touchingObject;
 
+    [SerializeField]
+    GameObject grabbedObject;
+
     // Use this for initialization
     void Start () {
         playerID = GetComponentInParent<CAVE2PlayerIdentity>();
@@ -69,6 +72,12 @@ public class CAVE2WandInteractor : MonoBehaviour {
         wandPointing = Physics.Raycast(ray, out hit, 100, wandLayerMask);
         Debug.DrawLine(ray.origin, hit.point); // Draws a line in the editor
 
+        if (grabbedObject)
+        {
+            CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Touching);
+            ProcessButtons(grabbedObject, playerInfo);
+        }
+
         if (wandPointing) // The wand is pointed at a collider
         {
             CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Pointing);
@@ -84,7 +93,7 @@ public class CAVE2WandInteractor : MonoBehaviour {
         {
             CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(playerID, wandID, CAVE2.Button.None, CAVE2.InteractionType.Touching);
             ProcessButtons(touchingObject, playerInfo);
-        }
+        } 
     }
 
     void OnTriggerStay(Collider collider)
@@ -112,7 +121,7 @@ public class CAVE2WandInteractor : MonoBehaviour {
 
     void ProcessButtons(GameObject interactedObject, CAVE2.WandEvent playerInfo)
     {
-        foreach(CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
+        foreach (CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
         {
             playerInfo.button = currentButton;
             
@@ -134,5 +143,21 @@ public class CAVE2WandInteractor : MonoBehaviour {
                 interactedObject.SendMessage("OnWandButtonUp", playerInfo, SendMessageOptions.DontRequireReceiver);
             }
         }
+    }
+
+    public bool GrabbedObject(GameObject g)
+    {
+        if (grabbedObject == null)
+        {
+            grabbedObject = g;
+            return true;
+        }
+        return false;
+    }
+
+    public void ReleaseObject(GameObject g)
+    {
+        if(grabbedObject == g)
+            grabbedObject = null;
     }
 }

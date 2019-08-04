@@ -30,6 +30,8 @@ using System.Collections;
 
 public class GrabbableObject : CAVE2Interactable {
 
+    public enum HoldingStyle { ButtonPress, ButtonHold };
+
     [SerializeField]
     bool grabbed;
 
@@ -40,7 +42,13 @@ public class GrabbableObject : CAVE2Interactable {
     CAVE2.InteractionType grabStyle = CAVE2.InteractionType.Any;
 
     [SerializeField]
+    HoldingStyle holdInteraction = HoldingStyle.ButtonHold;
+
+    [SerializeField]
     bool allowWandCollision = true;
+
+    [SerializeField]
+    bool centerOnWand = false;
 
     bool usedGravity;
 
@@ -53,6 +61,8 @@ public class GrabbableObject : CAVE2Interactable {
 
     Queue previousPositions = new Queue();
 
+    [SerializeField]
+    Transform grabber;
     Collider[] grabberColliders;
 
     int grabbingWandID;
@@ -140,7 +150,7 @@ public class GrabbableObject : CAVE2Interactable {
         // Interaction
         UpdateWandOverTimer();
 
-        if( CAVE2.Input.GetButtonUp(grabbingWandID, grabButton) && grabbed )
+        if(holdInteraction == HoldingStyle.ButtonHold && CAVE2.Input.GetButtonUp(grabbingWandID, grabButton) && grabbed )
         {
             OnWandGrabRelease();
         }
@@ -205,29 +215,46 @@ public class GrabbableObject : CAVE2Interactable {
 
     new void OnWandButtonDown(CAVE2.WandEvent evt)
     {
-        if( evt.button == grabButton && (evt.interactionType == grabStyle || grabStyle == CAVE2.InteractionType.Any))
+        if( evt.button == grabButton)
         {
-            OnWandGrab(CAVE2.GetWandObject(evt.wandID).transform);
-            grabbingWandID = evt.wandID;
+            if (!grabbed && (evt.interactionType == grabStyle || grabStyle == CAVE2.InteractionType.Any))
+            {
+                grabber = CAVE2.GetWandObject(evt.wandID).transform;
+                OnWandGrab();
+                grabbingWandID = evt.wandID;
+            }
+            else if(grabbed && holdInteraction == HoldingStyle.ButtonPress)
+            {
+                OnWandGrabRelease();
+            }
         }
     }
 
-    void OnWandGrab(Transform grabber)
+    void OnWandGrab()
     {
         if (GetComponent<Rigidbody>() && transform.parent != grabber )
         {
-            usedGravity = GetComponent<Rigidbody>().useGravity;
-            GetComponent<Rigidbody>().useGravity = false;
-            joint = gameObject.AddComponent<FixedJoint>();
-            joint.connectedBody = grabber.GetComponentInChildren<Rigidbody>();
-            joint.breakForce = float.PositiveInfinity;
-            joint.breakTorque = float.PositiveInfinity;
-
-            // Disable collisions between grabber and collider while held
-            grabberColliders = grabber.root.GetComponentsInChildren<Collider>();
-            foreach (Collider c in grabberColliders)
+            // Check if grabbing object already is grabbing something else
+            if (grabber.GetComponentInChildren<CAVE2WandInteractor>().GrabbedObject(gameObject))
             {
-                Physics.IgnoreCollision(c, GetComponent<Collider>(), true);
+                // Disable collisions between grabber and collider while held
+                grabberColliders = grabber.root.GetComponentsInChildren<Collider>();
+                foreach (Collider c in grabberColliders)
+                {
+                    Physics.IgnoreCollision(c, GetComponent<Collider>(), true);
+                }
+
+                if (centerOnWand)
+                {
+                    transform.position = grabber.transform.position;
+                }
+
+                usedGravity = GetComponent<Rigidbody>().useGravity;
+                GetComponent<Rigidbody>().useGravity = false;
+                joint = gameObject.AddComponent<FixedJoint>();
+                joint.connectedBody = grabber.GetComponentInChildren<Rigidbody>();
+                joint.breakForce = float.PositiveInfinity;
+                joint.breakTorque = float.PositiveInfinity;
             }
         }
         grabbed = true;
@@ -235,6 +262,8 @@ public class GrabbableObject : CAVE2Interactable {
 
     void OnWandGrabRelease()
     {
+        grabber.GetComponentInChildren<CAVE2WandInteractor>().ReleaseObject(gameObject);
+
         if (GetComponent<Rigidbody>())
         {
             GetComponent<Rigidbody>().useGravity = usedGravity;
@@ -242,9 +271,12 @@ public class GrabbableObject : CAVE2Interactable {
         }
 
         // Re-enable collisions between grabber and collider after released
-        foreach (Collider c in grabberColliders)
+        if (grabberColliders != null)
         {
-            Physics.IgnoreCollision(c, GetComponent<Collider>(), false);
+            foreach (Collider c in grabberColliders)
+            {
+                Physics.IgnoreCollision(c, GetComponent<Collider>(), false);
+            }
         }
 
         grabbed = false;
