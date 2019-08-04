@@ -638,6 +638,21 @@ public class CAVE2RPCManager : MonoBehaviour {
             writer.Write("Single");
             writer.Write((System.Single)param);
         }
+        else if (param is System.Boolean)
+        {
+            writer.Write("Boolean");
+            writer.Write((System.Boolean)param);
+        }
+        else if (param is System.String)
+        {
+            writer.Write("String");
+            writer.Write((System.String)param);
+        }
+        else if (param is Quaternion)
+        {
+            writer.Write("Quaternion");
+            writer.Write((Quaternion)param);
+        }
         else
         {
             Debug.LogWarning("CAVE2RPCManager: Unknown param " + param.GetType());
@@ -658,6 +673,18 @@ public class CAVE2RPCManager : MonoBehaviour {
         else if (type == "Single")
         {
             return networkReader.ReadSingle();
+        }
+        else if (type == "Boolean")
+        {
+            return networkReader.ReadBoolean();
+        }
+        else if (type == "String")
+        {
+            return networkReader.ReadString();
+        }
+        else if (type == "Quaternion")
+        {
+            return networkReader.ReadQuaternion();
         }
         else
         {
