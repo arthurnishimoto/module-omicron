@@ -155,9 +155,9 @@ public class CAVE2TransformSync : MonoBehaviour {
             }
             else
             {
-                /*
                 if(timeSinceLastChange > updateSpeed && Vector3.Magnitude(useLocal ? transform.localPosition : transform.position - nextPosition) > adaptiveThreshold)
                 {
+                    /*
                     if (useLocal)
                     {
                         transform.localPosition = Vector3.Lerp(transform.localPosition, nextPosition, Time.deltaTime);
@@ -166,8 +166,8 @@ public class CAVE2TransformSync : MonoBehaviour {
                     {
                         transform.position = Vector3.Lerp(transform.position, nextPosition, Time.deltaTime);
                     }
+                    */
                 }
-                */
             }
         }
 

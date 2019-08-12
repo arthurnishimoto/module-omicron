@@ -84,6 +84,9 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     Vector3 fly_x, fly_y, fly_z;
 
+    [SerializeField]
+    bool updateOnlyOnMaster = false;
+
     public enum AutoLevelMode { Disabled, OnGroundCollision };
 
     [Header("Collisions")]
@@ -143,16 +146,17 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if (navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly)
+        if (!updateOnlyOnMaster || (updateOnlyOnMaster && CAVE2.IsMaster()))
         {
-            UpdateFreeflyMovement();
+            if (navMode == NavigationMode.Drive || navMode == NavigationMode.Freefly)
+            {
+                UpdateFreeflyMovement();
+            }
+            else if (navMode == NavigationMode.Walk)
+            {
+                UpdateWalkMovement();
+            }
         }
-        else if (navMode == NavigationMode.Walk)
-        {
-            UpdateWalkMovement();
-        }
-
-        
     }
 
     void SetPosition(Vector3 position)
