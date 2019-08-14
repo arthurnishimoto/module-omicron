@@ -295,7 +295,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
                 transform.position = nextPos;
             }
 
-            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), transform.TransformDirection(Vector3.up), strafe * Time.deltaTime * turnSpeed);
         }
 
         if (autoLevelMode == AutoLevelMode.OnGroundCollision)
@@ -403,7 +403,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
                 transform.position = nextPos;
             }
 
-            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), Vector3.up, strafe * Time.deltaTime * turnSpeed);
+            transform.RotateAround(transform.position + transform.rotation * CAVE2.GetHeadPosition(headID), transform.TransformDirection(Vector3.up), strafe * Time.deltaTime * turnSpeed);
         }
     }
 }

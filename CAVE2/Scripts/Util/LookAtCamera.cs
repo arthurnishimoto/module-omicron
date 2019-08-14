@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LookAtCamera : MonoBehaviour {
 
+    [SerializeField]
+    bool alwaysUpOrientation = true;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -11,6 +14,9 @@ public class LookAtCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.LookAt(Camera.main.transform, Camera.main.transform.TransformDirection(Vector3.up));
+        if(alwaysUpOrientation)
+		    transform.LookAt(Camera.main.transform, Camera.main.transform.TransformDirection(Vector3.up));
+        else
+            transform.LookAt(Camera.main.transform);
     }
 }
