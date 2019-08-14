@@ -8,9 +8,4 @@ public class MachineInfoUI : MonoBehaviour {
 	void Start () {
         GetComponent<UnityEngine.UI.Text>().text += ": " + CAVE2Manager.GetMachineName();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

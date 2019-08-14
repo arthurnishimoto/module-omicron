@@ -65,6 +65,11 @@ public class CAVE2TransformSync : MonoBehaviour {
     [SerializeField]
     float adaptiveThreshold = 0.05f; // Drift allowed before correction (meters)
 
+    [SerializeField]
+    float adaptiveDelay = 2f; // Time in seconds before drift correction
+
+    float driftValue;
+
     public void Update()
     {
         if (updateMode == UpdateMode.Update)
@@ -78,17 +83,27 @@ public class CAVE2TransformSync : MonoBehaviour {
 
         if (adaptiveDebugText)
         {
-            adaptiveDebugText.text = "Master:\t (" + nextPosition.x.ToString("F2") + ", " + nextPosition.y.ToString("F2") + ", " + nextPosition.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "\t\t\t (" + nextRotation.eulerAngles.x.ToString("F2") + ", " + nextRotation.eulerAngles.y.ToString("F2") + ", " + nextRotation.eulerAngles.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "Client:\t (" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "\t\t\t (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
-
-            adaptiveDebugText.text += "Drift:\t\t (" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "\t\t\t (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
-            adaptiveDebugText.text += "Time since last change: " + timeSinceLastChange.ToString("F3");
+            adaptiveDebugText.text = GetAdaptiveDebugText();
         }
         
     }
+
+    public string GetAdaptiveDebugText()
+    {
+        string text = gameObject.name + "\n";
+        text += "Master:\t (" + nextPosition.x.ToString("F2") + ", " + nextPosition.y.ToString("F2") + ", " + nextPosition.z.ToString("F2") + ")\n";
+        text += "\t\t\t (" + nextRotation.eulerAngles.x.ToString("F2") + ", " + nextRotation.eulerAngles.y.ToString("F2") + ", " + nextRotation.eulerAngles.z.ToString("F2") + ")\n";
+        text += "Client:\t (" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
+        text += "\t\t\t (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
+
+        text += "Drift:\t\t (" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
+        text += "\t\t\t (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
+        text += "Drift Value: " + driftValue + " > " + adaptiveThreshold + " = " + (driftValue > adaptiveThreshold) + "\n";
+        text += "Time since last change: " + timeSinceLastChange.ToString("F3") + " (Sync on " + adaptiveDelay + ")";
+
+        return text;
+    }
+
     public void FixedUpdate()
     {
         if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive)
@@ -107,31 +122,36 @@ public class CAVE2TransformSync : MonoBehaviour {
         }
     }
 
+    public void SyncTransform()
+    {
+        Vector3 position = (useLocal ? transform.localPosition : transform.position);
+        Quaternion rotation = (useLocal ? transform.localRotation : transform.rotation);
+
+        if (syncPosition && syncRotation)
+        {
+            CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
+        }
+        else if (syncPosition)
+        {
+            CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, CAVE2RPCManager.MsgType.StateUpdate);
+        }
+        else if (syncRotation)
+        {
+            CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
+        }
+        else if (syncScale)
+        {
+            CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, CAVE2RPCManager.MsgType.StateUpdate);
+        }
+    }
+
     void UpdateSync()
     {
         if (CAVE2.IsMaster())
         {
             if (updateTimer < 0)
             {
-                Vector3 position = (useLocal ? transform.localPosition : transform.position);
-                Quaternion rotation = (useLocal ? transform.localRotation : transform.rotation);
-
-                if (syncPosition && syncRotation)
-                {
-                    CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
-                }
-                else if (syncPosition)
-                {
-                    CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, CAVE2RPCManager.MsgType.StateUpdate);
-                }
-                else if(syncRotation)
-                {
-                    CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
-                }
-                else if (syncScale)
-                {
-                    CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, CAVE2RPCManager.MsgType.StateUpdate);
-                }
+                SyncTransform();
 
                 updateTimer = updateSpeed;
             }
@@ -155,18 +175,20 @@ public class CAVE2TransformSync : MonoBehaviour {
             }
             else
             {
-                if(timeSinceLastChange > updateSpeed && Vector3.Magnitude(useLocal ? transform.localPosition : transform.position - nextPosition) > adaptiveThreshold)
+                driftValue = Vector3.Magnitude(useLocal ? transform.localPosition : transform.position - nextPosition);
+                if (timeSinceLastChange > adaptiveDelay && driftValue > adaptiveThreshold)
                 {
-                    /*
                     if (useLocal)
                     {
-                        transform.localPosition = Vector3.Lerp(transform.localPosition, nextPosition, Time.deltaTime);
+                        transform.localPosition = nextPosition;
+                        transform.localRotation = nextRotation;
                     }
                     else
                     {
-                        transform.position = Vector3.Lerp(transform.position, nextPosition, Time.deltaTime);
+                        transform.position = nextPosition;
+                        transform.rotation = nextRotation;
                     }
-                    */
+                    timeSinceLastChange = 0;
                 }
             }
         }

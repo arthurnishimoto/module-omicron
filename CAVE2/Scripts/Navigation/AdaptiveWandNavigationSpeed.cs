@@ -7,6 +7,7 @@ public class AdaptiveWandNavigationSpeed : MonoBehaviour {
     CAVE2WandNavigator wandNav;
 
     PlanetaryCoordinateMarker planetCoords;
+    AltitudeRadar altitudeRadar;
 
     float lowSpeed = 10000;
     float highSpeed = 1000000;
@@ -23,28 +24,52 @@ public class AdaptiveWandNavigationSpeed : MonoBehaviour {
     void Start () {
         wandNav = GetComponent<CAVE2WandNavigator>();
         planetCoords = GetComponent<PlanetaryCoordinateMarker>();
+        altitudeRadar = GetComponent<AltitudeRadar>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         if (useAdaptiveSpeed)
         {
+            float altitude = planetCoords.altitude;
+            float newSpeed = 1;
+
+            if (altitudeRadar && altitudeRadar.HasRadarHit())
+            {
+                altitude = altitudeRadar.GetRadarAltitude();
+            }
+
             if (mode == NavMode.Planet)
             {
-                if (planetCoords.altitude > 20000)
+                if (altitude > 5000)
                 {
-                    wandNav.globalSpeedMod = Mathf.Lerp(10000, 1000000, planetCoords.altitude / 5000000) * 2;
+                    newSpeed = Mathf.Lerp(10000, 1000000, altitude / 5000000) * 2;
                 }
                 else
                 {
-                    wandNav.globalSpeedMod = Mathf.Lerp(10, 10000, planetCoords.altitude / 20000) * 2;
+                    newSpeed = Mathf.Lerp(10, 10000, altitude / 5000) * 2;
                 }
             }
             else
             {
-                wandNav.globalSpeedMod = Mathf.Lerp(lowSpeed, highSpeed, planetCoords.altitude / highAltitude) * 2;
+                newSpeed = Mathf.Lerp(lowSpeed, highSpeed, altitude / highAltitude) * 2;
+            }
+
+            if(CAVE2.IsMaster())
+            {
+                CAVE2.SendMessage(gameObject.name, "SetSpeed", newSpeed);
             }
         }
+    }
+
+    void SetSpeed(object[] value)
+    {
+        SetSpeed((float)value[0]);
+    }
+
+    void SetSpeed(float speed)
+    {
+        wandNav.globalSpeedMod = speed;
     }
 
     public void UseAdaptiveSpeed(bool value)
