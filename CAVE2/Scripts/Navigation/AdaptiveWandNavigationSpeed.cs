@@ -39,6 +39,8 @@ public class AdaptiveWandNavigationSpeed : MonoBehaviour {
                 altitude = altitudeRadar.GetRadarAltitude();
             }
 
+            altitude = Mathf.Abs(altitude);
+
             if (mode == NavMode.Planet)
             {
                 if (altitude > 5000)
