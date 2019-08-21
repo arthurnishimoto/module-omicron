@@ -524,13 +524,13 @@ public class CAVE2InputManager : OmicronEventClient
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
             //    flags += (int)EventBase.Flags.SpecialButton3;
             // Wand Button 5 (L1/LB)
-            if (wandSimulatorButton5.Length > 0 && Input.GetButton(wandSimulatorButton5))
+            if (wandSimulatorButton5.Length > 0 && Input.GetKey(wandSimulatorButton5))
                 wand1_flags += (int)EventBase.Flags.Button5;
             // Wand Button 6 (L3)
             if (wandSimulatorButton6.Length > 0 && Input.GetButton(wandSimulatorButton6))
                 wand1_flags += (int)EventBase.Flags.Button6;
             // Wand Button 7 (L2)
-            if (wandSimulatorButton7.Length > 0 && Input.GetButton(wandSimulatorButton7))
+            if (wandSimulatorButton7.Length > 0 && Input.GetKey(wandSimulatorButton7))
                 wand1_flags += (int)EventBase.Flags.Button7;
             // Wand Button 8 (R2)
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))

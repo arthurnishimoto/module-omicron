@@ -81,7 +81,7 @@ public class NavSpeedUI : MonoBehaviour {
                     navControllerAdv.UseAdaptiveSpeed(true); // Mars-demo planet speed
                     adaptiveType = 0;
                     break;
-                case (4): sliderVal = 1.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
+                case (4): sliderVal = 1.0f; navControllerAdv.UseAdaptiveSpeed(false, 1.0f); break;
                 case (5): sliderVal = 10.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
                 case (6): sliderVal = 50.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
                 case (7): sliderVal = 100.0f; navControllerAdv.UseAdaptiveSpeed(false); break;

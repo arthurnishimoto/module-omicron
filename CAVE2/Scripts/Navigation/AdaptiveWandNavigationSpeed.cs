@@ -74,11 +74,19 @@ public class AdaptiveWandNavigationSpeed : MonoBehaviour {
         wandNav.globalSpeedMod = speed;
     }
 
-    public void UseAdaptiveSpeed(bool value)
+    public void UseAdaptiveSpeed(bool value, float speed = 0)
     {
         useAdaptiveSpeed = value;
 
         mode = NavMode.Planet;
+
+        if(!useAdaptiveSpeed && speed != 0)
+        {
+            if (CAVE2.IsMaster())
+            {
+                CAVE2.SendMessage(gameObject.name, "SetSpeed", speed);
+            }
+        }
     }
 
     public void UseAdaptiveSpeed(bool value, float lowSpeed, float highSpeed, float highAltitude)
