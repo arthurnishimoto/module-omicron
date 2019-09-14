@@ -53,6 +53,15 @@ public class CAVE2InputManager : OmicronEventClient
     public string wandSimulatorButton6 = "Fire3"; // PS3 Navigation L3
     public string wandSimulatorButton7 = "space"; // PS3 Navigation L2
 
+    string simulatorWand2AnalogUD = "Vertical2";
+    string simulatorWand2AnalogLR = "Horizontal2";
+
+    string simulatorWand1Trigger = "Trigger L";
+    string simulatorWand1Grip = "Grip R";
+
+    string simulatorWand2Trigger = "Trigger R";
+    string simulatorWand2Grip = "Grip R";
+
     [SerializeField]
     float axisDeadzone = 0.2f;
 
@@ -96,6 +105,15 @@ public class CAVE2InputManager : OmicronEventClient
         else if (UnityEngine.XR.XRDevice.model == "Oculus Rift CV1")
         {
             vrModel = VRModel.OculusRiftCV1;
+
+            simulatorWand2AnalogUD = "Oculus_CrossPlatform_SecondaryThumbstickVertical";
+            simulatorWand2AnalogLR = "Oculus_CrossPlatform_SecondaryThumbstickHorizontal";
+
+            simulatorWand1Trigger = "Oculus_CrossPlatform_PrimaryIndexTrigger";
+            simulatorWand1Grip = "Oculus_CrossPlatform_PrimaryHandTrigger";
+
+            simulatorWand2Trigger = "Oculus_CrossPlatform_SecondaryIndexTrigger";
+            simulatorWand2Grip = "Oculus_CrossPlatform_SecondaryHandTrigger";
         }
         else if (UnityEngine.XR.XRDevice.model.Length > 0)
         {
@@ -714,7 +732,16 @@ public class CAVE2InputManager : OmicronEventClient
         // Vive Left: N/A
         if (Input.GetKey(KeyCode.JoystickButton3))
         {
-            wand1_flags += (int)EventBase.Flags.Button3;
+            if (vrModel == VRModel.Vive)
+            {
+                // Ignore left menu button, mapped from right controller
+                // since accidental trackpad on left is common
+                //wand1_flags += (int)EventBase.Flags.Button3;
+            }
+            else
+            {
+                wand1_flags += (int)EventBase.Flags.Button3;
+            }
             if (debug)
                 Debug.Log("JoystickButton3");
         }
@@ -808,8 +835,8 @@ public class CAVE2InputManager : OmicronEventClient
          */
         // Oculus Touch Left: IndexTrigger (Press)
         // Vive Left: IndexTrigger (Press)
-        wand1_analog3.y = Input.GetAxis("Trigger L");
-        if (Input.GetAxis("Trigger L") > 0.1f)
+        wand1_analog3.y = Input.GetAxis(simulatorWand1Trigger);
+        if (Input.GetAxis(simulatorWand1Trigger) > 0.1f)
         {
             if (vrModel == VRModel.Vive)
                 wand1_flags += (int)EventBase.Flags.Button7;
@@ -819,19 +846,19 @@ public class CAVE2InputManager : OmicronEventClient
 
         // Oculus Touch Left: HandTrigger (Press)
         // Vive Left: HandTrigger (Press)
-        wand1_analog3.x = Input.GetAxis("Grip L");
-        if (Input.GetAxis("Grip L") > 0.1f)
+        wand1_analog3.x = Input.GetAxis(simulatorWand1Grip);
+        if (Input.GetAxis(simulatorWand1Grip) > 0.1f)
         {
             if (vrModel == VRModel.Vive)
                 wand1_flags += (int)EventBase.Flags.Button5;
             else
-                wand2_flags += (int)EventBase.Flags.Button7;
+                wand1_flags += (int)EventBase.Flags.Button7;
         }
 
         // Oculus Touch Right: HandTrigger (Press)
         // Vive Right: HandTrigger (Press)
-        wand2_analog3.x = Input.GetAxis("Grip R");
-        if (Input.GetAxis("Grip R") > 0.1f)
+        wand2_analog3.x = Input.GetAxis(simulatorWand2Grip);
+        if (Input.GetAxis(simulatorWand2Grip) > 0.1f)
         {
             if (vrModel == VRModel.Vive)
                 wand1_flags += (int)EventBase.Flags.Button3;
@@ -841,8 +868,8 @@ public class CAVE2InputManager : OmicronEventClient
 
         // Oculus Touch Right: IndexTrigger (Press)
         // Vive Right: IndexTrigger (Press)
-        wand2_analog3.y = Input.GetAxis("Trigger R");
-        if (Input.GetAxis("Trigger R") > 0.1f)
+        wand2_analog3.y = Input.GetAxis(simulatorWand2Trigger);
+        if (Input.GetAxis(simulatorWand2Trigger) > 0.1f)
         {
             if (vrModel == VRModel.Vive)
                 wand2_flags += (int)EventBase.Flags.Button7;
@@ -877,7 +904,14 @@ public class CAVE2InputManager : OmicronEventClient
         // Vive Right: N/A
         if (Input.GetKey(KeyCode.JoystickButton1))
         {
-            wand2_flags += (int)EventBase.Flags.Button3;
+            if (vrModel == VRModel.Vive)
+            {
+                wand1_flags += (int)EventBase.Flags.Button3;
+            }
+            else
+            {
+                wand2_flags += (int)EventBase.Flags.Button3;
+            }
             if (debug)
                 Debug.Log("JoystickButton1");
         }
@@ -930,7 +964,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
 
         wand1_analog1 = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        wand2_analog1 = new Vector2(Input.GetAxis("Horizontal2"), -Input.GetAxis("Vertical2"));
+        wand2_analog1 = new Vector2(Input.GetAxis(simulatorWand2AnalogLR), Input.GetAxis(simulatorWand2AnalogUD));
 
         // Oculus Touch Right: Analog (Touch)
         // Vive Right: Analog (Touch)
@@ -948,8 +982,8 @@ public class CAVE2InputManager : OmicronEventClient
 
         // For CAVE2 simulator purposes, we're treating the right analog as the DPad
         if (rightAnalogDPadActivate &&
-        (Input.GetAxis("Vertical2") != 0 ||
-        Input.GetAxis("Horizontal2") != 0)
+        (wand2_analog1.y != 0 ||
+        wand2_analog1.x != 0)
         )
         {
             /*
@@ -974,23 +1008,27 @@ public class CAVE2InputManager : OmicronEventClient
              * Axis: 5th axis (Joysticks)
              * JoyNum: Get Motion from all Joysticks
              */
-            float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
+            float padAngle = Mathf.Rad2Deg * Mathf.Atan2(-wand2_analog1.y, wand2_analog1.x);
 
             if (padAngle < -45 && padAngle > -135)
             {
                 wand1_flags += (int)EventBase.Flags.ButtonUp;
+                wand2_flags += (int)EventBase.Flags.ButtonUp;
             }
             else if (padAngle > -45 && padAngle < 45)
             {
                 wand1_flags += (int)EventBase.Flags.ButtonRight;
+                wand2_flags += (int)EventBase.Flags.ButtonRight;
             }
             else if (padAngle > 45 && padAngle < 135)
             {
                 wand1_flags += (int)EventBase.Flags.ButtonDown;
+                wand2_flags += (int)EventBase.Flags.ButtonDown;
             }
             else if (padAngle < -135 || padAngle > 135)
             {
                 wand1_flags += (int)EventBase.Flags.ButtonLeft;
+                wand2_flags += (int)EventBase.Flags.ButtonLeft;
             }
         }
 
@@ -1242,7 +1280,7 @@ public class CAVE2InputManager : OmicronEventClient
         }
 
         wand1_analog1 = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        wand2_analog1 = new Vector2(Input.GetAxis("Horizontal2"), -Input.GetAxis("Vertical2"));
+        wand2_analog1 = new Vector2(Input.GetAxis(simulatorWand2AnalogLR), -Input.GetAxis(simulatorWand2AnalogUD));
 
         // Oculus Touch Right: Analog (Touch)
         // Vive Right: Analog (Touch)
@@ -1260,8 +1298,8 @@ public class CAVE2InputManager : OmicronEventClient
 
         // For CAVE2 simulator purposes, we're treating the right analog as the DPad
         if (rightAnalogDPadActivate &&
-        (Input.GetAxis("Vertical2") != 0 ||
-        Input.GetAxis("Horizontal2") != 0)
+        (Input.GetAxis(simulatorWand2AnalogUD) != 0 ||
+        Input.GetAxis(simulatorWand2AnalogLR) != 0)
         )
         {
             /*
@@ -1286,7 +1324,7 @@ public class CAVE2InputManager : OmicronEventClient
              * Axis: 5th axis (Joysticks)
              * JoyNum: Get Motion from all Joysticks
              */
-            float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis("Vertical2"), Input.GetAxis("Horizontal2"));
+            float padAngle = Mathf.Rad2Deg * Mathf.Atan2(Input.GetAxis(simulatorWand2AnalogUD), Input.GetAxis(simulatorWand2AnalogLR));
 
             if (padAngle < -45 && padAngle > -135)
             {
