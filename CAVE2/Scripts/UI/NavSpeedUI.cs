@@ -35,24 +35,14 @@ public class NavSpeedUI : MonoBehaviour {
     public Slider slider;
 
     public CAVE2WandNavigator navController;
-    public AdaptiveWandNavigationSpeed navControllerAdv;
 
     int adaptiveType = 0;
 
     // Use this for initialization
     void Start () {
         navController = GetComponentInParent<CAVE2WandNavigator>();
-        navControllerAdv = GetComponentInParent<AdaptiveWandNavigationSpeed>();
-        slider.value = SpeedToSliderPosition(navController.globalSpeedMod);
 
-        if (navControllerAdv && navControllerAdv.UsingAdaptiveSpeed())
-        {
-            switch (adaptiveType)
-            {
-                case (0): label.text = "Nav Speed: Adaptive Orbit"; slider.value = 3; break;
-                case (1): label.text = "Nav Speed: Adaptive Landing"; break;
-            }
-        }
+        slider.value = SpeedToSliderPosition(navController.globalSpeedMod);
     }
 
     public void UpdateNavSpeed()
@@ -60,59 +50,10 @@ public class NavSpeedUI : MonoBehaviour {
         float sliderVal = slider.value;
         // value: 0 - 10
         // 0 = 0.00001; 10 = 100000
-        // sliderVal = Mathf.Pow(10,(sliderVal - 5)); // Omegalib scale
+        sliderVal = Mathf.Pow(10,(sliderVal - 5)); // Omegalib scale
 
-        if (navControllerAdv && navController)
-        {
-            // Advanced scale for adaptive speed
-            switch ((int)sliderVal)
-            {
-                case (0): sliderVal = 0.01f;
-                    navControllerAdv.UseAdaptiveSpeed(false);
-                    break;
-                case (1): sliderVal = 0.1f;
-                    navControllerAdv.UseAdaptiveSpeed(false);
-                    break;
-                case (2): sliderVal = 0.01f;
-                    navControllerAdv.UseAdaptiveSpeed(true);
-                    adaptiveType = 1;
-                    break;
-                case (3): sliderVal = 0.1f;
-                    navControllerAdv.UseAdaptiveSpeed(true); // Mars-demo planet speed
-                    adaptiveType = 0;
-                    break;
-                case (4): sliderVal = 1.0f; navControllerAdv.UseAdaptiveSpeed(false, 1.0f); break;
-                case (5): sliderVal = 10.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
-                case (6): sliderVal = 50.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
-                case (7): sliderVal = 100.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
-                case (8): sliderVal = 1000.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
-                case (9): sliderVal = 10000.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
-                case (10): sliderVal = 100000.0f; navControllerAdv.UseAdaptiveSpeed(false); break;
-            }
-            if (navControllerAdv.UsingAdaptiveSpeed())
-            {
-                switch (adaptiveType)
-                {
-                    case (0): label.text = "Nav Speed: Adaptive Orbit"; break;
-                    case (1): label.text = "Nav Speed: Adaptive Landing"; break;
-                }
-            }
-            else
-            {
-                label.text = "Navigation Speed: " + sliderVal + "x";
-                navController.globalSpeedMod = sliderVal;
-            }            
-        }
-        else
-        {
-            // New Scale
-            sliderVal = SliderPositionToSpeed(sliderVal);
-            if (navController)
-            {
-                label.text = "Navigation Speed: " + sliderVal + "x";
-                navController.globalSpeedMod = sliderVal;
-            }
-        }
+        label.text = "Navigation Speed: " + sliderVal + "x";
+        navController.globalSpeedMod = sliderVal;
     }
 
     int SpeedToSliderPosition(float speed)

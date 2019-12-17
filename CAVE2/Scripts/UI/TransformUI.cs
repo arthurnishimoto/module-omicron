@@ -38,6 +38,9 @@ public class TransformUI : MonoBehaviour {
     protected Vector3 position;
     protected Vector3 eulerAngles;
 
+    [SerializeField]
+    bool showScale;
+
     // Use this for initialization
     void Start () {
         if (positionUIText == null && GetComponent<Text>())
@@ -63,6 +66,11 @@ public class TransformUI : MonoBehaviour {
             }
 
             positionUIText.text = "Position: " + position.ToString("N3") + "\nRotation: " + eulerAngles.ToString("N3");
+            
+            if(showScale)
+            {
+                positionUIText.text += "\nScale: " + targetTransform.localScale.ToString("N3");
+            }
         }
     }
 }
