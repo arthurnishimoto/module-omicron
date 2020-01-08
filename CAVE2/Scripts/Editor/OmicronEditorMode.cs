@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2020		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2020, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -40,6 +40,8 @@ public class OmicronEditorMode : MonoBehaviour
     const string CONTINUUM_3D = "Omicron/Configure for Continuum 3D Wall";
     const string CONTINUUM_MAIN = "Omicron/Configure for Continuum Main Wall";
 
+    static GameObject c2sm;
+
     [MenuItem(CAVE2SIM_NAME)]
     static void ConfigCAVE2Simulator()
     {
@@ -54,6 +56,9 @@ public class OmicronEditorMode : MonoBehaviour
         {
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
         }
+
+        if (c2sm)
+            c2sm.SetActive(true);
     }
 
     [MenuItem(CAVE2_NAME)]
@@ -85,6 +90,10 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(OCULUS_NAME, PlayerSettings.virtualRealitySupported);
         Menu.SetChecked(VIVE_NAME, false);
 
+        c2sm = GameObject.Find("CAVE2ScreenMask");
+        if (c2sm)
+            c2sm.SetActive(false);
+
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Oculus VR HMDs" : "VR support disabled");
     }
 
@@ -101,6 +110,10 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(OCULUS_NAME, false);
         Menu.SetChecked(VIVE_NAME, PlayerSettings.virtualRealitySupported);
 
+        c2sm = GameObject.Find("CAVE2ScreenMask");
+        if (c2sm)
+            c2sm.SetActive(false);
+   
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
     }
 
@@ -111,6 +124,7 @@ public class OmicronEditorMode : MonoBehaviour
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
         PlayerSettings.virtualRealitySupported = false;
         Menu.SetChecked(VIVE_NAME, false);
+        Menu.SetChecked(OCULUS_NAME, false);
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
     }
