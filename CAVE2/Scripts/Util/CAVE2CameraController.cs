@@ -51,6 +51,8 @@ public class CAVE2CameraController : MonoBehaviour {
     [SerializeField]
     Transform rightCameraParent;
 
+    CAVE2WandNavigator wandNav;
+
     // Use this for initialization
     void Start()
     {
@@ -78,6 +80,8 @@ public class CAVE2CameraController : MonoBehaviour {
 
             cameraLayer = mainCamera.cullingMask;
         }
+
+        wandNav = GetComponentInParent<CAVE2WandNavigator>();
     }
 
     // Update is called once per frame
@@ -116,6 +120,20 @@ public class CAVE2CameraController : MonoBehaviour {
                 mainCamera.GetComponent<getRealCameraUpdater>().enabled = false;
             }
 #endif
+
+            float simHeadRotateSpeed = 40;
+            if(wandNav)
+            {
+                simHeadRotateSpeed = wandNav.GetTurnSpeed();
+            }
+            if( Input.GetKey(CAVE2.Input.simulatorHeadRotateL) )
+            {
+                transform.Rotate(-Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+            }
+            else if (Input.GetKey(CAVE2.Input.simulatorHeadRotateR))
+            {
+                transform.Rotate(Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+            }
         }
     }
 

@@ -126,6 +126,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
         navMode = lastNavMode;
     }
 
+    public float GetTurnSpeed()
+    {
+        return turnSpeed;
+    }
+
     // Use this for initialization
     void Start ()
     {

@@ -38,6 +38,8 @@ public class CAVE2PlayerIdentity : MonoBehaviour
     public int[] wandIDs;
     public Transform[] wandObjects;
 
+    public Transform cameraController;
+
     private void Start()
     {
         CAVE2.AddPlayerController(playerID, gameObject);
@@ -50,6 +52,15 @@ public class CAVE2PlayerIdentity : MonoBehaviour
             foreach (Transform t in children)
             {
                 t.name = t.name + " (PlayerID " + playerID + ")";
+            }
+        }
+
+        if(CAVE2.IsSimulatorMode())
+        {
+            headObject.parent = cameraController;
+            foreach (Transform t in wandObjects)
+            {
+                t.parent = cameraController;
             }
         }
     }
