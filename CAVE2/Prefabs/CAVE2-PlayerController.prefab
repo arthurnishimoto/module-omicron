@@ -2338,7 +2338,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011680592226}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -31.957382, y: 10.328703, z: -29.414307}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4000012536975182}
@@ -3765,6 +3765,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 114000013613681916}
+        m_MethodName: ToggleWandVisible
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_IsOn: 0
@@ -3896,7 +3907,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: dc666bc6d1c086b4eb93dca12df0d4bf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7d71d0eb914568e4b827159eb366af17, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4082,6 +4093,9 @@ MonoBehaviour:
   wandLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  wandPointing: 0
+  wandTouching: 0
+  grabbedObject: {fileID: 0}
 --- !u!114 &114000010459603480
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4140,6 +4154,9 @@ MonoBehaviour:
   wandLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  wandPointing: 0
+  wandTouching: 0
+  grabbedObject: {fileID: 0}
 --- !u!114 &114000010541511360
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4701,6 +4718,7 @@ MonoBehaviour:
   testSyncObject: {fileID: 0}
   adaptiveDebugText: {fileID: 114046277472524772}
   adaptiveThreshold: 0.05
+  adaptiveDelay: 2
 --- !u!114 &114000011229521700
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4736,6 +4754,7 @@ MonoBehaviour:
   positionUIText: {fileID: 0}
   targetTransform: {fileID: 4000013404205558}
   local: 1
+  showScale: 0
 --- !u!114 &114000011412901742
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4847,6 +4866,7 @@ MonoBehaviour:
   positionUIText: {fileID: 0}
   targetTransform: {fileID: 4000012806552110}
   local: 0
+  showScale: 0
 --- !u!114 &114000011521823972
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5354,7 +5374,7 @@ MonoBehaviour:
   strafe: 0
   vertical: 0
   lookAround: {x: 0, y: 0}
-  walkUsesFlyGlobalSpeedScale: 0
+  walkUsesFlyGlobalSpeedScale: 1
   globalSpeedMod: 1
   movementScale: 2
   flyMovementScale: 2
@@ -5366,6 +5386,7 @@ MonoBehaviour:
   freeFlyButton: 6
   horizontalMovementMode: 0
   forwardReference: 2
+  updateOnlyOnMaster: 0
   autoLevelMode: 1
   autoLevelButton: 5
   bodyCollider: {fileID: 136000012870809268}
@@ -6276,7 +6297,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 9ffd538dd27553046b40633efeeef871, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c7c6572bcff52e64f8c95b71a701800a, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -6636,7 +6657,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 10
   m_WholeNumbers: 1
-  m_Value: 4
+  m_Value: 5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -7048,6 +7069,7 @@ MonoBehaviour:
   positionUIText: {fileID: 0}
   targetTransform: {fileID: 4000013489015860}
   local: 1
+  showScale: 0
   wandID: 2
 --- !u!114 &114181114398302472
 MonoBehaviour:
@@ -7096,6 +7118,7 @@ MonoBehaviour:
   positionUIText: {fileID: 0}
   targetTransform: {fileID: 4000010099233380}
   local: 1
+  showScale: 0
   wandID: 1
 --- !u!114 &114531474996806656
 MonoBehaviour:
@@ -9498,7 +9521,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 976.1, y: -19.500004}
+  m_AnchoredPosition: {x: 976.1, y: -10}
   m_SizeDelta: {x: 474.10004, y: -42.999992}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224763880330607610

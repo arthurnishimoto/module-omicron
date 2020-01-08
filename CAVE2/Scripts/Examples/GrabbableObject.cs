@@ -108,8 +108,8 @@ public class GrabbableObject : CAVE2Interactable {
         }
         pointingOverHighlight.AddComponent<MeshFilter>().mesh = defaultMesh;
         MeshCollider wandCollider = gameObject.AddComponent<MeshCollider>();
-        wandCollider.convex = true;
         wandCollider.inflateMesh = defaultMesh;
+        wandCollider.convex = true;
         wandCollider.isTrigger = true;
 
         renderer = pointingOverHighlight.AddComponent<MeshRenderer>();
