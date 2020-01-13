@@ -23,9 +23,8 @@ GameObject:
   - component: {fileID: 65000011727607462}
   - component: {fileID: 23000014125979346}
   - component: {fileID: 54000012314781600}
-  - component: {fileID: 114000014093409540}
-  - component: {fileID: 114000012622403126}
-  - component: {fileID: 114000013802728138}
+  - component: {fileID: 114651793132841538}
+  - component: {fileID: 114870594594691554}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -45,9 +44,8 @@ GameObject:
   - component: {fileID: 65000013144759454}
   - component: {fileID: 23000012853331698}
   - component: {fileID: 54000013394975422}
-  - component: {fileID: 114000010596264916}
-  - component: {fileID: 114000012981426692}
-  - component: {fileID: 114000011920971702}
+  - component: {fileID: 114199185037799996}
+  - component: {fileID: 114773664819515326}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -67,9 +65,8 @@ GameObject:
   - component: {fileID: 65000011501080454}
   - component: {fileID: 23000012157155484}
   - component: {fileID: 54000010813312070}
-  - component: {fileID: 114000010215681154}
-  - component: {fileID: 114000013563479624}
-  - component: {fileID: 114000010328180150}
+  - component: {fileID: 114681382782453232}
+  - component: {fileID: 114757699639889332}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -89,9 +86,8 @@ GameObject:
   - component: {fileID: 65000010014903304}
   - component: {fileID: 23000011185653286}
   - component: {fileID: 54000013839794588}
-  - component: {fileID: 114000011746898498}
-  - component: {fileID: 114000012008920422}
-  - component: {fileID: 114000014173583258}
+  - component: {fileID: 114959755699508398}
+  - component: {fileID: 114169279781526492}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -111,9 +107,8 @@ GameObject:
   - component: {fileID: 65000012458935172}
   - component: {fileID: 23000013100409544}
   - component: {fileID: 54000010770466092}
-  - component: {fileID: 114000011004864116}
-  - component: {fileID: 114000011342270376}
-  - component: {fileID: 114000013360133064}
+  - component: {fileID: 114061752923525400}
+  - component: {fileID: 114024862173374848}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -133,9 +128,8 @@ GameObject:
   - component: {fileID: 65000012634615384}
   - component: {fileID: 23000013482300834}
   - component: {fileID: 54000014112632794}
-  - component: {fileID: 114000013232727306}
-  - component: {fileID: 114000012095071424}
-  - component: {fileID: 114000010711878740}
+  - component: {fileID: 114693732604986268}
+  - component: {fileID: 114398971307021774}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -155,9 +149,8 @@ GameObject:
   - component: {fileID: 65000013272464594}
   - component: {fileID: 23000010423471672}
   - component: {fileID: 54000013858683740}
-  - component: {fileID: 114000010279030894}
-  - component: {fileID: 114000013378807278}
-  - component: {fileID: 114000011074450114}
+  - component: {fileID: 114807930335803822}
+  - component: {fileID: 114657811821039492}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -177,9 +170,8 @@ GameObject:
   - component: {fileID: 65000011813476996}
   - component: {fileID: 23000010066139054}
   - component: {fileID: 54000012402848808}
-  - component: {fileID: 114000012216113902}
-  - component: {fileID: 114000010407858824}
-  - component: {fileID: 114000010018141938}
+  - component: {fileID: 114182782208321940}
+  - component: {fileID: 114415026326850474}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -199,9 +191,8 @@ GameObject:
   - component: {fileID: 65000010166900714}
   - component: {fileID: 23000010613444118}
   - component: {fileID: 54000012174326618}
-  - component: {fileID: 114000010217214538}
-  - component: {fileID: 114000010806766518}
-  - component: {fileID: 114000013690361154}
+  - component: {fileID: 114389548387048838}
+  - component: {fileID: 114718334864731258}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -221,9 +212,8 @@ GameObject:
   - component: {fileID: 65000013196779616}
   - component: {fileID: 23000013970204190}
   - component: {fileID: 54000011283615864}
-  - component: {fileID: 114000010631164778}
-  - component: {fileID: 114000011906620878}
-  - component: {fileID: 114000010828652012}
+  - component: {fileID: 114441181858272162}
+  - component: {fileID: 114819446811700008}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -243,9 +233,8 @@ GameObject:
   - component: {fileID: 65000014207546330}
   - component: {fileID: 23000012162768084}
   - component: {fileID: 54000013683512056}
-  - component: {fileID: 114000010256320656}
-  - component: {fileID: 114000010298098962}
-  - component: {fileID: 114000011174476882}
+  - component: {fileID: 114779951856747422}
+  - component: {fileID: 114986555601103400}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -265,9 +254,8 @@ GameObject:
   - component: {fileID: 65000012415361770}
   - component: {fileID: 23000013981150572}
   - component: {fileID: 54000012111540822}
-  - component: {fileID: 114000010226385618}
-  - component: {fileID: 114000011537561614}
-  - component: {fileID: 114000012237508758}
+  - component: {fileID: 114963191409668850}
+  - component: {fileID: 114857697207820396}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -287,9 +275,8 @@ GameObject:
   - component: {fileID: 65000012213854708}
   - component: {fileID: 23000012181100074}
   - component: {fileID: 54000011250462436}
-  - component: {fileID: 114000013817482738}
-  - component: {fileID: 114000013755002384}
-  - component: {fileID: 114000012007117482}
+  - component: {fileID: 114887416542458640}
+  - component: {fileID: 114940354670079438}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -309,9 +296,8 @@ GameObject:
   - component: {fileID: 65000011101417972}
   - component: {fileID: 23000013154116656}
   - component: {fileID: 54000011917228766}
-  - component: {fileID: 114000013965998568}
-  - component: {fileID: 114000012824950892}
-  - component: {fileID: 114000012184627874}
+  - component: {fileID: 114765679612709632}
+  - component: {fileID: 114429439488906218}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -331,9 +317,8 @@ GameObject:
   - component: {fileID: 65000014234917270}
   - component: {fileID: 23000013901088570}
   - component: {fileID: 54000012089050386}
-  - component: {fileID: 114000011055458984}
-  - component: {fileID: 114000013987186752}
-  - component: {fileID: 114000013953074394}
+  - component: {fileID: 114377232888599034}
+  - component: {fileID: 114868943964590938}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -353,9 +338,8 @@ GameObject:
   - component: {fileID: 65000012945914570}
   - component: {fileID: 23000014168363982}
   - component: {fileID: 54000010328374674}
-  - component: {fileID: 114000012006657666}
-  - component: {fileID: 114000010591067782}
-  - component: {fileID: 114000010281957462}
+  - component: {fileID: 114675825689397194}
+  - component: {fileID: 114143618384788160}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -390,9 +374,8 @@ GameObject:
   - component: {fileID: 65000010377977990}
   - component: {fileID: 23000010515500032}
   - component: {fileID: 54000012575523412}
-  - component: {fileID: 114000011873189306}
-  - component: {fileID: 114000013634704224}
-  - component: {fileID: 114000012100617194}
+  - component: {fileID: 114157088169616308}
+  - component: {fileID: 114683333644608728}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -1807,302 +1790,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114000010018141938
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012426726936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000010215681154
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010903279260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010217214538
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012499799190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010226385618
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012756769186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010256320656
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012557430954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010279030894
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012421763496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010281957462
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013774485432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000010298098962
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012557430954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000010328180150
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010903279260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000010407858824
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012426726936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000010591067782
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013774485432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000010596264916
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010859797810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010631164778
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012501446542}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000010711878740
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011905340126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000010806766518
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012499799190}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000010828652012
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012501446542}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000011004864116
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011900791056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000011055458984
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013501258084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000011074450114
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012421763496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000011174476882
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012557430954}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000011342270376
+--- !u!114 &114024862173374848
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2113,277 +1801,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
   wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
   grabButton: 2
   grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
   constraints: 0
-  grabbed: 0
---- !u!114 &114000011537561614
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012756769186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000011746898498
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011582524134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000011873189306
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000014035189788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000011906620878
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012501446542}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000011920971702
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010859797810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
+  grabber: {fileID: 0}
+  showPointingOver: 1
   highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000012006657666
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013774485432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000012007117482
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013035386862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000012008920422
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011582524134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000012095071424
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011905340126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000012100617194
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000014035189788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000012184627874
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013106012576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000012216113902
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012426726936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000012237508758
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012756769186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000012622403126
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010500620458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000012824950892
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013106012576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000012981426692
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010859797810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000013232727306
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011905340126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000013360133064
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114061752923525400
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2391,16 +1825,294 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000011900791056}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
   highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  defaultMesh: {fileID: 0}
   hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000013378807278
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114143618384788160
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013774485432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114157088169616308
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000014035189788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114169279781526492
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011582524134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114182782208321940
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012426726936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114199185037799996
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010859797810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114377232888599034
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013501258084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114389548387048838
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012499799190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114398971307021774
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011905340126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114415026326850474
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012426726936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114429439488906218
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013106012576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114441181858272162
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012501446542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114651793132841538
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010500620458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114657811821039492
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2411,13 +2123,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
   wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
   grabButton: 2
   grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
   constraints: 0
-  grabbed: 0
---- !u!114 &114000013563479624
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114675825689397194
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013774485432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114681382782453232
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2425,16 +2167,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000010903279260}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
   wandPointing: 0
-  grabButton: 2
-  grabStyle: 0
-  constraints: 0
-  grabbed: 0
---- !u!114 &114000013634704224
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114683333644608728
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2445,13 +2190,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
   wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
   grabButton: 2
   grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
   constraints: 0
-  grabbed: 0
---- !u!114 &114000013690361154
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114693732604986268
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011905340126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114718334864731258
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2459,79 +2234,53 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000012499799190}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
   highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000013755002384
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114757699639889332
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013035386862}
+  m_GameObject: {fileID: 1000010903279260}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
   wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
   grabButton: 2
   grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
   constraints: 0
-  grabbed: 0
---- !u!114 &114000013802728138
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010500620458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
+  grabber: {fileID: 0}
+  showPointingOver: 1
   highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000013817482738
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013035386862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000013953074394
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013501258084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
-  highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
---- !u!114 &114000013965998568
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114765679612709632
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2539,11 +2288,140 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000013106012576}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000013987186752
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114773664819515326
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010859797810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114779951856747422
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012557430954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114807930335803822
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012421763496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114819446811700008
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012501446542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114857697207820396
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012756769186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114868943964590938
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2554,13 +2432,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
   wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
   grabButton: 2
   grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
   constraints: 0
-  grabbed: 0
---- !u!114 &114000014093409540
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114870594594691554
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2568,11 +2456,73 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000010500620458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 800a044c834626b49a444f2bd1767c95, type: 3}
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropButton: 4
---- !u!114 &114000014173583258
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114887416542458640
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013035386862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114940354670079438
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013035386862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}
+--- !u!114 &114959755699508398
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2580,12 +2530,62 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000011582524134}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 995568e97a01f694083c312c122ea8bf, type: 3}
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wandOver: 0
-  lastWandOverTime: 0
-  wandOverTimeout: 0.15
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
   highlightScaler: 1.05
-  defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  defaultMesh: {fileID: 0}
   hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114963191409668850
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012756769186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb09dbe096eab1a4599994b8507402bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  showHoverOver: 1
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  hoverOverMaterial: {fileID: 2100000, guid: e50849494f4c7fe41a92230c9be3de89, type: 2}
+  strobing: 0
+  strobeSpeed: 0
+--- !u!114 &114986555601103400
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012557430954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0ad1210f5dd74f81a562fa78666b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wandPointing: 0
+  wandTouching: 0
+  grabbed: 0
+  grabButton: 2
+  grabStyle: 0
+  holdInteraction: 1
+  allowWandCollision: 1
+  centerOnWand: 0
+  constraints: 0
+  grabber: {fileID: 0}
+  showPointingOver: 1
+  highlightScaler: 1.05
+  defaultMesh: {fileID: 0}
+  pointingOverMaterial: {fileID: 0}
+  showTouchingOver: 1
+  touchingOverMaterial: {fileID: 0}

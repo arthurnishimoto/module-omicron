@@ -57,8 +57,11 @@ public class OmicronEditorMode : MonoBehaviour
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
         }
 
-        if (c2sm)
-            c2sm.SetActive(true);
+        c2sm = GameObject.Find("CAVE2ScreenMask");
+        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>() && c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode == CAVE2ScreenMaskRenderer.RenderMode.None)
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.Background;
+
+        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.CAVE2;
     }
 
     [MenuItem(CAVE2_NAME)]
@@ -75,6 +78,8 @@ public class OmicronEditorMode : MonoBehaviour
 
         if (Camera.main)
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
+
+        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.CAVE2;
     }
 
     [MenuItem(OCULUS_NAME)]
@@ -91,10 +96,12 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(VIVE_NAME, false);
 
         c2sm = GameObject.Find("CAVE2ScreenMask");
-        if (c2sm)
-            c2sm.SetActive(false);
+        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Oculus VR HMDs" : "VR support disabled");
+
+        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.Oculus;
     }
 
     [MenuItem(VIVE_NAME)]
@@ -111,10 +118,12 @@ public class OmicronEditorMode : MonoBehaviour
         Menu.SetChecked(VIVE_NAME, PlayerSettings.virtualRealitySupported);
 
         c2sm = GameObject.Find("CAVE2ScreenMask");
-        if (c2sm)
-            c2sm.SetActive(false);
-   
+        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
+
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
+
+        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.Vive;
     }
 
     [MenuItem(VR_NAME)]
@@ -160,6 +169,10 @@ public class OmicronEditorMode : MonoBehaviour
             projection.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
         }
 
+        c2sm = GameObject.Find("CAVE2ScreenMask");
+        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
+
         Debug.Log("Configured for Continuum Main Wall");
     }
 
@@ -188,6 +201,10 @@ public class OmicronEditorMode : MonoBehaviour
             }
             projection.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
         }
+
+        c2sm = GameObject.Find("CAVE2ScreenMask");
+        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
 
         Debug.Log("Configured for Continuum Main Wall");
     }

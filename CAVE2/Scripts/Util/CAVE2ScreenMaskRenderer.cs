@@ -34,12 +34,15 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
     public enum RenderMode { None, Background, Overlay }
     public RenderMode renderMode = RenderMode.Background;
 
-    void Start()
+    [SerializeField]
+    bool showInHMDVR;
+
+    void Awake()
     {
 #if UNITY_EDITOR
-        if (UnityEngine.XR.XRSettings.enabled && renderMode == RenderMode.Background)
+         if(!showInHMDVR && CAVE2.UsingHMDVR())
         {
-            renderMode = RenderMode.Overlay;
+            renderMode = RenderMode.None;
         }
 #else
         if( CAVE2.OnCAVE2Display() )

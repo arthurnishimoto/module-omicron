@@ -31,6 +31,8 @@ using UnityEngine;
 using omicron;
 using omicronConnector;
 using UnityEngine.VR;
+
+[ExecuteInEditMode]
 public class CAVE2InputManager : OmicronEventClient
 {
     Hashtable mocapSensors = new Hashtable();
@@ -83,7 +85,7 @@ public class CAVE2InputManager : OmicronEventClient
     public enum InputMappingMode { CAVE2, Vive, Oculus };
 
     [SerializeField]
-    InputMappingMode inputMappingMode = InputMappingMode.CAVE2;
+    public InputMappingMode inputMappingMode = InputMappingMode.CAVE2;
 
     [SerializeField]
     bool debug = false;
@@ -106,6 +108,8 @@ public class CAVE2InputManager : OmicronEventClient
         if (UnityEngine.XR.XRDevice.model == "Vive MV")
         {
             vrModel = VRModel.Vive;
+
+            inputMappingMode = InputMappingMode.Vive;
         }
         else if (UnityEngine.XR.XRDevice.model == "Oculus Rift CV1")
         {
@@ -119,6 +123,8 @@ public class CAVE2InputManager : OmicronEventClient
 
             simulatorWand2Trigger = "Oculus_CrossPlatform_SecondaryIndexTrigger";
             simulatorWand2Grip = "Oculus_CrossPlatform_SecondaryHandTrigger";
+
+            inputMappingMode = InputMappingMode.Oculus;
         }
         else if (UnityEngine.XR.XRDevice.model.Length > 0)
         {
@@ -658,6 +664,16 @@ public class CAVE2InputManager : OmicronEventClient
                 wand1_flags = (int)mapping[4];
                 wand2_flags = (int)mapping[5];
             }
+            else if (inputMappingMode == InputMappingMode.Vive)
+            {
+                object[] mapping = OculusControllerMapping(wand1_analog1, wand2_analog1, wand1_analog3, wand2_analog3);
+                wand1_analog1 = (Vector2)mapping[0];
+                wand2_analog1 = (Vector2)mapping[1];
+                wand1_analog3 = (Vector2)mapping[2];
+                wand2_analog3 = (Vector2)mapping[3];
+                wand1_flags = (int)mapping[4];
+                wand2_flags = (int)mapping[5];
+            }
         }
 
         // Only apply tracking when not in simulator mode
@@ -723,7 +739,7 @@ public class CAVE2InputManager : OmicronEventClient
             {
                 // Ignore left menu button, mapped from right controller
                 // since accidental trackpad on left is common
-                //wand1_flags += (int)EventBase.Flags.Button2;
+                wand1_flags += (int)EventBase.Flags.Button2;
             }
             else
             {
@@ -1055,7 +1071,7 @@ public class CAVE2InputManager : OmicronEventClient
             {
                 // Ignore left menu button, mapped from right controller
                 // since accidental trackpad on left is common
-                //wand1_flags += (int)EventBase.Flags.Button2;
+                wand1_flags += (int)EventBase.Flags.Button5;
             }
             else
             {
@@ -1178,7 +1194,7 @@ public class CAVE2InputManager : OmicronEventClient
         if (Input.GetAxis("Grip L") > 0.1f)
         {
             if (vrModel == VRModel.Vive)
-                wand1_flags += (int)EventBase.Flags.Button5;
+                wand1_flags += (int)EventBase.Flags.Button3;
             else
                 wand1_flags += (int)EventBase.Flags.Button7;
         }
@@ -1189,7 +1205,7 @@ public class CAVE2InputManager : OmicronEventClient
         if (Input.GetAxis("Grip R") > 0.1f)
         {
             if (vrModel == VRModel.Vive)
-                wand2_flags += (int)EventBase.Flags.Button3;
+                wand1_flags += (int)EventBase.Flags.Button3;
             else
                 wand2_flags += (int)EventBase.Flags.Button7;
         }

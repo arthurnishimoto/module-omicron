@@ -42,7 +42,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
 
     void Start()
     {
-        if (virtualWand && wandID == 1)
+        if (virtualWand && wandID == 1 && !CAVE2.UsingHMDVR())
         {
             virtualWand.localPosition = CAVE2.Input.wandTrackingOffset[wandID - 1];
         }

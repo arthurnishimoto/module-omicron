@@ -169,6 +169,16 @@ public class CAVE2 : MonoBehaviour
     {
         return CAVE2Manager.UsingGetReal3D();
     }
+
+    public static bool UsingHMDVR()
+    {
+        return CAVE2Manager.UsingHMDVR();
+    }
+
+    public static void SetHMDVREnabled(bool value)
+    {
+        CAVE2Manager.SetHMDVREnabled(value);
+    }
     // ---------------------------------------------------------------------------------------------
 
 
@@ -680,6 +690,8 @@ static CAVE2Manager CAVE2Manager_Instance;
     [SerializeField]
     public bool simulateAsClient;
 
+    public static bool hmdVREnabled; // HMD mode (non-CAVE2 simulator)
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
@@ -1006,6 +1018,16 @@ static CAVE2Manager CAVE2Manager_Instance;
 #else
         return false;
 #endif
+    }
+
+    public static bool UsingHMDVR()
+    {
+        return hmdVREnabled || UnityEngine.XR.XRSettings.enabled;
+    }
+
+    public static void SetHMDVREnabled(bool value)
+    {
+        hmdVREnabled = value;
     }
     // ---------------------------------------------------------------------------------------------
 
