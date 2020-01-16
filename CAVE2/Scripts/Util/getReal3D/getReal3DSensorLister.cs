@@ -19,6 +19,7 @@ public class getReal3DSensorLister : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+#if USING_GETREAL3D
         string[] sensorList = getReal3D.Input.sensorsName();
 
         // Sensors / Trackers
@@ -64,5 +65,6 @@ public class getReal3DSensorLister : MonoBehaviour
         {
             uiText.text += "[" + i + "] = " + buttons[i] + "\n";
         }
+#endif
     }
 }
