@@ -40,16 +40,19 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
     void Awake()
     {
 #if UNITY_EDITOR
-         if(!showInHMDVR && CAVE2.UsingHMDVR())
+        if (!showInHMDVR && CAVE2.UsingHMDVR())
         {
             renderMode = RenderMode.None;
         }
-#else
-        if( CAVE2.OnCAVE2Display() )
+#endif
+    }
+
+    void Start()
+    {
+        if ( CAVE2.OnCAVE2Display() )
         {
             GetComponent<Renderer>().enabled = false;
         }
-#endif
     }
 
 	// Update is called once per frame
