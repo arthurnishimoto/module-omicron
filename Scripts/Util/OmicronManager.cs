@@ -310,11 +310,11 @@ public class OmicronManager : MonoBehaviour
             GameObject c2m = GameObject.Find("OmicronManager");
             if( c2m == null )
             {
-                Debug.LogWarning("OmicronManager not found looking for CAVE2Manager");
+                // Debug.LogWarning("OmicronManager not found looking for CAVE2Manager");
                 c2m = GameObject.Find("CAVE2-Manager");
             }
             omicronManagerInstance = c2m.GetComponent<OmicronManager>();
-            Debug.LogWarning("Reintializing OmicronManager");
+            // Debug.LogWarning("Reintializing OmicronManager");
             omicronManagerInstance.Awake();
             return omicronManagerInstance;
         }

@@ -105,7 +105,7 @@ public class CAVE2InputManager : OmicronEventClient
         unityInputToOmicronInput[wandSimulatorButton2] = CAVE2.Button.Button2;
         unityInputToOmicronInput[wandSimulatorButton6] = CAVE2.Button.Button6;
 
-        if (UnityEngine.XR.XRDevice.model == "Vive MV")
+        if (UnityEngine.XR.XRDevice.model == "Vive MV" || UnityEngine.XR.XRDevice.model == "Vive. MV")
         {
             vrModel = VRModel.Vive;
 
@@ -126,7 +126,7 @@ public class CAVE2InputManager : OmicronEventClient
 
             inputMappingMode = InputMappingMode.Oculus;
         }
-        else if (UnityEngine.XR.XRDevice.model.Length > 0)
+        if (UnityEngine.XR.XRDevice.model.Length > 0)
         {
             Debug.Log("CAVE2InputManager: Detected VRDevice '" + UnityEngine.XR.XRDevice.model + "'.");
         }
