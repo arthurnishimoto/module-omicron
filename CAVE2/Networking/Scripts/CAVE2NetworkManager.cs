@@ -6,7 +6,12 @@ using UnityEngine.UI;
 
 public class CAVE2NetworkManager : MonoBehaviour
 {
+    [SerializeField]
+    bool dontDestroyOnLoad = true;
+
+    // Custom NetMsg IDs
     private short ClientConnect = 1000;
+    private short ServerAssign = 1001;
 
     public enum NetMode { None, Server, Client, Display };
 
@@ -33,10 +38,17 @@ public class CAVE2NetworkManager : MonoBehaviour
     public enum ConnectState { None, Connecting, Connected, Disconnected, Reconnecting };
 
     ConnectState connectState = ConnectState.None;
-    int connID = -1;
+    int connID = 0;
+
+    Dictionary<string, ClientInfo> clientList;
 
     public void Start()
     {
+        if (dontDestroyOnLoad)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+
         if (serverIP.Length == 0)
             serverIP = "127.0.0.1";
 
@@ -78,7 +90,7 @@ public class CAVE2NetworkManager : MonoBehaviour
                     {
                         case (ConnectState.None): status = "Not Connected"; break;
                         case (ConnectState.Connecting): status = "Connecting"; break;
-                        case (ConnectState.Connected): status = "Connected"; break;
+                        case (ConnectState.Connected): status = "Connected (connID: " + connID + ")"; break;
                         case (ConnectState.Disconnected): status = "Disconnected"; break;
 
                     }
@@ -99,6 +111,8 @@ public class CAVE2NetworkManager : MonoBehaviour
 
     public void StartServer()
     {
+        clientList = new Dictionary<string, ClientInfo>();
+
         netServer = new NetworkServerSimple();
 
         netServer.RegisterHandler(ClientConnect, OnServerClientConnected);
@@ -117,34 +131,97 @@ public class CAVE2NetworkManager : MonoBehaviour
 
         netClient.RegisterHandler(MsgType.Connect, OnClientConnected);
         netClient.RegisterHandler(MsgType.Disconnect, OnServerDisconnected);
+        netClient.RegisterHandler(ServerAssign, OnServerAssignment);
 
         netClient.Connect(serverIP, serverListenPort);
         connectState = ConnectState.Connecting;
     }
 
-    // Server function handlers
+    private void SendTo(int connID, short msgType, MessageBase msg, int channel = 0)
+    {
+        NetworkWriter netWriter = new NetworkWriter();
+        netWriter.StartMessage(msgType);
+        msg.Serialize(netWriter);
+        netWriter.FinishMessage();
+        netServer.SendWriterTo(connID, netWriter, channel);
+    }
+
+    // Derived from NetworkServer
+    // https://github.com/jamesjlinden/unity-decompiled/blob/master/UnityEngine.Networking/NetworkServer.cs
+    private void SendToClient(int connectionId, short msgType, MessageBase msg, int channel = 0)
+    {
+        if (connectionId < netServer.connections.Count)
+        {
+            NetworkConnection connection = netServer.connections[connectionId];
+            if (connection != null)
+            {
+                connection.Send(msgType, msg);
+                return;
+            }
+        }
+        if (!LogFilter.logError)
+            return;
+        Debug.LogError((object)("Failed to send message to connection ID '" + (object)connectionId + ", not found in connection list"));
+    }
+
+    // Derived from NetworkServer
+    // https://github.com/jamesjlinden/unity-decompiled/blob/master/UnityEngine.Networking/NetworkServer.cs
+    private bool SendToAll(short msgType, MessageBase msg, int channel = 0)
+    {
+        bool flag = true;
+        for (int index = 0; index < netServer.connections.Count; ++index)
+        {
+            NetworkConnection connection = netServer.connections[index];
+            if (connection != null)
+                flag &= connection.Send(msgType, msg);
+        }
+        return flag;
+    }
+
+    // Server function handlers --------------------------------------------------------------
     void OnServerClientConnected(NetworkMessage netmsg)
     {
         ClientInfoMsg clientInfo = netmsg.ReadMessage<ClientInfoMsg>();
 
-        Debug.Log("Client " + clientInfo.clientIP + " (" + clientInfo.hostName + " " + clientInfo.deviceType + ": " + clientInfo.deviceModel + ") connected to server as connID " + clientInfo.connID);
+        string clientID = clientInfo.clientIP + ":" + netmsg.conn.connectionId;
+
+        if (clientList.ContainsKey(clientID))
+        {
+        }
+        else
+        {
+            ClientInfo newClient = new ClientInfo();
+            newClient.connID = netmsg.conn.connectionId;
+
+            newClient.clientIP = clientInfo.clientIP;
+            newClient.hostName = clientInfo.hostName;
+            newClient.deviceModel = clientInfo.deviceModel;
+            newClient.deviceType = clientInfo.deviceType;
+            newClient.instanceID = 0;
+            newClient.active = true;
+
+            Debug.Log("Client " + clientID + " connected to server");
+
+            // Informs client of its server assigned connID
+            ServerAssignmentMsg assignMsg = new ServerAssignmentMsg();
+            assignMsg.connID = newClient.connID;
+            SendTo(newClient.connID, ServerAssign, assignMsg);
+        }
     }
 
     void OnClientDisconnected(NetworkMessage netmsg)
     {
-        Debug.Log("Client disconnected");
+        Debug.Log("Client " + netmsg.conn.connectionId + " disconnected");
     }
 
-    // Client function handlers
+    // Client function handlers --------------------------------------------------------------
     void OnClientConnected(NetworkMessage netmsg)
     {
         Debug.Log("Client connected to server");
-        connID = netClient.connection.connectionId;
 
         ClientInfoMsg clientInfo = new ClientInfoMsg();
         clientInfo.clientIP = localIP;
         clientInfo.hostName = hostName;
-        clientInfo.connID = connID;
         clientInfo.deviceType = SystemInfo.deviceType.ToString();
         clientInfo.deviceModel = SystemInfo.deviceModel;
         netClient.Send(ClientConnect, clientInfo);
@@ -157,13 +234,35 @@ public class CAVE2NetworkManager : MonoBehaviour
         Debug.Log("Server disconnected");
         connectState = ConnectState.Disconnected;
     }
+
+    // Any initial client information after connecting with server
+    void OnServerAssignment(NetworkMessage netmsg)
+    {
+        ServerAssignmentMsg serverAssign = netmsg.ReadMessage<ServerAssignmentMsg>();
+        connID = serverAssign.connID; // Server assigned connection ID
+    }
 }
 
-public class ClientInfoMsg : MessageBase
+public class ClientInfo
 {
     public string clientIP;
     public string hostName;
     public int connID;
     public string deviceModel;
     public string deviceType;
+    public int instanceID = 0;
+    public bool active;
+}
+
+public class ClientInfoMsg : MessageBase
+{
+    public string clientIP;
+    public string hostName;
+    public string deviceModel;
+    public string deviceType;
+}
+
+public class ServerAssignmentMsg : MessageBase
+{
+    public int connID;
 }
