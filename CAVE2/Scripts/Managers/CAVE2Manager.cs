@@ -44,7 +44,7 @@ public class CAVE2 : MonoBehaviour
     public enum InteractionType { Any, Pointing, Touching }
 
     public static CAVE2InputManager Input;
-    public static CAVE2RPCManager RpcManager;
+    public static CAVE2NetworkManager RpcManager;
 
     public struct WandEvent
     {
@@ -698,7 +698,7 @@ static CAVE2Manager CAVE2Manager_Instance;
         inputManager = GetComponent<CAVE2InputManager>();
         
         CAVE2.Input = inputManager;
-        CAVE2.RpcManager = GetComponent<CAVE2RPCManager>();
+        CAVE2.RpcManager = GetComponent<CAVE2NetworkManager>();
 
         CAVE2.Input.Init();
 
@@ -1164,11 +1164,6 @@ static CAVE2Manager CAVE2Manager_Instance;
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)
     {
         CAVE2.RpcManager.SendMessage(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16, msgType);
-    }
-
-    public void SendMessage(string targetObjectName, string methodName, object[] paramArr, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)
-    {
-        CAVE2.RpcManager.SendMessage(targetObjectName, methodName, paramArr, msgType);
     }
 
     public void SendMessage(string targetObjectName, string methodName, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)

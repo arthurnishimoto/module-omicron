@@ -52,7 +52,7 @@ public class RPCUpdateRateUI : MonoBehaviour {
         {
             timeleft -= Time.deltaTime;
             accum += Time.timeScale / Time.deltaTime;
-            frames += CAVE2.RpcManager.cave2RPCCallCount;
+            // frames += CAVE2.RpcManager.cave2RPCCallCount;
 
             // Interval ended - update GUI text and start new interval
             if (timeleft <= 0.0)
@@ -90,7 +90,7 @@ public class RPCUpdateRateUI : MonoBehaviour {
                 //	DebugConsole.Log(format,level);
                 timeleft = FPS_updateInterval;
                 accum = 0.0F;
-                CAVE2.RpcManager.cave2RPCCallCount = 0;
+                // CAVE2.RpcManager.cave2RPCCallCount = 0;
             }
         }
         else
