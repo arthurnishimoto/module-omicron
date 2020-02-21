@@ -29,8 +29,13 @@ using System.Linq;
 using System.Collections;
 
 using System;
+#if UNITY_WSA && !UNITY_EDITOR
+using Windows.Networking;
+using Windows.Networking.Sockets;
+#else
 using System.Net;
 using System.Net.Sockets;
+#endif
 using System.Text;
 using System.Threading;
 using System.IO;
@@ -430,9 +435,7 @@ namespace omicronConnector
 
         public bool Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
         {
-#if UNITY_WSA
-            Debug.LogWarning("Universal Windows Platform not supported. Will only work in Unity editor!");
-#endif
+
             if (EnableInputService)
             {
                 //dgrams = new ArrayList();
@@ -546,126 +549,237 @@ namespace omicronConnector
             }
             
         }// Listen()
+#else
+        // TCP Connection
+        StreamSocket client;
+        Stream streamToServer;
 
+        // UDP Connection
+        public DatagramSocket udpClient;
+
+        public String InputServer = "localhost";
+        public Int32 dataPort = 7000;
+        public Int32 msgPort = 27000;
+
+        public bool EnableInputService = true;
+        bool connected = false;
+
+        static IOmicronConnectorClientListener listener;
+
+        public OmicronConnectorClient()
+        {
+        }
+
+        public OmicronConnectorClient(IOmicronConnectorClientListener clistener)
+        {
+            listener = clistener;
+            //Debug.LogWarning("Platform not supported");
+        }
+
+        public bool Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
+        {
+            if (EnableInputService)
+            {
+                Debug.Log("OmicronConnector: Initializing... ");
+                ConnectASync(serverIP, msgPort, dataPort, flags);
+            }
+            connected = false;
+            //Debug.LogWarning("Platform not supported");
+            return false;
+        }// CTOR
+
+        private async void ConnectASync(string serverIP, int msgPort, int dataPort, int flags = -1)
+        {
+            try
+            {
+                // Create a TcpClient.
+                Debug.Log("InputService: Connecting to to " + serverIP);
+                client = new StreamSocket();
+                await client.ConnectAsync(new HostName(serverIP), msgPort.ToString());
+                streamToServer = client.OutputStream.AsStreamForWrite();
+
+                // Translate the passed message into ASCII and store it as a Byte array.
+                String message = "omicronV3_data_on," + dataPort + "," + flags;
+                Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+
+                // Send the handshake message to the server.
+                streamToServer.Write(data, 0, data.Length);
+                streamToServer.Flush();
+
+                // Create the UDP socket data will be received on
+                udpClient = new DatagramSocket();
+                udpClient.MessageReceived += MessageReceived;
+                udpClient.Control.InboundBufferSizeInBytes = 15360000;
+                await udpClient.BindServiceNameAsync(dataPort.ToString());
+
+                Debug.Log("InputService: Connected to " + serverIP);
+                connected = true;
+                return;
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Exception: " + e);
+            }
+            connected = false;
+            return;
+        }
+
+        public void Dispose()
+        {
+            //Debug.LogWarning("Platform not supported");
+            if (connected)
+            {
+                String message = "data_off";
+                Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
+                streamToServer.Write(data, 0, data.Length);
+
+                // Close the socket when finished receiving datagrams
+                Debug.Log("OmicronConnectorClient: Finished receiving. Closing socket.\n");
+                udpClient.Dispose();
+
+                // Close TCP connection.
+                streamToServer.Dispose();
+                client.Dispose();
+
+                Debug.Log("OmicronConnectorClient: Shutting down.");
+            }
+        }
+
+        void MessageReceived(DatagramSocket socket, DatagramSocketMessageReceivedEventArgs eventArguments)
+        {
+            try
+            {
+                Byte[] receiveBytes = new byte[eventArguments.GetDataReader().UnconsumedBufferLength];
+                eventArguments.GetDataReader().ReadBytes(receiveBytes);
+
+                listener.onEvent(ByteArrayToEventData(receiveBytes));
+            }
+            catch (Exception exception)
+            {
+                SocketErrorStatus socketError = SocketError.GetStatus(exception.HResult);
+                if (socketError == SocketErrorStatus.ConnectionResetByPeer)
+                {
+                    // This error would indicate that a previous send operation resulted in an 
+                    // ICMP "Port Unreachable" message.
+                    Debug.Log(
+                        "Peer does not listen on the specific port. Please make sure that you run step 1 first " +
+                        "or you have a server properly working on a remote server.");
+                }
+                else if (socketError != SocketErrorStatus.Unknown)
+                {
+                    Debug.Log(
+                        "Error happened when receiving a datagram: " + socketError.ToString()
+                        );
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+#endif
         public static EventData ByteArrayToEventData(byte[] receiveBytes)
-		{
-			MemoryStream ms = new MemoryStream();
-			ms.Write(receiveBytes, 0, receiveBytes.Length);
-
-			BinaryReader reader = new BinaryReader(ms);
-			omicronConnector.EventData ed = new omicronConnector.EventData();
-			reader.BaseStream.Position = 0;
-			
-			ed.timestamp = reader.ReadUInt32();
-			ed.sourceId = reader.ReadUInt32();
-			ed.serviceId = reader.ReadInt32();
-			ed.serviceType = (EventBase.ServiceType)reader.ReadUInt32();
-			ed.type = reader.ReadUInt32();
-			ed.flags = reader.ReadUInt32();
-
-			if (ed.type != 3)
-			{
-				Console.WriteLine(ed.type);
-				Console.WriteLine(ed.flags);
-				Console.WriteLine("---");
-			}
-			
-			ed.posx = reader.ReadSingle();
-			ed.posy = reader.ReadSingle();
-			ed.posz = reader.ReadSingle();
-			ed.orw = reader.ReadSingle();
-			ed.orx = reader.ReadSingle();
-			ed.ory = reader.ReadSingle();
-			ed.orz = reader.ReadSingle();
-			
-			ed.extraDataType = (omicron.EventBase.ExtraDataType)reader.ReadUInt32();
-			ed.extraDataItems = reader.ReadUInt32();
-			ed.extraDataMask = reader.ReadUInt32();
-			
-			ed.extraData = reader.ReadBytes(EventData.ExtraDataSize);
-
-			return ed;
-		}
-
-		public static byte[] EventDataToByteArray(EventData ed)
-		{
+        {
             MemoryStream ms = new MemoryStream();
-			BinaryWriter bw = new BinaryWriter(ms);
+            ms.Write(receiveBytes, 0, receiveBytes.Length);
 
-			bw.Write(ed.timestamp);
+            BinaryReader reader = new BinaryReader(ms);
+            omicronConnector.EventData ed = new omicronConnector.EventData();
+            reader.BaseStream.Position = 0;
+
+            ed.timestamp = reader.ReadUInt32();
+            ed.sourceId = reader.ReadUInt32();
+            ed.serviceId = reader.ReadInt32();
+            ed.serviceType = (EventBase.ServiceType)reader.ReadUInt32();
+            ed.type = reader.ReadUInt32();
+            ed.flags = reader.ReadUInt32();
+
+            if (ed.type != 3)
+            {
+                Console.WriteLine(ed.type);
+                Console.WriteLine(ed.flags);
+                Console.WriteLine("---");
+            }
+
+            ed.posx = reader.ReadSingle();
+            ed.posy = reader.ReadSingle();
+            ed.posz = reader.ReadSingle();
+            ed.orw = reader.ReadSingle();
+            ed.orx = reader.ReadSingle();
+            ed.ory = reader.ReadSingle();
+            ed.orz = reader.ReadSingle();
+
+            ed.extraDataType = (omicron.EventBase.ExtraDataType)reader.ReadUInt32();
+            ed.extraDataItems = reader.ReadUInt32();
+            ed.extraDataMask = reader.ReadUInt32();
+
+            ed.extraData = reader.ReadBytes(EventData.ExtraDataSize);
+
+            return ed;
+        }
+
+        public static byte[] EventDataToByteArray(EventData ed)
+        {
+            MemoryStream ms = new MemoryStream();
+            BinaryWriter bw = new BinaryWriter(ms);
+
+            bw.Write(ed.timestamp);
             bw.Write(ed.sourceId);
-			bw.Write(ed.serviceId);
+            bw.Write(ed.serviceId);
             bw.Write((uint)ed.serviceType);
-			bw.Write(ed.type);
-			bw.Write(ed.flags);
+            bw.Write(ed.type);
+            bw.Write(ed.flags);
 
-			bw.Write(ed.posx);
-			bw.Write(ed.posy);
-			bw.Write(ed.posz);
-			bw.Write(ed.orw);
-			bw.Write(ed.orx);
-			bw.Write(ed.ory);
-			bw.Write(ed.orz);
+            bw.Write(ed.posx);
+            bw.Write(ed.posy);
+            bw.Write(ed.posz);
+            bw.Write(ed.orw);
+            bw.Write(ed.orx);
+            bw.Write(ed.ory);
+            bw.Write(ed.orz);
 
-			bw.Write((uint)ed.extraDataType);
-			bw.Write(ed.extraDataItems);
-			bw.Write(ed.extraDataMask);
+            bw.Write((uint)ed.extraDataType);
+            bw.Write(ed.extraDataItems);
+            bw.Write(ed.extraDataMask);
 
-			bw.Write(ed.extraData);
+            bw.Write(ed.extraData);
 
             bw.Close();
             byte[] dataArray = ms.GetBuffer();
             ms.Close();
 
 
-			return dataArray;
-		}
-
-		public static string EventDataToString( EventData e )
-		{
-			byte[] b = EventDataToByteArray(e);
-			return GetStringFromBytes(b);
-		}
-
-		public static EventData StringToEventData( string s )
-		{
-			byte[] b = GetBytesFromString(s);
-			return ByteArrayToEventData(b);
-		}
-
-		static byte[] GetBytesFromString(string str)
-		{
-			return System.Convert.FromBase64String(str);
-			//return System.Text.Encoding.UTF8.GetBytes(str);
-			//byte[] bytes = new byte[str.Length * sizeof(char)];
-			//System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-			//return bytes;
-		}
-		
-		static string GetStringFromBytes(byte[] bytes)
-		{
-			return System.Convert.ToBase64String(bytes);
-			//return System.Text.Encoding.UTF8.GetString(bytes);
-			//char[] chars = new char[bytes.Length / sizeof(char)];
-			//System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-			//return new string(chars);
-		}
-#else
-        public OmicronConnectorClient(IOmicronConnectorClientListener clistener)
-        {
-            Debug.LogWarning("Platform not supported");
+            return dataArray;
         }
 
-        public bool Connect(string serverIP, int msgPort, int dataPort)
+        public static string EventDataToString(EventData e)
         {
-            Debug.LogWarning("Platform not supported");
-            return false;
-        }// CTOR
-
-        public void Dispose()
-        {
-            Debug.LogWarning("Platform not supported");
+            byte[] b = EventDataToByteArray(e);
+            return GetStringFromBytes(b);
         }
-#endif
+
+        public static EventData StringToEventData(string s)
+        {
+            byte[] b = GetBytesFromString(s);
+            return ByteArrayToEventData(b);
+        }
+
+        static byte[] GetBytesFromString(string str)
+        {
+            return System.Convert.FromBase64String(str);
+            //return System.Text.Encoding.UTF8.GetBytes(str);
+            //byte[] bytes = new byte[str.Length * sizeof(char)];
+            //System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            //return bytes;
+        }
+
+        static string GetStringFromBytes(byte[] bytes)
+        {
+            return System.Convert.ToBase64String(bytes);
+            //return System.Text.Encoding.UTF8.GetString(bytes);
+            //char[] chars = new char[bytes.Length / sizeof(char)];
+            //System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
+            //return new string(chars);
+        }
     }
 }
