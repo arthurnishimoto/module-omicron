@@ -54,7 +54,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     public bool useMsgServer;
 
-    static short MessageID = 1104;
+    // static short MessageID = 1104;
     NetworkServerSimple msgServer;
     NetworkMessageDelegate serverOnClientConnect;
     NetworkMessageDelegate serverOnClientDisconnect;
@@ -92,13 +92,13 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     bool debugMsg;
 
-    bool connected = false;
+    // bool connected = false;
 
-    [SerializeField]
-    bool autoReconnect = true;
+    // [SerializeField]
+    // bool autoReconnect = true;
 
-    [SerializeField]
-    float autoReconnectDelay = 5;
+    // [SerializeField]
+    // float autoReconnectDelay = 5;
 
     float autoReconnectTimer;
     int reconnectAttemptCount;
@@ -254,15 +254,15 @@ public class CAVE2RPCManager : MonoBehaviour {
                 case NetworkEventType.DataEvent:
                     NetworkReader networkReader = new NetworkReader(recBuffer);
 
-                    byte[] readerMsgSizeData = networkReader.ReadBytes(2);
-                    short readerMsgSize = (short)((readerMsgSizeData[1] << 8) + readerMsgSizeData[0]);
+                    // byte[] readerMsgSizeData = networkReader.ReadBytes(2);
+                    // short readerMsgSize = (short)((readerMsgSizeData[1] << 8) + readerMsgSizeData[0]);
 
                     byte[] readerMsgTypeData = networkReader.ReadBytes(2);
                     short readerMsgType = (short)((readerMsgTypeData[1] << 8) + readerMsgTypeData[0]);
 
                     string targetObjectName = networkReader.ReadString();
                     string methodName = networkReader.ReadString();
-                    int paramCount = networkReader.ReadInt32();
+                    // int paramCount = networkReader.ReadInt32();
 
                     switch (readerMsgType)
                     {
@@ -350,14 +350,14 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ClientOnConnect()
     {
         LogUI("Msg Client: Connected to " + serverIP);
-        connected = true;
+        // connected = true;
         reconnectAttemptCount = 0;
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
         LogUI("Msg Client: Disconnected");
-        connected = false;
+        // connected = false;
     }
 
     void ServerSendMsgToClients(byte[] writerData, MsgType msgType)

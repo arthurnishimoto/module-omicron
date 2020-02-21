@@ -15,8 +15,8 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     [SerializeField] float borderTop = 4; // mm
     [SerializeField] float borderBottom = 2; // mm
-    [SerializeField] float borderLeft = 4; // mm
-    [SerializeField] float borderRight = 2; // mm
+    // [SerializeField] float borderLeft = 4; // mm
+    // [SerializeField] float borderRight = 2; // mm
 
     [Header("Wall Parameters")]
     [SerializeField] float frontDisplayToTrackingOrigin = 3240; // mm
@@ -103,8 +103,8 @@ public class ScreenConfigCalc : MonoBehaviour {
         }
 
         angle = 2.0f * Mathf.Atan(displayWidthIncBorders / 2.0f / frontDisplayToTrackingOrigin);
-        
-        float displayPixelWidth = displayWidthIncBorders - borderLeft - borderRight;
+
+        // float displayPixelWidth = displayWidthIncBorders - borderLeft - borderRight;
         float displayPixelHeight = displayHeightIncBorders - borderTop - borderBottom;
 
         

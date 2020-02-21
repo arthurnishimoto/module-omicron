@@ -91,7 +91,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     [Header("Collisions")]
     [SerializeField] AutoLevelMode autoLevelMode = AutoLevelMode.OnGroundCollision;
-    [SerializeField] CAVE2.Button autoLevelButton = CAVE2.Button.Button6;
+    // [SerializeField] CAVE2.Button autoLevelButton = CAVE2.Button.Button6;
 
     [SerializeField]
     CapsuleCollider bodyCollider;

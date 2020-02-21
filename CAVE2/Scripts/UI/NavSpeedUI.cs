@@ -36,7 +36,7 @@ public class NavSpeedUI : MonoBehaviour {
 
     public CAVE2WandNavigator navController;
 
-    int adaptiveType = 0;
+    // int adaptiveType = 0;
 
     // Use this for initialization
     void Start () {

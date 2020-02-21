@@ -40,9 +40,10 @@ public class OmicronMocapSensor : OmicronEventClient
 
     public float timeSinceLastUpdate;
     public float lastPosDeltaMagnitude;
+    public float lastRotDeltaMagnitude;
 
     Vector3 lastPosition;
-    Quaternion lastRotation;
+    // Quaternion lastRotation;
 
     // Use this for initialization
     new void Start()
@@ -57,7 +58,7 @@ public class OmicronMocapSensor : OmicronEventClient
  
         lastPosDeltaMagnitude = (lastPosition - position).magnitude;
         lastPosition = position;
-        lastRotation = orientation;
+        // lastRotation = orientation;
 
         if (lastPosDeltaMagnitude != 0)
             timeSinceLastUpdate = 0;

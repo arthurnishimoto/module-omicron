@@ -31,7 +31,7 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
-    static float CAVE2_RADIUS = 3.240f;
+    // static float CAVE2_RADIUS = 3.240f;
     static float CAVE2_FLOOR_TO_BOTTOM_DISPLAY = 0.293f;
     static float CAVE2_DISPLAY_W_BORDER_HEIGHT = 0.581f;
 

@@ -68,7 +68,7 @@ public class OmicronController : OmicronEventClient
 
     EventBase.ServiceType defaultType = EventBase.ServiceType.ServiceTypeController;
 
-    bool buttonsChanged;
+    // bool buttonsChanged;
 
     public void SetAsWand()
     {
@@ -157,8 +157,8 @@ public class OmicronController : OmicronEventClient
         if (e.sourceId == sourceID || sourceID == -1)
         {
             //Debug.Log("OmicronEventClient: '" + name + "' received " + e.serviceType + " sourceId: " + e.sourceId);
-            if ((int)e.flags != rawFlags)
-                buttonsChanged = true;
+            // if ((int)e.flags != rawFlags)
+            // buttonsChanged = true;
 
             rawFlags = (int)e.flags;
             rawAnalogInput1 = new Vector2(e.getExtraDataFloat(0), e.getExtraDataFloat(1));
@@ -258,7 +258,7 @@ public class OmicronController : OmicronEventClient
         ButtonLeft = (ButtonState)param[14];
         ButtonRight = (ButtonState)param[15];
 
-        buttonsChanged = true;
+        // buttonsChanged = true;
     }
 
     void UpdateButton(ref ButtonState button, EventBase.Flags buttonFlag, int flags)

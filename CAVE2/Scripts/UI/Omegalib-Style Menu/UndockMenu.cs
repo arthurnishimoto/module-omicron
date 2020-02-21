@@ -7,20 +7,20 @@ public class UndockMenu : MonoBehaviour {
     [SerializeField]
     public bool undocked;
 
-    [SerializeField]
-    Transform dockedParent;
+    // [SerializeField]
+    // Transform dockedParent;
 
-    [SerializeField]
-    Vector3 dockedPosition;
+    // [SerializeField]
+    // Vector3 dockedPosition;
 
-    [SerializeField]
-    Quaternion dockedRotation;
+    // [SerializeField]
+    // Quaternion dockedRotation;
 
     // Use this for initialization
     void Start () {
-        dockedParent = transform.parent;
-        dockedPosition = transform.localPosition;
-        dockedRotation = transform.localRotation;
+        // dockedParent = transform.parent;
+        // dockedPosition = transform.localPosition;
+        // dockedRotation = transform.localRotation;
     }
 
     // Update is called once per frame

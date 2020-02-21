@@ -67,8 +67,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     [SerializeField]
     Camera holoLensCamera;
 
-    [SerializeField]
-    int currentHoloLensCameraMask;
+    // [SerializeField]
+    // int currentHoloLensCameraMask;
 
     [SerializeField]
     int VRProjectionCameraMask;
@@ -120,9 +120,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
     private void Update()
     {
         UpdateMode();
-        currentHoloLensCameraMask = holoLensCamera.cullingMask;
+        // currentHoloLensCameraMask = holoLensCamera.cullingMask;
 
-        if(cave2RPCManager.IsReconnecting())
+        if (cave2RPCManager.IsReconnecting())
         {
             if (showHMDTerminal && lastShowHMDTerminalState == 0)
             {

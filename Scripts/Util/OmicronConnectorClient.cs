@@ -420,7 +420,9 @@ namespace omicronConnector
         public Int32 msgPort = 27000;
 
         public bool EnableInputService = true;
-        bool connected = false;
+
+        public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
+        ConnectionState connectionState = ConnectionState.NotConnected;
 
         static IOmicronConnectorClientListener listener;
 		
@@ -433,7 +435,7 @@ namespace omicronConnector
             listener = clistener;
         }
 
-        public bool Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
+        public void Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
         {
 
             if (EnableInputService)
@@ -445,6 +447,7 @@ namespace omicronConnector
                 {
                     // Create a TcpClient.
 					Debug.Log("InputService: Connecting to to " + serverIP);
+                    connectionState = ConnectionState.Connecting;
                     client = new TcpClient(serverIP, msgPort);
 
                     // Translate the passed message into ASCII and store it as a Byte array.
@@ -466,33 +469,33 @@ namespace omicronConnector
                     // Creates a separate thread to listen for incoming data
                     listenerThread = new Thread(Listen);
                     listenerThread.Start();
-                    connected = true;
+                    connectionState = ConnectionState.Connected;
 
                     listenTCPThread = new Thread(ListenTCP);
                     listenTCPThread.Start();
 
-                    return true;
+                    return;
                 }
                 catch (ArgumentNullException e)
                 {
                     Debug.LogError("ArgumentNullException: " + e);
-                    connected = false;
-                    return false;
+                    connectionState = ConnectionState.FailedToConnect;
+                    return;
                 }
                 catch (SocketException e)
                 {
                     Debug.LogError("SocketException: " + e);
-                    connected = false;
-                    return false;
+                    connectionState = ConnectionState.FailedToConnect;
+                    return;
                 }
             }
-            connected = false;
-            return false;
+            connectionState = ConnectionState.NotConnected;
+            return;
         }// CTOR
 
         public void Dispose() 
 	    {
-            if (connected)
+            if (connectionState == ConnectionState.Connected)
             {
                 String message = "data_off";
                 Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
@@ -511,6 +514,11 @@ namespace omicronConnector
                 Debug.Log("OmicronConnectorClient: Shutting down.");
             }
 	    }
+
+        public ConnectionState GetConnectionState()
+        {
+            return connectionState;
+        }
 
         public struct UdpState
         {
@@ -576,7 +584,7 @@ namespace omicronConnector
             //Debug.LogWarning("Platform not supported");
         }
 
-        public bool Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
+        public void Connect(string serverIP, int msgPort, int dataPort, int flags = -1)
         {
             if (EnableInputService)
             {
@@ -585,7 +593,7 @@ namespace omicronConnector
             }
             connected = false;
             //Debug.LogWarning("Platform not supported");
-            return false;
+            return;
         }// CTOR
 
         private async void ConnectASync(string serverIP, int msgPort, int dataPort, int flags = -1)

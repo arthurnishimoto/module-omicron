@@ -12,6 +12,12 @@ public class CAVE2NetworkManager : MonoBehaviour
     // Custom NetMsg IDs
     private short ClientConnect = 1000;
     private short ServerAssign = 1001;
+    private short PosUpdate = 1002;
+    // private short CAVE2BroadcastMsg1 = 101;
+    // private short CAVE2BroadcastMsg2 = 102;
+    // private short CAVE2SendMsg = 200;
+    // private short CAVE2SendMsg1 = 201;
+    // private short CAVE2SendMsg2 = 201;
 
     public enum NetMode { None, Server, Client, Display };
 
@@ -41,9 +47,12 @@ public class CAVE2NetworkManager : MonoBehaviour
     int connID = 0;
 
     Dictionary<string, ClientInfo> clientList;
+    Dictionary<string, GameObject> gameObjectList;
 
     public void Start()
     {
+        gameObjectList = new Dictionary<string, GameObject>();
+
         if (dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);
@@ -132,6 +141,7 @@ public class CAVE2NetworkManager : MonoBehaviour
         netClient.RegisterHandler(MsgType.Connect, OnClientConnected);
         netClient.RegisterHandler(MsgType.Disconnect, OnServerDisconnected);
         netClient.RegisterHandler(ServerAssign, OnServerAssignment);
+        netClient.RegisterHandler(PosUpdate, OnServerPositionUpdate);
 
         netClient.Connect(serverIP, serverListenPort);
         connectState = ConnectState.Connecting;
@@ -214,6 +224,134 @@ public class CAVE2NetworkManager : MonoBehaviour
         Debug.Log("Client " + netmsg.conn.connectionId + " disconnected");
     }
 
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, CAVE2RPCManager.MsgType channel = CAVE2RPCManager.MsgType.Reliable)
+    {
+        GameObject targetGameObject;
+        if (!gameObjectList.ContainsKey(targetObjectName))
+        {
+            targetGameObject = GameObject.Find(targetObjectName);
+        }
+        else
+        {
+            targetGameObject = gameObjectList[targetObjectName];
+        }
+
+        if (targetGameObject != null)
+        {
+            gameObjectList[targetObjectName] = targetGameObject;
+
+            // Call locally
+            gameObjectList[targetObjectName].BroadcastMessage(methodName, param);
+
+            // Send to others
+        }
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, CAVE2RPCManager.MsgType channel = CAVE2RPCManager.MsgType.Reliable)
+    {
+        GameObject targetGameObject;
+        if (!gameObjectList.ContainsKey(targetObjectName))
+        {
+            targetGameObject = GameObject.Find(targetObjectName);
+        }
+        else
+        {
+            targetGameObject = gameObjectList[targetObjectName];
+        }
+
+        if (targetGameObject != null)
+        {
+            gameObjectList[targetObjectName] = targetGameObject;
+
+            // Call locally
+            gameObjectList[targetObjectName].SendMessage(methodName, param);
+
+            // Send to others
+
+        }
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, CAVE2RPCManager.MsgType channel = CAVE2RPCManager.MsgType.Reliable)
+    {
+        GameObject targetGameObject;
+        if (!gameObjectList.ContainsKey(targetObjectName))
+        {
+            targetGameObject = GameObject.Find(targetObjectName);
+        }
+        else
+        {
+            targetGameObject = gameObjectList[targetObjectName];
+        }
+
+        if (targetGameObject != null)
+        {
+            gameObjectList[targetObjectName] = targetGameObject;
+
+            // Call locally
+            gameObjectList[targetObjectName].SendMessage(methodName, new object[] { param, param2 });
+
+            // Send to others
+
+        }
+    }
+
+    public void SendMessage2(NetworkMessage netmsg)
+    {
+
+    }
+
+    public void UpdatePosition(string targetObjectName, Vector3 position, bool isLocal = false, int channel = Channels.DefaultUnreliable)
+    {
+        GameObject targetGameObject;
+        if (!gameObjectList.ContainsKey(targetObjectName))
+        {
+            targetGameObject = GameObject.Find(targetObjectName);
+        }
+        else
+        {
+            targetGameObject = gameObjectList[targetObjectName];
+        }
+
+        if (targetGameObject != null)
+        {
+            gameObjectList[targetObjectName] = targetGameObject;
+
+            ObjPosMsg msg = new ObjPosMsg();
+            msg.gameObjectName = targetObjectName;
+            msg.position = position;
+            msg.isLocal = isLocal;
+
+            SendToAll(PosUpdate, msg, channel);
+        }
+    }
+
+    public void OnServerPositionUpdate(NetworkMessage netmsg)
+    {
+        ObjPosMsg msg = netmsg.ReadMessage<ObjPosMsg>();
+        string targetObjectName = msg.gameObjectName;
+
+        GameObject targetGameObject = gameObjectList[targetObjectName];
+
+        if (targetGameObject == null)
+        {
+            targetGameObject = GameObject.Find(targetObjectName);
+        }
+
+        if (targetGameObject != null)
+        {
+            gameObjectList[targetObjectName] = targetGameObject;
+
+            if (msg.isLocal)
+            {
+                targetGameObject.transform.localPosition = msg.position;
+            }
+            else
+            {
+                targetGameObject.transform.position = msg.position;
+            }
+        }
+    }
+
     // Client function handlers --------------------------------------------------------------
     void OnClientConnected(NetworkMessage netmsg)
     {
@@ -265,4 +403,17 @@ public class ClientInfoMsg : MessageBase
 public class ServerAssignmentMsg : MessageBase
 {
     public int connID;
+}
+
+public class ObjPosMsg : MessageBase
+{
+    public string gameObjectName;
+    public Vector3 position;
+    public bool isLocal;
+}
+
+public class CAVE2Msg : MessageBase
+{
+    public string gameObjectName;
+    public string methodName;
 }

@@ -1,8 +1,17 @@
 fileFormatVersion: 2
 guid: 25b0ad1210f5dd74f81a562fa78666b9
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - grabber: {instanceID: 0}
+  - defaultMesh: {instanceID: 0}
+  - pointingOverMaterial: {fileID: 2100000, guid: 2a6e178022e90be498acb517c9f1a51c,
+      type: 2}
+  - touchingOverMaterial: {fileID: 2100000, guid: 2a6e178022e90be498acb517c9f1a51c,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

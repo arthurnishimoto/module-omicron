@@ -29,7 +29,7 @@ public class OmicronKinectImageClient : OmicronEventClient
     int x;
     int y;
 
-    Color[] colorArray;
+    // Color[] colorArray;
 
     public bool forceCompleteFrames = false;
     float lastZeroFrameTime;
@@ -88,7 +88,7 @@ public class OmicronKinectImageClient : OmicronEventClient
         outputMaterial.mainTexture = frames[0].texture;
 
         totalImagePixelCount = imageWidth * imageHeight;
-        colorArray = new Color[totalImagePixelCount];
+        // colorArray = new Color[totalImagePixelCount];
         readyFrames = new int[frameBufferSize];
     }
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class getReal3DHeadUpdater : MonoBehaviour
 {
-
+#if USING_GETREAL3D
     // Offset to tracking data (ex. object pivot vs tracking marker center)
     [SerializeField]
     Vector3 posOffset;
@@ -18,7 +18,7 @@ public class getReal3DHeadUpdater : MonoBehaviour
     {
 
     }
-#if USING_GETREAL3D
+
     // Update is called once per frame
     void Update()
     {
@@ -39,7 +39,7 @@ public class getReal3DHeadUpdater : MonoBehaviour
             transform.Rotate(rotOffset);
         }
     }
-#endif
+
 
     public void SetPositionOffset(object[] data)
     {
@@ -66,5 +66,5 @@ public class getReal3DHeadUpdater : MonoBehaviour
 
         rotOffset = new Vector3(x, y, z);
     }
-
+#endif
 }

@@ -15,7 +15,7 @@ public class CAVE2LoadSceneWandClick : CAVE2Interactable
 
     new public void OnWandButtonDown(CAVE2.WandEvent evt)
     {
-        CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)evt.playerID;
+        // CAVE2PlayerIdentity playerID = (CAVE2PlayerIdentity)evt.playerID;
         int wandID = (int)evt.wandID;
         CAVE2.Button button = (CAVE2.Button)evt.button;
 

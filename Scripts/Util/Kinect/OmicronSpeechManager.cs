@@ -37,8 +37,8 @@ public class OmicronSpeechManager : OmicronEventClient {
 
 	public UnityEngine.UI.Text debugText;
 
-    [SerializeField]
-    float audioEnergy;
+    // [SerializeField]
+    // float audioEnergy;
 
     [SerializeField]
     float audioAngle;
@@ -89,11 +89,11 @@ public class OmicronSpeechManager : OmicronEventClient {
 		}
         else if (e.serviceType == EventBase.ServiceType.ServiceTypeAudio)
         {
-            audioEnergy = e.posx;
+            // audioEnergy = e.posx;
             audioAngle = e.posy;
             angleConfidence = e.posz;
 
-            string debugText = "Received: " + audioEnergy + " db at angle " + audioAngle.ToString("F2") + " at " + angleConfidence.ToString("F2") + " confidence";
+            // string debugText = "Received: " + audioEnergy + " db at angle " + audioAngle.ToString("F2") + " at " + angleConfidence.ToString("F2") + " confidence";
             // debugText += "\nMin confidence: " + minimumSpeechConfidence.ToString("F2");
             //Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
 

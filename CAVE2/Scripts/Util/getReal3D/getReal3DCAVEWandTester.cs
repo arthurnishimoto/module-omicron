@@ -5,7 +5,7 @@ using omicron;
 using omicronConnector;
 
 public class getReal3DCAVEWandTester : MonoBehaviour {
-
+#if USING_GETREAL3D
     [SerializeField]
     float[] valuator;
 
@@ -20,7 +20,7 @@ public class getReal3DCAVEWandTester : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-#if USING_GETREAL3D
+
         valuator[0] = getReal3D.Input.GetAxis("Yaw");
         valuator[1] = getReal3D.Input.GetAxis("Forward");
         valuator[2] = getReal3D.Input.GetAxis("Strafe");
@@ -40,6 +40,7 @@ public class getReal3DCAVEWandTester : MonoBehaviour {
         button[9] = getReal3D.Input.GetButton("R3");
         button[10] = getReal3D.Input.GetButton("Back");
         button[11] = getReal3D.Input.GetButton("Start");
-#endif
+
     }
+#endif
 }

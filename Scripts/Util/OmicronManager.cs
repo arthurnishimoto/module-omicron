@@ -254,7 +254,6 @@ public class OmicronManager : MonoBehaviour
     SimpleCanvasTouch testTouchCanvas;
 
     string configPath;
-    bool hasConfig;
 
     [Header("Requested Service Types")]
     [SerializeField] bool enablePointer = true;
@@ -341,7 +340,6 @@ public class OmicronManager : MonoBehaviour
             if (cmdArgs[i].Equals("-oconfig") && i + 1 < cmdArgs.Length)
             {
                 configPath = Environment.CurrentDirectory + "/" + cmdArgs[i + 1];
-                hasConfig = true;
             }
         }
 
@@ -355,7 +353,6 @@ public class OmicronManager : MonoBehaviour
             serverIP = config.serverIP;
             serverMsgPort = config.serverMsgPort;
             dataPort = config.dataPort;
-            hasConfig = true;
         }
         catch
         {
@@ -388,10 +385,8 @@ public class OmicronManager : MonoBehaviour
         flags += enableAudio ? (int)ClientFlags.ServiceTypeAudio : 0;
 
 #if !UNITY_WEBGL
-        connectToServer = omicronManager.Connect( serverIP, serverMsgPort, dataPort, flags);
+        omicronManager.Connect( serverIP, serverMsgPort, dataPort, flags);
 #endif
-        connectionState = connectToServer ? ConnectionState.Connected : ConnectionState.FailedToConnect;
-
         return connectToServer;
 	}
 
@@ -465,6 +460,8 @@ public class OmicronManager : MonoBehaviour
 
     public void Update()
     {
+        connectionState = (ConnectionState)omicronManager.GetConnectionState();
+
         if (mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)))
         {
             Vector2 position = new Vector3(Input.mousePosition.x / Screen.width, 1 - (Input.mousePosition.y / Screen.height));
@@ -488,6 +485,22 @@ public class OmicronManager : MonoBehaviour
         StartCoroutine("SendEventsToClients");
 
         // CAVE2.SendMessage(gameObject.name, "UpdateDebugTextRPC", connectStatus );
+        if (statusCanvasText)
+        {
+            statusCanvasText.text = "OmicronManager\n";
+            statusCanvasText.text += "Server: " + serverIP + ":" + serverMsgPort +"\n";
+
+            string statusText = "UNKNOWN";
+            switch (connectionState)
+            {
+                case (ConnectionState.NotConnected): statusText = "Not Connected"; break;
+                case (ConnectionState.Connecting): statusText = "Connecting"; break;
+                case (ConnectionState.Connected): statusText = "Connected"; break;
+                case (ConnectionState.FailedToConnect): statusText = "Failed To Connect"; break;
+            }
+
+            statusCanvasText.text += "Status: " + statusText + "\n";
+        }
     }
 
     void UpdateDebugTextRPC(int connectStatus)

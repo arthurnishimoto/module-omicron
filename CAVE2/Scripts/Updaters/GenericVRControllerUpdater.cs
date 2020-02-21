@@ -44,38 +44,38 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 
     [Header("Wand 1 (Left)")]
     [SerializeField]
-    Vector3 wand1_position;
+    public Vector3 wand1_position;
 
     [SerializeField]
-    Quaternion wand1_rotation;
+    public Quaternion wand1_rotation;
 
     [SerializeField]
-    Vector2 wand1_analog1;
+    public Vector2 wand1_analog1;
 
     [SerializeField]
-    Vector2 wand1_analog2;
+    public Vector2 wand1_analog2;
 
     [SerializeField]
-    Vector2 wand1_analog3;
+    public Vector2 wand1_analog3;
 
     [SerializeField]
     int wand1_flags;
 
     [Header("Wand 2 (Right)")]
     [SerializeField]
-    Vector3 wand2_position;
+    public Vector3 wand2_position;
 
     [SerializeField]
-    Quaternion wand2_rotation;
+    public Quaternion wand2_rotation;
 
     [SerializeField]
-    Vector2 wand2_analog1;
+    public Vector2 wand2_analog1;
 
     [SerializeField]
-    Vector2 wand2_analog2;
+    public Vector2 wand2_analog2;
 
     [SerializeField]
-    Vector2 wand2_analog3;
+    public Vector2 wand2_analog3;
 
     [SerializeField]
     int wand2_flags;
