@@ -405,6 +405,18 @@ namespace omicronConnector
 
 	class OmicronConnectorClient
     {
+        public String InputServer = "localhost";
+        public Int32 dataPort = 7000;
+        public Int32 msgPort = 27000;
+
+        public bool EnableInputService = true;
+        bool connected = false;
+
+        public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
+        ConnectionState connectionState = ConnectionState.NotConnected;
+
+        static IOmicronConnectorClientListener listener;
+
 #if !UNITY_WSA || UNITY_EDITOR
         // TCP Connection
         TcpClient client;
@@ -415,17 +427,6 @@ namespace omicronConnector
         private static Thread listenerThread;
         private static Thread listenTCPThread;
 
-        public String InputServer = "localhost";
-        public Int32 dataPort = 7000;
-        public Int32 msgPort = 27000;
-
-        public bool EnableInputService = true;
-
-        public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
-        ConnectionState connectionState = ConnectionState.NotConnected;
-
-        static IOmicronConnectorClientListener listener;
-		
 		public OmicronConnectorClient()
         {
         }
@@ -515,11 +516,6 @@ namespace omicronConnector
             }
 	    }
 
-        public ConnectionState GetConnectionState()
-        {
-            return connectionState;
-        }
-
         public struct UdpState
         {
             public UdpClient u;
@@ -565,15 +561,6 @@ namespace omicronConnector
         // UDP Connection
         public DatagramSocket udpClient;
 
-        public String InputServer = "localhost";
-        public Int32 dataPort = 7000;
-        public Int32 msgPort = 27000;
-
-        public bool EnableInputService = true;
-        bool connected = false;
-
-        static IOmicronConnectorClientListener listener;
-
         public OmicronConnectorClient()
         {
         }
@@ -602,6 +589,7 @@ namespace omicronConnector
             {
                 // Create a TcpClient.
                 Debug.Log("InputService: Connecting to to " + serverIP);
+                connectionState = ConnectionState.Connecting;
                 client = new StreamSocket();
                 await client.ConnectAsync(new HostName(serverIP), msgPort.ToString());
                 streamToServer = client.OutputStream.AsStreamForWrite();
@@ -622,6 +610,7 @@ namespace omicronConnector
 
                 Debug.Log("InputService: Connected to " + serverIP);
                 connected = true;
+                connectionState = ConnectionState.Connected;
                 return;
             }
             catch (Exception e)
@@ -629,6 +618,7 @@ namespace omicronConnector
                 Debug.Log("Exception: " + e);
             }
             connected = false;
+            connectionState = ConnectionState.FailedToConnect;
             return;
         }
 
@@ -637,6 +627,8 @@ namespace omicronConnector
             //Debug.LogWarning("Platform not supported");
             if (connected)
             {
+                connectionState = ConnectionState.NotConnected;
+
                 String message = "data_off";
                 Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
                 streamToServer.Write(data, 0, data.Length);
@@ -686,6 +678,11 @@ namespace omicronConnector
             }
         }
 #endif
+        public ConnectionState GetConnectionState()
+        {
+            return connectionState;
+        }
+
         public static EventData ByteArrayToEventData(byte[] receiveBytes)
         {
             MemoryStream ms = new MemoryStream();

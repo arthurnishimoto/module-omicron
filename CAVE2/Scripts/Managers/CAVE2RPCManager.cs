@@ -633,6 +633,11 @@ public class CAVE2RPCManager : MonoBehaviour {
             writer.Write("Vector3");
             writer.Write((Vector3)param);
         }
+        else if (param is Vector2)
+        {
+            writer.Write("Vector2");
+            writer.Write((Vector2)param);
+        }
         else if (param is System.Single)
         {
             writer.Write("Single");
@@ -669,6 +674,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         else if (type == "Vector3")
         {
             return networkReader.ReadVector3();
+        }
+        else if (type == "Vector2")
+        {
+            return networkReader.ReadVector2();
         }
         else if (type == "Single")
         {
