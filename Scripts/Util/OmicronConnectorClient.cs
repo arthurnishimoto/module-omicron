@@ -417,6 +417,8 @@ namespace omicronConnector
 
         static IOmicronConnectorClientListener listener;
 
+        Byte[] receiveBytes = new byte[1024]; // Default Omicron event size
+
 #if !UNITY_WSA || UNITY_EDITOR
         // TCP Connection
         TcpClient client;
@@ -649,7 +651,6 @@ namespace omicronConnector
         {
             try
             {
-                Byte[] receiveBytes = new byte[eventArguments.GetDataReader().UnconsumedBufferLength];
                 eventArguments.GetDataReader().ReadBytes(receiveBytes);
 
                 listener.onEvent(ByteArrayToEventData(receiveBytes));
