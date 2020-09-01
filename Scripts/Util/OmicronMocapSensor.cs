@@ -38,12 +38,18 @@ public class OmicronMocapSensor : OmicronEventClient
     [SerializeField] Quaternion orientation;
     Vector3 positionMod = Vector3.one;
 
-    float timeSinceLastUpdate;
+    [SerializeField] float timeSinceLastUpdate;
     float lastPosDeltaMagnitude;
     float lastRotDeltaMagnitude;
 
     Vector3 lastPosition;
     // Quaternion lastRotation;
+
+    int updateEvents;
+    float updateTimer;
+
+    [SerializeField]
+    float updateLatency;
 
     // Use this for initialization
     new void Start()
@@ -62,6 +68,14 @@ public class OmicronMocapSensor : OmicronEventClient
 
         if (lastPosDeltaMagnitude != 0)
             timeSinceLastUpdate = 0;
+
+        updateTimer += Time.deltaTime;
+        if(updateTimer > 5 && updateEvents > 0 )
+        {
+            updateLatency = updateTimer / updateEvents;
+            updateTimer = 0;
+            updateEvents = 0;
+        }
     }
 
     public override void OnEvent(EventData e)
@@ -91,6 +105,7 @@ public class OmicronMocapSensor : OmicronEventClient
         position = (Vector3)param[0];
         orientation = (Quaternion)param[1];
         timeSinceLastUpdate = 0;
+        updateEvents++;
     }
 
     public Vector3 GetPosition()

@@ -40,9 +40,6 @@ public class CAVE2RPCManager : MonoBehaviour {
     // Cluster Sync
     public int cave2RPCCallCount;
 
-    [SerializeField]
-    bool debugRPC = false;
-
     // Remote Networking
     HostTopology topology;
     [SerializeField] int hostId;
@@ -108,6 +105,25 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     string defaultTargetObjectName;
 
+    [Header("Debug")]
+    [SerializeField]
+    bool debugRPC = false;
+
+    [SerializeField]
+    bool debugNetSpeed = false;
+
+    [SerializeField]
+    float clientSendRate;
+
+    int nPacketsSent;
+    float packetOutTimer;
+
+    int nPacketsReceived;
+    float packetInTimer;
+
+    [SerializeField]
+    float clientReceiveRate;
+
     private void LogUI(string msg)
     {
         if (remoteTerminal)
@@ -118,17 +134,6 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void Start()
     {
-        /*
-        msgServer = new NetworkServerSimple();
-        msgClient = new NetworkClient();
-
-        ConnectionConfig myConfig = new ConnectionConfig();
-        reliableChannelId = myConfig.AddChannel(QosType.Reliable);
-        unreliableChannelId = myConfig.AddChannel(QosType.Unreliable);
-
-        msgServer.Configure(myConfig, maxConnections);
-        msgClient.Configure(myConfig, maxConnections);
-        */
         SetupNetworking();
 
         if (useMsgServer)
@@ -143,28 +148,26 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void Update()
     {
-        /*
-        msgServer.Update();
+        UpdateNetwork();
 
-        if(useMsgClient && autoReconnect && !connected)
+        if(debugNetSpeed)
         {
-            if (autoReconnectTimer < autoReconnectDelay)
-            {
-                autoReconnectTimer += Time.deltaTime;
-            }
-            else
-            {
-                reconnectAttemptCount++;
-                LogUI("Msg Client: Reconnecting to server " + serverIP + ":" + serverListenPort + " (Attempt: " + reconnectAttemptCount + ")");
-                msgClient.Disconnect();
-                msgClient.Connect(serverIP, serverListenPort);
+            packetOutTimer += Time.deltaTime;
+            packetInTimer += Time.deltaTime;
 
-                autoReconnectTimer = 0;
+            if(packetOutTimer > 5 && nPacketsSent > 0)
+            {
+                clientSendRate = packetOutTimer / nPacketsSent;
+                packetOutTimer = 0;
+                nPacketsSent = 0;
+            }
+            if (packetInTimer > 5 && nPacketsReceived > 0)
+            {
+                clientReceiveRate = packetInTimer / nPacketsReceived;
+                packetInTimer = 0;
+                nPacketsReceived = 0;
             }
         }
-        */
-
-        UpdateNetwork();
     }
 
     public bool IsReconnecting()
@@ -200,22 +203,6 @@ public class CAVE2RPCManager : MonoBehaviour {
         byte error;
         hostId = NetworkTransport.AddHost(topology, serverListenPort);
         connectionId = NetworkTransport.Connect(hostId, serverIP, serverListenPort, 0, out error);
-
-        // msgClient = new NetworkClient();
-        // msgClient.Configure(topology);
-        // msgClient.Connect(serverIP, serverListenPort);
-
-        /*
-        msgClient.Connect(serverIP, serverListenPort);
-
-        clientOnConnect += ClientOnConnect;
-        clientOnDisconnect += ClientOnDisconnect;
-        clientOnData += ClientOnRecvMsg;
-
-        msgClient.RegisterHandler(MsgType.Connect, clientOnConnect);
-        msgClient.RegisterHandler(MsgType.Disconnect, clientOnDisconnect);
-        msgClient.RegisterHandler(MessageID, clientOnData);
-        */
     }
 
     void UpdateNetwork()
@@ -259,6 +246,8 @@ public class CAVE2RPCManager : MonoBehaviour {
                     string targetObjectName = networkReader.ReadString();
                     string methodName = networkReader.ReadString();
                     int paramCount = networkReader.ReadInt32();
+
+                    nPacketsReceived++;
 
                     switch (readerMsgType)
                     {
@@ -370,6 +359,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             byte error;
             NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+            nPacketsSent++;
         }
 
         /*
