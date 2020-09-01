@@ -254,7 +254,7 @@ public class CAVE2InputManager : OmicronEventClient
         if (mocapSensors.ContainsKey(ID))
         {
             OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
-            return mocap.position;
+            return mocap.GetPosition();
         }
         return Vector3.zero;
     }
@@ -264,7 +264,7 @@ public class CAVE2InputManager : OmicronEventClient
         if (mocapSensors.ContainsKey(ID))
         {
             OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
-            return mocap.orientation;
+            return mocap.GetOrientation();
         }
         return Quaternion.identity;
     }
@@ -274,7 +274,7 @@ public class CAVE2InputManager : OmicronEventClient
         if (mocapSensors.ContainsKey(ID))
         {
             OmicronMocapSensor mocap = (OmicronMocapSensor)mocapSensors[ID];
-            return mocap.timeSinceLastUpdate;
+            return mocap.GetTimeSinceLastUpdate();
         }
         return float.PositiveInfinity;
     }
@@ -348,7 +348,7 @@ public class CAVE2InputManager : OmicronEventClient
                 mocapManager.sourceID = (int)e.sourceId;
                 if (CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator)
                 {
-                    mocapManager.positionMod = new Vector3(1, 1, -1);
+                    mocapManager.SetPositionMod(new Vector3(1, 1, -1));
                 }
                 mocapSensors[(int)e.sourceId] = mocapManager;
             }
@@ -475,8 +475,7 @@ public class CAVE2InputManager : OmicronEventClient
                     CAVE2.GetCAVE2Manager().simulatorWandPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
                     CAVE2.GetCAVE2Manager().simulatorWandRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
 
-                    wand2MocapSensor.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-                    wand2MocapSensor.orientation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+                    wand2MocapSensor.UpdateTransform(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand), UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand));
 #endif
                 }
                 else if(UnityEngine.XR.XRDevice.model.Length > 0)
@@ -491,32 +490,23 @@ public class CAVE2InputManager : OmicronEventClient
                     CAVE2.GetCAVE2Manager().simulatorWandPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand) + positionOffset;
                     CAVE2.GetCAVE2Manager().simulatorWandRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
 
-                    wand2MocapSensor.position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand) + positionOffset;
-                    wand2MocapSensor.orientation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+                    wand2MocapSensor.UpdateTransform(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand) + positionOffset, UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand));
 #endif
                 }
             }
 
-            mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
-            mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
-            mainHeadSensor.timeSinceLastUpdate = 0;
+            mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
 
-            wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
-            wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
-            wandMocapSensor.timeSinceLastUpdate = 0;
+            wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
         {
             CAVE2.GetCAVE2Manager().simulatorHeadPosition = GetHeadPosition(1);
             CAVE2.GetCAVE2Manager().simulatorWandPosition = GetWandPosition(1);
 
-            mainHeadSensor.position = CAVE2.GetCAVE2Manager().simulatorHeadPosition;
-            mainHeadSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation);
-            mainHeadSensor.timeSinceLastUpdate = 0;
+            mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
 
-            wandMocapSensor.position = CAVE2.GetCAVE2Manager().simulatorWandPosition;
-            wandMocapSensor.orientation = Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation);
-            wandMocapSensor.timeSinceLastUpdate = 0;
+            wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
         }
 
         // Wand Buttons

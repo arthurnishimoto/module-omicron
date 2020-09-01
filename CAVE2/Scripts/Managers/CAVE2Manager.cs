@@ -685,7 +685,11 @@ static CAVE2Manager CAVE2Manager_Instance;
     public bool showDebugCanvas;
     public GameObject debugCanvas;
 
+    [Header("Networking")]
     CAVE2RPCManager rpcManager;
+
+    [SerializeField]
+    public bool sendTrackingData;
 
     [SerializeField]
     public bool simulateAsClient;

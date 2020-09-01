@@ -34,13 +34,13 @@ public class OmicronMocapSensor : OmicronEventClient
 {
     public int sourceID = 1; // -1 for any
 
-    public Vector3 position;
-    public Quaternion orientation;
-    public Vector3 positionMod = Vector3.one;
+    Vector3 position;
+    Quaternion orientation;
+    Vector3 positionMod = Vector3.one;
 
-    public float timeSinceLastUpdate;
-    public float lastPosDeltaMagnitude;
-    public float lastRotDeltaMagnitude;
+    float timeSinceLastUpdate;
+    float lastPosDeltaMagnitude;
+    float lastRotDeltaMagnitude;
 
     Vector3 lastPosition;
     // Quaternion lastRotation;
@@ -69,7 +69,6 @@ public class OmicronMocapSensor : OmicronEventClient
         if (e.sourceId == sourceID || sourceID == -1)
         {
             UpdateTransform( new Vector3(e.posx * positionMod.x, e.posy * positionMod.y, e.posz * positionMod.z), new Quaternion(e.orx, e.ory, e.orz, e.orw));
-
         }
     }
 
@@ -82,5 +81,27 @@ public class OmicronMocapSensor : OmicronEventClient
     {
         position = (Vector3)param[0];
         orientation = (Quaternion)param[1];
+        timeSinceLastUpdate = 0;
+    }
+
+    public Vector3 GetPosition()
+    {
+        return position;
+    }
+
+    public Quaternion GetOrientation()
+    {
+        return orientation;
+    }
+
+    public float GetTimeSinceLastUpdate()
+    {
+        return timeSinceLastUpdate;
+    }
+
+
+    public void SetPositionMod(Vector3 value)
+    {
+        positionMod = value;
     }
 }

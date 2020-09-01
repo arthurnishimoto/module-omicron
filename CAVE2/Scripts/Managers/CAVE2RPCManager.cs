@@ -185,23 +185,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         stateUpdateChannelId = config.AddChannel(QosType.StateUpdate);
 
         topology = new HostTopology(config, maxConnections);
-        hostId = NetworkTransport.AddHost(topology, serverListenPort);
     }
 
     private void StartNetServer()
     {
-        /*
-        serverOnClientConnect += ServerOnClientConnect;
-        serverOnClientDisconnect += ServerOnClientDisconnect;
-        serverOnData += ServerOnRecvMsg;
-
-        msgServer.RegisterHandler(MsgType.Connect, serverOnClientConnect);
-        msgServer.RegisterHandler(MsgType.Disconnect, serverOnClientDisconnect);
-        msgServer.RegisterHandler(MessageID, serverOnData);
-        
-        msgServer.Listen(serverListenPort);
+        hostId = NetworkTransport.AddHost(topology, serverListenPort);
         LogUI("Starting message server on port " + serverListenPort);
-        */
     }
 
     private void StartNetClient()
