@@ -34,8 +34,8 @@ public class OmicronMocapSensor : OmicronEventClient
 {
     public int sourceID = 1; // -1 for any
 
-    Vector3 position;
-    Quaternion orientation;
+    [SerializeField] Vector3 position;
+    [SerializeField] Quaternion orientation;
     Vector3 positionMod = Vector3.one;
 
     float timeSinceLastUpdate;
@@ -74,7 +74,16 @@ public class OmicronMocapSensor : OmicronEventClient
 
     public void UpdateTransform(Vector3 pos, Quaternion rot)
     {
-        CAVE2.SendMessage(gameObject.name, "SendTransformInfo", pos, rot);
+        if (CAVE2.GetCAVE2Manager().sendTrackingData)
+        {
+            CAVE2.SendMessage(gameObject.name, "SendTransformInfo", pos, rot);
+        }
+        else
+        {
+            position = pos;
+            orientation = rot;
+            timeSinceLastUpdate = 0;
+        }
     }
 
     public void SendTransformInfo(object[] param)

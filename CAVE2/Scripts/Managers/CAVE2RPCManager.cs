@@ -198,7 +198,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
 
         byte error;
+        hostId = NetworkTransport.AddHost(topology, serverListenPort);
         connectionId = NetworkTransport.Connect(hostId, serverIP, serverListenPort, 0, out error);
+
+        // msgClient = new NetworkClient();
+        // msgClient.Configure(topology);
+        // msgClient.Connect(serverIP, serverListenPort);
 
         /*
         msgClient.Connect(serverIP, serverListenPort);
@@ -243,15 +248,17 @@ public class CAVE2RPCManager : MonoBehaviour {
                 case NetworkEventType.DataEvent:
                     NetworkReader networkReader = new NetworkReader(recBuffer);
 
-                    // byte[] readerMsgSizeData = networkReader.ReadBytes(2);
-                    // short readerMsgSize = (short)((readerMsgSizeData[1] << 8) + readerMsgSizeData[0]);
+                    // First two bytes is the msg size
+                    byte[] readerMsgSizeData = networkReader.ReadBytes(2);
+                    short readerMsgSize = (short)((readerMsgSizeData[1] << 8) + readerMsgSizeData[0]);
 
+                    // Next two bytes is the msg type
                     byte[] readerMsgTypeData = networkReader.ReadBytes(2);
                     short readerMsgType = (short)((readerMsgTypeData[1] << 8) + readerMsgTypeData[0]);
 
                     string targetObjectName = networkReader.ReadString();
                     string methodName = networkReader.ReadString();
-                    // int paramCount = networkReader.ReadInt32();
+                    int paramCount = networkReader.ReadInt32();
 
                     switch (readerMsgType)
                     {

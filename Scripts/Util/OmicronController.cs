@@ -88,7 +88,11 @@ public class OmicronController : OmicronEventClient
         if (CAVE2.IsMaster())
         {
             UpdateButtons(rawFlags);
-            CAVE2.SendMessage(gameObject.name, "UpdateButtonStates", Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight);
+
+            if (CAVE2.GetCAVE2Manager().sendTrackingData)
+            {
+                CAVE2.SendMessage(gameObject.name, "UpdateButtonStates", Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, SpecialButton1, SpecialButton2, SpecialButton3, ButtonUp, ButtonDown, ButtonLeft, ButtonRight);
+            }
         }
     }
 
