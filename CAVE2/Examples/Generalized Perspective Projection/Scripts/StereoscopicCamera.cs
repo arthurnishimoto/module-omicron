@@ -38,7 +38,7 @@ public class StereoscopicCamera : MonoBehaviour {
     [SerializeField]
     bool generateCameras = false;
 
-    public enum StereoscopicMode { Left, Right, Interleaved, Checkerboard, };
+    public enum StereoscopicMode { Left, Right, Interleaved, Checkerboard, SideBySide };
     [SerializeField]
     StereoscopicMode stereoMode = StereoscopicMode.Interleaved;
 
@@ -66,6 +66,9 @@ public class StereoscopicCamera : MonoBehaviour {
     [SerializeField]
     bool regenerate;
 
+    [SerializeField]
+    bool update;
+
     // Use this for initialization
     void Start () {
         if (generateCameras && transform.parent.GetComponent<StereoscopicCamera>() == null)
@@ -83,6 +86,7 @@ public class StereoscopicCamera : MonoBehaviour {
         {
             Destroy(GetComponent<StereoscopicCamera>());
         }
+        update = true;
     }
 	
     void RebuildTextures()
@@ -102,8 +106,8 @@ public class StereoscopicCamera : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-        if(regenerate)
+    void Update() {
+        if (regenerate)
         {
             RebuildTextures();
             regenerate = false;
@@ -125,6 +129,31 @@ public class StereoscopicCamera : MonoBehaviour {
         stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
 
         stereoscopicMaterial.SetFloat("_InvertEyes", invertEyes ? 1.0f : 0.0f);
+
+        if (update)
+        {
+            if (stereoMode == StereoscopicMode.SideBySide)
+            {
+                if (invertEyes)
+                {
+                    rightEye.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1);
+                    leftEye.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1);
+                }
+                else
+                {
+                    leftEye.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1);
+                    rightEye.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1);
+                }
+            }
+            else
+            {
+                leftEye.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+                rightEye.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            }
+
+            SetStereoMode(stereoMode);
+            update = false;
+        }
     }
 
     void SetupStereoCameras()
@@ -188,6 +217,7 @@ public class StereoscopicCamera : MonoBehaviour {
     public void SetStereoMode(StereoscopicMode value)
     {
         stereoMode = value;
+
         switch (value)
         {
             case (StereoscopicMode.Interleaved):
@@ -195,6 +225,9 @@ public class StereoscopicCamera : MonoBehaviour {
                 break;
             case (StereoscopicMode.Checkerboard):
                 stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.Checkerboard);
+                break;
+            case (StereoscopicMode.SideBySide):
+                stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.SideBySide);
                 break;
             case (StereoscopicMode.Right):
                 stereoscopicMaterial.SetFloat("_StereoMode", (int)StereoscopicMode.Right);

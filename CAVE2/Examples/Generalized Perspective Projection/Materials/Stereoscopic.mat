@@ -4,11 +4,12 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Stereoscopic
   m_Shader: {fileID: 4800000, guid: dcaa6e07e98acd2448cae75e44b4cb39, type: 3}
-  m_ShaderKeywords: _EMISSION _STEREOMODE_INTERLEAVED
+  m_ShaderKeywords: _EMISSION _STEREOMODE_SIDEBYSIDE
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -74,18 +75,18 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _InvertEyes: 1
+    - _InvertEyes: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Overlay: 0
     - _Parallax: 0.02
-    - _RenderHeight: 4320
-    - _RenderWidth: 7680
+    - _RenderHeight: 768
+    - _RenderWidth: 1366
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _StereoMode: 2
+    - _StereoMode: 4
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

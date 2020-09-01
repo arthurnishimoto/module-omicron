@@ -120,132 +120,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &264020353
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1000012201446588, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_Name
-      value: CAVE2-Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: useMsgClient
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: serverIP
-      value: 10.0.0.129
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: sendTrackingData
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: simulatorMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: simulateAsClient
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: wandMousePointerEmulation
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: keyboardEventEmulation
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: mocapEmulation
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
---- !u!1 &405364420 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1000013479211570, guid: c1621f4dd1e8c2748a5a423aa7736d55,
-    type: 3}
-  m_PrefabInstance: {fileID: 758152298}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &405364426
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 405364420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c32a16c178ae0aa45ab80acbb5438801, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stereoscopicMaterial: {fileID: 2100000, guid: 24f09a7ad4e9b2b40b9d14c46269c66c,
-    type: 2}
-  generateCameras: 1
-  stereoMode: 4
-  outputResolution: {x: 1366, y: 768}
-  eyeSeparation: 0.065
-  textureScale: {x: 1, y: 1}
-  textureOffset: {x: 0, y: 0}
-  invertEyes: 0
-  regenerate: 0
-  update: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,7 +211,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1001 &758152298
+--- !u!1001 &706004741
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -347,6 +221,10 @@ PrefabInstance:
     - target: {fileID: 1000011680592226, guid: c1621f4dd1e8c2748a5a423aa7736d55, type: 3}
       propertyPath: m_Name
       value: CAVE2-PlayerController
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000011680592226, guid: c1621f4dd1e8c2748a5a423aa7736d55, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4000012806552110, guid: c1621f4dd1e8c2748a5a423aa7736d55, type: 3}
       propertyPath: m_LocalPosition.x
@@ -429,25 +307,89 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1621f4dd1e8c2748a5a423aa7736d55, type: 3}
---- !u!1 &2082373250 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1000011759684950, guid: c1621f4dd1e8c2748a5a423aa7736d55,
-    type: 3}
-  m_PrefabInstance: {fileID: 758152298}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2082373251
-MonoBehaviour:
+--- !u!1001 &2091677799
+PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2082373250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90df0457f6dea9147aa48b35ede4473e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sourceID: 0
-  posOffset: {x: 0, y: 0, z: 0}
-  rotOffset: {x: 0, y: 0, z: 0}
-  useLateUpdate: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1000012201446588, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_Name
+      value: CAVE2-Manager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012201446588, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000011540618614, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012506513464, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: enableMocap
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: sendTrackingData
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: useMsgServer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: debugRPC
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
