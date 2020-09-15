@@ -343,6 +343,7 @@ public class CAVE2InputManager : OmicronEventClient
         foreach (DictionaryEntry s in mocapSensors)
         {
             sensorList[i] = ((OmicronMocapSensor)s.Value).gameObject.name;
+            i++;
         }
 
         return sensorList;
@@ -356,6 +357,7 @@ public class CAVE2InputManager : OmicronEventClient
         foreach (DictionaryEntry s in wandControllers)
         {
             list[i] = ((OmicronController)s.Value).gameObject.name;
+            i++;
         }
 
         return list;
