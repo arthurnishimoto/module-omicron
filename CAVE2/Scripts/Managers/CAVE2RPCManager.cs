@@ -206,6 +206,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void StartNetServer()
     {
         hostId = NetworkTransport.AddHost(topology, serverListenPort);
+
         LogUI("Starting message server on port " + serverListenPort);
     }
 
@@ -675,59 +676,96 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
     }
 
-    private void ParamToByte(NetworkWriter writer, object param)
+    private string TypeToString(object obj)
     {
-        if(param is System.Enum || param is System.Int32)
+        if (obj is System.Enum || obj is System.Int32)
         {
-            writer.Write("int");
+            return "Int32";
+        }
+        else if (obj is Vector3)
+        {
+            return "Vector3";
+        }
+        else if (obj is Vector2)
+        {
+            return "Vector3";
+        }
+        else if (obj is System.Single)
+        {
+            return "Single";
+        }
+        else if (obj is System.Boolean)
+        {
+            return "Boolean";
+        }
+        else if (obj is System.String)
+        {
+            return "String";
+        }
+        else if (obj is Quaternion)
+        {
+            return "Quaternion";
+        }
+
+        return "OBJECT";
+    }
+
+    private void ParamToByte(NetworkWriter writer, object param, string typeOverride = null)
+    {
+        if (typeOverride == null)
+        {
+            writer.Write(TypeToString(param));
+        }
+        else
+        {
+            writer.Write(typeOverride);
+        }
+
+        if (param is System.Enum || param is System.Int32)
+        {
             writer.Write((int)param);
         }
         else if (param is Vector3)
         {
-            writer.Write("Vector3");
             writer.Write((Vector3)param);
         }
         else if (param is Vector2)
         {
-            writer.Write("Vector2");
             writer.Write((Vector2)param);
         }
         else if (param is System.Single)
         {
-            writer.Write("Single");
             writer.Write((System.Single)param);
         }
         else if (param is System.Boolean)
         {
-            writer.Write("Boolean");
             writer.Write((System.Boolean)param);
         }
         else if (param is System.String)
         {
-            writer.Write("String");
-            writer.Write((System.String)param);
-        }
-        else if (param is System.String[])
-        {
-            writer.Write("String[]");
-
             writer.Write((System.String)param);
         }
         else if (param is Quaternion)
         {
-            writer.Write("Quaternion");
             writer.Write((Quaternion)param);
         }
         else
         {
-            Debug.LogWarning("CAVE2RPCManager: Unknown param " + param.GetType());
+            if (typeOverride == "String")
+            {
+                writer.Write((System.String)param);
+            }
+            else
+            {
+                Debug.LogWarning("CAVE2RPCManager: Unknown param " + TypeToString(param));
+            }
         }
     }
 
     private object ReaderToObject(NetworkReader networkReader)
     {
         string type = networkReader.ReadString();
-        if(type == "int")
+        if(type == "Int32")
         {
             return networkReader.ReadInt32();
         }
@@ -751,13 +789,70 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             return networkReader.ReadString();
         }
+        else if (type.Contains("String["))
+        {
+            int arraySize = 0;
+            string indexStr = type.Substring(type.IndexOf("[") + 1, type.Length - type.IndexOf("]"));
+            if (int.TryParse(indexStr, out arraySize))
+            {
+                string[] strArr = new string[arraySize];
+                for (int i = 0; i < arraySize; i++)
+                {
+                    strArr[i] = networkReader.ReadString();
+                }
+                return strArr;
+            }
+            else
+            {
+                Debug.LogWarning("CAVE2RPCManager: Invalid array specification '" + type + "'");
+                return null;
+            }
+        }
         else if (type == "Quaternion")
         {
             return networkReader.ReadQuaternion();
         }
         else
         {
+            Debug.LogWarning("CAVE2RPCManager: Unknown param " + type);
             return null;
+        }
+    }
+    
+    void WriteParameters(NetworkWriter writer, object[] parameters)
+    {
+        int paramCount = 0;
+        foreach(object o in parameters)
+        {
+            if(o is System.Array)
+            {
+                paramCount += ((object[])o).Length;
+            }
+            else
+            {
+                paramCount++;
+            }
+        }
+        writer.Write(paramCount);
+
+        foreach (object o in parameters)
+        {
+            if (o is System.Array)
+            {
+                object[] objArr = (object[])o;
+
+                writer.Write(TypeToString(objArr[0]) + "[" + objArr.Length + "]");
+
+                for(int i = 0; i < objArr.Length; i++)
+                {
+                    ParamToByte(writer, objArr[i], TypeToString(objArr[0]));
+                }
+            }
+            else
+            {
+                ParamToByte(writer, o);
+            }
+            
         }
     }
 
@@ -772,9 +867,8 @@ public class CAVE2RPCManager : MonoBehaviour {
         writer.StartMessage(101);
         writer.Write(targetObjectName);
         writer.Write(methodName);
-        writer.Write(1);
 
-        ParamToByte(writer, param);
+        WriteParameters(writer, new object[] { param });
 
         writer.FinishMessage();
 
@@ -801,10 +895,8 @@ public class CAVE2RPCManager : MonoBehaviour {
         writer.StartMessage(102);
         writer.Write(targetObjectName);
         writer.Write(methodName);
-        writer.Write(2);
 
-        ParamToByte(writer, param);
-        ParamToByte(writer, param2);
+        WriteParameters(writer, new object[] { param, param2 });
 
         writer.FinishMessage();
 
@@ -831,9 +923,8 @@ public class CAVE2RPCManager : MonoBehaviour {
         writer.StartMessage(201);
         writer.Write(targetObjectName);
         writer.Write(methodName);
-        writer.Write(1);
 
-        ParamToByte(writer, param);
+        WriteParameters(writer, new object[] { param });
 
         writer.FinishMessage();
 
@@ -860,10 +951,8 @@ public class CAVE2RPCManager : MonoBehaviour {
         writer.StartMessage(202);
         writer.Write(targetObjectName);
         writer.Write(methodName);
-        writer.Write(2);
 
-        ParamToByte(writer, param);
-        ParamToByte(writer, param2);
+        WriteParameters(writer, new object[] { param, param2 });
 
         writer.FinishMessage();
 
@@ -890,11 +979,8 @@ public void SendMessage(string targetObjectName, string methodName, object param
     writer.StartMessage(203);
     writer.Write(targetObjectName);
     writer.Write(methodName);
-    writer.Write(3);
 
-    ParamToByte(writer, param);
-    ParamToByte(writer, param2);
-    ParamToByte(writer, param3);
+    WriteParameters(writer, new object[] { param, param2, param3 });
 
     writer.FinishMessage();
 
@@ -921,12 +1007,8 @@ public void SendMessage(string targetObjectName, string methodName, object param
     writer.StartMessage(204);
     writer.Write(targetObjectName);
     writer.Write(methodName);
-    writer.Write(4);
 
-    ParamToByte(writer, param);
-    ParamToByte(writer, param2);
-    ParamToByte(writer, param3);
-    ParamToByte(writer, param4);
+    WriteParameters(writer, new object[] { param, param2, param3, param4 });
 
     writer.FinishMessage();
 
@@ -953,13 +1035,14 @@ public void SendMessage(string targetObjectName, string methodName, object param
     writer.StartMessage(205);
     writer.Write(targetObjectName);
     writer.Write(methodName);
-    writer.Write(5);
 
-    ParamToByte(writer, param);
-    ParamToByte(writer, param2);
-    ParamToByte(writer, param3);
-    ParamToByte(writer, param4);
-    ParamToByte(writer, param5);
+    WriteParameters(writer, new object[] {
+        param,
+        param2,
+        param3,
+        param4,
+        param5
+    });
 
     writer.FinishMessage();
 
@@ -986,15 +1069,16 @@ public void SendMessage(string targetObjectName, string methodName, object param
     writer.StartMessage(207);
     writer.Write(targetObjectName);
     writer.Write(methodName);
-    writer.Write(7);
 
-    ParamToByte(writer, param);
-    ParamToByte(writer, param2);
-    ParamToByte(writer, param3);
-    ParamToByte(writer, param4);
-    ParamToByte(writer, param5);
-    ParamToByte(writer, param6);
-    ParamToByte(writer, param7);
+    WriteParameters(writer, new object[] {
+        param,
+        param2,
+        param3,
+        param4,
+        param5,
+        param6,
+        param7
+    });
 
     writer.FinishMessage();
 
@@ -1021,24 +1105,25 @@ public void SendMessage(string targetObjectName, string methodName, object param
     writer.StartMessage(216);
     writer.Write(targetObjectName);
     writer.Write(methodName);
-    writer.Write(16);
 
-    ParamToByte(writer, param);
-    ParamToByte(writer, param2);
-    ParamToByte(writer, param3);
-    ParamToByte(writer, param4);
-    ParamToByte(writer, param5);
-    ParamToByte(writer, param6);
-    ParamToByte(writer, param7);
-    ParamToByte(writer, param8);
-    ParamToByte(writer, param9);
-    ParamToByte(writer, param10);
-    ParamToByte(writer, param11);
-    ParamToByte(writer, param12);
-    ParamToByte(writer, param13);
-    ParamToByte(writer, param14);
-    ParamToByte(writer, param15);
-    ParamToByte(writer, param16);
+    WriteParameters(writer, new object[] {
+        param,
+        param2,
+        param3,
+        param4,
+        param5,
+        param6,
+        param7,
+        param8,
+        param9,
+        param10,
+        param11,
+        param12,
+        param13,
+        param14,
+        param15,
+        param16
+    });
 
     writer.FinishMessage();
 
