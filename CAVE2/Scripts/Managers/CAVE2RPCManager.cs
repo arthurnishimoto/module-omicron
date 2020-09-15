@@ -778,6 +778,25 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             return networkReader.ReadString();
         }
+        else if (type.Contains("String["))
+        {
+            int arraySize = 0;
+            string indexStr = type.Substring(type.IndexOf("[") + 1, type.Length - type.IndexOf("]"));
+            if (int.TryParse(indexStr, out arraySize))
+            {
+                string[] strArr = new string[arraySize];
+                for (int i = 0; i < arraySize; i++)
+                {
+                    strArr[i] = networkReader.ReadString();
+                }
+                return strArr;
+            }
+            else
+            {
+                Debug.LogWarning("CAVE2RPCManager: Invalid array specification '" + type + "'");
+                return null;
+            }
+        }
         else if (type == "Quaternion")
         {
             return networkReader.ReadQuaternion();
