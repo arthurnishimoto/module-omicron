@@ -334,6 +334,33 @@ public class CAVE2InputManager : OmicronEventClient
         return GetMocapTimeSinceUpdate(wandID);
     }
 
+
+    public string[] GetSensorList()
+    {
+        string[] sensorList = new string[mocapSensors.Count];
+
+        int i = 0;
+        foreach (DictionaryEntry s in mocapSensors)
+        {
+            sensorList[i] = ((OmicronMocapSensor)s.Value).gameObject.name;
+        }
+
+        return sensorList;
+    }
+
+    public string[] GetWandControllerList()
+    {
+        string[] list = new string[wandControllers.Count];
+
+        int i = 0;
+        foreach (DictionaryEntry s in wandControllers)
+        {
+            list[i] = ((OmicronController)s.Value).gameObject.name;
+        }
+
+        return list;
+    }
+
     // Parses Omicron Input Data
     public override void OnEvent(EventData e)
     {
