@@ -716,10 +716,6 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             writer.Write(TypeToString(param));
         }
-        else
-        {
-            writer.Write(typeOverride);
-        }
 
         if (param is System.Enum || param is System.Int32)
         {
@@ -751,14 +747,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
         else
         {
-            if (typeOverride == "String")
-            {
-                writer.Write((System.String)param);
-            }
-            else
-            {
-                Debug.LogWarning("CAVE2RPCManager: Unknown param " + TypeToString(param));
-            }
+            Debug.LogWarning("CAVE2RPCManager: Unknown param " + TypeToString(param));
         }
     }
 
