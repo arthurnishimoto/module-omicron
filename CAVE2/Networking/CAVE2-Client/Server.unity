@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18100342, g: 0.18059847, b: 0.2394757, a: 1}
+  m_IndirectSpecularColor: {r: 0.17357728, g: 0.18016139, b: 0.2248339, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -120,6 +120,75 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &428040529
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4300810806607580278, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_Name
+      value: Mocap Test Cube
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.2408
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.077
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.5813074
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300810806607580281, guid: 5ab59fada52fde046bb09576c1639b78,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5ab59fada52fde046bb09576c1639b78, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,10 +440,40 @@ PrefabInstance:
       propertyPath: enableMocap
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012506513464, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: connectToServer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012506513464, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: serverIP
+      value: cave2tracker.evl.uic.edu
+      objectReference: {fileID: 0}
     - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
         type: 3}
       propertyPath: sendTrackingData
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: wandMousePointerEmulation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: keyboardEventEmulation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: mocapEmulation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010706522814, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: simulatorMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
         type: 3}
@@ -391,5 +490,84 @@ PrefabInstance:
       propertyPath: debugRPC
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: useMsgClient
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: internalMessageTest
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
+--- !u!1001 &9004048665587684304
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1181550529140079352, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_Name
+      value: Mocap Test Sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.48153234
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.077
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.5813074
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181550529140079351, guid: ca07e2b03fd5c574987b5aea8bab63e4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ca07e2b03fd5c574987b5aea8bab63e4, type: 3}
