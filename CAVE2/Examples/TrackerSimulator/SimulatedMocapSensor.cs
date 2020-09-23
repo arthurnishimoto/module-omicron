@@ -33,9 +33,13 @@ public class SimulatedMocapSensor : MonoBehaviour
 
         if(addRandomJitter)
         {
-            outputPos.x += Random.Range(-1000, 1000) / 100000.0f;
-            outputPos.y += Random.Range(-1000, 1000) / 100000.0f;
-            outputPos.z += Random.Range(-1000, 1000) / 100000.0f;
+            outputPos.x += Random.Range(-1000, 1000) / 1000000.0f;
+            outputPos.y += Random.Range(-1000, 1000) / 1000000.0f;
+            outputPos.z += Random.Range(-1000, 1000) / 1000000.0f;
+
+            outputRot.x += Random.Range(-1000, 1000) / 1000000.0f;
+            outputRot.y += Random.Range(-1000, 1000) / 1000000.0f;
+            outputRot.z += Random.Range(-1000, 1000) / 1000000.0f;
         }
 
         Quaternion qrot = Quaternion.Euler(outputRot);
@@ -49,9 +53,9 @@ public class SimulatedMocapSensor : MonoBehaviour
         evt.flags = 0;
         evt.posx = outputPos.x;
         evt.posy = outputPos.y;
-        evt.posz = outputPos.z;
-        evt.orx = transform.localRotation.x;
-        evt.ory = transform.localRotation.y;
+        evt.posz = -outputPos.z;
+        evt.orx = -transform.localRotation.x;
+        evt.ory = -transform.localRotation.y;
         evt.orz = transform.localRotation.z;
         evt.orw = transform.localRotation.w;
 
