@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1181550529140079351}
-  - component: {fileID: 1181550529140079355}
+  - component: {fileID: 605177027}
   m_Layer: 0
   m_Name: Mocap Test Sphere
   m_TagString: Untagged
@@ -36,7 +36,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1181550529140079355
+--- !u!114 &605177027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,14 +45,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1181550529140079352}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8156e60766d97e6498d94a63d94b3fb3, type: 3}
+  m_Script: {fileID: 11500000, guid: 90df0457f6dea9147aa48b35ede4473e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sourceID: 6
-  position: {x: 0, y: 0, z: 0}
-  orientation: {x: 0, y: 0, z: 0, w: 0}
-  hideIfNotTracked: 0
-  timeSinceLastUpdate: 0
+  usePredefined: -1
+  sourceID: 1
+  posOffset: {x: 0, y: 0, z: 0}
+  rotOffset: {x: 0, y: 0, z: 0}
+  useLateUpdate: 0
 --- !u!1 &1181550530370225391
 GameObject:
   m_ObjectHideFlags: 0
