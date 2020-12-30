@@ -896,9 +896,9 @@ static CAVE2Manager CAVE2Manager_Instance;
     {
         switch (name)
         {
-            case CAVE2.Button.Button3: return "WandButton";
-            case CAVE2.Button.Button2: return "ChangeWand";
-            case CAVE2.Button.Button8: return "Reset";
+            case CAVE2.Button.Button8: return "WandButton";
+            case CAVE2.Button.Button3: return "ChangeWand";
+            case CAVE2.Button.Button2: return "Reset";
             case CAVE2.Button.Button1: return "Jump";
             case CAVE2.Button.Button5: return "WandLook";
             case CAVE2.Button.Button4: return "NavSpeed";

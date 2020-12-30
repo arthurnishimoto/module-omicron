@@ -654,6 +654,13 @@ public class CAVE2InputManager : OmicronEventClient
             float wand1_DPadUD = getReal3D.Input.GetAxis("DPadUD");
             float wand1_DPadLR = getReal3D.Input.GetAxis("DPadLR");
 
+            List<float> valuators = getReal3D.Input.valuators;
+            if(valuators.Count > 6)
+            {
+                wand1_DPadUD = valuators[5];
+                wand1_DPadLR = valuators[4];
+            }
+
             if (wand1_DPadUD > 0)
                 wand1_flags += (int)EventBase.Flags.ButtonUp;
             else if (wand1_DPadUD < 0)
@@ -740,11 +747,8 @@ public class CAVE2InputManager : OmicronEventClient
         if (!CAVE2.IsSimulatorMode())
         {
 #if USING_GETREAL3D
-            mainHeadSensor.position = getReal3D.Input.head.position;
-            mainHeadSensor.orientation = getReal3D.Input.head.rotation;
-
-            wandMocapSensor.position = getReal3D.Input.wand.position;
-            wandMocapSensor.orientation = getReal3D.Input.wand.rotation;
+            mainHeadSensor.UpdateTransform(getReal3D.Input.head.position, getReal3D.Input.head.rotation);
+            wandMocapSensor.UpdateTransform(getReal3D.Input.wand.position, getReal3D.Input.wand.rotation);
 
             //wand2MocapSensor.position = getReal3D.Input.GetSensor("Wand2").position;
             //wand2MocapSensor.orientation = getReal3D.Input.GetSensor("Wand2").rotation;
