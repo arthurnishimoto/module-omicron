@@ -443,7 +443,7 @@ public class RemoteTerminal : MonoBehaviour {
             GameObject targetObject = GameObject.Find("Main Camera");
             if (targetObject != null)
             {
-                GeneralizedPerspectiveProjection projection = GetComponent<GeneralizedPerspectiveProjection>();
+                GeneralizedPerspectiveProjection projection = targetObject.GetComponent<GeneralizedPerspectiveProjection>();
                 if (projection != null)
                 {
                     projection.UpdateScreenUL_x(msgArray[1]);
