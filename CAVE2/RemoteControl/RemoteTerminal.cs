@@ -460,6 +460,34 @@ public class RemoteTerminal : MonoBehaviour {
                 }
             }
         }
+        else if (rootCommand.Equals("setActive", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string objectName = msgArray[1];
+            bool value = true;
+
+            bool validBool = bool.TryParse(msgArray[2], out value);
+
+            GameObject targetObject = GameObject.Find(objectName);
+
+            // Standard check for setting an active gameobject inactive
+            if (targetObject != null && validBool && value == false)
+            {
+                targetObject.SetActive(value);
+            }
+            else if (targetObject == null && validBool && value == true)
+            {
+                // GameObject.Find() only finds active GameObjects, else
+                // use more expensive way to find an inactive GameObject
+                GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+                foreach(GameObject g in allObjects)
+                {
+                    if(g.name == objectName)
+                    {
+                        g.SetActive(value);
+                    }
+                }
+            }
+        }
         else if (rootCommand.Equals("message_to_remote", System.StringComparison.OrdinalIgnoreCase))
         {
             string message = "";
