@@ -438,6 +438,28 @@ public class RemoteTerminal : MonoBehaviour {
                 SendCommand("message_to_remote " + targetObject.transform.localEulerAngles.x + " " + targetObject.transform.localEulerAngles.y + " " + targetObject.transform.localEulerAngles.z);
             }
         }
+        else if (rootCommand.Equals("setGeneralizedPerspectiveProjection", System.StringComparison.OrdinalIgnoreCase))
+        {
+            GameObject targetObject = GameObject.Find("Main Camera");
+            if (targetObject != null)
+            {
+                GeneralizedPerspectiveProjection projection = GetComponent<GeneralizedPerspectiveProjection>();
+                if (projection != null)
+                {
+                    projection.UpdateScreenUL_x(msgArray[1]);
+                    projection.UpdateScreenUL_y(msgArray[2]);
+                    projection.UpdateScreenUL_z(msgArray[3]);
+
+                    projection.UpdateScreenLL_x(msgArray[4]);
+                    projection.UpdateScreenLL_y(msgArray[5]);
+                    projection.UpdateScreenLL_z(msgArray[6]);
+
+                    projection.UpdateScreenLR_x(msgArray[7]);
+                    projection.UpdateScreenLR_y(msgArray[8]);
+                    projection.UpdateScreenLR_z(msgArray[9]);
+                }
+            }
+        }
         else if (rootCommand.Equals("message_to_remote", System.StringComparison.OrdinalIgnoreCase))
         {
             string message = "";
