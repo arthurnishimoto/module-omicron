@@ -56,6 +56,10 @@ public class RemoteTerminal : MonoBehaviour {
     [SerializeField]
     GameObject selectedObject;
 
+    [Header("Debug")]
+    [SerializeField]
+    bool showMessageDebug;
+
     public void Start()
     {
         server = new NetworkServerSimple();
@@ -230,6 +234,10 @@ public class RemoteTerminal : MonoBehaviour {
         char[] charSeparators = new char[] { '|' };
         string[] msgStrArray = msgString.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
         ParseMessage(msgStrArray);
+        if(showMessageDebug)
+        {
+            Debug.Log(msgString);
+        }
     }
 
     void ParseMessage(string[] msgArray)
@@ -457,6 +465,24 @@ public class RemoteTerminal : MonoBehaviour {
                     projection.UpdateScreenLR_x(msgArray[7]);
                     projection.UpdateScreenLR_y(msgArray[8]);
                     projection.UpdateScreenLR_z(msgArray[9]);
+                }
+            }
+        }
+        else if (rootCommand.Equals("setEyeSeparation", System.StringComparison.OrdinalIgnoreCase))
+        {
+            GameObject targetObject = GameObject.Find("Main Camera");
+            if (targetObject != null)
+            {
+                StereoscopicCamera stereoCamera = GetComponent<StereoscopicCamera>();
+                if (stereoCamera != null)
+                {
+                    float value = 0;
+                    bool valid = float.TryParse(msgArray[1], out value);
+
+                    if (valid)
+                    {
+                        stereoCamera.SetEyeSeparation(value);
+                    }
                 }
             }
         }
