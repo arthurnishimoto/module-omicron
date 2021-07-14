@@ -27,7 +27,6 @@
  
 using omicron;
 using UnityEngine;
-using UnityEngine.VR;
 
 public class GenericVRControllerUpdater : MonoBehaviour {
 
@@ -82,7 +81,7 @@ public class GenericVRControllerUpdater : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        vrModelString = UnityEngine.XR.XRDevice.model;
+        vrModelString = CAVE2InputManager.GetXRDeviceName();
 
         if (vrModelString == "Vive MV")
         {

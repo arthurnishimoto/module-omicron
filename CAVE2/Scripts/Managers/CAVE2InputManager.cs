@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using omicron;
 using omicronConnector;
-using UnityEngine.VR;
 
 [ExecuteInEditMode]
 public class CAVE2InputManager : OmicronEventClient
@@ -95,6 +94,17 @@ public class CAVE2InputManager : OmicronEventClient
     [SerializeField]
     VRModel vrModel = VRModel.None;
 
+    public static string GetXRDeviceName()
+    {
+        List<UnityEngine.XR.InputDevice> xrDevices = new List<UnityEngine.XR.InputDevice>();
+        UnityEngine.XR.InputDevices.GetDevices(xrDevices);
+        if (xrDevices.Count > 0)
+        {
+            return xrDevices[0].name;
+        }
+        return "";
+    }
+
     public void Init()
     {
         base.Start();
@@ -105,13 +115,15 @@ public class CAVE2InputManager : OmicronEventClient
         unityInputToOmicronInput[wandSimulatorButton2] = CAVE2.Button.Button2;
         unityInputToOmicronInput[wandSimulatorButton6] = CAVE2.Button.Button6;
 
-        if (UnityEngine.XR.XRDevice.model == "Vive MV" || UnityEngine.XR.XRDevice.model == "Vive. MV")
+
+        string xrDeviceName = GetXRDeviceName();
+        if (xrDeviceName == "Vive MV" || xrDeviceName == "Vive. MV")
         {
             vrModel = VRModel.Vive;
 
             inputMappingMode = InputMappingMode.Vive;
         }
-        else if (UnityEngine.XR.XRDevice.model == "Oculus Rift CV1")
+        else if (xrDeviceName == "Oculus Rift CV1")
         {
             vrModel = VRModel.OculusRiftCV1;
 
@@ -126,9 +138,9 @@ public class CAVE2InputManager : OmicronEventClient
 
             inputMappingMode = InputMappingMode.Oculus;
         }
-        if (UnityEngine.XR.XRDevice.model.Length > 0)
+        else if(xrDeviceName.Length > 0)
         {
-            Debug.Log("CAVE2InputManager: Detected VRDevice '" + UnityEngine.XR.XRDevice.model + "'.");
+            Debug.Log("CAVE2InputManager: Detected VRDevice '" + xrDeviceName + "'.");
         }
 
         OmicronMocapSensor[] mocapSensors = GetComponents<OmicronMocapSensor>();
@@ -536,8 +548,8 @@ public class CAVE2InputManager : OmicronEventClient
         {
             if (UnityEngine.XR.XRSettings.enabled)
             {
-
-                if (UnityEngine.XR.XRDevice.model == "Vive MV")
+                string xrDeviceName = GetXRDeviceName();
+                if (xrDeviceName == "Vive MV")
                 {
                     CAVE2.GetCAVE2Manager().simulatorHeadPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head);
                     CAVE2.GetCAVE2Manager().simulatorHeadRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
@@ -548,7 +560,7 @@ public class CAVE2InputManager : OmicronEventClient
                     wand2MocapSensor.UpdateTransform(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand), UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand));
 #endif
                 }
-                else if(UnityEngine.XR.XRDevice.model.Length > 0)
+                else if(xrDeviceName.Length > 0)
                 {
                     // Hack: InputTracking isn't using some offset that the Main Camera is otherwise getting. Calculate the diff here:
                     Vector3 oculusRealHeadPosition = Camera.main.transform.localPosition;
