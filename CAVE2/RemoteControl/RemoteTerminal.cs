@@ -11,6 +11,9 @@ public class RemoteTerminal : MonoBehaviour {
     [SerializeField]
     bool connectToServer;
 
+    [SerializeField]
+    bool connectedToServer;
+
     bool isServer;
     bool connecting;
 
@@ -37,6 +40,12 @@ public class RemoteTerminal : MonoBehaviour {
     Text secondaryTerminalText;
 
     // Client
+    [SerializeField]
+    bool useCAVE2RPCManager;
+
+    [SerializeField]
+    CAVE2RPCManager cave2RPCManager;
+
     [SerializeField]
     string serverIP = "localhost";
     NetworkClient client;
@@ -203,12 +212,14 @@ public class RemoteTerminal : MonoBehaviour {
     void ClientOnConnect(NetworkMessage msg)
     {
         PrintUI("Client: Connected to " + serverIP);
+        connectedToServer = true;
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
         PrintUI("Client: Disconnected");
         connecting = false;
+        connectedToServer = false;
     }
 
     void ClientOnData(NetworkMessage msg)
@@ -546,38 +557,50 @@ public class RemoteTerminal : MonoBehaviour {
     public void SendCommand(string cmd, bool useReliable = true)
     {
         //Debug.Log("Sending: '" + cmd + "'");
-        if (isServer)
+        if (useCAVE2RPCManager)
         {
-            System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = server.connections;
+            cave2RPCManager.SendTerminalMsg(FormatCmdStr(cmd), useReliable);
+        }
+        else
+        {
 
-            for (int i = 0; i < connections.Count; i++)
+            if (isServer)
             {
-                if (connections[i] != null)
+                System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = server.connections;
+
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    if (connections[i] != null)
+                    {
+                        NetworkWriter writer = new NetworkWriter();
+                        writer.StartMessage(TerminalMsgID);
+                        writer.Write(FormatCmdStr(cmd));
+                        writer.FinishMessage();
+
+                        server.SendWriterTo(connections[i].connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
+                    }
+                }
+            }
+            else
+            {
+                if (client.connection != null && client.isConnected)
                 {
                     NetworkWriter writer = new NetworkWriter();
                     writer.StartMessage(TerminalMsgID);
                     writer.Write(FormatCmdStr(cmd));
                     writer.FinishMessage();
 
-                    server.SendWriterTo(connections[i].connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
+                    if (client.SendWriter(writer, useReliable ? reliableChannelId : unreliableChannelId) == false)
+                    {
+                        PrintUI("Failed to send message. Disconnected from server. Reconnecting...");
+                        ConnectToServer();
+
+                        // TODO: Create unsent message queue the resend on connection?
+                    }
                 }
-            }
-        }
-        else
-        {
-            if (client.connection != null)
-            {
-                NetworkWriter writer = new NetworkWriter();
-                writer.StartMessage(TerminalMsgID);
-                writer.Write(FormatCmdStr(cmd));
-                writer.FinishMessage();
-
-                if(client.SendWriter(writer, useReliable ? reliableChannelId : unreliableChannelId) == false)
+                else
                 {
-                    PrintUI("Failed to send message. Disconnected from server. Reconnecting...");
-                    ConnectToServer();
-
-                    // TODO: Create unsent message queue the resend on connection?
+                    PrintUI("Failed to send message. Not Connected to Server");
                 }
             }
         }
