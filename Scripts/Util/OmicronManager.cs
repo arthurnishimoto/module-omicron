@@ -297,6 +297,16 @@ public class OmicronManager : MonoBehaviour
 
     OmicronConfig config;
 
+    [Header("Network Analysis")]
+    [SerializeField]
+    float incomingUpdateLatency;
+
+    float updateTimer;
+    int updateEvents;
+
+    [SerializeField]
+    int filterByID = -1;
+
     public static OmicronManager GetOmicronManager()
     {
         if (omicronManagerInstance != null)
@@ -434,8 +444,18 @@ public class OmicronManager : MonoBehaviour
 
 	public void AddEvent( EventData e )
 	{
+        if (filterByID == -1)
+        {
+            updateEvents++;
+        }
+
         lock (eventList.SyncRoot)
         {
+            if (filterByID != -1)
+            {
+                updateEvents++;
+            }
+
             eventList.Add(e);
             if (debug)
             {
@@ -460,6 +480,14 @@ public class OmicronManager : MonoBehaviour
 
     public void Update()
     {
+        updateTimer += Time.deltaTime;
+        if(updateTimer > 5 && updateEvents > 0)
+        {
+            incomingUpdateLatency = updateTimer / updateEvents;
+            updateTimer = 0;
+            updateEvents = 0;
+        }
+
         connectionState = (ConnectionState)omicronManager.GetConnectionState();
 
         if (mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)))
