@@ -289,7 +289,13 @@ public class CAVE2RPCManager : MonoBehaviour {
                                     Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'");
                                     LogUI("connID " + srcID + ": " + msgString);
                                 }
-                                
+                                remoteTerminal.MsgFromCAVE2RPCManager(msgString);
+
+                                // If server forward message from client to other clients
+                                if(connectionId == 0)
+                                {
+                                    SendTerminalMsg(msgString, true, srcID);
+                                }
                             }
                         }
                         else if (clientMessageDelegates.ContainsKey(readerMsgType))
@@ -421,11 +427,18 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     }
 
-    public void SendTerminalMsg(string msgString, bool useReliable)
+    public void SendTerminalMsg(string msgString, bool useReliable, int forwardingID = -1)
     {
         NetworkWriter writer = new NetworkWriter();
         writer.StartMessage(Msg_RemoteTerminal);
-        writer.Write(connectionId);
+        if (forwardingID == -1)
+        {
+            writer.Write(connectionId);
+        }
+        else
+        {
+            writer.Write(forwardingID);
+        }
         writer.Write(msgString);
         writer.FinishMessage();
 
@@ -440,7 +453,10 @@ public class CAVE2RPCManager : MonoBehaviour {
             // Server to client(s)
             foreach(int clientId in clientIDs)
             {
-                NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                if (clientId != forwardingID) // Don't forward message back to sender
+                {
+                    NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                }
             }
         }
         else

@@ -251,6 +251,11 @@ public class RemoteTerminal : MonoBehaviour {
         }
     }
 
+    public void MsgFromCAVE2RPCManager(string msgString)
+    {
+        CAVE2ClusterMsg(msgString);
+    }
+
     void ParseMessage(string[] msgArray)
     {
         string rootCommand = msgArray[0];

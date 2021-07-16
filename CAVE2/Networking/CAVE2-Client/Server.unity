@@ -244,6 +244,16 @@ PrefabInstance:
     - target: {fileID: 114000013686925216, guid: 1056db8e37b5f7f4fa5555f6f1501058,
         type: 3}
       propertyPath: startServer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013686925216, guid: 1056db8e37b5f7f4fa5555f6f1501058,
+        type: 3}
+      propertyPath: cave2RPCManager
+      value: 
+      objectReference: {fileID: 823238238}
+    - target: {fileID: 114000013686925216, guid: 1056db8e37b5f7f4fa5555f6f1501058,
+        type: 3}
+      propertyPath: useCAVE2RPCManager
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -501,6 +511,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1621f4dd1e8c2748a5a423aa7736d55, type: 3}
+--- !u!114 &823238238 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+    type: 3}
+  m_PrefabInstance: {fileID: 2091677799}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af937c943915434f9738f08035c480e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &976475553
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -576,6 +598,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2dc815eb6f285da4dae0dcc549a09a6e, type: 3}
+--- !u!114 &1124704540 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114000013686925216, guid: 1056db8e37b5f7f4fa5555f6f1501058,
+    type: 3}
+  m_PrefabInstance: {fileID: 250177936}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c9d66f0f30a9c4ab0cf2dc684ef43b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1444878816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -744,16 +778,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
         type: 3}
-      propertyPath: debugRPC
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
-      propertyPath: useMsgClient
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
-        type: 3}
       propertyPath: internalMessageTest
       value: 1
       objectReference: {fileID: 0}
@@ -761,6 +785,11 @@ PrefabInstance:
         type: 3}
       propertyPath: remoteTerminal
       value: 
+      objectReference: {fileID: 1124704540}
+    - target: {fileID: 114000010049079728, guid: 542475707c6b5644dac416d70a41eb31,
+        type: 3}
+      propertyPath: debugMsg
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 542475707c6b5644dac416d70a41eb31, type: 3}
