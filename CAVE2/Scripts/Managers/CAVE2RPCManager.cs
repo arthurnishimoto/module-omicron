@@ -281,7 +281,15 @@ public class CAVE2RPCManager : MonoBehaviour {
                             }
                             else
                             {
-                                Debug.Log("RemoteTerminal in: '" + networkReader.ReadString() + "' client " + recHostId + "->" + recConnectionId);
+                                int srcID = networkReader.ReadInt32();
+                                string msgString = networkReader.ReadString();
+
+                                if (debugMsg)
+                                {
+                                    Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'");
+                                    LogUI("connID " + srcID + ": " + msgString);
+                                }
+                                
                             }
                         }
                         else if (clientMessageDelegates.ContainsKey(readerMsgType))
@@ -417,6 +425,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         NetworkWriter writer = new NetworkWriter();
         writer.StartMessage(Msg_RemoteTerminal);
+        writer.Write(connectionId);
         writer.Write(msgString);
         writer.FinishMessage();
 
