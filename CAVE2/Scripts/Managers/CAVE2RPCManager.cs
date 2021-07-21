@@ -286,7 +286,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
                                 if (debugMsg)
                                 {
-                                    Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'");
+                                    Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'" + connectionId);
                                     LogUI("connID " + srcID + ": " + msgString);
                                 }
                                 remoteTerminal.MsgFromCAVE2RPCManager(msgString);
@@ -453,22 +453,26 @@ public class CAVE2RPCManager : MonoBehaviour {
             // Server to client(s)
             foreach(int clientId in clientIDs)
             {
-                if (clientId != forwardingID) // Don't forward message back to sender
+                if (debugMsg)
                 {
-                    NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                    Debug.Log("RemoteTerminal out: " + connectionId + "'" + msgString + "' " + hostId + " " + clientId + " " + forwardingID);
                 }
+
+                NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
             }
         }
         else
         {
             // Client to Server
             NetworkTransport.Send(hostId, connectionId, channelId, writerData, writerData.Length, out error);
+
+            if (debugMsg)
+            {
+                Debug.Log("RemoteTerminal out: " + connectionId + "'" + msgString + "' " + hostId + " " + connectionId);
+            }
         }
 
-        if(debugMsg)
-        {
-            Debug.Log("RemoteTerminal out: " + connectionId + "'" + msgString + "' " + hostId + " " + connectionId);
-        }
+        
     }
 
     void ServerSendToClient(int clientId, short messageID, MessageBase msg, MsgType msgType = MsgType.Reliable)
