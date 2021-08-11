@@ -131,4 +131,9 @@ public class OmicronMocapSensor : OmicronEventClient
     {
         positionMod = value;
     }
+
+    public float GetUpdateLatency()
+    {
+        return updateLatency;
+    }
 }

@@ -70,4 +70,9 @@ public class CAVE2MocapUpdater : MonoBehaviour {
             transform.Rotate(rotOffset);
         }
     }
+
+    public void SetPosOffset(Vector3 offset)
+    {
+        posOffset = offset;
+    }
 }

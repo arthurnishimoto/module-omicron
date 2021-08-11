@@ -251,6 +251,11 @@ public class RemoteTerminal : MonoBehaviour {
         }
     }
 
+    public void MsgFromCAVE2RPCManager(string msgString)
+    {
+        CAVE2ClusterMsg(msgString);
+    }
+
     void ParseMessage(string[] msgArray)
     {
         string rootCommand = msgArray[0];
@@ -459,11 +464,11 @@ public class RemoteTerminal : MonoBehaviour {
         }
         else if (rootCommand.Equals("setGeneralizedPerspectiveProjection", System.StringComparison.OrdinalIgnoreCase))
         {
-            GameObject targetObject = GameObject.Find("Main Camera");
-            if (targetObject != null)
+            GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
+            foreach (GameObject cameraObj in cameraObjects)
             {
-                GeneralizedPerspectiveProjection projection = targetObject.GetComponent<GeneralizedPerspectiveProjection>();
-                if (projection != null)
+                GeneralizedPerspectiveProjection projection = cameraObj.GetComponent<GeneralizedPerspectiveProjection>();
+                if (projection)
                 {
                     projection.UpdateScreenUL_x(msgArray[1]);
                     projection.UpdateScreenUL_y(msgArray[2]);
@@ -476,6 +481,23 @@ public class RemoteTerminal : MonoBehaviour {
                     projection.UpdateScreenLR_x(msgArray[7]);
                     projection.UpdateScreenLR_y(msgArray[8]);
                     projection.UpdateScreenLR_z(msgArray[9]);
+                }
+            }
+        }
+        else if (rootCommand.Equals("setGPPCameraOffset", System.StringComparison.OrdinalIgnoreCase))
+        {
+            GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
+            foreach (GameObject cameraObj in cameraObjects)
+            {
+                GeneralizedPerspectiveProjection projection = cameraObj.GetComponent<GeneralizedPerspectiveProjection>();
+                if (projection)
+                {
+                    Vector3 newOffset = Vector3.zero;
+                    float.TryParse(msgArray[1], out newOffset.x);
+                    float.TryParse(msgArray[2], out newOffset.y);
+                    float.TryParse(msgArray[3], out newOffset.z);
+
+                    projection.SetOffset(newOffset);
                 }
             }
         }

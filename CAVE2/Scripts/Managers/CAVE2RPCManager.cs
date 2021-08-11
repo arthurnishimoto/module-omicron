@@ -289,7 +289,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                                     Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'");
                                     LogUI("connID " + srcID + ": " + msgString);
                                 }
-                                
+                                remoteTerminal.MsgFromCAVE2RPCManager(msgString);
                             }
                         }
                         else if (clientMessageDelegates.ContainsKey(readerMsgType))
