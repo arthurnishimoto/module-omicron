@@ -196,8 +196,27 @@ public class CAVE2WandNavigator : MonoBehaviour {
         lookAround.y = CAVE2.GetAxis(wandID, lookLRAxis);
         lookAround.y *= movementScale;
 
-        vertical = CAVE2.GetAxis(wandID, verticalAxis);
-        vertical *= movementScale * speedMod;
+        if(CAVE2.IsSimulatorMode())
+        {
+            if(Input.GetKey(CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().simulatorFlyUp))
+            {
+                vertical = 1;
+            }
+            else if(Input.GetKey(CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().simulatorFlyDown))
+            {
+                vertical = -1;
+            }
+            else
+            {
+                vertical = 0;
+            }
+            vertical *= movementScale * speedMod;
+        }
+        else
+        {
+            vertical = CAVE2.GetAxis(wandID, verticalAxis);
+            vertical *= movementScale * speedMod;
+        }
 
         freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
 
@@ -260,6 +279,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
         Vector3 nextPos = transform.position;
         float forwardAngle = transform.eulerAngles.y;
+
+        nextPos.y += vertical * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
 
         if (forwardReference == ForwardRef.Head)
             forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
@@ -380,6 +401,8 @@ public class CAVE2WandNavigator : MonoBehaviour {
         //nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
 
         nextPos += CAVE2.GetWandObject(wandID).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+
+        nextPos.y += vertical * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
 
         if (horizontalMovementMode == HorizonalMovementMode.Strafe)
         {

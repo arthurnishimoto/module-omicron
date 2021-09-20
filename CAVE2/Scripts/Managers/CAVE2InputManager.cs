@@ -64,6 +64,9 @@ public class CAVE2InputManager : OmicronEventClient
     string simulatorWand2Trigger = "Trigger R";
     string simulatorWand2Grip = "Grip R";
 
+    public KeyCode simulatorFlyUp = KeyCode.R;
+    public KeyCode simulatorFlyDown = KeyCode.F;
+
     [Header("Simulator Mocap Mapping")]
     public KeyCode simulatorHeadRotateL = KeyCode.Q;
     public KeyCode simulatorHeadRotateR = KeyCode.E;
