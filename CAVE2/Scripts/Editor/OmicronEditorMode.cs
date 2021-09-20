@@ -45,6 +45,8 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(CAVE2SIM_NAME)]
     static void ConfigCAVE2Simulator()
     {
+        CleanupCustomPerspectiveCamera();
+
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "");
 
         Debug.Log("Configured for CAVE2 simulator");
@@ -67,6 +69,8 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(CAVE2_NAME)]
     static void ConfigCAVE2()
     {
+        CleanupCustomPerspectiveCamera();
+
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "USING_GETREAL3D");
         PlayerSettings.virtualRealitySupported = false;
 
@@ -85,6 +89,8 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(OCULUS_NAME)]
     static void ConfigOculus()
     {
+        CleanupCustomPerspectiveCamera();
+
         if (Camera.main)
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
 
@@ -107,7 +113,9 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(VIVE_NAME)]
     static void ConfigVive()
     {
-        if( Camera.main )
+        CleanupCustomPerspectiveCamera();
+
+        if ( Camera.main )
             Camera.main.transform.localPosition = Vector3.up * 0f;
 
         PlayerSettings.virtualRealitySupported = true;
@@ -129,6 +137,8 @@ public class OmicronEditorMode : MonoBehaviour
     [MenuItem(VR_NAME)]
     static void ConfigVR()
     {
+        CleanupCustomPerspectiveCamera();
+
         if (Camera.main)
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
         PlayerSettings.virtualRealitySupported = false;
@@ -173,7 +183,7 @@ public class OmicronEditorMode : MonoBehaviour
         if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
             c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
 
-        Debug.Log("Configured for Continuum Main Wall");
+        Debug.Log("Configured for Continuum 3D Wall");
     }
 
     [MenuItem(CONTINUUM_MAIN)]
@@ -207,5 +217,20 @@ public class OmicronEditorMode : MonoBehaviour
             c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
 
         Debug.Log("Configured for Continuum Main Wall");
+    }
+
+    static void CleanupCustomPerspectiveCamera()
+    {
+        GeneralizedPerspectiveProjection projection = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
+        if (projection != null)
+        {
+            DestroyImmediate(projection);
+        }
+
+        StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
+        if (stereoCamera != null)
+        {
+            DestroyImmediate(stereoCamera);
+        }
     }
 }
