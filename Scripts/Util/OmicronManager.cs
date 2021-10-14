@@ -271,6 +271,7 @@ public class OmicronManager : MonoBehaviour
 
     [Header("Coordinate Conversions")]
     [SerializeField] bool continuum3DXAxis;
+    [SerializeField] bool continuumMainInvertX;
 
     enum ClientFlags
     {
@@ -593,6 +594,17 @@ public class OmicronManager : MonoBehaviour
 
                     e.posz = cave2X;
                     e.posx = -cave2Z;
+                }
+
+                // If Continuum tracking system is calibrated as main wall display out as +Z and 3D wall out as +X
+                // CAVE2 (Vicon uses +x to right (when facing main wall), Continuum uses -x to right)
+                if (continuumMainInvertX)
+                {
+                    float cave2X = e.posx;
+                    float cave2Z = e.posz;
+
+                    e.posx = -cave2X + 0.2f;
+                    e.posz = -cave2Z;
                 }
 
                 foreach (OmicronEventClient c in omicronClients)

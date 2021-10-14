@@ -191,7 +191,7 @@ public class OmicronEditorMode : MonoBehaviour
     {
         if (Camera.main)
         {
-            Camera.main.transform.localEulerAngles = Vector3.up * 90;
+            // Camera.main.transform.localEulerAngles = Vector3.up * 90;
 
             GeneralizedPerspectiveProjection projection = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
             if (projection == null)
@@ -199,9 +199,9 @@ public class OmicronEditorMode : MonoBehaviour
                 projection = Camera.main.gameObject.AddComponent<GeneralizedPerspectiveProjection>();
             }
 
-            projection.SetScreenUL(new Vector3(3.579f, 2.527f, 3.642f));
-            projection.SetScreenLL(new Vector3(3.579f, 0.479f, 3.642f));
-            projection.SetScreenLR(new Vector3(3.579f, 0.479f, -3.642f));
+            projection.SetScreenUL(new Vector3(-3.642f, 2.527f, 3.579f));
+            projection.SetScreenLL(new Vector3(-3.642f, 0.479f, 3.579f));
+            projection.SetScreenLR(new Vector3(3.642f, 0.479f, 3.579f));
             projection.SetVirtualCamera(Camera.main);
 
             StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
