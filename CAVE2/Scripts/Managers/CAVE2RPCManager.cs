@@ -495,10 +495,19 @@ public class CAVE2RPCManager : MonoBehaviour {
             case (MsgType.StateUpdate): channelId = stateUpdateChannelId; break;
         }
 
-        foreach (int clientId in clientIDs)
+        if (useMsgServer)
+        {
+            foreach (int clientId in clientIDs)
+            {
+                byte error;
+                NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                nPacketsSent++;
+            }
+        }
+        if(useMsgClient)
         {
             byte error;
-            NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+            NetworkTransport.Send(hostId, connectionId, channelId, writerData, writerData.Length, out error);
             nPacketsSent++;
         }
     }
