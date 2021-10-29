@@ -26,7 +26,6 @@
  *************************************************************************************************/
  
 using UnityEngine;
-using UnityEngine.VR;
 using System.Collections;
 
 public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {

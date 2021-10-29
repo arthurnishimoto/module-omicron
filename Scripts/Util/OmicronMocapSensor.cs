@@ -51,6 +51,9 @@ public class OmicronMocapSensor : OmicronEventClient
     [SerializeField]
     float updateLatency;
 
+    [SerializeField]
+    CAVE2RPCManager.MsgType sendDataMode = CAVE2RPCManager.MsgType.Unreliable;
+
     // Use this for initialization
     new void Start()
     {
@@ -90,7 +93,7 @@ public class OmicronMocapSensor : OmicronEventClient
     {
         if (CAVE2.GetCAVE2Manager().sendTrackingData)
         {
-            CAVE2.SendMessage(gameObject.name, "SendTransformInfo", pos, rot);
+            CAVE2.SendMessage(gameObject.name, "SendTransformInfo", pos, rot, sendDataMode);
         }
         else
         {

@@ -254,6 +254,7 @@ public class OmicronManager : MonoBehaviour
     SimpleCanvasTouch testTouchCanvas;
 
     string configPath;
+    bool hasConfig;
 
     [Header("Requested Service Types")]
     [SerializeField] bool enablePointer = true;
@@ -267,6 +268,10 @@ public class OmicronManager : MonoBehaviour
     [SerializeField] bool enableSpeech = true;
     [SerializeField] bool enableImage = false;
     [SerializeField] bool enableAudio = true;
+
+    [Header("Coordinate Conversions")]
+    [SerializeField] bool continuum3DXAxis;
+    [SerializeField] bool continuumMainInvertX;
 
     enum ClientFlags
     {
@@ -293,9 +298,21 @@ public class OmicronManager : MonoBehaviour
         public string serverIP;
         public int serverMsgPort;
         public int dataPort;
+        public bool continuum3DXAxis;
+        public bool keyboardMouseWandEmulation;
     }
 
     OmicronConfig config;
+
+    [Header("Network Analysis")]
+    [SerializeField]
+    float incomingUpdateLatency;
+
+    float updateTimer;
+    int updateEvents;
+
+    [SerializeField]
+    int filterByID = -1;
 
     public static OmicronManager GetOmicronManager()
     {
@@ -340,6 +357,7 @@ public class OmicronManager : MonoBehaviour
             if (cmdArgs[i].Equals("-oconfig") && i + 1 < cmdArgs.Length)
             {
                 configPath = Environment.CurrentDirectory + "/" + cmdArgs[i + 1];
+                hasConfig = true;
             }
         }
 
@@ -353,6 +371,10 @@ public class OmicronManager : MonoBehaviour
             serverIP = config.serverIP;
             serverMsgPort = config.serverMsgPort;
             dataPort = config.dataPort;
+            continuum3DXAxis = config.continuum3DXAxis;
+            GetComponent<CAVE2Manager>().SetKeyboardMouseWand(config.keyboardMouseWandEmulation);
+
+            hasConfig = true;
         }
         catch
         {
@@ -434,8 +456,18 @@ public class OmicronManager : MonoBehaviour
 
 	public void AddEvent( EventData e )
 	{
+        if (filterByID == -1)
+        {
+            updateEvents++;
+        }
+
         lock (eventList.SyncRoot)
         {
+            if (filterByID != -1)
+            {
+                updateEvents++;
+            }
+
             eventList.Add(e);
             if (debug)
             {
@@ -460,6 +492,14 @@ public class OmicronManager : MonoBehaviour
 
     public void Update()
     {
+        updateTimer += Time.deltaTime;
+        if(updateTimer > 5 && updateEvents > 0)
+        {
+            incomingUpdateLatency = updateTimer / updateEvents;
+            updateTimer = 0;
+            updateEvents = 0;
+        }
+
         connectionState = (ConnectionState)omicronManager.GetConnectionState();
 
         if (mouseTouchEmulation && (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)))
@@ -545,6 +585,28 @@ public class OmicronManager : MonoBehaviour
                     e.ory = -e.ory;
                 }
 
+                // If Continuum tracking system is calibrated as main wall display out as +Z and 3D wall out as +X
+                // I.e. 3D wall faces +X, opposed to standard CAVE2 configuration where this is +Z
+                if (continuum3DXAxis)
+                {
+                    float cave2X = e.posx;
+                    float cave2Z = e.posz;
+
+                    e.posz = cave2X;
+                    e.posx = -cave2Z;
+                }
+
+                // If Continuum tracking system is calibrated as main wall display out as +Z and 3D wall out as +X
+                // CAVE2 (Vicon uses +x to right (when facing main wall), Continuum uses -x to right)
+                if (continuumMainInvertX)
+                {
+                    float cave2X = e.posx;
+                    float cave2Z = e.posz;
+
+                    e.posx = -cave2X + 0.2f;
+                    e.posz = -cave2Z;
+                }
+
                 foreach (OmicronEventClient c in omicronClients)
                 {
                     if (c == null)
@@ -578,6 +640,22 @@ public class OmicronManager : MonoBehaviour
 
 	void OnApplicationQuit()
     {
+        if (config != null)
+        {
+            config.connectToServer = connectToServer;
+            config.serverIP = serverIP;
+            config.serverMsgPort = serverMsgPort;
+            config.dataPort = dataPort;
+            config.keyboardMouseWandEmulation = GetComponent<CAVE2Manager>().GetKeyboardMouseWand();
+            config.continuum3DXAxis = continuum3DXAxis;
+
+            string sfgJson = JsonUtility.ToJson(config, true);
+
+            StreamWriter writer = new StreamWriter(configPath);
+            writer.WriteLine(sfgJson);
+            writer.Close();
+        }
+
         if (connectToServer)
         {
             DisconnectServer();
@@ -642,5 +720,7 @@ public class OmicronManager : MonoBehaviour
 		GUI.Label(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 3, 120, 20), "Data Port:");
 		dataPort = int.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + rowHeight * 3, 200, 20), dataPort.ToString(), 25));
 
-	}
+        GUI.Label(new Rect(GUIOffset.x + 20, GUIOffset.y + rowHeight * 5, 120, 20), "Tracking Options:");
+        continuum3DXAxis = GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 6, 250, 20), continuum3DXAxis, "Flip Z and X axis");
+    }
 }// class

@@ -59,13 +59,16 @@ public class OmicronMocapObject : OmicronEventClient
 
     private void Update()
     {
-        transform.localPosition = position;
-        transform.localRotation = orientation;
-        timeSinceLastUpdate += Time.deltaTime;
-
-        if (GetComponent<MeshRenderer>())
+        if (CAVE2.IsMaster())
         {
-            GetComponent<MeshRenderer>().enabled = (hideIfNotTracked && timeSinceLastUpdate > 1) ? false : true;
+            transform.localPosition = position;
+            transform.localRotation = orientation;
+            timeSinceLastUpdate += Time.deltaTime;
+
+            if (GetComponent<MeshRenderer>())
+            {
+                GetComponent<MeshRenderer>().enabled = (hideIfNotTracked && timeSinceLastUpdate > 1) ? false : true;
+            }
         }
     }
 }

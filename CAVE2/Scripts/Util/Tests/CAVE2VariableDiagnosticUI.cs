@@ -20,6 +20,6 @@ public class CAVE2VariableDiagnosticUI : MonoBehaviour
         uiText.text = "IsMaster() = " + CAVE2.IsMaster() + "\n";
         uiText.text += "OnCAVE2Display() = " + CAVE2.OnCAVE2Display() + "\n";
         uiText.text += "VR Enabled = " + UnityEngine.XR.XRSettings.enabled + "\n";
-        uiText.text += "VR Model = '" + UnityEngine.XR.XRDevice.model + "'\n";
+        uiText.text += "VR Model = '" + CAVE2InputManager.GetXRDeviceName() + "'\n";
     }
 }

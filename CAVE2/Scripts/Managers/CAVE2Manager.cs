@@ -31,7 +31,7 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
-    // static float CAVE2_RADIUS = 3.240f;
+    static float CAVE2_RADIUS = 3.240f;
     static float CAVE2_FLOOR_TO_BOTTOM_DISPLAY = 0.293f;
     static float CAVE2_DISPLAY_W_BORDER_HEIGHT = 0.581f;
 
@@ -756,6 +756,36 @@ static CAVE2Manager CAVE2Manager_Instance;
         {
             debugCanvas.SetActive(showDebugCanvas);
         }
+    }
+
+    // GUI
+    Vector2 GUIOffset;
+    bool keyboardMouseWand;
+
+    public void SetKeyboardMouseWand(bool value)
+    {
+        keyboardMouseWand = value;
+    }
+
+    public bool GetKeyboardMouseWand()
+    {
+        return keyboardMouseWand;
+    }
+
+    public void SetGUIOffSet(Vector2 offset)
+    {
+        GUIOffset = offset;
+    }
+
+    public void OnWindow(int windowID)
+    {
+        float rowHeight = 25;
+
+        keyboardMouseWand = GUI.Toggle(new Rect(GUIOffset.x + 20, GUIOffset.y + rowHeight * 0, 250, 20), keyboardMouseWand, "Simulator Wand");
+
+        mocapEmulation = keyboardMouseWand;
+        keyboardEventEmulation = keyboardMouseWand;
+        wandMousePointerEmulation = keyboardMouseWand;
     }
 
     // CAVE2 Tracking Management -------------------------------------------------------------------

@@ -15,8 +15,8 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     [SerializeField] float borderTop = 4; // mm
     [SerializeField] float borderBottom = 2; // mm
-    // [SerializeField] float borderLeft = 4; // mm
-    // [SerializeField] float borderRight = 2; // mm
+    [SerializeField] float borderLeft = 4; // mm
+    [SerializeField] float borderRight = 2; // mm
 
     [Header("Wall Parameters")]
     [SerializeField] float frontDisplayToTrackingOrigin = 3240; // mm
@@ -30,6 +30,8 @@ public class ScreenConfigCalc : MonoBehaviour {
     [SerializeField] bool flatWall;
     [SerializeField] float wallOffset; // mm
     [SerializeField] float displayRotation; // mm
+
+    [SerializeField] Transform trackingOrigin;
 
     float angle;
 
@@ -103,8 +105,8 @@ public class ScreenConfigCalc : MonoBehaviour {
         }
 
         angle = 2.0f * Mathf.Atan(displayWidthIncBorders / 2.0f / frontDisplayToTrackingOrigin);
-
-        // float displayPixelWidth = displayWidthIncBorders - borderLeft - borderRight;
+        
+        float displayPixelWidth = displayWidthIncBorders - borderLeft - borderRight;
         float displayPixelHeight = displayHeightIncBorders - borderTop - borderBottom;
 
         
@@ -173,10 +175,11 @@ public class ScreenConfigCalc : MonoBehaviour {
 
                 displayObjects.Add(g);
 
-                Vector3 Px_UpperLeft = g.transform.Find("Borders/PixelSpace/Px-UpperLeft").position;
-                Vector3 Px_LowerLeft = g.transform.Find("Borders/PixelSpace/Px-LowerLeft").position;
-                Vector3 Px_LowerRight = g.transform.Find("Borders/PixelSpace/Px-LowerRight").position;
-                Vector3 Px_UpperRight = g.transform.Find("Borders/PixelSpace/Px-UpperRight").position;
+                // Convert from world space to relative to tracking orientation
+                Vector3 Px_UpperLeft = trackingOrigin.InverseTransformPoint(g.transform.Find("Borders/PixelSpace/Px-UpperLeft").position);
+                Vector3 Px_LowerLeft = trackingOrigin.InverseTransformPoint(g.transform.Find("Borders/PixelSpace/Px-LowerLeft").position);
+                Vector3 Px_LowerRight = trackingOrigin.InverseTransformPoint(g.transform.Find("Borders/PixelSpace/Px-LowerRight").position);
+                Vector3 Px_UpperRight = trackingOrigin.InverseTransformPoint(g.transform.Find("Borders/PixelSpace/Px-UpperRight").position);
 
                 Px_UpperLeft *= 1000.0f;
                 Px_LowerLeft *= 1000.0f;

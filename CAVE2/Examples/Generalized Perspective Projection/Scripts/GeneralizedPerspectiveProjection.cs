@@ -45,9 +45,6 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     [SerializeField]
     protected Transform head;
 
-    [SerializeField]
-    bool debug = false;
-
     protected bool useProjection = true;
 
     [SerializeField]
@@ -56,13 +53,31 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     Vector3 offset = Vector3.zero;
     bool applyPosition = true;
 
+    [Header("Debug")]
+    [SerializeField]
+    bool showScreenCorners = false;
+
+    [SerializeField]
+    UnityEngine.UI.Text debugGUI;
+
     // Use this for initialization
     void Start () {
 
 	}
-	
-	// Update is called once per frame
-	void LateUpdate () {
+
+    private void Update()
+    {
+        if(debugGUI)
+        {
+            debugGUI.text = "Projection:" + "\n";
+            debugGUI.text += screenUL.ToString("F3") + "\n";
+            debugGUI.text += screenLL.ToString("F3") + "\n";
+            debugGUI.text += screenLR.ToString("F3") + "";
+        }
+    }
+
+    // Update is called once per frame
+    void LateUpdate () {
         if (useProjection)
         {
             Projection(screenLL, screenLR, screenUL, head.localPosition + offset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
@@ -100,7 +115,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
         vb = pb - pe;
         vc = pc - pe;
 
-        if (debug)
+        if (showScreenCorners)
         {
             Debug.DrawRay(virtualCamera.transform.position, va, Color.green);
             Debug.DrawRay(virtualCamera.transform.position, vb, Color.green);

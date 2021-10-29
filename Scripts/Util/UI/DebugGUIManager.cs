@@ -38,7 +38,7 @@ public class DebugGUIManager : MonoBehaviour {
     public DebugWindow currentWindow = DebugWindow.App;
 
     OmicronManager omgManager;
-    // CAVE2Manager cave2manager;
+    CAVE2Manager cave2manager;
 
     public MonoBehaviour appMenu;
 
@@ -69,7 +69,7 @@ public class DebugGUIManager : MonoBehaviour {
     void Start()
 	{
 		omgManager = GetComponent<OmicronManager>();
-        // cave2manager = GetComponent<CAVE2Manager>();
+        cave2manager = GetComponent<CAVE2Manager>();
 
         transform.position = new Vector3(0.01f, 0.04f, 0);
 	}
@@ -149,18 +149,24 @@ public class DebugGUIManager : MonoBehaviour {
 
                 // showFPS = GUI.Toggle(new Rect(20, 25 * 7, 250, 20), showFPS, "Show FPS");
                 // showOnlyOnMaster = GUI.Toggle(new Rect(20, 25 * 8, 250, 20), showOnlyOnMaster, "Show FPS only on master");
-                GUI.Label(new Rect(20, 28 * 6.5f, 250, 20), "Time: " + System.String.Format("{0:F2}", Time.time));
-                GUI.Label(new Rect(20, 28 * 7, 250, 20), "FPS: " + System.String.Format("{0:F2}", curFPS));
-                GUI.Label(new Rect(20, 28 * 7.5f, 250, 20), "   Min (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.x, minMaxFPSTime.x));
-                GUI.Label(new Rect(20, 28 * 8.0f, 250, 20), "   Avg (Time): " + System.String.Format("{0:F2}", avgFPS.x / avgFPS.y));
-                GUI.Label(new Rect(20, 28 * 8.5f, 250, 20), "   Max (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.y, minMaxFPSTime.y));
+                GUI.Label(new Rect(20, 28 * 8.5f, 250, 20), "Time: " + System.String.Format("{0:F2}", Time.time));
+                GUI.Label(new Rect(20, 28 * 9, 250, 20), "FPS: " + System.String.Format("{0:F2}", curFPS));
+                GUI.Label(new Rect(20, 28 * 9.5f, 250, 20), "   Min (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.x, minMaxFPSTime.x));
+                GUI.Label(new Rect(20, 28 * 10.0f, 250, 20), "   Avg (Time): " + System.String.Format("{0:F2}", avgFPS.x / avgFPS.y));
+                GUI.Label(new Rect(20, 28 * 10.5f, 250, 20), "   Max (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.y, minMaxFPSTime.y));
             }
             else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
 		}
 		else if (currentWindow == DebugWindow.CAVE2 )
 		{
-			GUI.Label(new Rect(20,50,256,24), "This Feature is Not Currently Available");
+            if (cave2manager != null)
+            {
+                cave2manager.SetGUIOffSet(new Vector2(0, 50));
+                cave2manager.OnWindow(windowID);
+            }
+            else
+                GUI.Label(new Rect(20,50,256,24), "This Feature is Not Currently Available");
 		}
 		else if (currentWindow == DebugWindow.PlayerController )
 		{

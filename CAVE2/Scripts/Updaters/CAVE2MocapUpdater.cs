@@ -30,6 +30,10 @@ using System.Collections;
 
 public class CAVE2MocapUpdater : MonoBehaviour {
 
+    enum PredefinedMocapSensors {None = -1, Head_Tracker = 0, Wand_Batman = 1, Wand_Robin = 2, HoloLens = 5, Mirage = 6, HoloLens2 = 7};
+    [SerializeField]
+    PredefinedMocapSensors usePredefined = PredefinedMocapSensors.None;
+
     public int sourceID = 1;
 
     // Offset to tracking data (ex. object pivot vs tracking marker center)
@@ -41,7 +45,10 @@ public class CAVE2MocapUpdater : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-	
+	    if(usePredefined != PredefinedMocapSensors.None)
+        {
+            sourceID = (int)usePredefined;
+        }
 	}
 	
 	// Update is called once per frame

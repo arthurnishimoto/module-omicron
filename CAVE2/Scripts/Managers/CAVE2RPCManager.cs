@@ -52,7 +52,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     public bool useMsgServer;
 
-    // static short MessageID = 1104;
+    static short Msg_RemoteTerminal = 1104;
     static short Msg_CAVE2RPC2 = 202;
     static short Msg_CAVE2RPC16 = 216;
     static short Msg_OmicronSensorList = 1100;
@@ -61,7 +61,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     NetworkMessageDelegate serverOnClientConnect;
     NetworkMessageDelegate serverOnClientDisconnect;
     NetworkMessageDelegate serverOnData;
-    
+
     Hashtable serverMessageDelegates = new Hashtable();
 
     [SerializeField]
@@ -269,11 +269,36 @@ public class CAVE2RPCManager : MonoBehaviour {
                     // Next two bytes is the msg type
                     byte[] readerMsgTypeData = networkReader.ReadBytes(2);
                     short readerMsgType = (short)((readerMsgTypeData[1] << 8) + readerMsgTypeData[0]);
-                    
+
                     // New delegate format
-                    if(readerMsgType >= 1000)
+                    if (readerMsgType >= 1000)
                     {
-                        if (clientMessageDelegates.ContainsKey(readerMsgType))
+                        if(readerMsgType == Msg_RemoteTerminal)
+                        {
+                            if(remoteTerminal == null)
+                            {
+                                Debug.Log("Warning: Received RemoteTerminal message, but no Remote Terminal is assigned to CAVE2RPCManager!");
+                            }
+                            else
+                            {
+                                int srcID = networkReader.ReadInt32();
+                                string msgString = networkReader.ReadString();
+
+                                if (debugMsg)
+                                {
+                                    Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'" + connectionId);
+                                    LogUI("connID " + srcID + ": " + msgString);
+                                }
+                                remoteTerminal.MsgFromCAVE2RPCManager(msgString);
+
+                                // If server forward message from client to other clients
+                                if(connectionId == 0)
+                                {
+                                    SendTerminalMsg(msgString, true, srcID);
+                                }
+                            }
+                        }
+                        else if (clientMessageDelegates.ContainsKey(readerMsgType))
                         {
                             NetworkMessageDelegate msgDel = (NetworkMessageDelegate)clientMessageDelegates[readerMsgType];
 
@@ -347,7 +372,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                             ReaderToObject(networkReader)); break;
                     }
                     break;
-                    
+
                 case NetworkEventType.DisconnectEvent:
                     Debug.Log("DisconnectEvent");
                     if (connectionId != recConnectionId)
@@ -365,7 +390,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void ServerOnClientConnect(int clientConnectionId)
     {
-        LogUI("Msg Server: Client " + clientConnectionId  + " connected.");
+        LogUI("Msg Server: Client " + clientConnectionId + " connected.");
         clientIDs.Add(clientConnectionId);
 
         /*
@@ -386,7 +411,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void ClientOnConnect()
     {
-        LogUI("Msg Client: Connected to " + serverIP);
+        LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
         // connected = true;
         reconnectAttemptCount = 0;
     }
@@ -400,6 +425,54 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ClientOnReceiveOmicronSensorList(NetworkMessage msg)
     {
 
+    }
+
+    public void SendTerminalMsg(string msgString, bool useReliable, int forwardingID = -1)
+    {
+        NetworkWriter writer = new NetworkWriter();
+        writer.StartMessage(Msg_RemoteTerminal);
+        if (forwardingID == -1)
+        {
+            writer.Write(connectionId);
+        }
+        else
+        {
+            writer.Write(forwardingID);
+        }
+        writer.Write(msgString);
+        writer.FinishMessage();
+
+        int channelId = useReliable ? reliableChannelId : unreliableChannelId;
+
+        byte[] writerData = writer.AsArray();
+
+        byte error;
+
+        if (connectionId == 0)
+        {
+            // Server to client(s)
+            foreach(int clientId in clientIDs)
+            {
+                if (debugMsg)
+                {
+                    Debug.Log("RemoteTerminal out: " + connectionId + "'" + msgString + "' " + hostId + " " + clientId + " " + forwardingID);
+                }
+
+                NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+            }
+        }
+        else
+        {
+            // Client to Server
+            NetworkTransport.Send(hostId, connectionId, channelId, writerData, writerData.Length, out error);
+
+            if (debugMsg)
+            {
+                Debug.Log("RemoteTerminal out: " + connectionId + "'" + msgString + "' " + hostId + " " + connectionId);
+            }
+        }
+
+        
     }
 
     void ServerSendToClient(int clientId, short messageID, MessageBase msg, MsgType msgType = MsgType.Reliable)

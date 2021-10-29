@@ -11,6 +11,9 @@ public class RemoteTerminal : MonoBehaviour {
     [SerializeField]
     bool connectToServer;
 
+    [SerializeField]
+    bool connectedToServer;
+
     bool isServer;
     bool connecting;
 
@@ -38,6 +41,12 @@ public class RemoteTerminal : MonoBehaviour {
 
     // Client
     [SerializeField]
+    bool useCAVE2RPCManager;
+
+    [SerializeField]
+    CAVE2RPCManager cave2RPCManager;
+
+    [SerializeField]
     string serverIP = "localhost";
     NetworkClient client;
     NetworkMessageDelegate clientOnConnect;
@@ -55,6 +64,10 @@ public class RemoteTerminal : MonoBehaviour {
 
     [SerializeField]
     GameObject selectedObject;
+
+    [Header("Debug")]
+    [SerializeField]
+    bool showMessageDebug;
 
     public void Start()
     {
@@ -199,12 +212,14 @@ public class RemoteTerminal : MonoBehaviour {
     void ClientOnConnect(NetworkMessage msg)
     {
         PrintUI("Client: Connected to " + serverIP);
+        connectedToServer = true;
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
         PrintUI("Client: Disconnected");
         connecting = false;
+        connectedToServer = false;
     }
 
     void ClientOnData(NetworkMessage msg)
@@ -230,6 +245,15 @@ public class RemoteTerminal : MonoBehaviour {
         char[] charSeparators = new char[] { '|' };
         string[] msgStrArray = msgString.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
         ParseMessage(msgStrArray);
+        if(showMessageDebug)
+        {
+            Debug.Log(msgString);
+        }
+    }
+
+    public void MsgFromCAVE2RPCManager(string msgString)
+    {
+        CAVE2ClusterMsg(msgString);
     }
 
     void ParseMessage(string[] msgArray)
@@ -438,6 +462,74 @@ public class RemoteTerminal : MonoBehaviour {
                 SendCommand("message_to_remote " + targetObject.transform.localEulerAngles.x + " " + targetObject.transform.localEulerAngles.y + " " + targetObject.transform.localEulerAngles.z);
             }
         }
+        else if (rootCommand.Equals("setGeneralizedPerspectiveProjection", System.StringComparison.OrdinalIgnoreCase))
+        {
+            GameObject targetObject = GameObject.Find("Main Camera");
+            if (targetObject != null)
+            {
+                GeneralizedPerspectiveProjection projection = targetObject.GetComponent<GeneralizedPerspectiveProjection>();
+                if (projection != null)
+                {
+                    projection.UpdateScreenUL_x(msgArray[1]);
+                    projection.UpdateScreenUL_y(msgArray[2]);
+                    projection.UpdateScreenUL_z(msgArray[3]);
+
+                    projection.UpdateScreenLL_x(msgArray[4]);
+                    projection.UpdateScreenLL_y(msgArray[5]);
+                    projection.UpdateScreenLL_z(msgArray[6]);
+
+                    projection.UpdateScreenLR_x(msgArray[7]);
+                    projection.UpdateScreenLR_y(msgArray[8]);
+                    projection.UpdateScreenLR_z(msgArray[9]);
+                }
+            }
+        }
+        else if (rootCommand.Equals("setEyeSeparation", System.StringComparison.OrdinalIgnoreCase))
+        {
+            GameObject targetObject = GameObject.Find("Main Camera");
+            if (targetObject != null)
+            {
+                StereoscopicCamera stereoCamera = GetComponent<StereoscopicCamera>();
+                if (stereoCamera != null)
+                {
+                    float value = 0;
+                    bool valid = float.TryParse(msgArray[1], out value);
+
+                    if (valid)
+                    {
+                        stereoCamera.SetEyeSeparation(value);
+                    }
+                }
+            }
+        }
+        else if (rootCommand.Equals("setActive", System.StringComparison.OrdinalIgnoreCase))
+        {
+            string objectName = msgArray[1];
+            bool value = true;
+
+            bool validBool = bool.TryParse(msgArray[2], out value);
+
+            GameObject targetObject = GameObject.Find(objectName);
+
+            // Standard check for setting an active gameobject inactive
+            if (targetObject != null && validBool && value == false)
+            {
+                targetObject.SetActive(value);
+            }
+            else if (targetObject == null && validBool && value == true)
+            {
+                // GameObject.Find() only finds active GameObjects, else
+                // use more expensive way to find an inactive GameObject
+                GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+                foreach(GameObject g in allObjects)
+                {
+                    if(g.name == objectName)
+                    {
+                        g.SetActive(value);
+                    }
+                }
+            }
+        }
         else if (rootCommand.Equals("message_to_remote", System.StringComparison.OrdinalIgnoreCase))
         {
             string message = "";
@@ -470,38 +562,50 @@ public class RemoteTerminal : MonoBehaviour {
     public void SendCommand(string cmd, bool useReliable = true)
     {
         //Debug.Log("Sending: '" + cmd + "'");
-        if (isServer)
+        if (useCAVE2RPCManager)
         {
-            System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = server.connections;
+            cave2RPCManager.SendTerminalMsg(FormatCmdStr(cmd), useReliable);
+        }
+        else
+        {
 
-            for (int i = 0; i < connections.Count; i++)
+            if (isServer)
             {
-                if (connections[i] != null)
+                System.Collections.ObjectModel.ReadOnlyCollection<NetworkConnection> connections = server.connections;
+
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    if (connections[i] != null)
+                    {
+                        NetworkWriter writer = new NetworkWriter();
+                        writer.StartMessage(TerminalMsgID);
+                        writer.Write(FormatCmdStr(cmd));
+                        writer.FinishMessage();
+
+                        server.SendWriterTo(connections[i].connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
+                    }
+                }
+            }
+            else
+            {
+                if (client.connection != null && client.isConnected)
                 {
                     NetworkWriter writer = new NetworkWriter();
                     writer.StartMessage(TerminalMsgID);
                     writer.Write(FormatCmdStr(cmd));
                     writer.FinishMessage();
 
-                    server.SendWriterTo(connections[i].connectionId, writer, useReliable ? reliableChannelId : unreliableChannelId);
+                    if (client.SendWriter(writer, useReliable ? reliableChannelId : unreliableChannelId) == false)
+                    {
+                        PrintUI("Failed to send message. Disconnected from server. Reconnecting...");
+                        ConnectToServer();
+
+                        // TODO: Create unsent message queue the resend on connection?
+                    }
                 }
-            }
-        }
-        else
-        {
-            if (client.connection != null)
-            {
-                NetworkWriter writer = new NetworkWriter();
-                writer.StartMessage(TerminalMsgID);
-                writer.Write(FormatCmdStr(cmd));
-                writer.FinishMessage();
-
-                if(client.SendWriter(writer, useReliable ? reliableChannelId : unreliableChannelId) == false)
+                else
                 {
-                    PrintUI("Failed to send message. Disconnected from server. Reconnecting...");
-                    ConnectToServer();
-
-                    // TODO: Create unsent message queue the resend on connection?
+                    PrintUI("Failed to send message. Not Connected to Server");
                 }
             }
         }

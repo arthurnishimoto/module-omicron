@@ -199,7 +199,15 @@ public class StereoscopicCamera : MonoBehaviour {
         stereoscopicMaterial.SetFloat("_RenderHeight", outputResolution.y);
 
         leftEye.GetComponent<Camera>().targetTexture = leftTexture;
-        rightEye.GetComponent<Camera>().targetTexture = rightTexture;        
+        rightEye.GetComponent<Camera>().targetTexture = rightTexture;
+
+        // In case where mocap tracking is done on Main Camera disable tracking on parent object
+        // to allow child eye cameras to calculate proper rotation
+        CAVE2MocapUpdater cameraTracking = GetComponent<CAVE2MocapUpdater>();
+        if (cameraTracking != null)
+        {
+            cameraTracking.enabled = false;
+        }
     }
 
     void OnRenderImage(RenderTexture src, RenderTexture dest)
