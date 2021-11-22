@@ -581,6 +581,52 @@ public class OmicronManager : MonoBehaviour
                     EventBase.ServiceType eType = e.serviceType;
                     EventBase.ServiceType clientType = c.GetClientType();
 
+
+                    if (!enablePointer && eType == EventBase.ServiceType.ServiceTypePointer)
+                    {
+                        continue;
+                    }
+                    else if (!enableMocap && eType == EventBase.ServiceType.ServiceTypeMocap)
+                    {
+                        continue;
+                    }
+                    else if (!enableKeyboard && eType == EventBase.ServiceType.ServiceTypeKeyboard)
+                    {
+                        continue;
+                    }
+                    else if (!enableController && eType == EventBase.ServiceType.ServiceTypeController)
+                    {
+                        continue;
+                    }
+                    else if (!enableUI && eType == EventBase.ServiceType.ServiceTypeUi)
+                    {
+                        continue;
+                    }
+                    else if (!enableGeneric && eType == EventBase.ServiceType.ServiceTypeGeneric)
+                    {
+                        continue;
+                    }
+                    else if (!enableBrain && eType == EventBase.ServiceType.ServiceTypeBrain)
+                    {
+                        continue;
+                    }
+                    else if (!enableWand && eType == EventBase.ServiceType.ServiceTypeWand)
+                    {
+                        continue;
+                    }
+                    else if (!enableSpeech && eType == EventBase.ServiceType.ServiceTypeSpeech)
+                    {
+                        continue;
+                    }
+                    else if (!enableImage && eType == EventBase.ServiceType.ServiceTypeImage)
+                    {
+                        continue;
+                    }
+                    else if (!enableAudio && eType == EventBase.ServiceType.ServiceTypeAudio)
+                    {
+                        continue;
+                    }
+
                     if (!c.IsFlaggedForRemoval() && (clientType == EventBase.ServiceType.ServiceTypeAny || eType == clientType))
                     {
                         //c.BroadcastMessage("OnEvent", e, SendMessageOptions.DontRequireReceiver);
