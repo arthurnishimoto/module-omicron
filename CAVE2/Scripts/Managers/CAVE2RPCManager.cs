@@ -750,7 +750,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
         else if (obj is Vector2)
         {
-            return "Vector3";
+            return "Vector2";
         }
         else if (obj is System.Single)
         {
