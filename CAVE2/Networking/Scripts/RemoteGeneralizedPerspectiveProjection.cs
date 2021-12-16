@@ -51,6 +51,13 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     [SerializeField]
     bool updateCameraOffset;
 
+
+    [Header("Networking")]
+    [SerializeField]
+    float sendDelay = 10; // ms
+
+    float sendTimer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,12 +76,20 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
 
         if(sendUpdate || continuousUpdate)
         {
-            remoteTerminal.SendCommand("setGeneralizedPerspectiveProjection " + screenUL.x + " " + screenUL.y + " " + screenUL.z + " " + screenLL.x + " " + screenLL.y + " " + screenLL.z + " " + screenLR.x + " " + screenLR.y + " " + screenLR.z);
-            //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
-            //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLL", screenLL);
-            //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLR", screenLR);
+            if (sendTimer <= 0)
+            {
+                remoteTerminal.SendCommand("setGeneralizedPerspectiveProjection " + screenUL.x + " " + screenUL.y + " " + screenUL.z + " " + screenLL.x + " " + screenLL.y + " " + screenLL.z + " " + screenLR.x + " " + screenLR.y + " " + screenLR.z);
+                //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
+                //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLL", screenLL);
+                //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLR", screenLR);
 
-            sendUpdate = false;
+                sendUpdate = false;
+                sendTimer = sendDelay / 1000.0f;
+            }
+            else
+            {
+                sendTimer -= Time.deltaTime;
+            }
         }
         if(updateCameraOffset)
         {
