@@ -100,7 +100,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     bool debugMsg;
 
-    // bool connected = false;
+    bool clientConnectedToServer = false;
 
     // [SerializeField]
     // bool autoReconnect = true;
@@ -141,6 +141,11 @@ public class CAVE2RPCManager : MonoBehaviour {
             remoteTerminal.PrintUI(msg);
         else
             Debug.Log(msg);
+    }
+
+    public int GetConnID()
+    {
+        return connectionId;
     }
 
     private void Start()
@@ -215,9 +220,13 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
 
         byte error;
-        hostId = NetworkTransport.AddHost(topology, serverListenPort);
+        hostId = NetworkTransport.AddHost(topology);
         connectionId = NetworkTransport.Connect(hostId, serverIP, serverListenPort, 0, out error);
 
+        if (error != 0)
+        {
+            LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
+        }
         /*
         // Setup delegates
         clientOnReceiveOmicronSensorList += ClientOnReceiveOmicronSensorList;
@@ -412,14 +421,14 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ClientOnConnect()
     {
         LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
-        // connected = true;
+        clientConnectedToServer = true;
         reconnectAttemptCount = 0;
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
     {
         LogUI("Msg Client: Disconnected");
-        // connected = false;
+        clientConnectedToServer = false;
     }
 
     void ClientOnReceiveOmicronSensorList(NetworkMessage msg)
@@ -524,7 +533,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 nPacketsSent++;
             }
         }
-        if(useMsgClient)
+        if(useMsgClient && clientConnectedToServer)
         {
             byte error;
             NetworkTransport.Send(hostId, connectionId, channelId, writerData, writerData.Length, out error);
