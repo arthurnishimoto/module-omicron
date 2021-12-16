@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: CAVE2-ScreenMask
   m_Shader: {fileID: 4800000, guid: 860207ce08de0464db704037001e9935, type: 3}
   m_ShaderKeywords: _CULL_OFF _EMISSION _ZTEST_GREATER
@@ -20,8 +21,9 @@ Material:
     m_TexEnvs: []
     m_Floats:
     - <noninit>: 2
-    - _Cull: 2
-    - _ZTest: 2
+    - _Cull: 0
+    - _ZTest: 1
     m_Colors:
     - <noninit>: {r: 0.18999997, g: 0.29999998, b: 0.4699999, a: 1}
     - _Color: {r: 0.19, g: 0.3, b: 0.47, a: 1}
+  m_BuildTextureStacks: []
