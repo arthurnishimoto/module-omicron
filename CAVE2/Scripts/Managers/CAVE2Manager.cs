@@ -126,6 +126,39 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.GetButtonState(wandID, button);
     }
 
+
+    //
+    [System.Obsolete("GetAxis(int, CAVE2.Axis) is deprecated, please use GetAxis(CAVE2.Axis, int) instead.")]
+    public static float GetAxis(int wandID, CAVE2.Axis axis)
+    {
+        return CAVE2Manager.GetAxis(wandID, axis);
+    }
+
+    [System.Obsolete("GetButton(int, CAVE2.Button) is deprecated, please use GetButton(CAVE2.Button, int) instead.")]
+    public static bool GetButton(int wandID, CAVE2.Button button)
+    {
+        return CAVE2Manager.GetButton(wandID, button);
+    }
+
+    [System.Obsolete("GetButtonDown(int, CAVE2.Button) is deprecated, please use GetButtonDown(CAVE2.Button, int) instead.")]
+    public static bool GetButtonDown(int wandID, CAVE2.Button button)
+    {
+        return CAVE2Manager.GetButtonDown(wandID, button);
+    }
+
+    [System.Obsolete("GetButtonUp(int, CAVE2.Button) is deprecated, please use GetButtonUp(CAVE2.Button, int) instead.")]
+    public static bool GetButtonUp(int wandID, CAVE2.Button button)
+    {
+        return CAVE2Manager.GetButtonUp(wandID, button);
+    }
+
+    [System.Obsolete("GetButtonState(int, CAVE2.Button) is deprecated, please use GetButtonState(CAVE2.Button, int) instead.")]
+    public static OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
+    {
+        return CAVE2Manager.GetButtonState(wandID, button);
+    }
+
+
     public static CAVE2.Button GetReal3DToCAVE2Button(string name)
     {
         return CAVE2Manager.GetReal3DToCAVE2Button(name);
