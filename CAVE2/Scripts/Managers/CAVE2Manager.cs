@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -101,27 +101,27 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.UsingOmicronServer();
     }
 
-    public static float GetAxis(int wandID, CAVE2.Axis axis)
+    public static float GetAxis(CAVE2.Axis axis, int wandID = 1)
     {
         return CAVE2Manager.GetAxis(wandID, axis);
     }
 
-    public static bool GetButton(int wandID, CAVE2.Button button)
+    public static bool GetButton(CAVE2.Button button, int wandID = 1)
     {
         return CAVE2Manager.GetButton(wandID, button);
     }
 
-    public static bool GetButtonDown(int wandID, CAVE2.Button button)
+    public static bool GetButtonDown(CAVE2.Button button, int wandID = 1)
     {
         return CAVE2Manager.GetButtonDown(wandID, button);
     }
 
-    public static bool GetButtonUp(int wandID, CAVE2.Button button)
+    public static bool GetButtonUp(CAVE2.Button button, int wandID = 1)
     {
         return CAVE2Manager.GetButtonUp(wandID, button);
     }
 
-    public static OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
+    public static OmicronController.ButtonState GetButtonState(CAVE2.Button button, int wandID = 1)
     {
         return CAVE2Manager.GetButtonState(wandID, button);
     }

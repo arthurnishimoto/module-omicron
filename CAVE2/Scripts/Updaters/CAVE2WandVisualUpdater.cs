@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -122,9 +122,9 @@ public class CAVE2WandVisualUpdater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        leftAnalogStick = new Vector2(CAVE2.GetAxis(wandID, CAVE2.Axis.LeftAnalogStickLR), CAVE2.GetAxis(wandID, CAVE2.Axis.LeftAnalogStickUD));
-        rightAnalogStick = new Vector2(CAVE2.GetAxis(wandID, CAVE2.Axis.RightAnalogStickLR), CAVE2.GetAxis(wandID, CAVE2.Axis.RightAnalogStickUD));
-        analogTriggers = new Vector2(CAVE2.GetAxis(wandID, CAVE2.Axis.AnalogTriggerL), CAVE2.GetAxis(wandID, CAVE2.Axis.AnalogTriggerR));
+        leftAnalogStick = new Vector2(CAVE2.GetAxis(CAVE2.Axis.LeftAnalogStickLR, wandID), CAVE2.GetAxis(CAVE2.Axis.LeftAnalogStickUD, wandID));
+        rightAnalogStick = new Vector2(CAVE2.GetAxis(CAVE2.Axis.RightAnalogStickLR, wandID), CAVE2.GetAxis(CAVE2.Axis.RightAnalogStickUD, wandID));
+        analogTriggers = new Vector2(CAVE2.GetAxis(CAVE2.Axis.AnalogTriggerL, wandID), CAVE2.GetAxis(CAVE2.Axis.AnalogTriggerR, wandID));
 
         if (buttonL3)
             buttonL3.localEulerAngles = new Vector3(leftAnalogStick.y, 0, -leftAnalogStick.x) * 30;
@@ -138,26 +138,26 @@ public class CAVE2WandVisualUpdater : MonoBehaviour
 
         // Tests if hold state is working properly (public state varibles should change)
         // Tests if up/down is working (visual buttons should change)
-        SetLit(buttonCross, CAVE2.GetButtonState(wandID, CAVE2.Button.Button3));
-        SetLit(buttonCircle, CAVE2.GetButtonState(wandID, CAVE2.Button.Button2));
-        SetLit(buttonTriangle, CAVE2.GetButtonState(wandID, CAVE2.Button.Button1));
-        SetLit(buttonSquare, CAVE2.GetButtonState(wandID, CAVE2.Button.Button4));
+        SetLit(buttonCross, CAVE2.GetButtonState(CAVE2.Button.Button3, wandID));
+        SetLit(buttonCircle, CAVE2.GetButtonState(CAVE2.Button.Button2, wandID));
+        SetLit(buttonTriangle, CAVE2.GetButtonState(CAVE2.Button.Button1, wandID));
+        SetLit(buttonSquare, CAVE2.GetButtonState(CAVE2.Button.Button4, wandID));
 
-        SetLit(buttonUp, CAVE2.GetButtonState(wandID, CAVE2.Button.ButtonUp));
-        SetLit(buttonDown, CAVE2.GetButtonState(wandID, CAVE2.Button.ButtonDown));
-        SetLit(buttonLeft, CAVE2.GetButtonState(wandID, CAVE2.Button.ButtonLeft));
-        SetLit(buttonRight, CAVE2.GetButtonState(wandID, CAVE2.Button.ButtonRight));
+        SetLit(buttonUp, CAVE2.GetButtonState(CAVE2.Button.ButtonUp, wandID));
+        SetLit(buttonDown, CAVE2.GetButtonState(CAVE2.Button.ButtonDown, wandID));
+        SetLit(buttonLeft, CAVE2.GetButtonState(CAVE2.Button.ButtonLeft, wandID));
+        SetLit(buttonRight, CAVE2.GetButtonState(CAVE2.Button.ButtonRight, wandID));
 
-        SetLit(buttonL1, CAVE2.GetButtonState(wandID, CAVE2.Button.Button5));
-        SetLit(buttonL2, CAVE2.GetButtonState(wandID, CAVE2.Button.Button7));
-        SetLit(buttonL3, CAVE2.GetButtonState(wandID, CAVE2.Button.Button6));
+        SetLit(buttonL1, CAVE2.GetButtonState(CAVE2.Button.Button5, wandID));
+        SetLit(buttonL2, CAVE2.GetButtonState(CAVE2.Button.Button7, wandID));
+        SetLit(buttonL3, CAVE2.GetButtonState(CAVE2.Button.Button6, wandID));
 
-        SetLit(buttonR1, CAVE2.GetButtonState(wandID, CAVE2.Button.Button8));
-        SetLit(buttonR2, CAVE2.GetButtonState(wandID, CAVE2.Button.SpecialButton3));
-        SetLit(buttonR3, CAVE2.GetButtonState(wandID, CAVE2.Button.Button9));
+        SetLit(buttonR1, CAVE2.GetButtonState(CAVE2.Button.Button8, wandID));
+        SetLit(buttonR2, CAVE2.GetButtonState(CAVE2.Button.SpecialButton3, wandID));
+        SetLit(buttonR3, CAVE2.GetButtonState(CAVE2.Button.Button9, wandID));
 
-        SetLit(buttonSelect, CAVE2.GetButtonState(wandID, CAVE2.Button.SpecialButton1));
-        SetLit(buttonStart, CAVE2.GetButtonState(wandID, CAVE2.Button.SpecialButton2));
+        SetLit(buttonSelect, CAVE2.GetButtonState(CAVE2.Button.SpecialButton1, wandID));
+        SetLit(buttonStart, CAVE2.GetButtonState(CAVE2.Button.SpecialButton2, wandID));
     }
 
     void SetLit(Transform g, OmicronController.ButtonState state)
