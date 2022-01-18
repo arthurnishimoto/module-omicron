@@ -1,11 +1,11 @@
 /**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2019		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2019, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -299,6 +299,7 @@ public class OmicronManager : MonoBehaviour
         public int serverMsgPort;
         public int dataPort;
         public bool continuum3DXAxis;
+        public bool continuumMainInvertX;
         public bool keyboardMouseWandEmulation;
     }
 
@@ -372,6 +373,7 @@ public class OmicronManager : MonoBehaviour
             serverMsgPort = config.serverMsgPort;
             dataPort = config.dataPort;
             continuum3DXAxis = config.continuum3DXAxis;
+            continuumMainInvertX = config.continuumMainInvertX;
             GetComponent<CAVE2Manager>().SetKeyboardMouseWand(config.keyboardMouseWandEmulation);
 
             hasConfig = true;
@@ -694,6 +696,7 @@ public class OmicronManager : MonoBehaviour
             config.dataPort = dataPort;
             config.keyboardMouseWandEmulation = GetComponent<CAVE2Manager>().GetKeyboardMouseWand();
             config.continuum3DXAxis = continuum3DXAxis;
+            config.continuumMainInvertX = continuumMainInvertX;
 
             string sfgJson = JsonUtility.ToJson(config, true);
 
@@ -728,7 +731,7 @@ public class OmicronManager : MonoBehaviour
 
 	public void OnWindow(int windowID)
 	{
-		float rowHeight = 25;
+		float rowHeight = 18;
 
 		idleStatus.normal.textColor = Color.white;
 		activeStatus.normal.textColor = Color.green;
@@ -767,6 +770,7 @@ public class OmicronManager : MonoBehaviour
 		dataPort = int.Parse(GUI.TextField(new Rect(GUIOffset.x + 150, GUIOffset.y + rowHeight * 3, 200, 20), dataPort.ToString(), 25));
 
         GUI.Label(new Rect(GUIOffset.x + 20, GUIOffset.y + rowHeight * 5, 120, 20), "Tracking Options:");
-        continuum3DXAxis = GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 6, 250, 20), continuum3DXAxis, "Flip Z and X axis");
+        continuum3DXAxis = GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 6, 250, 20), continuum3DXAxis, "Flip Z and X axis for Continuum 3D Wall");
+        continuumMainInvertX = GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 7, 250, 20), continuumMainInvertX, "Invert X axis for Continuum Main Wall");
     }
 }// class

@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -30,7 +30,7 @@ using System.Collections;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
-    enum UpdateMode {Manual, Update, Fixed, Late, Adaptive};
+    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive};
 
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
@@ -246,5 +246,35 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void SyncScale(object[] data)
     {
         SyncScale(new Vector3((float)data[0], (float)data[1], (float)data[2]));
+    }
+
+    public void SetAdaptiveSync()
+    {
+        CAVE2.SendMessage(gameObject.name, "SetAdaptiveSyncRPC");
+    }
+
+    void SetAdaptiveSyncRPC()
+    {
+        updateMode = UpdateMode.Adaptive;
+    }
+
+    public void SetManualSync()
+    {
+        CAVE2.SendMessage(gameObject.name, "SetManualSyncRPC");
+    }
+
+    void SetManualSyncRPC()
+    {
+        updateMode = UpdateMode.Manual;
+    }
+
+    public bool IsAdaptiveSyncEnabled()
+    {
+        return updateMode == UpdateMode.Adaptive;
+    }
+
+    public bool IsManualSyncEnabled()
+    {
+        return updateMode == UpdateMode.Manual;
     }
 }
