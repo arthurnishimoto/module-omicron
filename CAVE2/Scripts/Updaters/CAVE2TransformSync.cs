@@ -55,7 +55,7 @@ public class CAVE2TransformSync : MonoBehaviour {
     bool hasScaleFromMaster;
 
     [SerializeField]
-    UnityEngine.UI.Text adaptiveDebugText;
+    UnityEngine.UI.Text adaptiveDebugText = null;
 
     Vector3 posDiff;
     Vector3 rotDiff;

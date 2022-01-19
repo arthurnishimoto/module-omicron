@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 public class CAVE2NetworkManager : MonoBehaviour
 {
     [SerializeField]
@@ -39,7 +40,7 @@ public class CAVE2NetworkManager : MonoBehaviour
     NetworkClient netClient;
 
     [SerializeField]
-    Text debugText;
+    Text debugText = null;
 
     public enum ConnectState { None, Connecting, Connected, Disconnected, Reconnecting };
 
@@ -417,3 +418,5 @@ public class CAVE2Msg : MessageBase
     public string gameObjectName;
     public string methodName;
 }
+
+#pragma warning restore CS0618 // Type or member is obsolete

@@ -27,81 +27,81 @@ public class OmicronVRDisplayManager : MonoBehaviour {
     bool showUI;
 
     [SerializeField]
-    GameObject panel;
+    GameObject panel = null;
 
     [SerializeField]
-    GeneralizedPerspectiveProjection projection;
+    GeneralizedPerspectiveProjection projection = null;
 
     [SerializeField]
-    StereoscopicCamera stereoScript;
+    StereoscopicCamera stereoScript = null;
 
 
     [Header("Canvas UI")]
 
     [SerializeField]
-    InputField screenUL_x;
+    InputField screenUL_x = null;
 
     [SerializeField]
-    InputField screenUL_y;
+    InputField screenUL_y = null;
 
     [SerializeField]
-    InputField screenUL_z;
+    InputField screenUL_z = null;
 
     Vector3 screenUL;
 
     [SerializeField]
-    InputField screenLL_x;
+    InputField screenLL_x = null;
 
     [SerializeField]
-    InputField screenLL_y;
+    InputField screenLL_y = null;
 
     [SerializeField]
-    InputField screenLL_z;
+    InputField screenLL_z = null;
 
     Vector3 screenLL;
 
     [SerializeField]
-    InputField screenLR_x;
+    InputField screenLR_x = null;
 
     [SerializeField]
-    InputField screenLR_y;
+    InputField screenLR_y = null;
 
     [SerializeField]
-    InputField screenLR_z;
+    InputField screenLR_z = null;
 
     Vector3 screenLR;
 
     [SerializeField]
-    Dropdown stereoModeMenu;
+    Dropdown stereoModeMenu = null;
 
     [SerializeField]
-    Button invertStereo;
+    Button invertStereo = null;
 
     [SerializeField]
-    InputField screenScale_x;
+    InputField screenScale_x = null;
 
     [SerializeField]
-    InputField screenScale_y;
+    InputField screenScale_y = null;
 
     [SerializeField]
-    InputField screenOffset_x;
+    InputField screenOffset_x = null;
 
     [SerializeField]
-    InputField screenOffset_y;
+    InputField screenOffset_y = null;
 
     [SerializeField]
-    InputField resolution_x;
+    InputField resolution_x = null;
 
     [SerializeField]
-    InputField resolution_y;
+    InputField resolution_y = null;
 
     Vector2 stereoResolution = new Vector2(1366, 768);
 
     [SerializeField]
-    Button useCurrentResolution;
+    Button useCurrentResolution = null;
 
     [SerializeField]
-    InputField eyeSeparation;
+    InputField eyeSeparation = null;
 
     Vector2 screenScale;
     Vector2 screenOffset;

@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class CAVE2ClusterManager : MonoBehaviour
 {
     [SerializeField]
-    OmicronManager omicronManager;
+    OmicronManager omicronManager = null;
 
     [SerializeField]
-    CAVE2RPCManager rpcManager;
+    CAVE2RPCManager rpcManager = null;
 
     [Header("Debug")]
     [SerializeField]
-    Text debugUIText;
+    Text debugUIText = null;
 
     // Start is called before the first frame update
     void Start()

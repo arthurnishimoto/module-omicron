@@ -5,7 +5,7 @@ public class ProjectDescriptionCanvasUI : MonoBehaviour
 {
 
     [SerializeField]
-    GameObject canvasUIRoot;
+    GameObject canvasUIRoot = null;
 
     [SerializeField]
     bool fadeAfterDistance = false;

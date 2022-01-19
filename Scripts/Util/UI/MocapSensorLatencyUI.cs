@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class MocapSensorLatencyUI : MonoBehaviour
 {
     [SerializeField]
-    string mocapSensorName;
+    string mocapSensorName = null;
 
     OmicronMocapSensor sensor;
     Text text;

@@ -554,28 +554,28 @@ public class CAVE2InputManager : OmicronEventClient
                 string xrDeviceName = GetXRDeviceName();
                 if (xrDeviceName == "Vive MV")
                 {
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head);
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.Head);
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
 #if UNITY_5_5_OR_NEWER
-                    CAVE2.GetCAVE2Manager().simulatorWandPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-                    CAVE2.GetCAVE2Manager().simulatorWandRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.LeftHand);
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
 
-                    wand2MocapSensor.UpdateTransform(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand), UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand));
+                    wand2MocapSensor.UpdateTransform(CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.RightHand), CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.RightHand));
 #endif
                 }
                 else if(xrDeviceName.Length > 0)
                 {
                     // Hack: InputTracking isn't using some offset that the Main Camera is otherwise getting. Calculate the diff here:
                     Vector3 oculusRealHeadPosition = Camera.main.transform.localPosition;
-                    Vector3 positionOffset = oculusRealHeadPosition - UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head);
+                    Vector3 positionOffset = oculusRealHeadPosition - CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.Head);
 
-                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head) + positionOffset;
-                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorHeadPosition = CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.Head) + positionOffset;
+                    CAVE2.GetCAVE2Manager().simulatorHeadRotation = CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.Head).eulerAngles;
 #if UNITY_5_5_OR_NEWER
-                    CAVE2.GetCAVE2Manager().simulatorWandPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand) + positionOffset;
-                    CAVE2.GetCAVE2Manager().simulatorWandRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.LeftHand) + positionOffset;
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.LeftHand).eulerAngles;
 
-                    wand2MocapSensor.UpdateTransform(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand) + positionOffset, UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand));
+                    wand2MocapSensor.UpdateTransform(CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.RightHand) + positionOffset, CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.RightHand));
 #endif
                 }
             }

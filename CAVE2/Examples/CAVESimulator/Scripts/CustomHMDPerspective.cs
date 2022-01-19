@@ -16,7 +16,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     Vector3 displayOffset = new Vector3(0.0f, 0.0f, 0.734f);
 
     [SerializeField]
-    Transform vrDisplay;
+    Transform vrDisplay = null;
 
     protected GameObject vrCamera;
 
@@ -43,7 +43,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
     Vector3 headOriginOffset;
 
     [SerializeField]
-    Transform headOrigin;
+    Transform headOrigin = null;
 
     void Start()
     {

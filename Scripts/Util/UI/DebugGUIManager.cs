@@ -65,7 +65,7 @@ public class DebugGUIManager : MonoBehaviour {
     float avgFPSTimeLimit = 15;
 
     [SerializeField]
-    bool resetAvgFPSTimer;
+    bool resetAvgFPSTimer = false;
 
     bool cursorVisibleDefault;
 

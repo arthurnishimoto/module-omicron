@@ -5,16 +5,16 @@ using UnityEngine;
 public class RemoteMocapOffset : MonoBehaviour
 {
     [SerializeField]
-    string targetGameObject;
+    string targetGameObject = null;
 
     [SerializeField]
-    RemoteTerminal remoteTerminal;
+    RemoteTerminal remoteTerminal = null;
 
     [SerializeField]
-    Vector3 newOffset;
+    Vector3 newOffset = Vector3.zero;
 
     [SerializeField]
-    bool sendOffset;
+    bool sendOffset = false;
 
     // Start is called before the first frame update
     void Start()

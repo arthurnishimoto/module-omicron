@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 public class RemoteTerminal : MonoBehaviour {
 
     [SerializeField]
@@ -34,17 +35,17 @@ public class RemoteTerminal : MonoBehaviour {
     int unreliableChannelId;
 
     [SerializeField]
-    Text terminalTextLog;
+    Text terminalTextLog = null;
 
     [SerializeField]
-    Text secondaryTerminalText;
+    Text secondaryTerminalText = null;
 
     // Client
     [SerializeField]
-    bool useCAVE2RPCManager;
+    bool useCAVE2RPCManager = false;
 
     [SerializeField]
-    CAVE2RPCManager cave2RPCManager;
+    CAVE2RPCManager cave2RPCManager = null;
 
     [SerializeField]
     string serverIP = "localhost";
@@ -56,7 +57,7 @@ public class RemoteTerminal : MonoBehaviour {
 
     // Command Terminal
     [SerializeField]
-    InputField commandLine;
+    InputField commandLine = null;
     ArrayList cmdHistory = new ArrayList();
     int currentCmdHistoryLine;
 
@@ -67,7 +68,7 @@ public class RemoteTerminal : MonoBehaviour {
 
     [Header("Debug")]
     [SerializeField]
-    bool showMessageDebug;
+    bool showMessageDebug = false;
 
     public void Start()
     {
@@ -220,6 +221,11 @@ public class RemoteTerminal : MonoBehaviour {
         PrintUI("Client: Disconnected");
         connecting = false;
         connectedToServer = false;
+    }
+
+    public bool IsConnectedToServer()
+    {
+        return connectedToServer;
     }
 
     void ClientOnData(NetworkMessage msg)
@@ -708,3 +714,5 @@ public class RemoteTerminal : MonoBehaviour {
         }
     }
 }
+
+#pragma warning restore CS0618 // Type or member is obsolete

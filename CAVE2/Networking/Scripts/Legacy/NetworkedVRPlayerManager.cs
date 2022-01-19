@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -29,6 +29,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 public class NetworkedVRPlayerManager : NetworkLobbyPlayer
 {
 
@@ -273,3 +274,4 @@ public class NetworkedVRPlayerManager : NetworkLobbyPlayer
         playerType = type;
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

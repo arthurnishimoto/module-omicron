@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -26,6 +26,7 @@
  *************************************************************************************************/
  
 using omicron;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GenericVRControllerUpdater : MonoBehaviour {
@@ -88,15 +89,15 @@ public class GenericVRControllerUpdater : MonoBehaviour {
             // vrModel = VRModel.Vive;
         }
 	}
-	
-	// Update is called once per frame
-	void Update () {
-#if UNITY_5_5_OR_NEWER
-        wand1_position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftHand);
-        wand1_rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.LeftHand);
 
-        wand2_position = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightHand);
-        wand2_rotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.RightHand);
+    // Update is called once per frame
+    void Update () {
+#if UNITY_5_5_OR_NEWER
+        wand1_position = CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.LeftHand);
+        wand1_rotation = CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.LeftHand);
+
+        wand2_position = CAVE2.GetXRNodePosition(UnityEngine.XR.XRNode.RightHand);
+        wand2_rotation = CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.RightHand);
 #endif
         ProcessVRInput();
     }

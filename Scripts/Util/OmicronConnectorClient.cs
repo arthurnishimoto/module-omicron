@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2015		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2015, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -410,7 +410,7 @@ namespace omicronConnector
         public Int32 msgPort = 27000;
 
         public bool EnableInputService = true;
-        bool connected = false;
+        // bool connected = false;
 
         public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
         ConnectionState connectionState = ConnectionState.NotConnected;
@@ -517,12 +517,14 @@ namespace omicronConnector
                 Debug.Log("OmicronConnectorClient: Shutting down.");
             }
 	    }
-
+        
+        /*
         public struct UdpState
         {
             public UdpClient u;
             public IPEndPoint e;
         }
+        */
 
         private static void Listen()
         {

@@ -101,7 +101,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
     NavigationMode initMode;
 
     [SerializeField]
-    GameObject worldNavigationManager;
+    GameObject worldNavigationManager = null;
 
     public bool hasInput;
 

@@ -8,7 +8,7 @@ public class AssetBundleManager : MonoBehaviour {
     {
         public AssetBundle assetBundle;
         public bool loaded;
-        public float loadProgress;
+        // public float loadProgress;
         public AssetBundleCreateRequest request;
         public float startTime;
     }
@@ -17,7 +17,7 @@ public class AssetBundleManager : MonoBehaviour {
     bool loadAssetBundles;
 
     [SerializeField]
-    string[] assetBundlePath;
+    string[] assetBundlePath = null;
 
     Hashtable assetBundles = new Hashtable();
 

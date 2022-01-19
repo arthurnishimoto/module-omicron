@@ -50,16 +50,16 @@ public class OMenuManager : MonoBehaviour {
     public CAVE2.Button selectButton = CAVE2.Button.Button2;
 
     [SerializeField]
-    AudioClip openMenuSound;
+    AudioClip openMenuSound = null;
 
     [SerializeField]
-    AudioClip closeMenuSound;
+    AudioClip closeMenuSound = null;
 
     [SerializeField]
-    AudioClip selectMenuSound;
+    AudioClip selectMenuSound = null;
 
     [SerializeField]
-    AudioClip scrollMenuSound;
+    AudioClip scrollMenuSound = null;
 
     AudioSource audioSource;
 

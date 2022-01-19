@@ -6,19 +6,19 @@ using UnityEngine;
 public class HoloLensCameraCalibrationUI : MonoBehaviour {
 
     [SerializeField]
-    bool enableKeyboardShortcuts;
+    bool enableKeyboardShortcuts = false;
 
     [SerializeField]
-    Text cameraSettingText;
+    Text cameraSettingText = null;
 
     [SerializeField]
-    CustomHMDPerspective hololensPerspective;
+    CustomHMDPerspective hololensPerspective = null;
 
     [SerializeField]
-    RemoteTerminal commandLineTerminal;
+    RemoteTerminal commandLineTerminal = null;
 
     [SerializeField]
-    bool hideCAVE2View;
+    bool hideCAVE2View = false;
 
     bool lastHideViewState;
 

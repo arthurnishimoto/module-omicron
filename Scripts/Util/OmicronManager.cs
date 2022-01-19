@@ -248,13 +248,13 @@ public class OmicronManager : MonoBehaviour
     private ArrayList omicronClients;
 
     [SerializeField]
-    UnityEngine.UI.Text statusCanvasText;
+    UnityEngine.UI.Text statusCanvasText = null;
 
     [SerializeField]
-    SimpleCanvasTouch testTouchCanvas;
+    SimpleCanvasTouch testTouchCanvas = null;
 
     string configPath;
-    bool hasConfig;
+    bool hasConfig = false;
 
     [Header("Requested Service Types")]
     [SerializeField] bool enablePointer = true;
@@ -391,6 +391,11 @@ public class OmicronManager : MonoBehaviour
         omicronClients = new ArrayList();
         //DontDestroyOnLoad(gameObject);
     }// start
+
+    public bool HasConfig()
+    {
+        return hasConfig;
+    }
 
 	public bool ConnectToServer()
 	{

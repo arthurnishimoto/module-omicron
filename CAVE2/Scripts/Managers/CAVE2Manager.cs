@@ -566,7 +566,6 @@ public class CAVE2 : MonoBehaviour
     public static bool IsPointingAtCAVE2Screens(float x, float y, float z, float rx, float ry, float rz, float rw, out Vector3 intersectPoint)
     {
         Vector3 eulerAngles = Vector3.zero;
-        float radius = 3.240f;
 
         // Quaternion to Euler ////////////////////////
         // Rotation matrix Q multiplied by reference vector (0,0,1)
@@ -596,7 +595,7 @@ public class CAVE2 : MonoBehaviour
         float ox = eulerAngles.x; // parametric slope of x, from orientation vector
         float oy = eulerAngles.y; // parametric slope of y, from orientation vector
         float oz = eulerAngles.z; // parametric slope of z, from orientation vector
-        float r = radius; // radius of cylinder
+        float r = CAVE2_RADIUS; // radius of cylinder
 
         // A * t^2 + B * t + C
         float A = ox * ox + oz * oz;
@@ -656,6 +655,46 @@ public class CAVE2 : MonoBehaviour
         {
             return false;
         }
+    }
+    // ---------------------------------------------------------------------------------------------
+
+    // CAVE2 XR Helpers
+    public static Vector3 GetXRNodePosition(UnityEngine.XR.XRNode type)
+    {
+        List<UnityEngine.XR.XRNodeState> nodeStates = new List<UnityEngine.XR.XRNodeState>();
+        UnityEngine.XR.InputTracking.GetNodeStates(nodeStates);
+
+        foreach (UnityEngine.XR.XRNodeState nodeState in nodeStates)
+        {
+            if (nodeState.nodeType == type)
+            {
+                Vector3 value;
+                if (nodeState.TryGetPosition(out value))
+                {
+                    return value;
+                }
+            }
+        }
+        return Vector3.zero;
+    }
+
+    public static Quaternion GetXRNodeRotation(UnityEngine.XR.XRNode type)
+    {
+        List<UnityEngine.XR.XRNodeState> nodeStates = new List<UnityEngine.XR.XRNodeState>();
+        UnityEngine.XR.InputTracking.GetNodeStates(nodeStates);
+
+        foreach (UnityEngine.XR.XRNodeState nodeState in nodeStates)
+        {
+            if (nodeState.nodeType == type)
+            {
+                Quaternion value;
+                if (nodeState.TryGetRotation(out value))
+                {
+                    return value;
+                }
+            }
+        }
+        return Quaternion.identity;
     }
 
     // ---------------------------------------------------------------------------------------------

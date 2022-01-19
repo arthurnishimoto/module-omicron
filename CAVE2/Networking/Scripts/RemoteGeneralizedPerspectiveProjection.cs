@@ -21,13 +21,13 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     bool sendUpdate;
 
     [SerializeField]
-    bool continuousUpdate;
+    bool continuousUpdate = false;
 
     [SerializeField]
-    RemoteTerminal remoteTerminal;
+    RemoteTerminal remoteTerminal = null;
 
     [SerializeField]
-    bool updateByEdge;
+    bool updateByEdge = false;
 
     [SerializeField]
     float leftEdge = -1.025f;
@@ -46,10 +46,10 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
 
     [Header("Camera Offset")]
     [SerializeField]
-    Vector3 cameraOffset;
+    Vector3 cameraOffset = Vector3.zero;
 
     [SerializeField]
-    bool updateCameraOffset;
+    bool updateCameraOffset = false;
 
 
     [Header("Networking")]

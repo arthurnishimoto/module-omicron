@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -30,6 +30,8 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 #if USING_GETREAL3D
 public class CAVE2RPCManager : getReal3D.MonoBehaviourWithRpc
 {
@@ -53,9 +55,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     public bool useMsgServer;
 
     static short Msg_RemoteTerminal = 1104;
-    static short Msg_CAVE2RPC2 = 202;
-    static short Msg_CAVE2RPC16 = 216;
-    static short Msg_OmicronSensorList = 1100;
+    // static short Msg_CAVE2RPC2 = 202;
+    // static short Msg_CAVE2RPC16 = 216;
+    // static short Msg_OmicronSensorList = 1100;
 
     NetworkServerSimple msgServer;
     NetworkMessageDelegate serverOnClientConnect;
@@ -95,10 +97,10 @@ public class CAVE2RPCManager : MonoBehaviour {
     Hashtable clientMessageDelegates = new Hashtable();
 
     [SerializeField]
-    string serverIP;
+    string serverIP = null;
 
     [SerializeField]
-    bool debugMsg;
+    bool debugMsg = false;
 
     bool clientConnectedToServer = false;
 
@@ -112,7 +114,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     int reconnectAttemptCount;
 
     [SerializeField]
-    RemoteTerminal remoteTerminal;
+    RemoteTerminal remoteTerminal = null;
 
     string defaultTargetObjectName;
 
@@ -1448,3 +1450,4 @@ public void SendMessage(string targetObjectName, string methodName, object param
         }
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete
