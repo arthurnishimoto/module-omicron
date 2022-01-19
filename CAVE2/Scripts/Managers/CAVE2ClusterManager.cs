@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +16,22 @@ public class CAVE2ClusterManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField]
     Text debugUIText = null;
+
+    [SerializeField]
+    InputField displayWidthUI;
+
+    [SerializeField]
+    InputField displayHeightUI;
+
+    [SerializeField]
+    InputField displayPosXUI;
+
+    [SerializeField]
+    InputField displayPosYUI;
+
+    Display mainDisplay;
+
+    bool firstUpdate = true;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +52,24 @@ public class CAVE2ClusterManager : MonoBehaviour
             debugUIText.text = CAVE2Manager.GetMachineName() + "\n";
             debugUIText.text += "ConnID: " + rpcManager.GetConnID() + "\n";
 
+            debugUIText.text += "\nDisplays: \n";
+            Display[] displays = Display.displays;
+            int displayID = 0;
+            foreach (Display d in displays)
+            {
+                if(firstUpdate && displayID == 0)
+                {
+                    mainDisplay = d;
+                    displayWidthUI.SetTextWithoutNotify(d.renderingWidth+"");
+                    displayHeightUI.SetTextWithoutNotify(d.renderingHeight + "");
+                    
+                    firstUpdate = false;
+                }
+                debugUIText.text += "  [" + displayID + "] NativeRes: " + d.systemWidth + ", " + d.systemHeight + " RenderDim: " + d.renderingWidth + ", " + d.renderingHeight + "\n";
+                debugUIText.text += "    " + d.ToString() + "\n";
+                displayID++;
+            }
+
             debugUIText.text += "\nSensors: \n";
             OmicronMocapSensor[] mocapSensors = GetComponentsInChildren<OmicronMocapSensor>();
             foreach(OmicronMocapSensor mo in mocapSensors)
@@ -50,4 +86,38 @@ public class CAVE2ClusterManager : MonoBehaviour
             }
         }
     }
+
+    public void OnSetDisplay()
+    {
+        int newWidth = 1024;
+        int newHeight = 768;
+
+        int newXPos = 0;
+        int newYPos = 0;
+
+        int.TryParse(displayWidthUI.text, out newWidth);
+        int.TryParse(displayHeightUI.text, out newHeight);
+        int.TryParse(displayPosXUI.text, out newXPos);
+        int.TryParse(displayPosYUI.text, out newYPos);
+
+        //mainDisplay.SetParams(newWidth, newHeight, newXPos, newYPos);
+        //mainDisplay.SetRenderingResolution(newWidth, newHeight);
+        Screen.SetResolution(newWidth, newHeight, FullScreenMode.Windowed);
+        SetPosition(newXPos, newYPos);
+    }
+
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR
+    [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
+    private static extern bool SetWindowPos(IntPtr hwnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+    [DllImport("user32.dll", EntryPoint = "FindWindow")]
+    public static extern IntPtr FindWindow(System.String className, System.String windowName);
+
+    public static void SetPosition(int x, int y, int resX = 0, int resY = 0)
+    {
+        System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
+        string procName = proc.ProcessName;
+
+        SetWindowPos(FindWindow(null, procName), 0, x, y, resX, resY, resX * resY == 0 ? 1 : 0);
+    }
+#endif
 }
