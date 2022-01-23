@@ -399,6 +399,10 @@ public class ClientInfoMsg : MessageBase
     public string hostName;
     public string deviceModel;
     public string deviceType;
+    public int connID;
+    public int processID;
+    public Vector2 windowPosition;
+    public Vector2 windowSize;
 }
 
 public class ServerAssignmentMsg : MessageBase

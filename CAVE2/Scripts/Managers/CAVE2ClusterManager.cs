@@ -103,21 +103,52 @@ public class CAVE2ClusterManager : MonoBehaviour
         //mainDisplay.SetParams(newWidth, newHeight, newXPos, newYPos);
         //mainDisplay.SetRenderingResolution(newWidth, newHeight);
         Screen.SetResolution(newWidth, newHeight, FullScreenMode.Windowed);
-        SetPosition(newXPos, newYPos);
+        // SetPosition(newXPos, newYPos);
     }
 
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR
     [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
     private static extern bool SetWindowPos(IntPtr hwnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
-    public static extern IntPtr FindWindow(System.String className, System.String windowName);
+    public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
+    [DllImport("user32.dll", EntryPoint = "GetActiveWindow")]
+    public static extern IntPtr GetActiveWindow();
+    [DllImport("user32.dll", EntryPoint = "SetWindowText")]
+    public static extern bool SetWindowText(System.IntPtr hwnd, System.String lpString);
+    [DllImport("user32.dll", EntryPoint = "GetWindowThreadProcessId")]
+    public static extern bool GetWindowThreadProcessId(System.IntPtr hwnd, out System.Int32 lpdwProcessId);
 
-    public static void SetPosition(int x, int y, int resX = 0, int resY = 0)
+    public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0)
     {
-        System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
-        string procName = proc.ProcessName;
-
-        SetWindowPos(FindWindow(null, procName), 0, x, y, resX, resY, resX * resY == 0 ? 1 : 0);
+        SetWindowPos(FindWindow(null, Application.productName + " " + connID), 0, x, y, resX, resY, resX * resY == 0 ? 1 : 0);
     }
+
+    public static void SetWindowTitle(int connID, int oldID = 0)
+    {
+        // Get the window handle by current Process
+        // var currentProc = System.Diagnostics.Process.GetCurrentProcess();
+        // IntPtr windowPtr = currentProc.MainWindowHandle;
+
+        string oldIDstr = "";
+        if(oldID != 0)
+        {
+            oldIDstr = " " + oldID;
+        }
+
+        //Get the window handle by name (does not work for multiple app instances)
+        IntPtr windowPtr = FindWindow(null, Application.productName + oldIDstr);
+
+        //Set the title text using the window handle.
+        SetWindowText(windowPtr, Application.productName + " " + connID);
+    }
+
+    public static int GetWindowProcessId(int connID)
+    {
+        int id = -1;
+        IntPtr windowPtr = FindWindow(null, Application.productName + " " + connID);
+        GetWindowThreadProcessId(windowPtr, out id);
+        return id;
+    }
+
 #endif
 }
