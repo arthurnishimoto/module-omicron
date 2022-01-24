@@ -44,6 +44,9 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     [SerializeField]
     float depth = -0.859f;
 
+    [SerializeField]
+    float eyeSeparation = 0.065f;
+
     [Header("Camera Offset")]
     [SerializeField]
     Vector3 cameraOffset;
@@ -79,6 +82,7 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
             if (sendTimer <= 0)
             {
                 remoteTerminal.SendCommand("setGeneralizedPerspectiveProjection " + screenUL.x + " " + screenUL.y + " " + screenUL.z + " " + screenLL.x + " " + screenLL.y + " " + screenLL.z + " " + screenLR.x + " " + screenLR.y + " " + screenLR.z);
+                remoteTerminal.SendCommand("setEyeSeparation " + eyeSeparation);
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLL", screenLL);
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLR", screenLR);
