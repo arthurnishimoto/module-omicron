@@ -3,11 +3,11 @@
  * 
  * Generates a stereoscopic camera from a main camera/
  *-------------------------------------------------------------------------------------------------
- * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2018-2022   		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2018-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -33,7 +33,7 @@ using System.Collections;
 public class StereoscopicCamera : MonoBehaviour {
 
     [SerializeField]
-    Material stereoscopicMaterial;
+    Material stereoscopicMaterial = null;
 
     [SerializeField]
     bool generateCameras = false;

@@ -5,7 +5,7 @@ using UnityEngine;
 public class CAVE2LoadSceneWandClick : CAVE2Interactable
 {
     [SerializeField]
-    string sceneName;
+    string sceneName = null;
 
     [SerializeField]
     int wandID = 1;

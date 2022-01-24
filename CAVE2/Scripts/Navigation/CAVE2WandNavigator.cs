@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -101,7 +101,7 @@ public class CAVE2WandNavigator : MonoBehaviour {
     NavigationMode initMode;
 
     [SerializeField]
-    GameObject worldNavigationManager;
+    GameObject worldNavigationManager = null;
 
     public bool hasInput;
 
@@ -188,12 +188,12 @@ public class CAVE2WandNavigator : MonoBehaviour {
         forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
         forward *= movementScale * speedMod;
 
-        strafe = CAVE2.GetAxis(wandID, strafeAxis);
+        strafe = CAVE2.GetAxis(strafeAxis, wandID);
         strafe *= movementScale;
 
-        lookAround.x = CAVE2.GetAxis(wandID, lookUDAxis);
+        lookAround.x = CAVE2.GetAxis(lookUDAxis, wandID);
         lookAround.x *= movementScale;
-        lookAround.y = CAVE2.GetAxis(wandID, lookLRAxis);
+        lookAround.y = CAVE2.GetAxis(lookLRAxis, wandID);
         lookAround.y *= movementScale;
 
         if(CAVE2.IsSimulatorMode())
@@ -214,15 +214,15 @@ public class CAVE2WandNavigator : MonoBehaviour {
         }
         else
         {
-            vertical = CAVE2.GetAxis(wandID, verticalAxis);
+            vertical = CAVE2.GetAxis(verticalAxis, wandID);
             vertical *= movementScale * speedMod;
         }
 
-        freeflyButtonDown = CAVE2.GetButton(wandID, freeFlyButton);
+        freeflyButtonDown = CAVE2.GetButton(freeFlyButton, wandID);
 
         hasInput = (forward != 0 || strafe != 0 || lookAround.magnitude > 0 || vertical != 0 || freeflyButtonDown);
 
-        if (CAVE2.GetButtonDown(wandID, freeFlyToggleButton))
+        if (CAVE2.GetButtonDown(freeFlyToggleButton, wandID))
         {
             if (navMode == NavigationMode.Walk)
                 SetNavigationMode((int)NavigationMode.Drive);

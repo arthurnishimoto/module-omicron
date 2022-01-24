@@ -6,10 +6,10 @@ using UnityEngine;
 public class CAVE2SecondPlayerCamera : MonoBehaviour {
 
     [SerializeField]
-    Transform mainPlayerHead;
+    Transform mainPlayerHead = null;
 
     [SerializeField]
-    Transform secondPlayerHead;
+    Transform secondPlayerHead = null;
 
     // Use this for initialization
     void Start () {

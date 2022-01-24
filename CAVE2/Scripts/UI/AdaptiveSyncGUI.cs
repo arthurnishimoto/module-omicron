@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class AdaptiveSyncGUI : MonoBehaviour {
 
     [SerializeField]
-    CAVE2TransformSync transformSync;
+    CAVE2TransformSync transformSync = null;
 
     [SerializeField]
     Text text;

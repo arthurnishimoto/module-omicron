@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -39,6 +39,7 @@ public class DebugGUIManager : MonoBehaviour {
 
     OmicronManager omgManager;
     CAVE2Manager cave2manager;
+    CAVE2PlayerIdentity cave2PlayerController;
 
     public MonoBehaviour appMenu;
 
@@ -64,7 +65,9 @@ public class DebugGUIManager : MonoBehaviour {
     float avgFPSTimeLimit = 15;
 
     [SerializeField]
-    bool resetAvgFPSTimer;
+    bool resetAvgFPSTimer = false;
+
+    bool cursorVisibleDefault;
 
     void Start()
 	{
@@ -72,14 +75,25 @@ public class DebugGUIManager : MonoBehaviour {
         cave2manager = GetComponent<CAVE2Manager>();
 
         transform.position = new Vector3(0.01f, 0.04f, 0);
-	}
+        cursorVisibleDefault = Cursor.visible;
+    }
 
 	void Update()
 	{
         if (CAVE2.IsMaster())
         {
             if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
+            {
                 showGUI = !showGUI;
+                if(showGUI)
+                {
+                    Cursor.visible = true;
+                }
+                else
+                {
+                    Cursor.visible = cursorVisibleDefault;
+                }
+            }
 
             timeleft -= Time.deltaTime;
             accum += Time.timeScale / Time.deltaTime;
@@ -154,6 +168,8 @@ public class DebugGUIManager : MonoBehaviour {
                 GUI.Label(new Rect(20, 28 * 9.5f, 250, 20), "   Min (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.x, minMaxFPSTime.x));
                 GUI.Label(new Rect(20, 28 * 10.0f, 250, 20), "   Avg (Time): " + System.String.Format("{0:F2}", avgFPS.x / avgFPS.y));
                 GUI.Label(new Rect(20, 28 * 10.5f, 250, 20), "   Max (Time): " + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.y, minMaxFPSTime.y));
+                GUI.Label(new Rect(20, 28 * 10.5f + 18 * 1, 500, 40), "Config Path: " + Application.dataPath);
+
             }
             else
 				GUI.Label(new Rect(0,50,256,24), "This Feature is Not Currently Available");
@@ -170,7 +186,17 @@ public class DebugGUIManager : MonoBehaviour {
 		}
 		else if (currentWindow == DebugWindow.PlayerController )
 		{
-			GUI.Label(new Rect(20,50,256,24), "This Feature is Not Currently Available");
+            if (cave2PlayerController != null)
+            {
+                cave2PlayerController.SetGUIOffSet(new Vector2(0, 50));
+                cave2PlayerController.OnWindow(windowID);
+            }
+            else if(cave2PlayerController == null && CAVE2.GetPlayerController(1) != null)
+            {
+                cave2PlayerController = CAVE2.GetPlayerController(1).GetComponent<CAVE2PlayerIdentity>();
+            }
+            else
+                GUI.Label(new Rect(20, 50, 256, 24), "This Feature is Not Currently Available");
         }
         else if (currentWindow == DebugWindow.App )
         {

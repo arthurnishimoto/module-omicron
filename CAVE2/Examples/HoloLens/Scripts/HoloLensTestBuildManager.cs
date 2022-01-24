@@ -3,11 +3,11 @@
  *
  * Editor helper script to toggle a scene between HoloLens+CAVE2 simulator mode and HoloLens build
  *-------------------------------------------------------------------------------------------------
- * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2018-2022   		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2018-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -62,55 +62,55 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
     [Header("Components")]
     [SerializeField]
-    ScreenConfigCalc cave2Screen;
+    ScreenConfigCalc cave2Screen = null;
 
     [SerializeField]
-    Camera holoLensCamera;
+    Camera holoLensCamera = null;
 
     // [SerializeField]
     // int currentHoloLensCameraMask;
 
     [SerializeField]
-    int VRProjectionCameraMask;
+    int VRProjectionCameraMask = 0;
 
     [SerializeField]
-    CAVE2TransformSync headTracking;
+    CAVE2TransformSync headTracking = null;
 
     [SerializeField]
-    CAVE2RPCManager cave2RPCManager;
+    CAVE2RPCManager cave2RPCManager = null;
 
     [SerializeField]
-    GameObject CAVE2ScreenCover;
+    GameObject CAVE2ScreenCover = null;
 
     [SerializeField]
-    CAVE2Manager cave2Manager;
+    CAVE2Manager cave2Manager = null;
 
     [SerializeField]
-    CustomHMDPerspective hmdPerspective;
+    CustomHMDPerspective hmdPerspective = null;
 
     [SerializeField]
-    getReal3DMocapUpdater serverHeadTracking;
+    getReal3DMocapUpdater serverHeadTracking = null;
 
     [SerializeField]
-    Camera cave2SimCamera;
+    Camera cave2SimCamera = null;
 
     [SerializeField]
-    GameObject cave2ScreenMask;
+    GameObject cave2ScreenMask = null;
 
     [SerializeField]
-    GameObject commandLineTerminal;
+    GameObject commandLineTerminal = null;
 
     [SerializeField]
-    RemoteTerminal remoteTerminal;
+    RemoteTerminal remoteTerminal = null;
 
     [SerializeField]
-    GameObject hmdTerminalDisplay;
+    GameObject hmdTerminalDisplay = null;
 
     [SerializeField]
-    GameObject remoteUIControls;
+    GameObject remoteUIControls = null;
 
     [SerializeField]
-    GameObject calibrationObjects;
+    GameObject calibrationObjects = null;
 
     private void Start()
     {

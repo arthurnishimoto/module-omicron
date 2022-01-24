@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2020		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2020, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -63,7 +63,14 @@ public class OmicronEditorMode : MonoBehaviour
         if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>() && c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode == CAVE2ScreenMaskRenderer.RenderMode.None)
             c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.Background;
 
-        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.CAVE2;
+        if(CAVE2.GetCAVE2Manager() != null)
+        {
+            CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.CAVE2;
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2Manager / CAVE2InputManager not found in current scene!");
+        }
     }
 
     [MenuItem(CAVE2_NAME)]
@@ -83,7 +90,14 @@ public class OmicronEditorMode : MonoBehaviour
         if (Camera.main)
             Camera.main.transform.localPosition = Vector3.up * 1.6f;
 
-        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.CAVE2;
+        if (CAVE2.GetCAVE2Manager() != null)
+        {
+            CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.CAVE2;
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2Manager / CAVE2InputManager not found in current scene!");
+        }
     }
 
     [MenuItem(OCULUS_NAME)]
@@ -107,7 +121,14 @@ public class OmicronEditorMode : MonoBehaviour
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Oculus VR HMDs" : "VR support disabled");
 
-        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.Oculus;
+        if (CAVE2.GetCAVE2Manager() != null)
+        {
+            CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.Oculus;
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2Manager / CAVE2InputManager not found in current scene!");
+        }
     }
 
     [MenuItem(VIVE_NAME)]
@@ -131,7 +152,14 @@ public class OmicronEditorMode : MonoBehaviour
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
 
-        CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.Vive;
+        if (CAVE2.GetCAVE2Manager() != null)
+        {
+            CAVE2.GetCAVE2Manager().GetComponent<CAVE2InputManager>().inputMappingMode = CAVE2InputManager.InputMappingMode.Vive;
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2Manager / CAVE2InputManager not found in current scene!");
+        }
     }
 
     [MenuItem(VR_NAME)]

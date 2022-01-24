@@ -6,16 +6,16 @@ using omicron;
 public class SimulatedMocapSensor : MonoBehaviour
 {
     [SerializeField]
-    int sourceID;
+    int sourceID = 0;
 
     [SerializeField]
-    bool addRandomJitter;
+    bool addRandomJitter = false;
 
     [SerializeField]
-    Vector3 outputPos;
+    Vector3 outputPos = Vector3.zero;
 
     [SerializeField]
-    Vector3 outputRot;
+    Vector3 outputRot = Vector3.zero;
 
     OmicronManager omicronManager;
 

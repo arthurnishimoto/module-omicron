@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -101,30 +101,63 @@ public class CAVE2 : MonoBehaviour
         return CAVE2Manager.UsingOmicronServer();
     }
 
+    public static float GetAxis(CAVE2.Axis axis, int wandID = 1)
+    {
+        return CAVE2Manager.GetAxis(wandID, axis);
+    }
+
+    public static bool GetButton(CAVE2.Button button, int wandID = 1)
+    {
+        return CAVE2Manager.GetButton(wandID, button);
+    }
+
+    public static bool GetButtonDown(CAVE2.Button button, int wandID = 1)
+    {
+        return CAVE2Manager.GetButtonDown(wandID, button);
+    }
+
+    public static bool GetButtonUp(CAVE2.Button button, int wandID = 1)
+    {
+        return CAVE2Manager.GetButtonUp(wandID, button);
+    }
+
+    public static OmicronController.ButtonState GetButtonState(CAVE2.Button button, int wandID = 1)
+    {
+        return CAVE2Manager.GetButtonState(wandID, button);
+    }
+
+
+    //
+    [System.Obsolete("GetAxis(int, CAVE2.Axis) is deprecated, please use GetAxis(CAVE2.Axis, int) instead.")]
     public static float GetAxis(int wandID, CAVE2.Axis axis)
     {
         return CAVE2Manager.GetAxis(wandID, axis);
     }
 
+    [System.Obsolete("GetButton(int, CAVE2.Button) is deprecated, please use GetButton(CAVE2.Button, int) instead.")]
     public static bool GetButton(int wandID, CAVE2.Button button)
     {
         return CAVE2Manager.GetButton(wandID, button);
     }
 
+    [System.Obsolete("GetButtonDown(int, CAVE2.Button) is deprecated, please use GetButtonDown(CAVE2.Button, int) instead.")]
     public static bool GetButtonDown(int wandID, CAVE2.Button button)
     {
         return CAVE2Manager.GetButtonDown(wandID, button);
     }
 
+    [System.Obsolete("GetButtonUp(int, CAVE2.Button) is deprecated, please use GetButtonUp(CAVE2.Button, int) instead.")]
     public static bool GetButtonUp(int wandID, CAVE2.Button button)
     {
         return CAVE2Manager.GetButtonUp(wandID, button);
     }
 
+    [System.Obsolete("GetButtonState(int, CAVE2.Button) is deprecated, please use GetButtonState(CAVE2.Button, int) instead.")]
     public static OmicronController.ButtonState GetButtonState(int wandID, CAVE2.Button button)
     {
         return CAVE2Manager.GetButtonState(wandID, button);
     }
+
 
     public static CAVE2.Button GetReal3DToCAVE2Button(string name)
     {
@@ -533,7 +566,6 @@ public class CAVE2 : MonoBehaviour
     public static bool IsPointingAtCAVE2Screens(float x, float y, float z, float rx, float ry, float rz, float rw, out Vector3 intersectPoint)
     {
         Vector3 eulerAngles = Vector3.zero;
-        float radius = 3.240f;
 
         // Quaternion to Euler ////////////////////////
         // Rotation matrix Q multiplied by reference vector (0,0,1)
@@ -563,7 +595,7 @@ public class CAVE2 : MonoBehaviour
         float ox = eulerAngles.x; // parametric slope of x, from orientation vector
         float oy = eulerAngles.y; // parametric slope of y, from orientation vector
         float oz = eulerAngles.z; // parametric slope of z, from orientation vector
-        float r = radius; // radius of cylinder
+        float r = CAVE2_RADIUS; // radius of cylinder
 
         // A * t^2 + B * t + C
         float A = ox * ox + oz * oz;
@@ -623,6 +655,46 @@ public class CAVE2 : MonoBehaviour
         {
             return false;
         }
+    }
+    // ---------------------------------------------------------------------------------------------
+
+    // CAVE2 XR Helpers
+    public static Vector3 GetXRNodePosition(UnityEngine.XR.XRNode type)
+    {
+        List<UnityEngine.XR.XRNodeState> nodeStates = new List<UnityEngine.XR.XRNodeState>();
+        UnityEngine.XR.InputTracking.GetNodeStates(nodeStates);
+
+        foreach (UnityEngine.XR.XRNodeState nodeState in nodeStates)
+        {
+            if (nodeState.nodeType == type)
+            {
+                Vector3 value;
+                if (nodeState.TryGetPosition(out value))
+                {
+                    return value;
+                }
+            }
+        }
+        return Vector3.zero;
+    }
+
+    public static Quaternion GetXRNodeRotation(UnityEngine.XR.XRNode type)
+    {
+        List<UnityEngine.XR.XRNodeState> nodeStates = new List<UnityEngine.XR.XRNodeState>();
+        UnityEngine.XR.InputTracking.GetNodeStates(nodeStates);
+
+        foreach (UnityEngine.XR.XRNodeState nodeState in nodeStates)
+        {
+            if (nodeState.nodeType == type)
+            {
+                Quaternion value;
+                if (nodeState.TryGetRotation(out value))
+                {
+                    return value;
+                }
+            }
+        }
+        return Quaternion.identity;
     }
 
     // ---------------------------------------------------------------------------------------------

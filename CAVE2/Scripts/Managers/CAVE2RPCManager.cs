@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -30,6 +30,8 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 #if USING_GETREAL3D
 public class CAVE2RPCManager : getReal3D.MonoBehaviourWithRpc
 {
@@ -44,7 +46,8 @@ public class CAVE2RPCManager : MonoBehaviour {
     // Remote Networking
     HostTopology topology;
     [SerializeField] int hostId;
-    [SerializeField] int connectionId;
+    int connectionId;
+    [SerializeField] int connID;
 
     HashSet<int> clientIDs = new HashSet<int>();
 
@@ -52,10 +55,11 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     public bool useMsgServer;
 
-    static short Msg_RemoteTerminal = 1104;
-    static short Msg_CAVE2RPC2 = 202;
-    static short Msg_CAVE2RPC16 = 216;
-    static short Msg_OmicronSensorList = 1100;
+    const short Msg_RemoteTerminal = 1104;
+    const short Msg_ClientInfo = 1101;
+    // static short Msg_CAVE2RPC2 = 202;
+    // static short Msg_CAVE2RPC16 = 216;
+    // static short Msg_OmicronSensorList = 1100;
 
     NetworkServerSimple msgServer;
     NetworkMessageDelegate serverOnClientConnect;
@@ -95,10 +99,10 @@ public class CAVE2RPCManager : MonoBehaviour {
     Hashtable clientMessageDelegates = new Hashtable();
 
     [SerializeField]
-    string serverIP;
+    string serverIP = null;
 
     [SerializeField]
-    bool debugMsg;
+    bool debugMsg = false;
 
     bool clientConnectedToServer = false;
 
@@ -112,7 +116,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     int reconnectAttemptCount;
 
     [SerializeField]
-    RemoteTerminal remoteTerminal;
+    RemoteTerminal remoteTerminal = null;
 
     string defaultTargetObjectName;
 
@@ -135,6 +139,8 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     float clientReceiveRate;
 
+    bool windowAssignmentDone = false;
+
     private void LogUI(string msg)
     {
         if (remoteTerminal)
@@ -145,7 +151,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public int GetConnID()
     {
-        return connectionId;
+        return connID;
     }
 
     private void Start()
@@ -184,6 +190,34 @@ public class CAVE2RPCManager : MonoBehaviour {
                 nPacketsReceived = 0;
             }
         }
+
+        if (windowAssignmentDone == false)
+        {
+            var currentProc = System.Diagnostics.Process.GetCurrentProcess();
+            for (int i = 1; i < 5; i++)
+            {
+                if (currentProc.Id == CAVE2ClusterManager.GetWindowProcessId(-i))
+                {
+                    CAVE2ClusterManager.SetWindowTitle(connID, -i);
+                    switch (connID)
+                    {
+                        case (1):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 0, 5440, 768);
+                            break;
+                        case (2):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 1, 5440, 768);
+                            break;
+                        case (3):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 2, 5440, 768);
+                            break;
+                        case (4):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 3, 5440, 768);
+                            break;
+                    }
+                    windowAssignmentDone = true;
+                }
+            }
+        }
     }
 
     public bool IsReconnecting()
@@ -204,7 +238,6 @@ public class CAVE2RPCManager : MonoBehaviour {
         stateUpdateChannelId = config.AddChannel(QosType.StateUpdate);
 
         topology = new HostTopology(config, maxConnections);
-
         msgClient = new NetworkClient();
     }
 
@@ -222,6 +255,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         byte error;
         hostId = NetworkTransport.AddHost(topology);
         connectionId = NetworkTransport.Connect(hostId, serverIP, serverListenPort, 0, out error);
+        connID = connectionId;
 
         if (error != 0)
         {
@@ -254,12 +288,15 @@ public class CAVE2RPCManager : MonoBehaviour {
             int dataSize;
             byte error;
             recData = NetworkTransport.Receive(out recHostId, out recConnectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
+
+            bool isClient = connectionId == recConnectionId;
+
             switch (recData)
             {
                 case NetworkEventType.Nothing: break;
                 case NetworkEventType.ConnectEvent:
                     Debug.Log("ConnectEvent");
-                    if (connectionId == recConnectionId)
+                    if (isClient)
                     {
                         ClientOnConnect();
                     }
@@ -282,40 +319,60 @@ public class CAVE2RPCManager : MonoBehaviour {
                     // New delegate format
                     if (readerMsgType >= 1000)
                     {
-                        if(readerMsgType == Msg_RemoteTerminal)
+                        bool knownMessage = true;
+                        switch (readerMsgType)
                         {
-                            if(remoteTerminal == null)
+                            case Msg_RemoteTerminal:
+                                if (remoteTerminal == null)
+                                {
+                                    Debug.Log("Warning: Received RemoteTerminal message, but no Remote Terminal is assigned to CAVE2RPCManager!");
+                                }
+                                else
+                                {
+                                    int srcID = networkReader.ReadInt32();
+                                    string msgString = networkReader.ReadString();
+
+                                    if (debugMsg)
+                                    {
+                                        Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'" + connectionId);
+                                        LogUI("connID " + srcID + ": " + msgString);
+                                    }
+                                    remoteTerminal.MsgFromCAVE2RPCManager(msgString);
+
+                                    // If server forward message from client to other clients
+                                    if (connectionId == 0)
+                                    {
+                                        SendTerminalMsg(msgString, true, srcID);
+                                    }
+                                }
+                                break;
+                            case Msg_ClientInfo:
+                                if (isClient)
+                                {
+                                    OnClientReceiveClientInfo(networkReader.ReadMessage<ClientInfoMsg>());
+                                }
+                                else
+                                {
+                                    OnServerReceiveClientInfo(networkReader.ReadMessage<ClientInfoMsg>());
+                                }
+                                break;
+                            default:
+                                knownMessage = false;
+                                break;
+                        }
+
+                        if (!knownMessage)
+                        {
+                            if (clientMessageDelegates.ContainsKey(readerMsgType))
                             {
-                                Debug.Log("Warning: Received RemoteTerminal message, but no Remote Terminal is assigned to CAVE2RPCManager!");
+                                NetworkMessageDelegate msgDel = (NetworkMessageDelegate)clientMessageDelegates[readerMsgType];
+
+                                // OmicronSensorListMsg msg = networkReader.ReadMessage<OmicronSensorListMsg>();
                             }
                             else
                             {
-                                int srcID = networkReader.ReadInt32();
-                                string msgString = networkReader.ReadString();
-
-                                if (debugMsg)
-                                {
-                                    Debug.Log("RemoteTerminal from connID " + srcID + ": '" + msgString + "'" + connectionId);
-                                    LogUI("connID " + srcID + ": " + msgString);
-                                }
-                                remoteTerminal.MsgFromCAVE2RPCManager(msgString);
-
-                                // If server forward message from client to other clients
-                                if(connectionId == 0)
-                                {
-                                    SendTerminalMsg(msgString, true, srcID);
-                                }
+                                Debug.Log("Warning: Unknown client message type " + readerMsgType);
                             }
-                        }
-                        else if (clientMessageDelegates.ContainsKey(readerMsgType))
-                        {
-                            NetworkMessageDelegate msgDel = (NetworkMessageDelegate)clientMessageDelegates[readerMsgType];
-
-                            // OmicronSensorListMsg msg = networkReader.ReadMessage<OmicronSensorListMsg>();
-                        }
-                        else
-                        {
-                            Debug.Log("Warning: Unknown client message type " + readerMsgType);
                         }
                         return;
                     }
@@ -332,8 +389,8 @@ public class CAVE2RPCManager : MonoBehaviour {
                         case (201): SendCAVE2RPC(targetObjectName, methodName, ReaderToObject(networkReader)); break;
                         case (202):
                             SendCAVE2RPC4(targetObjectName, methodName,
-                    ReaderToObject(networkReader),
-                    ReaderToObject(networkReader)); break;
+                            ReaderToObject(networkReader),
+                            ReaderToObject(networkReader)); break;
                         case (203):
                             SendCAVE2RPC5(targetObjectName, methodName,
                             ReaderToObject(networkReader),
@@ -402,6 +459,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("Msg Server: Client " + clientConnectionId + " connected.");
         clientIDs.Add(clientConnectionId);
 
+        // Assign new clientID to client
+        ClientInfoMsg clientIDMsg = new ClientInfoMsg();
+        clientIDMsg.connID = clientConnectionId;
+
+        ServerSendToClient(clientConnectionId, Msg_ClientInfo, clientIDMsg);
+
         /*
         OmicronSensorListMsg sensorListMsg = new OmicronSensorListMsg();
         sensorListMsg.sensorList = CAVE2.Input.GetSensorList();
@@ -418,9 +481,16 @@ public class CAVE2RPCManager : MonoBehaviour {
         clientIDs.Remove(clientConnectionId);
     }
 
+    void OnServerReceiveClientInfo(ClientInfoMsg msg)
+    {
+        LogUI("Msg Server: Client info " + msg.connID + ": " + msg.hostName + " (" + msg.clientIP + ")");
+        LogUI("     Process ID: " + msg.processID);
+    }
+
     void ClientOnConnect()
     {
         LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
+        
         clientConnectedToServer = true;
         reconnectAttemptCount = 0;
     }
@@ -434,6 +504,33 @@ public class CAVE2RPCManager : MonoBehaviour {
     void ClientOnReceiveOmicronSensorList(NetworkMessage msg)
     {
 
+    }
+
+    void OnClientReceiveClientInfo(ClientInfoMsg msg)
+    {
+        // Server assigned connID
+        connID = msg.connID;
+
+        // Note this can be different from connectionId!
+
+        // Sets the window title to include this window's processID
+        var currentProc = System.Diagnostics.Process.GetCurrentProcess();
+        
+        // Appends a unique negative connID to the window title.
+        // This is a temporary connID assignment so that each window will
+        // have a unique ID.
+        // This will later be compared and reassigned
+        CAVE2ClusterManager.SetWindowTitle(-connID);
+
+        // Confirm connID with server and send additional client info
+        msg.connID = connID;
+        msg.hostName = CAVE2Manager.GetMachineName();
+        msg.clientIP = "[IP ADDRESS]";
+        msg.processID = currentProc.Id;
+        ClientSendToServer(Msg_ClientInfo, msg);
+
+        
+        
     }
 
     public void SendTerminalMsg(string msgString, bool useReliable, int forwardingID = -1)
@@ -512,6 +609,29 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             Debug.LogWarning("Unknown client ID: " + clientId);
         }
+    }
+
+    void ClientSendToServer(short messageID, MessageBase msg, MsgType msgType = MsgType.Reliable)
+    {
+        int channelId = reliableChannelId;
+        switch (msgType)
+        {
+            case (MsgType.Reliable): channelId = reliableChannelId; break;
+            case (MsgType.Unreliable): channelId = unreliableChannelId; break;
+            case (MsgType.StateUpdate): channelId = stateUpdateChannelId; break;
+        }
+
+        NetworkWriter networkWriter = new NetworkWriter();
+        networkWriter.StartMessage(messageID);
+        networkWriter.Write(msg);
+
+        networkWriter.FinishMessage();
+
+        byte[] writerData = networkWriter.AsArray();
+
+        byte error;
+        NetworkTransport.Send(hostId, connectionId, channelId, writerData, writerData.Length, out error);
+        nPacketsSent++;
     }
 
     void ServerSendMsgToClients(byte[] writerData, MsgType msgType)
@@ -1447,4 +1567,7 @@ public void SendMessage(string targetObjectName, string methodName, object param
             Debug.LogWarning("CAVE2RPCManager: CAVE2DestroyRPC failed to find gameObject '" + targetObjectName + "'");
         }
     }
+
 }
+
+#pragma warning restore CS0618 // Type or member is obsolete

@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -50,16 +50,16 @@ public class OMenuManager : MonoBehaviour {
     public CAVE2.Button selectButton = CAVE2.Button.Button2;
 
     [SerializeField]
-    AudioClip openMenuSound;
+    AudioClip openMenuSound = null;
 
     [SerializeField]
-    AudioClip closeMenuSound;
+    AudioClip closeMenuSound = null;
 
     [SerializeField]
-    AudioClip selectMenuSound;
+    AudioClip selectMenuSound = null;
 
     [SerializeField]
-    AudioClip scrollMenuSound;
+    AudioClip scrollMenuSound = null;
 
     AudioSource audioSource;
 
@@ -85,6 +85,10 @@ public class OMenuManager : MonoBehaviour {
            if(CAVE2.IsMaster())
            {
                 angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
+                if (CAVE2.IsSimulatorMode())
+                {
+                        angleOffset.y += CAVE2.GetCameraController().transform.localEulerAngles.y;
+                }
                 CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
                 CAVE2.SendMessage(mainMenu.name, "ToggleMenu");
            }

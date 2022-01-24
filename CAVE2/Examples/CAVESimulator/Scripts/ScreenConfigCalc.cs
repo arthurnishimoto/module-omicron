@@ -9,7 +9,7 @@ public class ScreenConfigCalc : MonoBehaviour {
     [SerializeField] bool regenerateDisplayWall;
 
     [Header("Display Parameters")]
-    [SerializeField] GameObject display;
+    [SerializeField] GameObject display = null;
     [SerializeField] float displayWidthIncBorders = 1027; // mm
     [SerializeField] float displayHeightIncBorders = 581; // mm
 
@@ -27,11 +27,11 @@ public class ScreenConfigCalc : MonoBehaviour {
     [SerializeField] int displaysPerColumn = 4;
 
     [Header("Flat Wall Mode")]
-    [SerializeField] bool flatWall;
-    [SerializeField] float wallOffset; // mm
-    [SerializeField] float displayRotation; // mm
+    [SerializeField] bool flatWall = false;
+    [SerializeField] float wallOffset = 0; // mm
+    [SerializeField] float displayRotation = 0; // mm
 
-    [SerializeField] Transform trackingOrigin;
+    [SerializeField] Transform trackingOrigin = null;
 
     float angle;
 
@@ -43,11 +43,11 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     [Header("Rendering")]
     [SerializeField]
-    bool simulateDisplays;
-    bool last_simulateDisplaysState;
+    bool simulateDisplays = false;
+    bool last_simulateDisplaysState = false;
 
     [SerializeField]
-    Material floorMaterial;
+    Material floorMaterial = null;
 
     [SerializeField]
     CAVE2ScreenMaskRenderer.RenderMode floorRenderMode = CAVE2ScreenMaskRenderer.RenderMode.Background;

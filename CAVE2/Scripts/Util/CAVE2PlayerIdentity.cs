@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -40,6 +40,8 @@ public class CAVE2PlayerIdentity : MonoBehaviour
 
     public Transform cameraController;
 
+    int playerSyncMode;
+
     private void Start()
     {
         CAVE2.AddPlayerController(playerID, gameObject);
@@ -62,6 +64,108 @@ public class CAVE2PlayerIdentity : MonoBehaviour
             {
                 t.parent = cameraController;
             }
+        }
+
+        // CAVE2 Player Controller Config
+        configPath = Application.dataPath + "/cave2player.cfg";
+
+        // Read from config (if it exists, else create on quit)
+        try
+        {
+            System.IO.StreamReader reader = new System.IO.StreamReader(configPath);
+            config = JsonUtility.FromJson<CAVE2PlayerConfig>(reader.ReadToEnd());
+
+            playerSyncMode = config.playerSyncMode;
+
+            GameObject playerController = CAVE2.GetPlayerController(1);
+            if (playerController && playerController.GetComponent<CAVE2TransformSync>())
+            {
+                switch (playerSyncMode)
+                {
+                    case ((int)CAVE2TransformSync.UpdateMode.Adaptive):
+                        playerController.GetComponent<CAVE2TransformSync>().SetAdaptiveSync();
+                        break;
+                    case ((int)CAVE2TransformSync.UpdateMode.Manual):
+                        playerController.GetComponent<CAVE2TransformSync>().SetManualSync();
+                        break;
+                }
+            }
+
+
+        }
+        catch
+        {
+
+        }
+    }
+
+    [System.Serializable]
+    public class CAVE2PlayerConfig
+    {
+        public int playerSyncMode;
+    }
+
+    CAVE2PlayerConfig config;
+    string configPath;
+
+    void OnApplicationQuit()
+    {
+        if (config != null)
+        {
+            config.playerSyncMode = playerSyncMode;
+
+            string sfgJson = JsonUtility.ToJson(config, true);
+
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(configPath);
+            writer.WriteLine(sfgJson);
+            writer.Close();
+        }
+    }
+
+
+    // GUI
+    Vector2 GUIOffset;
+
+    public void SetGUIOffSet(Vector2 offset)
+    {
+        GUIOffset = offset;
+    }
+
+    public void OnWindow(int windowID)
+    {
+        float rowHeight = 18;
+
+        CAVE2TransformSync playerSync = GetComponent<CAVE2TransformSync>();
+        if (playerSync)
+        {
+            GUI.Label(new Rect(GUIOffset.x + 20, GUIOffset.y + rowHeight * 0, 120, 20), "Player Sync:");
+            bool playerAdaptiveSync = GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 1, 250, 20), playerSync.IsAdaptiveSyncEnabled(), "Adaptive");
+            //bool playerManualSync = GUI.Toggle(new Rect(GUIOffset.x + 25, GUIOffset.y + rowHeight * 2, 250, 20), playerSync.IsManualSyncEnabled(), "Manual (Off)");
+
+            if (playerAdaptiveSync && !playerSync.IsAdaptiveSyncEnabled())
+            {
+                playerSyncMode = (int)CAVE2TransformSync.UpdateMode.Adaptive;
+                playerSync.SetAdaptiveSync();
+
+                UpdateConfig();
+            }
+            else if(!playerAdaptiveSync && playerSync.IsAdaptiveSyncEnabled())
+            {
+                playerSyncMode = (int)CAVE2TransformSync.UpdateMode.Manual;
+                playerSync.SetManualSync();
+
+                UpdateConfig();
+            }
+            
+        }
+    }
+
+    void UpdateConfig()
+    {
+        if(config == null)
+        {
+            config = new CAVE2PlayerConfig();
+            config.playerSyncMode = playerSyncMode;
         }
     }
 }

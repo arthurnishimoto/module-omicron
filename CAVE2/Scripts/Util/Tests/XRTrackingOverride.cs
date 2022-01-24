@@ -5,7 +5,7 @@ using UnityEngine;
 public class XRTrackingOverride : MonoBehaviour {
 
     [SerializeField]
-    bool disablePositionalTracking;
+    bool disablePositionalTracking = false;
 
     Vector3 lastEulerAngles;
 
@@ -19,7 +19,7 @@ public class XRTrackingOverride : MonoBehaviour {
         if (disablePositionalTracking)
         {
             //transform.localPosition = -UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye);
-            transform.localRotation = Quaternion.Inverse(UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye));
+            transform.localRotation = Quaternion.Inverse(CAVE2.GetXRNodeRotation(UnityEngine.XR.XRNode.CenterEye));
         }
     }
 }
