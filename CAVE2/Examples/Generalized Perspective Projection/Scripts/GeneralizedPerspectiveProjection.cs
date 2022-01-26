@@ -55,6 +55,10 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     
     bool applyPosition = true;
 
+    [Header("HMD Options")]
+    [SerializeField]
+    bool applyHeadOffset;
+
     [Header("Debug")]
     [SerializeField]
     bool showScreenCorners = false;
@@ -75,6 +79,12 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
             debugGUI.text += screenUL.ToString("F3") + "\n";
             debugGUI.text += screenLL.ToString("F3") + "\n";
             debugGUI.text += screenLR.ToString("F3") + "";
+        }
+
+        // Used for HMD AR/VR perspective
+        if(applyHeadOffset)
+        {
+            offset = -head.transform.localPosition;
         }
     }
 

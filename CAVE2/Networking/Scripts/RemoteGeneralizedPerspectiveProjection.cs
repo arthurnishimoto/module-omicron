@@ -72,6 +72,11 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     [SerializeField]
     bool updateCameraOffset = false;
 
+    // Obsolete
+    bool useHeadPositionAsOffset = false;
+
+    [SerializeField]
+    Transform trackedHead;
 
     [Header("Networking")]
     [SerializeField]
@@ -107,9 +112,17 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
                 remoteTerminal.SendCommand("setEyeSeparation " + eyeSeparation);
                 if (updateCameraOffset)
                 {
-                    remoteTerminal.SendCommand("setGPPCameraOffset " + cameraOffset.x + " " + cameraOffset.y + " " + cameraOffset.z);
-                    //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
-                    //updateCameraOffset = false;
+                    if (useHeadPositionAsOffset && trackedHead)
+                    {
+                        // Obsolete: Configured directly on Gen. Perspective script
+                        remoteTerminal.SendCommand("setGPPCameraOffset " + -trackedHead.localPosition.x + " " + -trackedHead.localPosition.y + " " + -trackedHead.localPosition.z);
+                    }
+                    else
+                    {
+                        remoteTerminal.SendCommand("setGPPCameraOffset " + cameraOffset.x + " " + cameraOffset.y + " " + cameraOffset.z);
+                        //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
+                        //updateCameraOffset = false;
+                    }
                 }
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLL", screenLL);
