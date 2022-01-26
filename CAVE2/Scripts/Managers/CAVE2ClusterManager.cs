@@ -117,10 +117,24 @@ public class CAVE2ClusterManager : MonoBehaviour
     public static extern bool SetWindowText(System.IntPtr hwnd, System.String lpString);
     [DllImport("user32.dll", EntryPoint = "GetWindowThreadProcessId")]
     public static extern bool GetWindowThreadProcessId(System.IntPtr hwnd, out System.Int32 lpdwProcessId);
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongA")]
+    public static extern long SetWindowLongA(System.IntPtr hwnd, System.Int32 nIndex, System.Int64 dwNewLong);
 
     public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0)
     {
-        SetWindowPos(FindWindow(null, Application.productName + " " + connID), 0, x, y, resX, resY, resX * resY == 0 ? 1 : 0);
+        const int SWP_SHOWWINDOW = 0x0040;
+        const int GWL_STYLE = -16;
+        IntPtr windowPtr = FindWindow(null, Application.productName + " " + connID);
+
+        // https://answers.unity.com/questions/946630/borderless-windows-in-standalone-builds.html
+        // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlonga
+        // https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
+        // Sets window to borderless
+        SetWindowLongA(windowPtr, GWL_STYLE, 0x00800000L);
+
+        //https://answers.unity.com/questions/13523/is-there-a-way-to-set-the-position-of-a-standalone.html?_ga=2.54933416.2072224053.1643235688-1899960085.1550115936
+        // Sets the window position and shows window (last flag required after setting style above)
+        SetWindowPos(windowPtr, 0, x, y, resX, resY, SWP_SHOWWINDOW);
     }
 
     public static void SetWindowTitle(int connID, int oldID = 0)
