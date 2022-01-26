@@ -18,6 +18,12 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     protected Vector3 screenLR = new Vector3(1.0215f, 1.324f, -0.085972f);
 
     [SerializeField]
+    Vector3 widthHeightDepth;
+
+    [SerializeField]
+    Vector3 whdOffset;
+
+    [SerializeField]
     bool sendUpdate;
 
     [SerializeField]
@@ -44,6 +50,21 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     [SerializeField]
     float depth = -0.859f;
 
+    [SerializeField]
+    bool updateByWHD = false;
+
+    [SerializeField]
+    float projectionWidth = 2.54f;
+
+    [SerializeField]
+    float projectionHeight = 2.47f;
+
+    [SerializeField]
+    Vector3 projectionOffset;
+
+    [SerializeField]
+    float eyeSeparation = 0.065f;
+
     [Header("Camera Offset")]
     [SerializeField]
     Vector3 cameraOffset = Vector3.zero;
@@ -51,6 +72,11 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     [SerializeField]
     bool updateCameraOffset = false;
 
+    // Obsolete
+    bool useHeadPositionAsOffset = false;
+
+    [SerializeField]
+    Transform trackedHead;
 
     [Header("Networking")]
     [SerializeField]
@@ -74,11 +100,30 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
             screenLR = new Vector3(-leftEdge + rightOffset, bottomEdge, depth);
         }
 
+        widthHeightDepth.x = screenLL.x - screenLR.x;
+        widthHeightDepth.y = screenUL.y - screenLL.y;
+        widthHeightDepth.z = screenUL.z;
+
         if(sendUpdate || continuousUpdate)
         {
             if (sendTimer <= 0)
             {
                 remoteTerminal.SendCommand("setGeneralizedPerspectiveProjection " + screenUL.x + " " + screenUL.y + " " + screenUL.z + " " + screenLL.x + " " + screenLL.y + " " + screenLL.z + " " + screenLR.x + " " + screenLR.y + " " + screenLR.z);
+                remoteTerminal.SendCommand("setEyeSeparation " + eyeSeparation);
+                if (updateCameraOffset)
+                {
+                    if (useHeadPositionAsOffset && trackedHead)
+                    {
+                        // Obsolete: Configured directly on Gen. Perspective script
+                        remoteTerminal.SendCommand("setGPPCameraOffset " + -trackedHead.localPosition.x + " " + -trackedHead.localPosition.y + " " + -trackedHead.localPosition.z);
+                    }
+                    else
+                    {
+                        remoteTerminal.SendCommand("setGPPCameraOffset " + cameraOffset.x + " " + cameraOffset.y + " " + cameraOffset.z);
+                        //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
+                        //updateCameraOffset = false;
+                    }
+                }
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLL", screenLL);
                 //CAVE2.BroadcastMessage(targetGameObject, "SetScreenLR", screenLR);
@@ -90,12 +135,6 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
             {
                 sendTimer -= Time.deltaTime;
             }
-        }
-        if(updateCameraOffset)
-        {
-            remoteTerminal.SendCommand("setGPPCameraOffset " + cameraOffset.x + " " + cameraOffset.y + " " + cameraOffset.z);
-            //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
-            updateCameraOffset = false;
         }
     }
 }

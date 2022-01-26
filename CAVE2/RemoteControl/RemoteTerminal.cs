@@ -503,7 +503,7 @@ public class RemoteTerminal : MonoBehaviour {
                     float.TryParse(msgArray[2], out newOffset.y);
                     float.TryParse(msgArray[3], out newOffset.z);
 
-                    projection.SetOffset(newOffset);
+                    projection.SetHeadOffset(newOffset);
                 }
             }
         }
@@ -512,12 +512,11 @@ public class RemoteTerminal : MonoBehaviour {
             GameObject targetObject = GameObject.Find("Main Camera");
             if (targetObject != null)
             {
-                StereoscopicCamera stereoCamera = GetComponent<StereoscopicCamera>();
+                StereoscopicCamera stereoCamera = targetObject.GetComponent<StereoscopicCamera>();
                 if (stereoCamera != null)
                 {
                     float value = 0;
                     bool valid = float.TryParse(msgArray[1], out value);
-
                     if (valid)
                     {
                         stereoCamera.SetEyeSeparation(value);

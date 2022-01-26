@@ -117,8 +117,8 @@ public class StereoscopicCamera : MonoBehaviour {
 
         if (GetComponent<GeneralizedPerspectiveProjection>())
         {
-            leftEye.GetComponent<GeneralizedPerspectiveProjection>().SetOffset(leftEye.transform.localPosition);
-            rightEye.GetComponent<GeneralizedPerspectiveProjection>().SetOffset(rightEye.transform.localPosition);
+            leftEye.GetComponent<GeneralizedPerspectiveProjection>().SetEyeOffset(leftEye.transform.localPosition);
+            rightEye.GetComponent<GeneralizedPerspectiveProjection>().SetEyeOffset(rightEye.transform.localPosition);
         }
 
         stereoscopicMaterial.SetTextureOffset("_LeftTex", textureOffset);
