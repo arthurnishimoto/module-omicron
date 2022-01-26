@@ -51,6 +51,8 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     protected Camera virtualCamera;
 
     Vector3 offset = Vector3.zero;
+    Vector3 eyeOffset = Vector3.zero;
+    
     bool applyPosition = true;
 
     [Header("Debug")]
@@ -80,7 +82,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     void LateUpdate () {
         if (useProjection)
         {
-            Projection(screenLL, screenLR, screenUL, head.localPosition + offset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
+            Projection(screenLL, screenLR, screenUL, head.localPosition + offset + eyeOffset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
         }
     }
 
@@ -162,7 +164,12 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
         applyPosition = false;
     }
 
-    public void SetOffset(Vector3 viewer)
+    public void SetEyeOffset(Vector3 viewer)
+    {
+        eyeOffset = viewer;
+    }
+
+    public void SetHeadOffset(Vector3 viewer)
     {
         offset = viewer;
     }

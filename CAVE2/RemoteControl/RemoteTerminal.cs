@@ -503,7 +503,7 @@ public class RemoteTerminal : MonoBehaviour {
                     float.TryParse(msgArray[2], out newOffset.y);
                     float.TryParse(msgArray[3], out newOffset.z);
 
-                    projection.SetOffset(newOffset);
+                    projection.SetHeadOffset(newOffset);
                 }
             }
         }
