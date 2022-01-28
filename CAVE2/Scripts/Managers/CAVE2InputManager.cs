@@ -66,6 +66,9 @@ public class CAVE2InputManager : OmicronEventClient
     public KeyCode simulatorFlyUp = KeyCode.R;
     public KeyCode simulatorFlyDown = KeyCode.F;
 
+    [SerializeField]
+    bool disableGetReal3DControllerInput = false;
+
     [Header("Simulator Mocap Mapping")]
     public KeyCode simulatorHeadRotateL = KeyCode.Q;
     public KeyCode simulatorHeadRotateR = KeyCode.E;
@@ -652,7 +655,7 @@ public class CAVE2InputManager : OmicronEventClient
 
         // getReal3D
 #if USING_GETREAL3D
-        if (!CAVE2.IsSimulatorMode())
+        if (!CAVE2.IsSimulatorMode() && !disableGetReal3DControllerInput)
         {
             wand1_analog1 = new Vector2(
                 getReal3D.Input.GetAxis(CAVE2.CAVE2ToGetReal3DAxis(CAVE2.Axis.LeftAnalogStickLR)),
