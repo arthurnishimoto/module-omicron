@@ -483,7 +483,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void OnServerReceiveClientInfo(ClientInfoMsg msg)
     {
-        LogUI("Msg Server: Client info " + msg.connID + ": " + msg.hostName + " (" + msg.clientIP + ")");
+        LogUI("Msg Server: Client info " + msg.connID + ": " + msg.hostName + " (" + msg.deviceType + ")");
         LogUI("     Process ID: " + msg.processID);
     }
 
