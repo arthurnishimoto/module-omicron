@@ -13,6 +13,11 @@ public class CAVE2ClusterManager : MonoBehaviour
     [SerializeField]
     CAVE2RPCManager rpcManager = null;
 
+    [SerializeField]
+    bool enableScreenManagement;
+
+    bool windowAssignmentDone;
+
     [Header("Debug")]
     [SerializeField]
     Text debugUIText = null;
@@ -83,6 +88,36 @@ public class CAVE2ClusterManager : MonoBehaviour
                 debugUIText.text += "  [" + c.sourceID + "] Button Flag: " + c.rawFlags + "\n";
                 debugUIText.text += "       Analog 1: " + c.GetAnalogStick(1).ToString("F2") + " Analog 2: " + c.GetAnalogStick(2).ToString("F2") + "\n";
                 debugUIText.text += "       Analog 3: " + c.GetAnalogStick(3).ToString("F2") + " Analog 4: " + c.GetAnalogStick(4).ToString("F2") + "\n";
+            }
+        }
+
+        if (windowAssignmentDone == false)
+        {
+            int connID = GetComponent<CAVE2RPCManager>().GetConnID();
+
+            var currentProc = System.Diagnostics.Process.GetCurrentProcess();
+            for (int i = 1; i < 5; i++)
+            {
+                if (currentProc.Id == CAVE2ClusterManager.GetWindowProcessId(-i))
+                {
+                    CAVE2ClusterManager.SetWindowTitle(connID, -i);
+                    switch (connID)
+                    {
+                        case (1):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 0, 5440, 768);
+                            break;
+                        case (2):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 1, 5440, 768);
+                            break;
+                        case (3):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 2, 5440, 768);
+                            break;
+                        case (4):
+                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 3, 5440, 768);
+                            break;
+                    }
+                    windowAssignmentDone = true;
+                }
             }
         }
     }

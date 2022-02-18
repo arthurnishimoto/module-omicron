@@ -139,8 +139,6 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     float clientReceiveRate;
 
-    bool windowAssignmentDone = false;
-
     private void LogUI(string msg)
     {
         if (remoteTerminal)
@@ -188,34 +186,6 @@ public class CAVE2RPCManager : MonoBehaviour {
                 clientReceiveRate = packetInTimer / nPacketsReceived;
                 packetInTimer = 0;
                 nPacketsReceived = 0;
-            }
-        }
-
-        if (windowAssignmentDone == false)
-        {
-            var currentProc = System.Diagnostics.Process.GetCurrentProcess();
-            for (int i = 1; i < 5; i++)
-            {
-                if (currentProc.Id == CAVE2ClusterManager.GetWindowProcessId(-i))
-                {
-                    CAVE2ClusterManager.SetWindowTitle(connID, -i);
-                    switch (connID)
-                    {
-                        case (1):
-                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 0, 5440, 768);
-                            break;
-                        case (2):
-                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 1, 5440, 768);
-                            break;
-                        case (3):
-                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 2, 5440, 768);
-                            break;
-                        case (4):
-                            CAVE2ClusterManager.SetPosition(connID, 0, 768 * 3, 5440, 768);
-                            break;
-                    }
-                    windowAssignmentDone = true;
-                }
             }
         }
     }
