@@ -769,6 +769,10 @@ static CAVE2Manager CAVE2Manager_Instance;
 
     public static bool hmdVREnabled; // HMD mode (non-CAVE2 simulator)
 
+    [Header("Performance")]
+    [SerializeField]
+    public bool useLowQualityOnMaster;
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
@@ -804,6 +808,10 @@ static CAVE2Manager CAVE2Manager_Instance;
             {
                 OmicronManager omg = GetComponent<OmicronManager>();
                 omg.connectToServer = false;
+            }
+            else if(useLowQualityOnMaster)
+            {
+                QualitySettings.SetQualityLevel(0);
             }
         }
     }

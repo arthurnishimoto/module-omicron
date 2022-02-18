@@ -65,9 +65,14 @@ public class CAVE2ClusterManager : MonoBehaviour
                 if(firstUpdate && displayID == 0)
                 {
                     mainDisplay = d;
-                    displayWidthUI.SetTextWithoutNotify(d.renderingWidth+"");
-                    displayHeightUI.SetTextWithoutNotify(d.renderingHeight + "");
-                    
+                    if (displayWidthUI)
+                    {
+                        displayWidthUI.SetTextWithoutNotify(d.renderingWidth + "");
+                    }
+                    if (displayHeightUI)
+                    {
+                        displayHeightUI.SetTextWithoutNotify(d.renderingHeight + "");
+                    }
                     firstUpdate = false;
                 }
                 debugUIText.text += "  [" + displayID + "] NativeRes: " + d.systemWidth + ", " + d.systemHeight + " RenderDim: " + d.renderingWidth + ", " + d.renderingHeight + "\n";

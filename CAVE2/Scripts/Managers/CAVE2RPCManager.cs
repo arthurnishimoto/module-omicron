@@ -453,7 +453,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     void OnServerReceiveClientInfo(ClientInfoMsg msg)
     {
-        LogUI("Msg Server: Client info " + msg.connID + ": " + msg.hostName + " (" + msg.clientIP + ")");
+        LogUI("Msg Server: Client info " + msg.connID + ": " + msg.hostName + " (" + msg.deviceType + ")");
         LogUI("     Process ID: " + msg.processID);
     }
 
@@ -497,6 +497,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         msg.hostName = CAVE2Manager.GetMachineName();
         msg.clientIP = "[IP ADDRESS]";
         msg.processID = currentProc.Id;
+        msg.deviceType = Application.platform.ToString();
+        // msg.deviceType = SystemInfo.deviceType.ToString();
+        // msg.deviceModel = SystemInfo.deviceModel;
+
         ClientSendToServer(Msg_ClientInfo, msg);
 
         
