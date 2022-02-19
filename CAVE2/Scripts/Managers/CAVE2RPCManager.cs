@@ -139,7 +139,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     float clientReceiveRate;
 
-    private void LogUI(string msg)
+    public void LogUI(string msg)
     {
         if (remoteTerminal)
             remoteTerminal.PrintUI(msg);
@@ -1036,7 +1036,27 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+        {
+            getReal3D.RpcManager.call("BroadcastCAVE2RPC", targetObjectName, methodName, param);
+        }
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(101);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
 
+            WriteParameters(writer, new object[] { param });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            BroadcastCAVE2RPC(targetObjectName, methodName, param);
+        }
+#else
         NetworkWriter writer = new NetworkWriter();
         writer.StartMessage(101);
         writer.Write(targetObjectName);
@@ -1048,12 +1068,6 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
-            getReal3D.RpcManager.call("BroadcastCAVE2RPC", targetObjectName, methodName, param);
-        else
-            BroadcastCAVE2RPC(targetObjectName, methodName, param);
-#else
         BroadcastCAVE2RPC(targetObjectName, methodName, param);
 #endif
     }
@@ -1064,7 +1078,25 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 BroadcastMessage (Param 4) '" + methodName + "' on " + targetObjectName);
         }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("BroadcastCAVE2RPC4", targetObjectName, methodName, param, param2);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(102);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
 
+            WriteParameters(writer, new object[] { param, param2 });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            BroadcastCAVE2RPC4(targetObjectName, methodName, param, param2);
+        }
+#else
         NetworkWriter writer = new NetworkWriter();
         writer.StartMessage(102);
         writer.Write(targetObjectName);
@@ -1076,12 +1108,6 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
-            getReal3D.RpcManager.call("BroadcastCAVE2RPC4", targetObjectName, methodName, param, param2);
-        else
-            BroadcastCAVE2RPC4(targetObjectName, methodName, param, param2);
-#else
         BroadcastCAVE2RPC4(targetObjectName, methodName, param, param2);
 #endif
     }
@@ -1092,7 +1118,25 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 SendMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(201);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
 
+            WriteParameters(writer, new object[] { param });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            SendCAVE2RPC(targetObjectName, methodName, param);
+        }
+#else
         NetworkWriter writer = new NetworkWriter();
         writer.StartMessage(201);
         writer.Write(targetObjectName);
@@ -1104,12 +1148,6 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
-            getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
-        else
-            SendCAVE2RPC(targetObjectName, methodName, param);
-#else
         SendCAVE2RPC(targetObjectName, methodName, param);
 #endif
     }
@@ -1120,7 +1158,25 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("CAVE2 SendMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(202);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
 
+            WriteParameters(writer, new object[] { param, param2 });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            SendCAVE2RPC4(targetObjectName, methodName, param, param2);
+        }
+#else
         NetworkWriter writer = new NetworkWriter();
         writer.StartMessage(202);
         writer.Write(targetObjectName);
@@ -1132,23 +1188,36 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-    if (getReal3D.Cluster.isMaster)
-        getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
-    else
-        SendCAVE2RPC4(targetObjectName, methodName, param, param2);
-#else
-    SendCAVE2RPC4(targetObjectName, methodName, param, param2);
+       SendCAVE2RPC4(targetObjectName, methodName, param, param2);
 #endif
-}
+    }
 
-public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
 {
     if (debugRPC)
     {
         LogUI("CAVE2 SendMessage (Param 5)'" + methodName + "' on " + targetObjectName);
     }
 
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(203);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
+
+            WriteParameters(writer, new object[] { param, param2, param3 });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            SendCAVE2RPC5(targetObjectName, methodName, param, param2, param3);
+        }
+#else
     NetworkWriter writer = new NetworkWriter();
     writer.StartMessage(203);
     writer.Write(targetObjectName);
@@ -1160,23 +1229,36 @@ public void SendMessage(string targetObjectName, string methodName, object param
 
     ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-    if (getReal3D.Cluster.isMaster)
-        getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
-    else
-        SendCAVE2RPC5(targetObjectName, methodName, param, param2, param3);
-#else
     SendCAVE2RPC5(targetObjectName, methodName, param, param2, param3);
 #endif
-}
+    }
 
-public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
 {
     if (debugRPC)
     {
         LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
     }
 
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(204);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
+
+            WriteParameters(writer, new object[] { param, param2, param3, param4 });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            SendCAVE2RPC6(targetObjectName, methodName, param, param2, param3, param4);
+        }
+#else
     NetworkWriter writer = new NetworkWriter();
     writer.StartMessage(204);
     writer.Write(targetObjectName);
@@ -1188,23 +1270,41 @@ public void SendMessage(string targetObjectName, string methodName, object param
 
     ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-    if (getReal3D.Cluster.isMaster)
-        getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
-    else
-        SendCAVE2RPC6(targetObjectName, methodName, param, param2, param3, param4);
-#else
     SendCAVE2RPC6(targetObjectName, methodName, param, param2, param3, param4);
 #endif
-}
+    }
 
-public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
 {
     if (debugRPC)
     {
         LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
     }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC7", targetObjectName, methodName, param, param2, param3, param4, param5);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(205);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
 
+            WriteParameters(writer, new object[] {
+        param,
+        param2,
+        param3,
+        param4,
+        param5
+    });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            SendCAVE2RPC7(targetObjectName, methodName, param, param2, param3, param4, param5);
+        }
+#else
     NetworkWriter writer = new NetworkWriter();
     writer.StartMessage(205);
     writer.Write(targetObjectName);
@@ -1222,23 +1322,42 @@ public void SendMessage(string targetObjectName, string methodName, object param
 
     ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-    if (getReal3D.Cluster.isMaster)
-        getReal3D.RpcManager.call("SendCAVE2RPC7", targetObjectName, methodName, param, param2, param3, param4, param5);
-    else
-        SendCAVE2RPC7(targetObjectName, methodName, param, param2, param3, param4, param5);
-#else
     SendCAVE2RPC7(targetObjectName, methodName, param, param2, param3, param4, param5);
 #endif
-}
+    }
 
-public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
 {
     if (debugRPC)
     {
         LogUI("CAVE2 SendMessage (Param 9)'" + methodName + "' on " + targetObjectName);
     }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC9", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(207);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
 
+            WriteParameters(writer, new object[] {
+                param,
+                param2,
+                param3,
+                param4,
+                param5,
+                param6,
+                param7
+            });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+            SendCAVE2RPC9(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
+        }
+#else
     NetworkWriter writer = new NetworkWriter();
     writer.StartMessage(207);
     writer.Write(targetObjectName);
@@ -1257,23 +1376,52 @@ public void SendMessage(string targetObjectName, string methodName, object param
     writer.FinishMessage();
 
     ServerSendMsgToClients(writer.ToArray(), msgType);
-
-#if USING_GETREAL3D
-    if (getReal3D.Cluster.isMaster)
-        getReal3D.RpcManager.call("SendCAVE2RPC9", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
-    else
-        SendCAVE2RPC9(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
-#else
     SendCAVE2RPC9(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
 #endif
-}
+    }
 
-public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, MsgType msgType = MsgType.Reliable)
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, MsgType msgType = MsgType.Reliable)
 {
     if (debugRPC)
     {
         LogUI("CAVE2 SendMessage (Param 18)'" + methodName + "' on " + targetObjectName);
     }
+#if USING_GETREAL3D
+        if (getReal3D.Cluster.isMaster)
+            getReal3D.RpcManager.call("SendCAVE2RPC18", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
+        else
+        {
+            NetworkWriter writer = new NetworkWriter();
+            writer.StartMessage(216);
+            writer.Write(targetObjectName);
+            writer.Write(methodName);
+
+            WriteParameters(writer, new object[] {
+                param,
+                param2,
+                param3,
+                param4,
+                param5,
+                param6,
+                param7,
+                param8,
+                param9,
+                param10,
+                param11,
+                param12,
+                param13,
+                param14,
+                param15,
+                param16
+            });
+
+            writer.FinishMessage();
+
+            ServerSendMsgToClients(writer.ToArray(), msgType);
+
+            SendCAVE2RPC18(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
+        }
+#else
 
     NetworkWriter writer = new NetworkWriter();
     writer.StartMessage(216);
@@ -1303,13 +1451,7 @@ public void SendMessage(string targetObjectName, string methodName, object param
 
     ServerSendMsgToClients(writer.ToArray(), msgType);
 
-#if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
-            getReal3D.RpcManager.call("SendCAVE2RPC18", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
-        else
-            SendCAVE2RPC18(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
-#else
-        SendCAVE2RPC18(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
+    SendCAVE2RPC18(targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
 #endif
     }
 

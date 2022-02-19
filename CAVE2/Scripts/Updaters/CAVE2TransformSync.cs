@@ -27,6 +27,7 @@
  
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
@@ -69,6 +70,15 @@ public class CAVE2TransformSync : MonoBehaviour {
     float adaptiveDelay = 2f; // Time in seconds before drift correction
 
     float driftValue;
+
+    [Header("Advanced Cluster Sync")]
+    [SerializeField]
+    bool useAdvancedClusterSync;
+
+    [SerializeField]
+    UnityEngine.UI.Text advSyncDebugText;
+
+    Dictionary<int, Vector3> clusterPositions = new Dictionary<int, Vector3>();
 
     public void Update()
     {
@@ -157,8 +167,24 @@ public class CAVE2TransformSync : MonoBehaviour {
             }
 
             updateTimer -= Time.fixedDeltaTime;
+
+            if (useAdvancedClusterSync && advSyncDebugText)
+            {
+                advSyncDebugText.text = "Master Pos: " + transform.position + " nClientPos: " + clusterPositions.Count + "\n";
+                foreach (KeyValuePair<int, Vector3> kvp in clusterPositions)
+                {
+                    advSyncDebugText.text += kvp.Key + " " + kvp.Value + " Diff " + (kvp.Value - transform.position) + "\n";
+                }
+            }
         }
-        else if(gotFirstUpdateFromMaster)
+        else if(useAdvancedClusterSync)
+        {
+            Vector3 position = (useLocal ? transform.localPosition : transform.position);
+            int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
+            CAVE2.SendMessage(gameObject.name, "ClientPos", position.x, position.y, position.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
+        }
+
+        if(!CAVE2.IsMaster() && gotFirstUpdateFromMaster)
         {
             if (updateMode != UpdateMode.Adaptive)
             {
@@ -276,5 +302,21 @@ public class CAVE2TransformSync : MonoBehaviour {
     public bool IsManualSyncEnabled()
     {
         return updateMode == UpdateMode.Manual;
+    }
+
+    public void ClientPos(object[] data)
+    {
+        // CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().LogUI("Rec pos from connID " + (int)data[3]);
+        int connID = (int)data[3];
+        Vector3 pos = new Vector3((float)data[0], (float)data[1], (float)data[2]);
+
+        if(clusterPositions.ContainsKey(connID))
+        {
+            clusterPositions[connID] = pos;
+        }
+        else
+        {
+            clusterPositions.Add(connID, pos);
+        }
     }
 }
