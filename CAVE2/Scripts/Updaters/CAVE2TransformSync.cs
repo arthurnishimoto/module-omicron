@@ -39,6 +39,8 @@ public class CAVE2TransformSync : MonoBehaviour {
     public float updateSpeed = 3;
     float updateTimer;
 
+    float delayTimer;
+
     public bool syncPosition = true;
     public bool syncRotation;
     public bool syncScale;
@@ -130,18 +132,28 @@ public class CAVE2TransformSync : MonoBehaviour {
         }
         else if (useAdvancedClusterSync)
         {
-            if (advUpdateTimer > advUpdateTime)
+            if (delayTimer > 0)
             {
-                Vector3 position = (useLocal ? transform.localPosition : transform.position);
-                int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
-                CAVE2.SendMessage(gameObject.name, "ClientPos", position.x, position.y, position.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
-
-                advUpdateTimer = 0;
+                delayTimer -= Time.deltaTime;
+                return;
             }
             else
             {
-                advUpdateTimer += Time.deltaTime;
-            }
+                delayTimer = 0;
+
+                if (advUpdateTimer > advUpdateTime)
+                {
+                    Vector3 position = (useLocal ? transform.localPosition : transform.position);
+                    int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
+                    CAVE2.SendMessage(gameObject.name, "ClientPos", position.x, position.y, position.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
+
+                    advUpdateTimer = 0;
+                }
+                else
+                {
+                    advUpdateTimer += Time.deltaTime;
+                }
+            }            
         }
     }
 
@@ -217,6 +229,16 @@ public class CAVE2TransformSync : MonoBehaviour {
         }
         else if(gotFirstUpdateFromMaster)
         {
+            if (delayTimer > 0)
+            {
+                delayTimer -= Time.deltaTime;
+                return;
+            }
+            else
+            {
+                delayTimer = 0;
+            }
+
             if (updateMode != UpdateMode.Adaptive && updateMode != UpdateMode.ClientAdaptive)
             {
                 if (useLocal)
@@ -369,5 +391,10 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             clusterPositions.Add(connID, pos);
         }
+    }
+
+    public void DelaySync(float time = 3)
+    {
+        delayTimer = time;
     }
 }
