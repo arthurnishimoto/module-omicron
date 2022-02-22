@@ -163,7 +163,7 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public void FixedUpdate()
     {
-        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive)
+        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive || updateMode == UpdateMode.ClientAdaptive)
         {
             timeSinceLastChange += Time.fixedDeltaTime;
             UpdateSync();
