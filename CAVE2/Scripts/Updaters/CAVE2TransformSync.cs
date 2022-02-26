@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
-    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive, ClientAdaptive};
+    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive, ClientAdaptive, ClientUpdate};
 
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
@@ -39,7 +39,7 @@ public class CAVE2TransformSync : MonoBehaviour {
     public float updateSpeed = 3;
     float updateTimer;
 
-    float delayTimer;
+    float delayTimer = 0;
 
     public bool syncPosition = true;
     public bool syncRotation;
@@ -81,6 +81,7 @@ public class CAVE2TransformSync : MonoBehaviour {
     UnityEngine.UI.Text advSyncDebugText;
 
     Dictionary<int, Vector3> clusterPositions = new Dictionary<int, Vector3>();
+    Dictionary<int, Vector3> clusterRotations = new Dictionary<int, Vector3>();
 
     float advUpdateTimer;
     float advUpdateTime = 0.1f;
@@ -91,6 +92,17 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             timeSinceLastChange += Time.deltaTime;
             UpdateSync();
+        }
+
+        if (CAVE2.IsMaster())
+        {
+            if (updateTimer < 0)
+            {
+                SyncTransform();
+                updateTimer = updateSpeed;
+            }
+
+            updateTimer -= Time.deltaTime;
         }
 
         posDiff = nextPosition - (useLocal ? transform.localPosition : transform.position);
@@ -115,37 +127,60 @@ public class CAVE2TransformSync : MonoBehaviour {
                 }
             }
 
-            if (updateMode == UpdateMode.ClientAdaptive && clusterPositions.ContainsKey(1))
+            if(delayTimer > 0)
             {
-                Vector3 clientPos = clusterPositions[1];
+                delayTimer -= Time.deltaTime;
+            }
+            else
+            {
+                int syncingDisplayNode = 1;
+                if (updateMode == UpdateMode.ClientUpdate && clusterPositions.ContainsKey(syncingDisplayNode))
+                {
+                    Vector3 clientPos = clusterPositions[syncingDisplayNode];
+                    Vector3 clientRot = clusterRotations[syncingDisplayNode];
 
-                if(useLocal)
-                {
-                    transform.localPosition = clientPos;
-                }
-                else
-                {
-                    transform.position = clientPos;
+                    if (useLocal)
+                    {
+                        if (syncPosition)
+                        {
+                            transform.localPosition = clientPos;
+                        }
+                        if (syncRotation)
+                        {
+                            transform.localEulerAngles = clientRot;
+                        }
+                    }
+                    else
+                    {
+                        if (syncPosition)
+                        {
+                            transform.position = clientPos;
+                        }
+                        if (syncRotation)
+                        {
+                            transform.eulerAngles = clientRot;
+                        }
+                    }
                 }
             }
-
         }
         else if (useAdvancedClusterSync)
         {
             if (delayTimer > 0)
             {
                 delayTimer -= Time.deltaTime;
-                return;
             }
             else
             {
                 delayTimer = 0;
 
-                if (advUpdateTimer > advUpdateTime)
+                if (advUpdateTimer > updateSpeed)
                 {
                     Vector3 position = (useLocal ? transform.localPosition : transform.position);
+                    Vector3 rotation = (useLocal ? transform.localEulerAngles : transform.eulerAngles);
+
                     int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
-                    CAVE2.SendMessage(gameObject.name, "ClientPos", position.x, position.y, position.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
+                    CAVE2.SendMessage(gameObject.name, "ClientPosRos", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
 
                     advUpdateTimer = 0;
                 }
@@ -216,18 +251,7 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     void UpdateSync()
     {
-        if (CAVE2.IsMaster())
-        {
-            if (updateTimer < 0)
-            {
-                SyncTransform();
-
-                updateTimer = updateSpeed;
-            }
-
-            updateTimer -= Time.fixedDeltaTime;
-        }
-        else if(gotFirstUpdateFromMaster)
+        if(!CAVE2.IsMaster() && gotFirstUpdateFromMaster)
         {
             if (delayTimer > 0)
             {
@@ -357,6 +381,26 @@ public class CAVE2TransformSync : MonoBehaviour {
         updateMode = UpdateMode.Adaptive;
     }
 
+    public void SetClientUpdateSync()
+    {
+        CAVE2.SendMessage(gameObject.name, "SetClientUpdateSyncRPC");
+    }
+
+    void SetClientUpdateSyncRPC()
+    {
+        updateMode = UpdateMode.ClientUpdate;
+    }
+
+    public void SetUpdateSync()
+    {
+        CAVE2.SendMessage(gameObject.name, "SetUpdateSyncRPC");
+    }
+
+    void SetUpdateSyncRPC()
+    {
+        updateMode = UpdateMode.Update;
+    }
+
     public void SetManualSync()
     {
         CAVE2.SendMessage(gameObject.name, "SetManualSyncRPC");
@@ -377,13 +421,14 @@ public class CAVE2TransformSync : MonoBehaviour {
         return updateMode == UpdateMode.Manual;
     }
 
-    public void ClientPos(object[] data)
+    public void ClientPosRos(object[] data)
     {
         // CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().LogUI("Rec pos from connID " + (int)data[3]);
-        int connID = (int)data[3];
+        int connID = (int)data[6];
         Vector3 pos = new Vector3((float)data[0], (float)data[1], (float)data[2]);
+        Vector3 rot = new Vector3((float)data[3], (float)data[4], (float)data[5]);
 
-        if(clusterPositions.ContainsKey(connID))
+        if (clusterPositions.ContainsKey(connID))
         {
             clusterPositions[connID] = pos;
         }
@@ -391,9 +436,23 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             clusterPositions.Add(connID, pos);
         }
+
+        if (clusterRotations.ContainsKey(connID))
+        {
+            clusterRotations[connID] = rot;
+        }
+        else
+        {
+            clusterRotations.Add(connID, rot);
+        }
     }
 
     public void DelaySync(float time = 3)
+    {
+        CAVE2.SendMessage(gameObject.name, "DelaySyncRPC", time);
+    }
+
+    public void DelaySyncRPC(float time = 3)
     {
         delayTimer = time;
     }
