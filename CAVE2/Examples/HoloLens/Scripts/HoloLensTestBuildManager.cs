@@ -150,9 +150,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             holoLensCamera.cullingMask = -1;
             holoLensCamera.enabled = true;
             headTracking.enabled = !simulateTracking;
-            cave2RPCManager.useMsgClient = !simulateTracking;
+            cave2RPCManager.EnableMsgClient(!simulateTracking);
 
-            cave2RPCManager.useMsgServer = false;
+            cave2RPCManager.EnableMsgServer(false);
             serverHeadTracking.enabled = false;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
@@ -167,9 +167,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             holoLensCamera.cullingMask = 512;
             hmdPerspective.virtualCameraCullingMask = VRProjectionCameraMask;
             holoLensCamera.enabled = true;
-            cave2RPCManager.useMsgClient = true;
+            cave2RPCManager.EnableMsgClient(true);
 
-            cave2RPCManager.useMsgServer = false;
+            cave2RPCManager.EnableMsgServer(false);
             serverHeadTracking.enabled = false;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
@@ -180,9 +180,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Screen.enabled = false;
             headTracking.enabled = true;
             holoLensCamera.enabled = false;
-            cave2RPCManager.useMsgClient = false;
+            cave2RPCManager.EnableMsgClient(false);
 
-            cave2RPCManager.useMsgServer = true;
+            cave2RPCManager.EnableMsgServer(true);
             serverHeadTracking.enabled = true;
             cave2SimCamera.enabled = true;
             cave2ScreenMask.SetActive(true);
@@ -196,9 +196,9 @@ public class HoloLensTestBuildManager : MonoBehaviour {
             cave2Screen.enabled = false;
             headTracking.enabled = true;
             holoLensCamera.enabled = true;
-            cave2RPCManager.useMsgClient = true;
+            cave2RPCManager.EnableMsgServer(true);
 
-            cave2RPCManager.useMsgServer = false;
+            cave2RPCManager.EnableMsgServer(false);
             serverHeadTracking.enabled = true;
             cave2SimCamera.enabled = false;
             cave2ScreenMask.SetActive(false);
@@ -225,8 +225,8 @@ public class HoloLensTestBuildManager : MonoBehaviour {
 
             headTracking.enabled = false;
 
-            cave2RPCManager.useMsgClient = false;
-            cave2RPCManager.useMsgServer = false;
+            cave2RPCManager.EnableMsgClient(false);
+            cave2RPCManager.EnableMsgServer(false);
             remoteUIControls.SetActive(false);
 
             showTerminal = false;

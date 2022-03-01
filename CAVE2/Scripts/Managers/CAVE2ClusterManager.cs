@@ -44,8 +44,8 @@ public class CAVE2ClusterManager : MonoBehaviour
         if (!CAVE2.IsMaster())
         {
             omicronManager.connectToServer = false;
-            rpcManager.useMsgServer = false;
-            rpcManager.useMsgClient = true;
+            rpcManager.EnableMsgServer(false);
+            rpcManager.EnableMsgClient(true);
         }
     }
 
