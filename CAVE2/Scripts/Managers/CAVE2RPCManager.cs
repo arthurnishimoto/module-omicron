@@ -53,7 +53,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [Header("Message Server")]
     [SerializeField]
-    public bool useMsgServer;
+    bool useMsgServer;
 
     const short Msg_RemoteTerminal = 1104;
     const short Msg_ClientInfo = 1101;
@@ -87,7 +87,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [Header("Message Client")]
     [SerializeField]
-    public bool useMsgClient;
+    bool useMsgClient;
 
     NetworkClient msgClient;
     NetworkMessageDelegate clientOnConnect;
@@ -150,6 +150,18 @@ public class CAVE2RPCManager : MonoBehaviour {
     public int GetConnID()
     {
         return connID;
+    }
+
+    public void EnableMsgServer(bool value)
+    {
+        useMsgServer = value;
+        Debug.Log("MsgServer " + (value ? "enabled" : "disabled"));
+    }
+
+    public void EnableMsgClient(bool value)
+    {
+        useMsgClient = value;
+        Debug.Log("MsgClient " + (value ? "enabled" : "disabled"));
     }
 
     private void Start()
