@@ -410,7 +410,7 @@ namespace omicronConnector
         public Int32 msgPort = 27000;
 
         public bool EnableInputService = true;
-        // bool connected = false;
+        bool connected = false;
 
         public enum ConnectionState { NotConnected, Connecting, Connected, FailedToConnect };
         ConnectionState connectionState = ConnectionState.NotConnected;
