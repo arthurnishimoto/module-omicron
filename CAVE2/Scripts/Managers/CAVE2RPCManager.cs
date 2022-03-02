@@ -125,6 +125,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     bool debugRPC = false;
 
     [SerializeField]
+    bool hideLogWarning = true;
+
+    [SerializeField]
     bool debugNetSpeed = false;
 
     [SerializeField]
@@ -1500,7 +1503,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: BroadcastCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1522,7 +1525,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: BroadcastCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1544,7 +1547,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1565,7 +1568,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC4 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1586,7 +1589,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC5 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1607,7 +1610,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC6 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1628,7 +1631,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC7 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1649,7 +1652,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC9 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1670,7 +1673,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC18 failed to find gameObject '" + targetObjectName + "'");
         }
