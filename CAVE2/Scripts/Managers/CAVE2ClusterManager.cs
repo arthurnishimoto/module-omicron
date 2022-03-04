@@ -96,7 +96,7 @@ public class CAVE2ClusterManager : MonoBehaviour
             }
         }
 
-        if (windowAssignmentDone == false)
+        if (enableScreenManagement && windowAssignmentDone == false)
         {
             int connID = GetComponent<CAVE2RPCManager>().GetConnID();
 
