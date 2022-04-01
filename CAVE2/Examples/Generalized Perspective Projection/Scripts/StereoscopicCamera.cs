@@ -69,6 +69,8 @@ public class StereoscopicCamera : MonoBehaviour {
     [SerializeField]
     bool update;
 
+    bool camerasGenerated;
+
     // Use this for initialization
     void Start () {
         if (generateCameras && transform.parent.GetComponent<StereoscopicCamera>() == null)
@@ -208,6 +210,8 @@ public class StereoscopicCamera : MonoBehaviour {
         {
             cameraTracking.enabled = false;
         }
+
+        camerasGenerated = true;
     }
 
     void OnRenderImage(RenderTexture src, RenderTexture dest)
@@ -348,5 +352,10 @@ public class StereoscopicCamera : MonoBehaviour {
     public void SetEyeSeparation(float value)
     {
         eyeSeparation = value;
+    }
+
+    public bool IsCamerasGenerated()
+    {
+        return camerasGenerated;
     }
 }
