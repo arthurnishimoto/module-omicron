@@ -53,6 +53,9 @@ public class CAVE2CameraController : MonoBehaviour {
 
     CAVE2WandNavigator wandNav = null;
 
+    [SerializeField]
+    bool generateGetReal3DCamera = true;
+
     // Use this for initialization
     void Start()
     {
@@ -64,11 +67,11 @@ public class CAVE2CameraController : MonoBehaviour {
         }
 
 #if USING_GETREAL3D
-        if (mainCamera.GetComponent<getRealCameraUpdater>())
+        if (generateGetReal3DCamera && mainCamera.GetComponent<getRealCameraUpdater>())
         {
             mainCamera.GetComponent<getRealCameraUpdater>().enabled = true;
         }
-        else
+        else if(generateGetReal3DCamera)
         {
             mainCamera.gameObject.AddComponent<getRealCameraUpdater>();
         }
