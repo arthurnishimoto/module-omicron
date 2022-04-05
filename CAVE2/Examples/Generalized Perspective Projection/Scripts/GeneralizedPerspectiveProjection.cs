@@ -50,14 +50,15 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     [SerializeField]
     protected Camera virtualCamera;
 
-    Vector3 offset = Vector3.zero;
+    [SerializeField]
+    protected Vector3 headOffset = Vector3.zero;
     Vector3 eyeOffset = Vector3.zero;
     
     bool applyPosition = true;
 
     [Header("HMD Options")]
     [SerializeField]
-    bool applyHeadOffset;
+    protected bool applyHeadOffset;
 
     [Header("Debug")]
     [SerializeField]
@@ -84,7 +85,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
         // Used for HMD AR/VR perspective
         if(applyHeadOffset)
         {
-            offset = -head.transform.localPosition;
+            headOffset = -head.transform.localPosition;
         }
     }
 
@@ -92,7 +93,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     void LateUpdate () {
         if (useProjection)
         {
-            Projection(screenLL, screenLR, screenUL, head.localPosition + offset + eyeOffset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
+            Projection(screenLL, screenLR, screenUL, head.localPosition + headOffset + eyeOffset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
         }
     }
 
@@ -181,7 +182,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
 
     public void SetHeadOffset(Vector3 viewer)
     {
-        offset = viewer;
+        headOffset = viewer;
     }
 
     public Vector3 GetScreenUL()
