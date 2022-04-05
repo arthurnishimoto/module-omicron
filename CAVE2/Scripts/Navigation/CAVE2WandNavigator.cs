@@ -176,6 +176,11 @@ public class CAVE2WandNavigator : MonoBehaviour {
         }
     }
 
+    public void SetActiveWandID(int id)
+    {
+        wandID = id;
+    }
+
 	// Update is called once per frame
 	void Update()
     {
@@ -185,15 +190,29 @@ public class CAVE2WandNavigator : MonoBehaviour {
             speedMod = globalSpeedMod;
         }
 
-        forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
+        if (wandID == -1) // Special wand ID 1 or 2 case
+        {
+            forward = CAVE2.Input.GetAxis(1, forwardAxis);
+            strafe = CAVE2.GetAxis(strafeAxis, 1);
+            lookAround.x = CAVE2.GetAxis(lookUDAxis, 1);
+            lookAround.y = CAVE2.GetAxis(lookLRAxis, 1);
+
+            forward += CAVE2.Input.GetAxis(2, forwardAxis);
+            strafe += CAVE2.GetAxis(strafeAxis, 2);
+            lookAround.x += CAVE2.GetAxis(lookUDAxis, 2);
+            lookAround.y += CAVE2.GetAxis(lookLRAxis, 2);
+        }
+        else // Normal single wandID case
+        {
+            forward = CAVE2.Input.GetAxis(wandID, forwardAxis);
+            strafe = CAVE2.GetAxis(strafeAxis, wandID);
+            lookAround.x = CAVE2.GetAxis(lookUDAxis, wandID);
+            lookAround.y = CAVE2.GetAxis(lookLRAxis, wandID);
+        }
+        
         forward *= movementScale * speedMod;
-
-        strafe = CAVE2.GetAxis(strafeAxis, wandID);
         strafe *= movementScale;
-
-        lookAround.x = CAVE2.GetAxis(lookUDAxis, wandID);
         lookAround.x *= movementScale;
-        lookAround.y = CAVE2.GetAxis(lookLRAxis, wandID);
         lookAround.y *= movementScale;
 
         if(CAVE2.IsSimulatorMode())
@@ -391,16 +410,40 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
         float forwardAngle = transform.eulerAngles.y;
 
-        if (forwardReference == ForwardRef.Head)
-            forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
-        else if (forwardReference == ForwardRef.Wand)
-            forwardAngle = CAVE2.GetWandObject(wandID).transform.eulerAngles.y;
+        if (wandID == -1) // Special either wand 1 or 2 case 
+        {
+            if (forwardReference == ForwardRef.Head)
+                forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
+            else if (forwardReference == ForwardRef.Wand)
+            {
+                if (CAVE2.Input.GetAxis(1, forwardAxis) != 0)
+                {
+                    forwardAngle = CAVE2.GetWandObject(1).transform.eulerAngles.y;
+                }
+                if (CAVE2.Input.GetAxis(2, forwardAxis) != 0)
+                {
+                    forwardAngle = CAVE2.GetWandObject(2).transform.eulerAngles.y;
+                }
+            }
 
-        //nextPos.z += forward * Time.deltaTime * Mathf.Cos(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
-        //nextPos.x += forward * Time.deltaTime * Mathf.Sin(Mathf.Deg2Rad * forwardAngle) * flyMovementScale;
-        //nextPos.y += vertical * Time.deltaTime * flyMovementScale * globalSpeedMod;
+            if (CAVE2.Input.GetAxis(1, forwardAxis) != 0)
+            {
+                nextPos += CAVE2.GetWandObject(1).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            }
+            if (CAVE2.Input.GetAxis(2, forwardAxis) != 0)
+            {
+                nextPos += CAVE2.GetWandObject(2).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            }
+        }
+        else // Normal case
+        {
+            if (forwardReference == ForwardRef.Head)
+                forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
+            else if (forwardReference == ForwardRef.Wand)
+                forwardAngle = CAVE2.GetWandObject(wandID).transform.eulerAngles.y;
 
-        nextPos += CAVE2.GetWandObject(wandID).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            nextPos += CAVE2.GetWandObject(wandID).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+        }
 
         nextPos.y += vertical * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
 

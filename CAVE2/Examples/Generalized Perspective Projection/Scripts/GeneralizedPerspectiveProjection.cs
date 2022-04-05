@@ -60,6 +60,9 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     [SerializeField]
     protected bool applyHeadOffset;
 
+    [SerializeField]
+    bool invertHeadX;
+
     [Header("Debug")]
     [SerializeField]
     bool showScreenCorners = false;
@@ -93,7 +96,12 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     void LateUpdate () {
         if (useProjection)
         {
-            Projection(screenLL, screenLR, screenUL, head.localPosition + headOffset + eyeOffset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
+            Vector3 headLocalPos = head.localPosition;
+            if(invertHeadX)
+            {
+                headLocalPos.x *= -1;
+            }
+            Projection(screenLL, screenLR, screenUL, headLocalPos + headOffset + eyeOffset, virtualCamera.nearClipPlane, virtualCamera.farClipPlane);
         }
     }
 
@@ -277,5 +285,15 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     public void SetHeadTracker(Transform h)
     {
         head = h;
+    }
+
+    public void SetApplyHeadOffset(bool val)
+    {
+        applyHeadOffset = val;
+    }
+
+    public void SetInvertHeadX(bool val)
+    {
+        invertHeadX = val;
     }
 }

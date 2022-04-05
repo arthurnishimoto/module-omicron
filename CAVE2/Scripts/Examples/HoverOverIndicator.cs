@@ -37,7 +37,7 @@ public class HoverOverIndicator : CAVE2Interactable
     bool showPointingOver = true;
 
     [SerializeField]
-    float highlightScaler = 1.05f;
+    Vector3 highlightScaler = new Vector3(1.05f, 1.05f, 1.05f);
 
     [SerializeField]
     Mesh defaultMesh;
@@ -66,7 +66,7 @@ public class HoverOverIndicator : CAVE2Interactable
         hoverOverHighlight.transform.parent = transform;
         hoverOverHighlight.transform.position = transform.position;
         hoverOverHighlight.transform.rotation = transform.rotation;
-        hoverOverHighlight.transform.localScale = Vector3.one * highlightScaler;
+        hoverOverHighlight.transform.localScale = highlightScaler;
 
         if (defaultMesh == null)
         {

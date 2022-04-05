@@ -51,9 +51,12 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     HashSet<int> clientIDs = new HashSet<int>();
 
+    [SerializeField]
+    bool useGetReal3DRPC = true;
+
     [Header("Message Server")]
     [SerializeField]
-    public bool useMsgServer;
+    bool useMsgServer;
 
     const short Msg_RemoteTerminal = 1104;
     const short Msg_ClientInfo = 1101;
@@ -87,7 +90,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [Header("Message Client")]
     [SerializeField]
-    public bool useMsgClient;
+    bool useMsgClient;
 
     NetworkClient msgClient;
     NetworkMessageDelegate clientOnConnect;
@@ -125,6 +128,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     bool debugRPC = false;
 
     [SerializeField]
+    bool hideLogWarning = true;
+
+    [SerializeField]
     bool debugNetSpeed = false;
 
     [SerializeField]
@@ -150,6 +156,18 @@ public class CAVE2RPCManager : MonoBehaviour {
     public int GetConnID()
     {
         return connID;
+    }
+
+    public void EnableMsgServer(bool value)
+    {
+        useMsgServer = value;
+        Debug.Log("MsgServer " + (value ? "enabled" : "disabled"));
+    }
+
+    public void EnableMsgClient(bool value)
+    {
+        useMsgClient = value;
+        Debug.Log("MsgClient " + (value ? "enabled" : "disabled"));
     }
 
     private void Start()
@@ -1037,7 +1055,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 BroadcastMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
         {
             getReal3D.RpcManager.call("BroadcastCAVE2RPC", targetObjectName, methodName, param);
         }
@@ -1079,7 +1097,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 BroadcastMessage (Param 4) '" + methodName + "' on " + targetObjectName);
         }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("BroadcastCAVE2RPC4", targetObjectName, methodName, param, param2);
         else
         {
@@ -1119,7 +1137,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 SendMessage (Param 1) '" + methodName + "' on " + targetObjectName);
         }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC", targetObjectName, methodName, param);
         else
         {
@@ -1159,7 +1177,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("CAVE2 SendMessage (Param 4)'" + methodName + "' on " + targetObjectName);
         }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC4", targetObjectName, methodName, param, param2);
         else
         {
@@ -1200,7 +1218,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     }
 
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC5", targetObjectName, methodName, param, param2, param3);
         else
         {
@@ -1241,7 +1259,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     }
 
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC6", targetObjectName, methodName, param, param2, param3, param4);
         else
         {
@@ -1281,7 +1299,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("CAVE2 SendMessage (Param 6)'" + methodName + "' on " + targetObjectName);
     }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC7", targetObjectName, methodName, param, param2, param3, param4, param5);
         else
         {
@@ -1333,7 +1351,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("CAVE2 SendMessage (Param 9)'" + methodName + "' on " + targetObjectName);
     }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC9", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7);
         else
         {
@@ -1387,7 +1405,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         LogUI("CAVE2 SendMessage (Param 18)'" + methodName + "' on " + targetObjectName);
     }
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("SendCAVE2RPC18", targetObjectName, methodName, param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16);
         else
         {
@@ -1463,7 +1481,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void Destroy(string targetObjectName)
     {
 #if USING_GETREAL3D
-        if (getReal3D.Cluster.isMaster)
+        if (getReal3D.Cluster.isMaster && useGetReal3DRPC)
             getReal3D.RpcManager.call("CAVE2DestroyRPC", targetObjectName);
         else
             CAVE2DestroyRPC(targetObjectName);
@@ -1488,7 +1506,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: BroadcastCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1510,7 +1528,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: BroadcastCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1532,7 +1550,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1553,7 +1571,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC4 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1574,7 +1592,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC5 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1595,7 +1613,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC6 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1616,7 +1634,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC7 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1637,7 +1655,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC9 failed to find gameObject '" + targetObjectName + "'");
         }
@@ -1658,7 +1676,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             //Debug.Log ("Broadcast '" +methodName +"' on "+targetObject.name);
             targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 }, SendMessageOptions.DontRequireReceiver);
         }
-        else
+        else if (!hideLogWarning)
         {
             Debug.LogWarning("CAVE2RPCManager: SendCAVE2RPC18 failed to find gameObject '" + targetObjectName + "'");
         }

@@ -31,13 +31,15 @@ using System.Collections.Generic;
 
 public class CAVE2TransformSync : MonoBehaviour {
 
-    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive};
+    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive, ClientAdaptive, ClientUpdate};
 
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
 
     public float updateSpeed = 3;
     float updateTimer;
+
+    float delayTimer = 0;
 
     public bool syncPosition = true;
     public bool syncRotation;
@@ -79,6 +81,10 @@ public class CAVE2TransformSync : MonoBehaviour {
     UnityEngine.UI.Text advSyncDebugText;
 
     Dictionary<int, Vector3> clusterPositions = new Dictionary<int, Vector3>();
+    Dictionary<int, Vector3> clusterRotations = new Dictionary<int, Vector3>();
+
+    float advUpdateTimer;
+    float advUpdateTime = 0.1f;
 
     public void Update()
     {
@@ -88,6 +94,17 @@ public class CAVE2TransformSync : MonoBehaviour {
             UpdateSync();
         }
 
+        if (CAVE2.IsMaster())
+        {
+            if (updateTimer < 0)
+            {
+                SyncTransform();
+                updateTimer = updateSpeed;
+            }
+
+            updateTimer -= Time.deltaTime;
+        }
+
         posDiff = nextPosition - (useLocal ? transform.localPosition : transform.position);
         rotDiff = nextRotation.eulerAngles - (useLocal ? transform.localRotation.eulerAngles : transform.rotation.eulerAngles);
 
@@ -95,7 +112,84 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             adaptiveDebugText.text = GetAdaptiveDebugText();
         }
-        
+
+        if (CAVE2.IsMaster() && useAdvancedClusterSync)
+        {
+            if (advSyncDebugText)
+            {
+                advSyncDebugText.text = gameObject.name + "\n";
+                advSyncDebugText.text += "Master Pos: " + transform.position + " nClientPos: " + clusterPositions.Count + "\n";
+
+                foreach (KeyValuePair<int, Vector3> kvp in clusterPositions)
+                {
+                    float diff = (kvp.Value - transform.position).magnitude;
+                    advSyncDebugText.text += kvp.Key + " " + kvp.Value + " Diff " + diff + "\n";
+                }
+            }
+
+            if(delayTimer > 0)
+            {
+                delayTimer -= Time.deltaTime;
+            }
+            else
+            {
+                int syncingDisplayNode = 1;
+                if (updateMode == UpdateMode.ClientUpdate && clusterPositions.ContainsKey(syncingDisplayNode))
+                {
+                    Vector3 clientPos = clusterPositions[syncingDisplayNode];
+                    Vector3 clientRot = clusterRotations[syncingDisplayNode];
+
+                    if (useLocal)
+                    {
+                        if (syncPosition)
+                        {
+                            transform.localPosition = clientPos;
+                        }
+                        if (syncRotation)
+                        {
+                            transform.localEulerAngles = clientRot;
+                        }
+                    }
+                    else
+                    {
+                        if (syncPosition)
+                        {
+                            transform.position = clientPos;
+                        }
+                        if (syncRotation)
+                        {
+                            transform.eulerAngles = clientRot;
+                        }
+                    }
+                }
+            }
+        }
+        else if (useAdvancedClusterSync)
+        {
+            if (delayTimer > 0)
+            {
+                delayTimer -= Time.deltaTime;
+            }
+            else
+            {
+                delayTimer = 0;
+
+                if (advUpdateTimer > updateSpeed)
+                {
+                    Vector3 position = (useLocal ? transform.localPosition : transform.position);
+                    Vector3 rotation = (useLocal ? transform.localEulerAngles : transform.eulerAngles);
+
+                    int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
+                    CAVE2.SendMessage(gameObject.name, "ClientPosRos", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
+
+                    advUpdateTimer = 0;
+                }
+                else
+                {
+                    advUpdateTimer += Time.deltaTime;
+                }
+            }            
+        }
     }
 
     public string GetAdaptiveDebugText()
@@ -116,7 +210,7 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public void FixedUpdate()
     {
-        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive)
+        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive || updateMode == UpdateMode.ClientAdaptive)
         {
             timeSinceLastChange += Time.fixedDeltaTime;
             UpdateSync();
@@ -157,36 +251,19 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     void UpdateSync()
     {
-        if (CAVE2.IsMaster())
-        {
-            if (updateTimer < 0)
-            {
-                SyncTransform();
-
-                updateTimer = updateSpeed;
-            }
-
-            updateTimer -= Time.fixedDeltaTime;
-
-            if (useAdvancedClusterSync && advSyncDebugText)
-            {
-                advSyncDebugText.text = "Master Pos: " + transform.position + " nClientPos: " + clusterPositions.Count + "\n";
-                foreach (KeyValuePair<int, Vector3> kvp in clusterPositions)
-                {
-                    advSyncDebugText.text += kvp.Key + " " + kvp.Value + " Diff " + (kvp.Value - transform.position) + "\n";
-                }
-            }
-        }
-        else if(useAdvancedClusterSync)
-        {
-            Vector3 position = (useLocal ? transform.localPosition : transform.position);
-            int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
-            CAVE2.SendMessage(gameObject.name, "ClientPos", position.x, position.y, position.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
-        }
-
         if(!CAVE2.IsMaster() && gotFirstUpdateFromMaster)
         {
-            if (updateMode != UpdateMode.Adaptive)
+            if (delayTimer > 0)
+            {
+                delayTimer -= Time.deltaTime;
+                return;
+            }
+            else
+            {
+                delayTimer = 0;
+            }
+
+            if (updateMode != UpdateMode.Adaptive && updateMode != UpdateMode.ClientAdaptive)
             {
                 if (useLocal)
                 {
@@ -244,6 +321,11 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void SyncPosition(object[] data)
     {
         SyncPosition(new Vector3((float)data[0], (float)data[1], (float)data[2]));
+
+        if (updateMode == UpdateMode.Manual && !useAdvancedClusterSync)
+        {
+            UpdateSync();
+        }
     }
 
     public void SyncRotation(Quaternion rotation)
@@ -255,12 +337,22 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void SyncRotation(object[] data)
     {
         SyncRotation(new Quaternion((float)data[0], (float)data[1], (float)data[2], (float)data[3]));
+
+        if (updateMode == UpdateMode.Manual && !useAdvancedClusterSync)
+        {
+            UpdateSync();
+        }
     }
 
     public void SyncPosRot(object[] data)
     {
         SyncPosition(new Vector3((float)data[0], (float)data[1], (float)data[2]));
         SyncRotation(new Quaternion((float)data[3], (float)data[4], (float)data[5], (float)data[6]));
+
+        if (updateMode == UpdateMode.Manual && !useAdvancedClusterSync)
+        {
+            UpdateSync();
+        }
     }
 
     public void SyncScale(Vector3 value)
@@ -272,6 +364,11 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void SyncScale(object[] data)
     {
         SyncScale(new Vector3((float)data[0], (float)data[1], (float)data[2]));
+
+        if (updateMode == UpdateMode.Manual && !useAdvancedClusterSync)
+        {
+            UpdateSync();
+        }
     }
 
     public void SetAdaptiveSync()
@@ -282,6 +379,26 @@ public class CAVE2TransformSync : MonoBehaviour {
     void SetAdaptiveSyncRPC()
     {
         updateMode = UpdateMode.Adaptive;
+    }
+
+    public void SetClientUpdateSync()
+    {
+        CAVE2.SendMessage(gameObject.name, "SetClientUpdateSyncRPC");
+    }
+
+    void SetClientUpdateSyncRPC()
+    {
+        updateMode = UpdateMode.ClientUpdate;
+    }
+
+    public void SetUpdateSync()
+    {
+        CAVE2.SendMessage(gameObject.name, "SetUpdateSyncRPC");
+    }
+
+    void SetUpdateSyncRPC()
+    {
+        updateMode = UpdateMode.Update;
     }
 
     public void SetManualSync()
@@ -304,13 +421,14 @@ public class CAVE2TransformSync : MonoBehaviour {
         return updateMode == UpdateMode.Manual;
     }
 
-    public void ClientPos(object[] data)
+    public void ClientPosRos(object[] data)
     {
         // CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().LogUI("Rec pos from connID " + (int)data[3]);
-        int connID = (int)data[3];
+        int connID = (int)data[6];
         Vector3 pos = new Vector3((float)data[0], (float)data[1], (float)data[2]);
+        Vector3 rot = new Vector3((float)data[3], (float)data[4], (float)data[5]);
 
-        if(clusterPositions.ContainsKey(connID))
+        if (clusterPositions.ContainsKey(connID))
         {
             clusterPositions[connID] = pos;
         }
@@ -318,5 +436,24 @@ public class CAVE2TransformSync : MonoBehaviour {
         {
             clusterPositions.Add(connID, pos);
         }
+
+        if (clusterRotations.ContainsKey(connID))
+        {
+            clusterRotations[connID] = rot;
+        }
+        else
+        {
+            clusterRotations.Add(connID, rot);
+        }
+    }
+
+    public void DelaySync(float time = 3)
+    {
+        CAVE2.SendMessage(gameObject.name, "DelaySyncRPC", time);
+    }
+
+    public void DelaySyncRPC(float time = 3)
+    {
+        delayTimer = time;
     }
 }

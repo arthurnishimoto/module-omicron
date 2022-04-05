@@ -85,7 +85,7 @@ public class CAVE2HeadMarker : MonoBehaviour {
         transform.localPosition = CAVE2.GetHeadPosition(headID);
         transform.localRotation = CAVE2.GetHeadRotation(headID);
 
-        if (!CAVE2.OnCAVE2Display() && !CAVE2.UsingHMDVR())
+        if (forwardLine && headToGroundLine)
         {
             forwardLine.enabled = showLine;
 
