@@ -35,6 +35,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
     protected DisplayInfo displayInfo;
 
+    [Header("Display")]
     [SerializeField]
     Vector2 displayResolution = new Vector2(1366, 768);
 
@@ -52,8 +53,11 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     [SerializeField]
     bool hideDisplayFrame = true;
 
+    [SerializeField]
+    protected bool useARMaterial = false;
+
     // Use this for initialization
-    void Start () {
+    void Start() {
         displayInfo = GetComponent<DisplayInfo>();
 
         screenUL = displayInfo.Px_UpperLeft;
@@ -74,7 +78,15 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
 
-        displayMat = new Material(Shader.Find("Unlit/Texture"));
+        if (useARMaterial)
+        {
+            displayMat = new Material(Shader.Find("Transparent/Self-Illumin"));
+            displayMat.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        }
+        else
+        {
+            displayMat = new Material(Shader.Find("Unlit/Texture"));
+        }
         displayMat.name = gameObject.name + " (VR Camera Material)";
         displayMat.mainTexture = cameraRT;
 

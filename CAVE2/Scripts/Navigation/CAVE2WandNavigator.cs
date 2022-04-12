@@ -416,12 +416,24 @@ public class CAVE2WandNavigator : MonoBehaviour {
                 forwardAngle = CAVE2.GetHeadObject(headID).transform.eulerAngles.y;
             else if (forwardReference == ForwardRef.Wand)
             {
-                forwardAngle = CAVE2.GetWandObject(1).transform.eulerAngles.y;
-                forwardAngle += CAVE2.GetWandObject(2).transform.eulerAngles.y;
+                if (CAVE2.Input.GetAxis(1, forwardAxis) != 0)
+                {
+                    forwardAngle = CAVE2.GetWandObject(1).transform.eulerAngles.y;
+                }
+                if (CAVE2.Input.GetAxis(2, forwardAxis) != 0)
+                {
+                    forwardAngle = CAVE2.GetWandObject(2).transform.eulerAngles.y;
+                }
             }
 
-            nextPos += CAVE2.GetWandObject(1).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
-            nextPos += CAVE2.GetWandObject(2).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            if (CAVE2.Input.GetAxis(1, forwardAxis) != 0)
+            {
+                nextPos += CAVE2.GetWandObject(1).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            }
+            if (CAVE2.Input.GetAxis(2, forwardAxis) != 0)
+            {
+                nextPos += CAVE2.GetWandObject(2).transform.rotation * Vector3.forward * forward * Time.deltaTime * (smoothMovement ? flyMovementScale * 20 : flyMovementScale);
+            }
         }
         else // Normal case
         {

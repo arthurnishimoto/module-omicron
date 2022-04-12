@@ -35,13 +35,53 @@ using System.Collections;
 
 public class HMDDisplay : CAVE2Display
 {
+    [SerializeField]
+    bool applyHeadOffsetToScreenPosition;
+
+    [SerializeField]
+    Transform head2;
+
+    [SerializeField]
+    bool otherTrackedPerspective;
+
+    [SerializeField]
+    Vector3 screenOffset = Vector3.zero;
+
+    [SerializeField]
+    Vector3 headOffsetModifer = Vector3.zero;
+
+    [SerializeField]
+    Vector3 screenOffsetModifier = Vector3.zero;
+
     // Update is called once per frame
     void Update () {
+        if (applyHeadOffsetToScreenPosition)
+        {
+            screenOffset = head.localPosition;
+            // Remove initial offset between head and display height
+            screenOffset.y -= (displayInfo.Px_UpperLeft.y + displayInfo.Px_LowerLeft.y) / 2.0f;
+        }
 
-        screenUL = displayInfo.Px_UpperLeft;
-        screenLL = displayInfo.Px_LowerLeft;
-        screenLR = displayInfo.Px_LowerRight;
+        Vector3 screenOffset2 = Vector3.zero;
+        if (head2 && otherTrackedPerspective)
+        {
+            screenOffset2 = head2.localPosition;
+            // Remove initial offset between head and display height
+            screenOffset2.y -= (displayInfo.Px_UpperLeft.y + displayInfo.Px_LowerLeft.y) / 2.0f;
 
-        vrCamera.transform.localEulerAngles = transform.parent.localEulerAngles;
+            //headOffset = screenOffset2 - screenOffset + headOffsetModifer;
+            //screenOffset += headOffset;
+            headOffset = screenOffset;
+            screenOffset += headOffset;
+        }
+
+        screenUL = displayInfo.Px_UpperLeft + screenOffset + screenOffsetModifier;
+        screenLL = displayInfo.Px_LowerLeft + screenOffset + screenOffsetModifier;
+        screenLR = displayInfo.Px_LowerRight + screenOffset + screenOffsetModifier;
+
+        if (vrCamera)
+        {
+            vrCamera.transform.localEulerAngles = transform.parent.localEulerAngles;
+        }
     }
 }
