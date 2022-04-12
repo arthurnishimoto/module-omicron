@@ -4,11 +4,11 @@
  * Turns the attached object into a virtual reality display. Assumes parent object has a
  * VRDisplayManager to get the tracked head position and the virtual world head position
  *-------------------------------------------------------------------------------------------------
- * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2018-2022   	Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2018-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -48,6 +48,10 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     Material originalMaterial;
     Material displayMat;
 
+    [Header("Rendering")]
+    [SerializeField]
+    bool hideDisplayFrame = true;
+
     // Use this for initialization
     void Start () {
         displayInfo = GetComponent<DisplayInfo>();
@@ -64,6 +68,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
 
         virtualCamera = vrCamera.AddComponent<Camera>();
+        virtualCamera.cullingMask = GetComponentInParent<VRDisplayManager>().virtualCameraCullingMask;
 
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
@@ -77,6 +82,18 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         originalMaterial = displaySpace.GetComponent<MeshRenderer>().material;
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
         displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+
+        if(hideDisplayFrame)
+        {
+            Transform borders = transform.Find("Borders");
+            borders.GetComponent<MeshRenderer>().enabled = false;
+            MeshRenderer[] corners = displaySpace.GetComponentsInChildren<MeshRenderer>();
+            foreach(MeshRenderer m in corners)
+            {
+                m.enabled = false;
+            }
+            displaySpace.GetComponent<MeshRenderer>().enabled = true;
+        }
     }
 
     public void RemoveDisplayTexture()
