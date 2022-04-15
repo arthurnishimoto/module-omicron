@@ -49,8 +49,16 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     Material originalMaterial;
     Material displayMat;
 
+    protected enum ARMaterial {None, Transparent, Build}
+
     [SerializeField]
-    protected bool useARMaterial = false;
+    protected ARMaterial useARMaterial;
+
+    [SerializeField]
+    bool alwaysHideBorders = false;
+
+    [SerializeField]
+    bool useVRDisplayManagerCullingLayer = true;
 
     // Use this for initialization
     void Start() {
@@ -73,10 +81,15 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
 
-        if (useARMaterial)
+        if (useARMaterial == ARMaterial.Transparent)
         {
             displayMat = new Material(Shader.Find("Transparent/Self-Illumin"));
             displayMat.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        }
+        else if (useARMaterial == ARMaterial.Build)
+        {
+            displayMat = new Material(Shader.Find("Unlit/Texture"));
+            displayMat.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         }
         else
         {
@@ -88,7 +101,10 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         Transform displaySpace = transform.Find("Borders/PixelSpace");
         originalMaterial = displaySpace.GetComponent<MeshRenderer>().material;
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
-        displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+        if (useVRDisplayManagerCullingLayer)
+        {
+            displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+        }
     }
 
     public void RemoveDisplayTexture()
@@ -105,5 +121,42 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
         if(vrCamera)
             vrCamera.SetActive(true);
+    }
+
+    public void HideDisplayBorders()
+    {
+        // Disable renderers for all children (borders, display, and corners)
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer rm in renderers)
+        {
+            rm.enabled = false;
+        }
+
+        // Re-enable just display
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    public void ShowDisplayBorders()
+    {
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        if (!alwaysHideBorders)
+        {
+            foreach (MeshRenderer rm in renderers)
+            {
+                rm.enabled = true;
+            }
+        }
+        // Re-enable just display
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    public void SetVRDisplayMask(LayerMask newMask)
+    {
+        if (vrCamera)
+        {
+            vrCamera.GetComponent<Camera>().cullingMask = newMask;
+        }
     }
 }

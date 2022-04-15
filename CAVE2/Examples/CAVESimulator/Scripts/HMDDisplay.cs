@@ -53,8 +53,21 @@ public class HMDDisplay : CAVE2Display
     [SerializeField]
     Vector3 screenOffsetModifier = Vector3.zero;
 
+    [Header("Debug Analysis")]
+    [SerializeField]
+    Vector3 headLocation;
+
+    [SerializeField]
+    Vector3 head2Location;
+
     // Update is called once per frame
     void Update () {
+        headLocation = head.localPosition;
+        if(head2)
+        {
+            head2Location = head2.localPosition;
+        }
+
         if (applyHeadOffsetToScreenPosition)
         {
             screenOffset = head.localPosition;
@@ -71,7 +84,7 @@ public class HMDDisplay : CAVE2Display
 
             //headOffset = screenOffset2 - screenOffset + headOffsetModifer;
             //screenOffset += headOffset;
-            headOffset = screenOffset;
+            headOffset = screenOffset + headOffsetModifer;
             screenOffset += headOffset;
         }
 
@@ -83,5 +96,11 @@ public class HMDDisplay : CAVE2Display
         {
             vrCamera.transform.localEulerAngles = transform.parent.localEulerAngles;
         }
+    }
+
+    // Ignore this for AR HMDs
+    public new void SetVRDisplayMask(LayerMask newMask)
+    {
+
     }
 }

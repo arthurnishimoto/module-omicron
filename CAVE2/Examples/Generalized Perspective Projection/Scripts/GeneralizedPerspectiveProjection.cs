@@ -111,7 +111,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
     // pe = Viewer/camera position
     // n = Near clipping plane
     // f = Far clipping plane
-    protected void Projection( Vector3 pa, Vector3 pb, Vector3 pc, Vector3 pe, float n, float f)
+    protected void Projection(Vector3 pa, Vector3 pb, Vector3 pc, Vector3 pe, float n, float f)
     {
         // Non-unit vectors of screen corners
         Vector3 va, vb, vc;
