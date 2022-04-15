@@ -235,7 +235,8 @@ public class OmicronEditorMode : MonoBehaviour
             StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
             if (stereoCamera != null)
             {
-                DestroyImmediate(stereoCamera);
+                //DestroyImmediate(stereoCamera);
+                stereoCamera.enabled = false;
             }
             projection.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
         }
@@ -252,13 +253,15 @@ public class OmicronEditorMode : MonoBehaviour
         GeneralizedPerspectiveProjection projection = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
         if (projection != null)
         {
-            DestroyImmediate(projection);
+            //DestroyImmediate(projection);
+            projection.enabled = false;
         }
 
         StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
         if (stereoCamera != null)
         {
-            DestroyImmediate(stereoCamera);
+            //DestroyImmediate(stereoCamera);
+            projection.enabled = false;
         }
     }
 }
