@@ -4,11 +4,11 @@
  * Turns the attached object into a virtual reality display. Assumes parent object has a
  * VRDisplayManager to get the tracked head position and the virtual world head position
  *-------------------------------------------------------------------------------------------------
- * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2018-2022   	Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2018-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -49,8 +49,8 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     Material originalMaterial;
     Material displayMat;
 
-    protected enum ARMaterial {None, Transparent, Build}
-
+    protected enum ARMaterial { None, Transparent, Build }
+    [Header("Rendering")]
     [SerializeField]
     protected ARMaterial useARMaterial;
 
@@ -74,7 +74,6 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         vrCamera.transform.parent = GetComponentInParent<VRDisplayManager>().virtualHead;
         vrCamera.transform.localPosition = Vector3.zero;
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
-
         virtualCamera = vrCamera.AddComponent<Camera>();
 
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
