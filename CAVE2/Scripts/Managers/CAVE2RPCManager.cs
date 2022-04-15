@@ -56,7 +56,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [Header("Message Server")]
     [SerializeField]
-    bool useMsgServer;
+    public bool useMsgServer;
 
     const short Msg_RemoteTerminal = 1104;
     const short Msg_ClientInfo = 1101;
@@ -90,7 +90,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [Header("Message Client")]
     [SerializeField]
-    bool useMsgClient;
+    public bool useMsgClient;
 
     NetworkClient msgClient;
     NetworkMessageDelegate clientOnConnect;

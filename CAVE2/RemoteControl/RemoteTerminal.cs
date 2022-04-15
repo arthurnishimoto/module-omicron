@@ -55,6 +55,12 @@ public class RemoteTerminal : MonoBehaviour {
     NetworkMessageDelegate clientOnData;
     bool localConnection = false; // Flag to disable cyclic events if connecting to a local msg server
 
+
+    // Typically used to remotely update perspective projection on connected AR HMDs,
+    // However CAVE2 displays should not allow this.
+    [SerializeField]
+    bool allowRemotePerspectiveUpdate = true;
+
     // Command Terminal
     [SerializeField]
     InputField commandLine = null;
@@ -154,6 +160,11 @@ public class RemoteTerminal : MonoBehaviour {
                 secondaryTerminalText.text = terminalTextLog.text;
         }
         Debug.Log(log.ToString());
+    }
+
+    public void SetRemotePerspectiveUpdateAllowed(bool val)
+    {
+        allowRemotePerspectiveUpdate = val;
     }
 
     void ServerOnClientConnect(NetworkMessage msg)
@@ -470,56 +481,65 @@ public class RemoteTerminal : MonoBehaviour {
         }
         else if (rootCommand.Equals("setGeneralizedPerspectiveProjection", System.StringComparison.OrdinalIgnoreCase))
         {
-            GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
-            foreach (GameObject cameraObj in cameraObjects)
+            if (allowRemotePerspectiveUpdate)
             {
-                GeneralizedPerspectiveProjection projection = cameraObj.GetComponent<GeneralizedPerspectiveProjection>();
-                if (projection)
+                GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
+                foreach (GameObject cameraObj in cameraObjects)
                 {
-                    projection.UpdateScreenUL_x(msgArray[1]);
-                    projection.UpdateScreenUL_y(msgArray[2]);
-                    projection.UpdateScreenUL_z(msgArray[3]);
+                    GeneralizedPerspectiveProjection projection = cameraObj.GetComponent<GeneralizedPerspectiveProjection>();
+                    if (projection)
+                    {
+                        projection.UpdateScreenUL_x(msgArray[1]);
+                        projection.UpdateScreenUL_y(msgArray[2]);
+                        projection.UpdateScreenUL_z(msgArray[3]);
 
-                    projection.UpdateScreenLL_x(msgArray[4]);
-                    projection.UpdateScreenLL_y(msgArray[5]);
-                    projection.UpdateScreenLL_z(msgArray[6]);
+                        projection.UpdateScreenLL_x(msgArray[4]);
+                        projection.UpdateScreenLL_y(msgArray[5]);
+                        projection.UpdateScreenLL_z(msgArray[6]);
 
-                    projection.UpdateScreenLR_x(msgArray[7]);
-                    projection.UpdateScreenLR_y(msgArray[8]);
-                    projection.UpdateScreenLR_z(msgArray[9]);
+                        projection.UpdateScreenLR_x(msgArray[7]);
+                        projection.UpdateScreenLR_y(msgArray[8]);
+                        projection.UpdateScreenLR_z(msgArray[9]);
+                    }
                 }
             }
         }
         else if (rootCommand.Equals("setGPPCameraOffset", System.StringComparison.OrdinalIgnoreCase))
         {
-            GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
-            foreach (GameObject cameraObj in cameraObjects)
+            if (allowRemotePerspectiveUpdate)
             {
-                GeneralizedPerspectiveProjection projection = cameraObj.GetComponent<GeneralizedPerspectiveProjection>();
-                if (projection)
+                GameObject[] cameraObjects = GameObject.FindGameObjectsWithTag("MainCamera");
+                foreach (GameObject cameraObj in cameraObjects)
                 {
-                    Vector3 newOffset = Vector3.zero;
-                    float.TryParse(msgArray[1], out newOffset.x);
-                    float.TryParse(msgArray[2], out newOffset.y);
-                    float.TryParse(msgArray[3], out newOffset.z);
+                    GeneralizedPerspectiveProjection projection = cameraObj.GetComponent<GeneralizedPerspectiveProjection>();
+                    if (projection)
+                    {
+                        Vector3 newOffset = Vector3.zero;
+                        float.TryParse(msgArray[1], out newOffset.x);
+                        float.TryParse(msgArray[2], out newOffset.y);
+                        float.TryParse(msgArray[3], out newOffset.z);
 
-                    projection.SetHeadOffset(newOffset);
+                        projection.SetHeadOffset(newOffset);
+                    }
                 }
             }
         }
         else if (rootCommand.Equals("setEyeSeparation", System.StringComparison.OrdinalIgnoreCase))
         {
-            GameObject targetObject = GameObject.Find("Main Camera");
-            if (targetObject != null)
+            if (allowRemotePerspectiveUpdate)
             {
-                StereoscopicCamera stereoCamera = targetObject.GetComponent<StereoscopicCamera>();
-                if (stereoCamera != null)
+                GameObject targetObject = GameObject.Find("Main Camera");
+                if (targetObject != null)
                 {
-                    float value = 0;
-                    bool valid = float.TryParse(msgArray[1], out value);
-                    if (valid)
+                    StereoscopicCamera stereoCamera = targetObject.GetComponent<StereoscopicCamera>();
+                    if (stereoCamera != null)
                     {
-                        stereoCamera.SetEyeSeparation(value);
+                        float value = 0;
+                        bool valid = float.TryParse(msgArray[1], out value);
+                        if (valid)
+                        {
+                            stereoCamera.SetEyeSeparation(value);
+                        }
                     }
                 }
             }
