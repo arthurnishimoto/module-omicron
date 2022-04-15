@@ -46,6 +46,8 @@ public class ScreenConfigCalc : MonoBehaviour {
     bool simulateDisplays = false;
     bool last_simulateDisplaysState = false;
 
+    public ScreenMaskGeneration generateScreenMask;
+
     [SerializeField]
     Material floorMaterial = null;
 
@@ -55,6 +57,7 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     public enum ConfigOutput { None, All, getReal3D };
     public enum NodeArrangement { Sequential, Even, Odd };
+    public enum ScreenMaskGeneration { None, GameObjectOnly, GameObjectAndAsset };
 
     [Header("Display Config Generator")]
     
@@ -63,7 +66,6 @@ public class ScreenConfigCalc : MonoBehaviour {
     [SerializeField] string nodeName = "lyra";
     public ConfigOutput outputConfig = ConfigOutput.None;
 
-    public bool generateScreenMaskAsset;
     GameObject screenMask;
 
     // Mesh Generation
@@ -294,91 +296,94 @@ public class ScreenConfigCalc : MonoBehaviour {
                 currentNode += 2;
         }
 
-        // Entrance
-        Vector3 v2 = new Vector3(entranceVert[0].x, entranceVert[0].y, entranceVert[0].z) / 1000.0f;
-        Vector2 uv2 = new Vector2(entranceVert[0].x, entranceVert[0].z) / 1000.0f;
-        CAVE2ScreenMaskVerticies.Add(v2);
-        CAVE2ScreenMaskUV.Add(uv2);
-
-        v2 = new Vector3(entranceVert[1].x, entranceVert[1].y, entranceVert[1].z) / 1000.0f;
-        uv2 = new Vector2(entranceVert[1].x, entranceVert[1].z) / 1000.0f;
-        CAVE2ScreenMaskVerticies.Add(v2);
-        CAVE2ScreenMaskUV.Add(uv2);
-
-        v2 = new Vector3(entranceVert[2].x, entranceVert[2].y, entranceVert[2].z) / 1000.0f;
-        uv2 = new Vector2(entranceVert[2].x, entranceVert[2].z) / 1000.0f;
-        CAVE2ScreenMaskVerticies.Add(v2);
-        CAVE2ScreenMaskUV.Add(uv2);
-
-        v2 = new Vector3(entranceVert[3].x, entranceVert[3].y, entranceVert[3].z) / 1000.0f;
-        uv2 = new Vector2(entranceVert[3].x, entranceVert[3].z) / 1000.0f;
-        CAVE2ScreenMaskVerticies.Add(v2);
-        CAVE2ScreenMaskUV.Add(uv2);
-
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 4); // Entrance right floor
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 2); // Entrance left top
-
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 4); // Entrance right floor
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 2); // Entrance left top
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 1); // Entrance left floor
-
-        // Entrance floor
-        CAVE2ScreenMaskTriangles.Add(0); // Origin
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 4); // Entrance right floor
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 1); // Entrance left floor
-
-        // Entrance ceiling
-        CAVE2ScreenMaskTriangles.Add(1); // Origin
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 2); // Entrance left top
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
-
-        // Last column ceiling
-        CAVE2ScreenMaskTriangles.Add(1); // Origin (Ceiling)
-        CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
-        CAVE2ScreenMaskTriangles.Add(lastCeilingVertIndex);
-
-        screenMask = new GameObject("CAVE2 Screen Mask");
-        screenMask.transform.parent = transform;
-        screenMask.transform.localPosition = Vector3.zero;
-        screenMask.transform.localRotation = Quaternion.identity;
-
-        if (screenMask.GetComponent<MeshFilter>() == null)
-            screenMask.AddComponent<MeshFilter>();
-        if (screenMask.GetComponent<MeshRenderer>() == null)
-            screenMask.AddComponent<MeshRenderer>();
-
-        if (floorMaterial)
+        if (generateScreenMask != ScreenMaskGeneration.None)
         {
-            Mesh mesh = screenMask.GetComponent<MeshFilter>().mesh;
-            MeshRenderer meshRenderer = screenMask.GetComponent<MeshRenderer>();
+            // Entrance
+            Vector3 v2 = new Vector3(entranceVert[0].x, entranceVert[0].y, entranceVert[0].z) / 1000.0f;
+            Vector2 uv2 = new Vector2(entranceVert[0].x, entranceVert[0].z) / 1000.0f;
+            CAVE2ScreenMaskVerticies.Add(v2);
+            CAVE2ScreenMaskUV.Add(uv2);
 
-            mesh.Clear();
-            meshRenderer.material = floorMaterial;
+            v2 = new Vector3(entranceVert[1].x, entranceVert[1].y, entranceVert[1].z) / 1000.0f;
+            uv2 = new Vector2(entranceVert[1].x, entranceVert[1].z) / 1000.0f;
+            CAVE2ScreenMaskVerticies.Add(v2);
+            CAVE2ScreenMaskUV.Add(uv2);
 
-            mesh.vertices = CAVE2ScreenMaskVerticies.ToArray();
-            mesh.uv = CAVE2ScreenMaskUV.ToArray();
-            mesh.triangles = CAVE2ScreenMaskTriangles.ToArray();
+            v2 = new Vector3(entranceVert[2].x, entranceVert[2].y, entranceVert[2].z) / 1000.0f;
+            uv2 = new Vector2(entranceVert[2].x, entranceVert[2].z) / 1000.0f;
+            CAVE2ScreenMaskVerticies.Add(v2);
+            CAVE2ScreenMaskUV.Add(uv2);
 
-            UpdateScreenMask();
-#if UNITY_EDITOR
-            if (generateScreenMaskAsset)
+            v2 = new Vector3(entranceVert[3].x, entranceVert[3].y, entranceVert[3].z) / 1000.0f;
+            uv2 = new Vector2(entranceVert[3].x, entranceVert[3].z) / 1000.0f;
+            CAVE2ScreenMaskVerticies.Add(v2);
+            CAVE2ScreenMaskUV.Add(uv2);
+
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 4); // Entrance right floor
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 2); // Entrance left top
+
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 4); // Entrance right floor
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 2); // Entrance left top
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 1); // Entrance left floor
+
+            // Entrance floor
+            CAVE2ScreenMaskTriangles.Add(0); // Origin
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 4); // Entrance right floor
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 1); // Entrance left floor
+
+            // Entrance ceiling
+            CAVE2ScreenMaskTriangles.Add(1); // Origin
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 2); // Entrance left top
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
+
+            // Last column ceiling
+            CAVE2ScreenMaskTriangles.Add(1); // Origin (Ceiling)
+            CAVE2ScreenMaskTriangles.Add(CAVE2ScreenMaskVerticies.Count - 3); // Entrance right top
+            CAVE2ScreenMaskTriangles.Add(lastCeilingVertIndex);
+
+            screenMask = new GameObject("CAVE2 Screen Mask");
+            screenMask.transform.parent = transform;
+            screenMask.transform.localPosition = Vector3.zero;
+            screenMask.transform.localRotation = Quaternion.identity;
+
+            if (screenMask.GetComponent<MeshFilter>() == null)
+                screenMask.AddComponent<MeshFilter>();
+            if (screenMask.GetComponent<MeshRenderer>() == null)
+                screenMask.AddComponent<MeshRenderer>();
+
+            if (floorMaterial)
             {
-                if (!Directory.Exists(Application.dataPath + "/Resources/"))
+                Mesh mesh = screenMask.GetComponent<MeshFilter>().mesh;
+                MeshRenderer meshRenderer = screenMask.GetComponent<MeshRenderer>();
+
+                mesh.Clear();
+                meshRenderer.material = floorMaterial;
+
+                mesh.vertices = CAVE2ScreenMaskVerticies.ToArray();
+                mesh.uv = CAVE2ScreenMaskUV.ToArray();
+                mesh.triangles = CAVE2ScreenMaskTriangles.ToArray();
+
+                UpdateScreenMask();
+#if UNITY_EDITOR
+                if (generateScreenMask == ScreenMaskGeneration.GameObjectAndAsset)
                 {
-                    UnityEditor.AssetDatabase.CreateFolder("Assets", "Resources");
+                    if (!Directory.Exists(Application.dataPath + "/Resources/"))
+                    {
+                        UnityEditor.AssetDatabase.CreateFolder("Assets", "Resources");
+                    }
+                    UnityEditor.AssetDatabase.Refresh();
+                    if (!Directory.Exists(Application.dataPath + "/Resources/CAVE2/"))
+                        UnityEditor.AssetDatabase.CreateFolder("Assets/Resources", "CAVE2");
+
+                    UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/Resources/CAVE2/CAVE2ScreenMask.asset");
+                    UnityEditor.AssetDatabase.SaveAssets();
+                    UnityEditor.AssetDatabase.Refresh();
+
+                    UnityEditor.PrefabUtility.CreatePrefab("Assets/Resources/CAVE2/CAVE2ScreenMask.prefab", screenMask);
                 }
-                UnityEditor.AssetDatabase.Refresh();
-                if (!Directory.Exists(Application.dataPath + "/Resources/CAVE2/"))
-                    UnityEditor.AssetDatabase.CreateFolder("Assets/Resources", "CAVE2");
-
-                UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/Resources/CAVE2/CAVE2ScreenMask.asset");
-                UnityEditor.AssetDatabase.SaveAssets();
-                UnityEditor.AssetDatabase.Refresh();
-
-                UnityEditor.PrefabUtility.CreatePrefab("Assets/Resources/CAVE2/CAVE2ScreenMask.prefab", screenMask);
-            }
 #endif
+            }
         }
         if (outputConfig == ConfigOutput.All || outputConfig == ConfigOutput.getReal3D)
         {

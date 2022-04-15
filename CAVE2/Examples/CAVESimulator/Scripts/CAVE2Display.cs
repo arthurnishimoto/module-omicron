@@ -4,11 +4,11 @@
  * Turns the attached object into a virtual reality display. Assumes parent object has a
  * VRDisplayManager to get the tracked head position and the virtual world head position
  *-------------------------------------------------------------------------------------------------
- * Copyright 2018   		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2018-2022   	Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2018-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -35,6 +35,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
     protected DisplayInfo displayInfo;
 
+    [Header("Display")]
     [SerializeField]
     Vector2 displayResolution = new Vector2(1366, 768);
 
@@ -48,8 +49,19 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     Material originalMaterial;
     Material displayMat;
 
+    protected enum ARMaterial { None, Transparent, Build }
+    [Header("Rendering")]
+    [SerializeField]
+    protected ARMaterial useARMaterial;
+
+    [SerializeField]
+    bool alwaysHideBorders = false;
+
+    [SerializeField]
+    bool useVRDisplayManagerCullingLayer = true;
+
     // Use this for initialization
-    void Start () {
+    void Start() {
         displayInfo = GetComponent<DisplayInfo>();
 
         screenUL = displayInfo.Px_UpperLeft;
@@ -62,21 +74,36 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         vrCamera.transform.parent = GetComponentInParent<VRDisplayManager>().virtualHead;
         vrCamera.transform.localPosition = Vector3.zero;
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
-
         virtualCamera = vrCamera.AddComponent<Camera>();
 
         RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
 
-        displayMat = new Material(Shader.Find("Unlit/Texture"));
+        if (useARMaterial == ARMaterial.Transparent)
+        {
+            displayMat = new Material(Shader.Find("Transparent/Self-Illumin"));
+            displayMat.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        }
+        else if (useARMaterial == ARMaterial.Build)
+        {
+            displayMat = new Material(Shader.Find("Unlit/Texture"));
+            displayMat.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        else
+        {
+            displayMat = new Material(Shader.Find("Unlit/Texture"));
+        }
         displayMat.name = gameObject.name + " (VR Camera Material)";
         displayMat.mainTexture = cameraRT;
 
         Transform displaySpace = transform.Find("Borders/PixelSpace");
         originalMaterial = displaySpace.GetComponent<MeshRenderer>().material;
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
-        displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+        if (useVRDisplayManagerCullingLayer)
+        {
+            displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
+        }
     }
 
     public void RemoveDisplayTexture()
@@ -93,5 +120,42 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
         if(vrCamera)
             vrCamera.SetActive(true);
+    }
+
+    public void HideDisplayBorders()
+    {
+        // Disable renderers for all children (borders, display, and corners)
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (MeshRenderer rm in renderers)
+        {
+            rm.enabled = false;
+        }
+
+        // Re-enable just display
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    public void ShowDisplayBorders()
+    {
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        if (!alwaysHideBorders)
+        {
+            foreach (MeshRenderer rm in renderers)
+            {
+                rm.enabled = true;
+            }
+        }
+        // Re-enable just display
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    public void SetVRDisplayMask(LayerMask newMask)
+    {
+        if (vrCamera)
+        {
+            vrCamera.GetComponent<Camera>().cullingMask = newMask;
+        }
     }
 }
