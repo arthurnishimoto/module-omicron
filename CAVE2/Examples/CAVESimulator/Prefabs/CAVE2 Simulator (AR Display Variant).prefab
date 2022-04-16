@@ -300,6 +300,36 @@ PrefabInstance:
       propertyPath: m_CullingMask.m_Bits
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 20825607323234470, guid: b62fcffd034e0154997bc34861ac4195,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 20825607323234470, guid: b62fcffd034e0154997bc34861ac4195,
+        type: 3}
+      propertyPath: m_ClearFlags
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 20825607323234470, guid: b62fcffd034e0154997bc34861ac4195,
+        type: 3}
+      propertyPath: m_BackGroundColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 20825607323234470, guid: b62fcffd034e0154997bc34861ac4195,
+        type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 20825607323234470, guid: b62fcffd034e0154997bc34861ac4195,
+        type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 20825607323234470, guid: b62fcffd034e0154997bc34861ac4195,
+        type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 114449731639654882, guid: b62fcffd034e0154997bc34861ac4195,
         type: 3}
       propertyPath: trackingOrigin
