@@ -192,202 +192,345 @@ public class CAVE2ClusterManager : MonoBehaviour
 
     void SetCAVE2CameraPerspective()
     {
-        GeneralizedPerspectiveProjection camera = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
-        if(camera == null)
+        GeneralizedPerspectiveProjection mainCamera = Camera.main.GetComponent<GeneralizedPerspectiveProjection>();
+        if (mainCamera == null)
         {
-            camera = Camera.main.gameObject.AddComponent<GeneralizedPerspectiveProjection>();
+            mainCamera = Camera.main.gameObject.AddComponent<GeneralizedPerspectiveProjection>();
         }
-        else if(camera.enabled == false)
+        else if (mainCamera.enabled == false)
         {
-            camera.enabled = true;
+            mainCamera.enabled = true;
         }
-        camera.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
-        camera.SetVirtualCamera(Camera.main);
-        camera.SetApplyHeadOffset(false);
 
-        RemoteTerminal terminal = GameObject.Find("Terminal").GetComponent<RemoteTerminal>();
+        // Stereoscopic first
+        StereoscopicCamera stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
+        if (stereoCamera == null)
+        {
+            stereoCamera = Camera.main.gameObject.AddComponent<StereoscopicCamera>();
+        }
+        else if (stereoCamera.enabled == false)
+        {
+            stereoCamera.enabled = true;
+        }
+        stereoCamera.EnableStereo(true);
+        stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Interleaved);
 
-        terminal.PrintUI("Setting Camera Perspective for " + CAVE2Manager.GetMachineName() + " WindowID: " + myWindowPosID);
-        if (CAVE2Manager.GetMachineName() == "ORION") //Backwall
+        // Stereo for main CAVE2 columns
+        stereoCamera.SetStereoResolution(new Vector2(1366, 3072));
+        stereoCamera.ForceSetupStereoCameras();
+        stereoCamera.InvertStereo();
+
+        bool mainCameraRotated = false;
+
+        // Setup camera perspective
+        GeneralizedPerspectiveProjection[] cameras = Camera.main.GetComponentsInChildren<GeneralizedPerspectiveProjection>();
+        foreach (GeneralizedPerspectiveProjection camera in cameras)
         {
-            camera.transform.Rotate(Vector3.up * 180);
-            switch (myWindowPosID)
+            camera.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
+            camera.SetVirtualCamera(camera.GetComponent<Camera>());
+            camera.SetApplyHeadOffset(false);
+
+            RemoteTerminal terminal = GameObject.Find("Terminal").GetComponent<RemoteTerminal>();
+
+            terminal.PrintUI("Setting Camera Perspective for " + CAVE2Manager.GetMachineName() + " WindowID: " + myWindowPosID);
+            if (CAVE2Manager.GetMachineName() == "ORION") //Backwall
             {
-                case (0): // Top Row
-                    camera.SetScreenLL(new Vector3(2.57f, 2.03f, -6.85f));
-                    camera.SetScreenLR(new Vector3(-1.6f, 2.03f, -6.85f));
-                    camera.SetScreenUL(new Vector3(2.57f, 2.60f, -6.85f));
-                    break;
-                case (1):
-                    camera.SetScreenLL(new Vector3(2.57f, 1.44f, -6.85f));
-                    camera.SetScreenLR(new Vector3(-1.6f, 1.44f, -6.85f));
-                    camera.SetScreenUL(new Vector3(2.57f, 2.02f, -6.85f));
-                    break;
-                case (2):
-                    camera.SetScreenLL(new Vector3(2.57f, 0.86f, -6.85f));
-                    camera.SetScreenLR(new Vector3(-1.6f, 0.86f, -6.85f));
-                    camera.SetScreenUL(new Vector3(2.57f, 1.44f, -6.85f));
-                    break;
-                case (3): // Bottom Row
-                    camera.SetScreenLL(new Vector3(2.57f, 0.28f, -6.85f));
-                    camera.SetScreenLR(new Vector3(-1.6f, 0.28f, -6.85f));
-                    camera.SetScreenUL(new Vector3(2.57f, 0.86f, -6.85f));
-                    break;
+                // Backwall has a different stereo configuration
+                stereoCamera.SetStereoResolution(new Vector2(5440, 768));
+                stereoCamera.InvertStereo(); // Invert backwall back to un-inverted
+
+                // Stereoscopic camera is the "root" camera
+                if (!mainCameraRotated)
+                {
+                    mainCamera.transform.Rotate(Vector3.up * 180);
+                    mainCameraRotated = true;
+                }
+                switch (myWindowPosID)
+                {
+                    case (0): // Top Row
+                        camera.SetScreenLL(new Vector3(2.57f, 2.03f, -6.85f));
+                        camera.SetScreenLR(new Vector3(-1.6f, 2.03f, -6.85f));
+                        camera.SetScreenUL(new Vector3(2.57f, 2.60f, -6.85f));
+                        break;
+                    case (1):
+                        camera.SetScreenLL(new Vector3(2.57f, 1.44f, -6.85f));
+                        camera.SetScreenLR(new Vector3(-1.6f, 1.44f, -6.85f));
+                        camera.SetScreenUL(new Vector3(2.57f, 2.02f, -6.85f));
+                        break;
+                    case (2):
+                        camera.SetScreenLL(new Vector3(2.57f, 0.86f, -6.85f));
+                        camera.SetScreenLR(new Vector3(-1.6f, 0.86f, -6.85f));
+                        camera.SetScreenUL(new Vector3(2.57f, 1.44f, -6.85f));
+                        break;
+                    case (3): // Bottom Row
+                        camera.SetScreenLL(new Vector3(2.57f, 0.28f, -6.85f));
+                        camera.SetScreenLR(new Vector3(-1.6f, 0.28f, -6.85f));
+                        camera.SetScreenUL(new Vector3(2.57f, 0.86f, -6.85f));
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-01")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-01")
             {
-                case (0): // Lyra-01
-                    camera.SetScreenUL(new Vector3(-0.5437923f, 2.605996f, -3.239587f));
-                    camera.SetScreenLL(new Vector3(-0.5437923f, 0.3060037f, -3.239587f));
-                    camera.SetScreenLR(new Vector3(-1.512198f, 0.3060037f, -2.916143f));
-                    camera.transform.Rotate(Vector3.up * -161.531f);
-                    break;
-                case (1): // Lyra-03
-                    camera.SetScreenUL(new Vector3(-1.518851f, 2.605996f, -2.912683f));
-                    camera.SetScreenLL(new Vector3(-1.518851f, 0.3060037f, -2.912683f));
-                    camera.SetScreenLR(new Vector3(-2.339788f, 0.3060037f, -2.305651f));
-                    camera.transform.Rotate(Vector3.up * -143.519f);
-                    break;
-                case (2): // Lyra-05
-                    camera.SetScreenUL(new Vector3(-2.345045f, 2.605996f, -2.300303f));
-                    camera.SetScreenLL(new Vector3(-2.345045f, 0.3060037f, -2.300303f));
-                    camera.SetScreenLR(new Vector3(-2.938052f, 0.3060037f, -1.469178f));
-                    camera.transform.Rotate(Vector3.up * -125.508f);
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0): // Lyra-01
+                        camera.SetScreenUL(new Vector3(-0.5437923f, 2.605996f, -3.239587f));
+                        camera.SetScreenLL(new Vector3(-0.5437923f, 0.3060037f, -3.239587f));
+                        camera.SetScreenLR(new Vector3(-1.512198f, 0.3060037f, -2.916143f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -161.531f);
+                        }
+                        break;
+                    case (1): // Lyra-03
+                        camera.SetScreenUL(new Vector3(-1.518851f, 2.605996f, -2.912683f));
+                        camera.SetScreenLL(new Vector3(-1.518851f, 0.3060037f, -2.912683f));
+                        camera.SetScreenLR(new Vector3(-2.339788f, 0.3060037f, -2.305651f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -143.519f);
+                        }
+                        break;
+                    case (2): // Lyra-05
+                        camera.SetScreenUL(new Vector3(-2.345045f, 2.605996f, -2.300303f));
+                        camera.SetScreenLL(new Vector3(-2.345045f, 0.3060037f, -2.300303f));
+                        camera.SetScreenLR(new Vector3(-2.938052f, 0.3060037f, -1.469178f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -125.508f);
+                        }
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-02")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-02")
             {
-                case (0): // Lyra-07
-                    camera.SetScreenUL(new Vector3(-2.941398f, 2.605996f, -1.462467f));
-                    camera.SetScreenLL(new Vector3(-2.941398f, 0.3060037f, -1.462467f));
-                    camera.SetScreenLR(new Vector3(-3.248353f, 0.3060037f, -0.4887097f));
-                    camera.transform.Rotate(Vector3.up * -107.496f);
-                    break;
-                case (1): // Lyra-09
-                    camera.SetScreenUL(new Vector3(-3.24946f, 2.605996f, -0.4812928f));
-                    camera.SetScreenLL(new Vector3(-3.24946f, 0.3060037f, -0.4812928f));
-                    camera.SetScreenLR(new Vector3(-3.240278f, 0.3060037f, 0.539658f));
-                    camera.transform.Rotate(Vector3.up * -89.485f);
-                    break;
-                case (2): // Lyra-11
-                    camera.SetScreenUL(new Vector3(-3.239037f, 2.605996f, 0.5470539f));
-                    camera.SetScreenLL(new Vector3(-3.239037f, 0.3060037f, 0.5470539f));
-                    camera.SetScreenLR(new Vector3(-2.914619f, 0.3060037f, 1.515133f));
-                    camera.transform.Rotate(Vector3.up * -71.47301f);
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0): // Lyra-07
+                        camera.SetScreenUL(new Vector3(-2.941398f, 2.605996f, -1.462467f));
+                        camera.SetScreenLL(new Vector3(-2.941398f, 0.3060037f, -1.462467f));
+                        camera.SetScreenLR(new Vector3(-3.248353f, 0.3060037f, -0.4887097f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -107.496f);
+                        }
+                        break;
+                    case (1): // Lyra-09
+                        camera.SetScreenUL(new Vector3(-3.24946f, 2.605996f, -0.4812928f));
+                        camera.SetScreenLL(new Vector3(-3.24946f, 0.3060037f, -0.4812928f));
+                        camera.SetScreenLR(new Vector3(-3.240278f, 0.3060037f, 0.539658f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -89.485f);
+                        }
+                        break;
+                    case (2): // Lyra-11
+                        camera.SetScreenUL(new Vector3(-3.239037f, 2.605996f, 0.5470539f));
+                        camera.SetScreenLL(new Vector3(-3.239037f, 0.3060037f, 0.5470539f));
+                        camera.SetScreenLR(new Vector3(-2.914619f, 0.3060037f, 1.515133f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -71.47301f);
+                        }
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-03")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-03")
             {
-                case (0): // Lyra-13
-                    camera.SetScreenUL(new Vector3(-2.911153f, 2.605996f, 1.521783f));
-                    camera.SetScreenLL(new Vector3(-2.911153f, 0.3060037f, 1.521783f));
-                    camera.SetScreenLR(new Vector3(-2.303294f, 0.3060037f, 2.342108f));
-                    camera.transform.Rotate(Vector3.up * -53.462f);
-                    break;
-                case (1): // Lyra-15
-                    camera.SetScreenUL(new Vector3(-2.297941f, 2.605996f, 2.34736f));
-                    camera.SetScreenLL(new Vector3(-2.297941f, 0.3060037f, 2.34736f));
-                    camera.SetScreenLR(new Vector3(-1.46622f, 0.3060037f, 2.939529f));
-                    camera.transform.Rotate(Vector3.up * -35.45f);
-                    break;
-                case (2): // Lyra-17
-                    camera.SetScreenLL(new Vector3(-1.459505f, 0.3060037f, 2.942869f));
-                    camera.SetScreenLR(new Vector3(-0.4854392f, 0.3060037f, 3.248843f));
-                    camera.SetScreenUL(new Vector3(-1.459505f, 2.605996f, 2.942869f));
-                    camera.transform.Rotate(Vector3.up * -17.439f);
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0): // Lyra-13
+                        camera.SetScreenUL(new Vector3(-2.911153f, 2.605996f, 1.521783f));
+                        camera.SetScreenLL(new Vector3(-2.911153f, 0.3060037f, 1.521783f));
+                        camera.SetScreenLR(new Vector3(-2.303294f, 0.3060037f, 2.342108f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -53.462f);
+                        }
+                        break;
+                    case (1): // Lyra-15
+                        camera.SetScreenUL(new Vector3(-2.297941f, 2.605996f, 2.34736f));
+                        camera.SetScreenLL(new Vector3(-2.297941f, 0.3060037f, 2.34736f));
+                        camera.SetScreenLR(new Vector3(-1.46622f, 0.3060037f, 2.939529f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -35.45f);
+                        }
+                        break;
+                    case (2): // Lyra-17
+                        camera.SetScreenLL(new Vector3(-1.459505f, 0.3060037f, 2.942869f));
+                        camera.SetScreenLR(new Vector3(-0.4854392f, 0.3060037f, 3.248843f));
+                        camera.SetScreenUL(new Vector3(-1.459505f, 2.605996f, 2.942869f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * -17.439f);
+                        }
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-04")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-04")
             {
-                case (0): // Lyra-19
-                    camera.SetScreenUL(new Vector3(-0.478021f, 2.605996f, 3.249943f));
-                    camera.SetScreenLL(new Vector3(-0.478021f, 0.3060037f, 3.249943f));
-                    camera.SetScreenLR(new Vector3(0.54292f, 0.3060037f, 3.239733f));
-                    camera.transform.Rotate(Vector3.up * 0.573f);
-                    break;
-                case (1): // Lyra-21
-                    camera.SetScreenUL(new Vector3(0.5503147f, 2.605996f, 3.238485f));
-                    camera.SetScreenLL(new Vector3(0.5503147f, 0.3060037f, 3.238485f));
-                    camera.SetScreenLR(new Vector3(1.518067f, 0.3060037f, 2.913092f));
-                    camera.transform.Rotate(Vector3.up * 18.584f);
-                    break;
-                case (2): // Lyra-23
-                    camera.SetScreenUL(new Vector3(1.524713f, 2.605996f, 2.909619f));
-                    camera.SetScreenLL(new Vector3(1.524713f, 0.3060037f, 2.909619f));
-                    camera.SetScreenLR(new Vector3(2.344425f, 0.3060037f, 2.300935f));
-                    camera.transform.Rotate(Vector3.up * 36.596f);
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0): // Lyra-19
+                        camera.SetScreenUL(new Vector3(-0.478021f, 2.605996f, 3.249943f));
+                        camera.SetScreenLL(new Vector3(-0.478021f, 0.3060037f, 3.249943f));
+                        camera.SetScreenLR(new Vector3(0.54292f, 0.3060037f, 3.239733f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 0.573f);
+                        }
+                        break;
+                    case (1): // Lyra-21
+                        camera.SetScreenUL(new Vector3(0.5503147f, 2.605996f, 3.238485f));
+                        camera.SetScreenLL(new Vector3(0.5503147f, 0.3060037f, 3.238485f));
+                        camera.SetScreenLR(new Vector3(1.518067f, 0.3060037f, 2.913092f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 18.584f);
+                        }
+                        break;
+                    case (2): // Lyra-23
+                        camera.SetScreenUL(new Vector3(1.524713f, 2.605996f, 2.909619f));
+                        camera.SetScreenLL(new Vector3(1.524713f, 0.3060037f, 2.909619f));
+                        camera.SetScreenLR(new Vector3(2.344425f, 0.3060037f, 2.300935f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 36.596f);
+                        }
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-05")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-05")
             {
-                case (0): // Lyra-25
-                    camera.SetScreenUL(new Vector3(2.349672f, 2.605996f, 2.295577f));
-                    camera.SetScreenLL(new Vector3(2.349672f, 0.3060037f, 2.295577f));
-                    camera.SetScreenLR(new Vector3(2.941004f, 0.3060037f, 1.463259f));
-                    camera.transform.Rotate(Vector3.up * 54.608f);
-                    break;
-                case (1): // Lyra-27
-                    camera.SetScreenUL(new Vector3(2.944337f, 2.605996f, 1.456542f));
-                    camera.SetScreenLL(new Vector3(2.944337f, 0.3060037f, 1.456542f));
-                    camera.SetScreenLR(new Vector3(3.24933f, 0.3060037f, 0.4821681f));
-                    camera.transform.Rotate(Vector3.up * 72.619f);
-                    break;
-                case (2): // Lyra-29
-                    camera.SetScreenUL(new Vector3(3.250422f, 2.605996f, 0.4747489f));
-                    camera.SetScreenLL(new Vector3(3.250422f, 0.3060037f, 0.4747489f));
-                    camera.SetScreenLR(new Vector3(3.239185f, 0.3060037f, -0.5461813f));
-                    camera.transform.Rotate(Vector3.up * 90.631f);
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0): // Lyra-25
+                        camera.SetScreenUL(new Vector3(2.349672f, 2.605996f, 2.295577f));
+                        camera.SetScreenLL(new Vector3(2.349672f, 0.3060037f, 2.295577f));
+                        camera.SetScreenLR(new Vector3(2.941004f, 0.3060037f, 1.463259f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 54.608f);
+                        }
+                        break;
+                    case (1): // Lyra-27
+                        camera.SetScreenUL(new Vector3(2.944337f, 2.605996f, 1.456542f));
+                        camera.SetScreenLL(new Vector3(2.944337f, 0.3060037f, 1.456542f));
+                        camera.SetScreenLR(new Vector3(3.24933f, 0.3060037f, 0.4821681f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 72.619f);
+                        }
+                        break;
+                    case (2): // Lyra-29
+                        camera.SetScreenUL(new Vector3(3.250422f, 2.605996f, 0.4747489f));
+                        camera.SetScreenLL(new Vector3(3.250422f, 0.3060037f, 0.4747489f));
+                        camera.SetScreenLR(new Vector3(3.239185f, 0.3060037f, -0.5461813f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 90.631f);
+                        }
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-06")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-06")
             {
-                case (0): // Lyra-31
-                    camera.SetScreenUL(new Vector3(3.237929f, 2.605996f, -0.5535748f));
-                    camera.SetScreenLL(new Vector3(3.237929f, 0.3060037f, -0.5535748f));
-                    camera.SetScreenLR(new Vector3(2.911562f, 0.3060037f, -1.520999f));
-                    camera.transform.Rotate(Vector3.up * 108.642f);
-                    break;
-                case (1): // Lyra-33
-                    camera.SetScreenUL(new Vector3(2.908083f, 2.605996f, -1.527641f));
-                    camera.SetScreenLL(new Vector3(2.908083f, 0.3060037f, -1.527641f));
-                    camera.SetScreenLR(new Vector3(2.298573f, 0.3060037f, -2.346741f));
-                    camera.transform.Rotate(Vector3.up * 126.654f);
-                    break;
-                case (2): // Lyra-35
-                    camera.SetScreenUL(new Vector3(2.29321f, 2.605996f, -2.351982f));
-                    camera.SetScreenLL(new Vector3(2.29321f, 0.3060037f, -2.351982f));
-                    camera.SetScreenLR(new Vector3(1.460298f, 0.3060037f, -2.942476f));
-                    camera.transform.Rotate(Vector3.up * 144.665f);
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0): // Lyra-31
+                        camera.SetScreenUL(new Vector3(3.237929f, 2.605996f, -0.5535748f));
+                        camera.SetScreenLL(new Vector3(3.237929f, 0.3060037f, -0.5535748f));
+                        camera.SetScreenLR(new Vector3(2.911562f, 0.3060037f, -1.520999f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 108.642f);
+                        }
+                        break;
+                    case (1): // Lyra-33
+                        camera.SetScreenUL(new Vector3(2.908083f, 2.605996f, -1.527641f));
+                        camera.SetScreenLL(new Vector3(2.908083f, 0.3060037f, -1.527641f));
+                        camera.SetScreenLR(new Vector3(2.298573f, 0.3060037f, -2.346741f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 126.654f);
+                        }
+                        break;
+                    case (2): // Lyra-35
+                        camera.SetScreenUL(new Vector3(2.29321f, 2.605996f, -2.351982f));
+                        camera.SetScreenLL(new Vector3(2.29321f, 0.3060037f, -2.351982f));
+                        camera.SetScreenLR(new Vector3(1.460298f, 0.3060037f, -2.942476f));
+
+                        if (!mainCameraRotated)
+                        {
+                            mainCameraRotated = true;
+                            // Stereoscopic camera is the "root" camera
+                            mainCamera.transform.Rotate(Vector3.up * 144.665f);
+                        }
+                        break;
+                }
             }
-        }
-        else if (CAVE2Manager.GetMachineName() == "ORION-WIN")
-        {
-            switch (myWindowPosID)
+            else if (CAVE2Manager.GetMachineName() == "ORION-WIN")
             {
-                case (0):
-                    camera.SetScreenLL(new Vector3(-2.3f, 0.29f, 2.36f));
-                    camera.SetScreenLR(new Vector3(2.35f, 0.29f, 2.31f));
-                    camera.SetScreenUL(new Vector3(-2.3f, 2.61f, 2.36f));
-                    break;
+                switch (myWindowPosID)
+                {
+                    case (0):
+                        camera.SetScreenLL(new Vector3(-2.3f, 0.29f, 2.36f));
+                        camera.SetScreenLR(new Vector3(2.35f, 0.29f, 2.31f));
+                        camera.SetScreenUL(new Vector3(-2.3f, 2.61f, 2.36f));
+                        break;
+                }
             }
         }
     }

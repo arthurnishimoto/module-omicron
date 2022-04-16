@@ -73,6 +73,14 @@ public class StereoscopicCamera : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        if (!update)
+        {
+            ForceSetupStereoCameras();
+        }
+    }
+	
+    public void ForceSetupStereoCameras()
+    {
         if (generateCameras && transform.parent.GetComponent<StereoscopicCamera>() == null)
         {
             SetupStereoCameras();
@@ -90,71 +98,87 @@ public class StereoscopicCamera : MonoBehaviour {
         }
         update = true;
     }
-	
-    void RebuildTextures()
+
+    bool RebuildTextures()
     {
-        // Setup stereo materials and render textures
-        leftTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
-        rightTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
+        // Check if eye objects exist first, if not, may still be initializing (in conjunction with
+        // GeneralizedPerspectiveProjection, in this case wait and try again next Update.
+        if (leftEye && rightEye)
+        {
+            // Setup stereo materials and render textures
+            leftTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
+            rightTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
 
-        leftEye.GetComponent<Camera>().targetTexture = leftTexture;
-        rightEye.GetComponent<Camera>().targetTexture = rightTexture;
+            leftEye.GetComponent<Camera>().targetTexture = leftTexture;
+            rightEye.GetComponent<Camera>().targetTexture = rightTexture;
 
-        stereoscopicMaterial.SetFloat("_RenderWidth", outputResolution.x);
-        stereoscopicMaterial.SetFloat("_RenderHeight", outputResolution.y);
+            stereoscopicMaterial.SetFloat("_RenderWidth", outputResolution.x);
+            stereoscopicMaterial.SetFloat("_RenderHeight", outputResolution.y);
 
-        stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
-        stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
+            stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
+            stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
+
+            return true;
+        }
+        return false;
     }
 
     // Update is called once per frame
     void Update() {
         if (regenerate)
         {
-            RebuildTextures();
-            regenerate = false;
-        }
-        leftEye.transform.localPosition = Vector3.left * eyeSeparation / 2.0f;
-        rightEye.transform.localPosition = Vector3.right * eyeSeparation / 2.0f;
-
-        if (GetComponent<GeneralizedPerspectiveProjection>())
-        {
-            leftEye.GetComponent<GeneralizedPerspectiveProjection>().SetEyeOffset(leftEye.transform.localPosition);
-            rightEye.GetComponent<GeneralizedPerspectiveProjection>().SetEyeOffset(rightEye.transform.localPosition);
-        }
-
-        stereoscopicMaterial.SetTextureOffset("_LeftTex", textureOffset);
-        stereoscopicMaterial.SetTextureOffset("_RightTex", textureOffset);
-        stereoscopicMaterial.SetTextureScale("_LeftTex", textureScale);
-        stereoscopicMaterial.SetTextureScale("_RightTex", textureScale);
-        stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
-        stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
-
-        stereoscopicMaterial.SetFloat("_InvertEyes", invertEyes ? 1.0f : 0.0f);
-
-        if (update)
-        {
-            if (stereoMode == StereoscopicMode.SideBySide)
+            if (RebuildTextures())
             {
-                if (invertEyes)
+                regenerate = false;
+            }
+        }
+
+        // In general, these should never be null, unless generated at runtime
+        // and may be null for a frame or two
+        if (leftEye && rightEye)
+        {
+            leftEye.transform.localPosition = Vector3.left * eyeSeparation / 2.0f;
+            rightEye.transform.localPosition = Vector3.right * eyeSeparation / 2.0f;
+
+            if (GetComponent<GeneralizedPerspectiveProjection>())
+            {
+                leftEye.GetComponent<GeneralizedPerspectiveProjection>().SetEyeOffset(leftEye.transform.localPosition);
+                rightEye.GetComponent<GeneralizedPerspectiveProjection>().SetEyeOffset(rightEye.transform.localPosition);
+            }
+
+            stereoscopicMaterial.SetTextureOffset("_LeftTex", textureOffset);
+            stereoscopicMaterial.SetTextureOffset("_RightTex", textureOffset);
+            stereoscopicMaterial.SetTextureScale("_LeftTex", textureScale);
+            stereoscopicMaterial.SetTextureScale("_RightTex", textureScale);
+            stereoscopicMaterial.SetTexture("_LeftTex", leftTexture);
+            stereoscopicMaterial.SetTexture("_RightTex", rightTexture);
+
+            stereoscopicMaterial.SetFloat("_InvertEyes", invertEyes ? 1.0f : 0.0f);
+
+            if (update)
+            {
+                if (stereoMode == StereoscopicMode.SideBySide)
                 {
-                    rightEye.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1);
-                    leftEye.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1);
+                    if (invertEyes)
+                    {
+                        rightEye.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1);
+                        leftEye.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1);
+                    }
+                    else
+                    {
+                        leftEye.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1);
+                        rightEye.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1);
+                    }
                 }
                 else
                 {
-                    leftEye.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1);
-                    rightEye.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1);
+                    leftEye.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+                    rightEye.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
                 }
-            }
-            else
-            {
-                leftEye.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-                rightEye.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            }
 
-            SetStereoMode(stereoMode);
-            update = false;
+                SetStereoMode(stereoMode);
+                update = false;
+            }
         }
     }
 
