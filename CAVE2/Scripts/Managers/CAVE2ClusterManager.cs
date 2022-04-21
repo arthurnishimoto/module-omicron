@@ -27,6 +27,13 @@ public class CAVE2ClusterManager : MonoBehaviour
     [SerializeField]
     Transform headTracker;
 
+    [Header("UI")]
+    [SerializeField]
+    Text currentHeadTrackerText;
+
+    [SerializeField]
+    Text currentHeadTrackerTransformText;
+
     [Header("Debug")]
     [SerializeField]
     Text debugUIText = null;
@@ -83,43 +90,27 @@ public class CAVE2ClusterManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(headTracker)
+        {
+            CAVE2MocapUpdater head = headTracker.GetComponent<CAVE2MocapUpdater>();
+
+            if (currentHeadTrackerText)
+            {
+                currentHeadTrackerText.text = head.sourceID.ToString();
+            }
+            if (currentHeadTrackerTransformText)
+            {
+                currentHeadTrackerTransformText.text = head.transform.localPosition.ToString("F3") + "\n" + head.transform.localEulerAngles.ToString("F3");
+            }
+        }
+
         if(debugUIText)
         {
             debugUIText.text = CAVE2Manager.GetMachineName() + "\n";
 
             Process currentProcess = Process.GetCurrentProcess();
             debugUIText.text += "My Process: '" + currentProcess.ProcessName + "' ID: '" + currentProcess.Id + "' Window title: '" + currentProcess.MainWindowTitle + "'\n";
-
-            /*
-            IntPtr windowPtr = FindWindow(null, currentProcess.ProcessName);
-            Rect myRect = new Rect();
-
-            GetWindowRect(windowPtr, ref myRect);
-
-            debugUIText.text += "   Window Rect: " + myRect.Left + ", " + myRect.Right + ", " + myRect.Top + ", " + myRect.Bottom + "\n";
-            
-            
-            debugUIText.text += "\nAll Main Window Processes: \n";
-            Process[] processlist = Process.GetProcesses();
-
-            int matchingProcessIndex = 0;
-            for(int i = 0; i < processlist.Length; i++)
-            {
-                Process process = processlist[i];
-                if (process.ProcessName == currentProcess.ProcessName)
-                {
-                    debugUIText.text += "Process: '" + process.ProcessName + "' ID: '" + process.Id + "' Window title: '" + process.MainWindowTitle + "'\n";
-                    if(process.Id == currentProcess.Id)
-                    {
-                        myWindowPosID = matchingProcessIndex;
-                    }
-                    matchingProcessIndex++;
-                }
-            }
-            */
-
             debugUIText.text += "   Window ID: " + myWindowPosID + "\n";
-
 
             debugUIText.text += "ConnID: " + rpcManager.GetConnID() + "\n";
 
@@ -190,6 +181,19 @@ public class CAVE2ClusterManager : MonoBehaviour
                     windowAssignmentDone = true;
                 }
             }
+        }
+    }
+
+    public void SetPrimaryHeadTracker(int trackerID)
+    {
+        CAVE2.SendMessage(gameObject.name, "SetPrimaryHeadTrackerRPC", trackerID);
+    }
+
+    void SetPrimaryHeadTrackerRPC(int trackerID)
+    {
+        if (headTracker)
+        {
+            headTracker.GetComponent<CAVE2MocapUpdater>().SetSourceID(trackerID);
         }
     }
 
