@@ -33,6 +33,7 @@ public class DelayPlayerWalkMode : MonoBehaviour
         {
             GetComponent<CAVE2WandNavigator>().SetNavModeWalk(true);
             done = true;
+            this.enabled = false;
         }
     }
 }

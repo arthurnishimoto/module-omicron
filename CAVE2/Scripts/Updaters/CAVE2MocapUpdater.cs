@@ -75,4 +75,9 @@ public class CAVE2MocapUpdater : MonoBehaviour {
     {
         posOffset = offset;
     }
+
+    public void SetSourceID(int id)
+    {
+        sourceID = id;
+    }
 }

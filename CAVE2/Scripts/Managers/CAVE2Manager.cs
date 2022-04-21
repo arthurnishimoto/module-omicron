@@ -788,7 +788,7 @@ static CAVE2Manager CAVE2Manager_Instance;
         machineName = GetMachineName();
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
 
-        Random.InitState(1138);
+        Random.InitState(1138);   
     }
     void Start()
     {
@@ -812,6 +812,12 @@ static CAVE2Manager CAVE2Manager_Instance;
             else if(useLowQualityOnMaster)
             {
                 QualitySettings.SetQualityLevel(0);
+            }
+
+            if(OnCAVE2Master())
+            {
+                // Enable mouse cursor or head node
+                Cursor.visible = true;
             }
         }
     }
