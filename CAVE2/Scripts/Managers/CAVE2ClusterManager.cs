@@ -24,6 +24,9 @@ public class CAVE2ClusterManager : MonoBehaviour
     [SerializeField]
     bool useCAVE2GeneralizedPerspectiveProjection;
 
+    [SerializeField]
+    Transform headTracker;
+
     [Header("Debug")]
     [SerializeField]
     Text debugUIText = null;
@@ -226,7 +229,7 @@ public class CAVE2ClusterManager : MonoBehaviour
         GeneralizedPerspectiveProjection[] cameras = Camera.main.GetComponentsInChildren<GeneralizedPerspectiveProjection>();
         foreach (GeneralizedPerspectiveProjection camera in cameras)
         {
-            camera.SetHeadTracker(GameObject.Find("CAVE2-PlayerController/Head").transform);
+            camera.SetHeadTracker(headTracker);
             camera.SetVirtualCamera(camera.GetComponent<Camera>());
             camera.SetApplyHeadOffset(false);
 

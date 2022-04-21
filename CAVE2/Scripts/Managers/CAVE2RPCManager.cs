@@ -88,6 +88,9 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     public enum MsgType { Reliable, Unreliable, StateUpdate };
 
+    float serverUpdateDataDelay = 1.0f;
+    float serverUpdateTimer;
+
     [Header("Message Client")]
     [SerializeField]
     public bool useMsgClient;
@@ -205,6 +208,17 @@ public class CAVE2RPCManager : MonoBehaviour {
                 packetInTimer = 0;
                 nPacketsReceived = 0;
             }
+        }
+
+        if(serverUpdateTimer > serverUpdateDataDelay)
+        {
+            // Periodically update clients with latest sensor list
+            CAVE2.SendMessage(gameObject.name, "UpdateOmicronSensorList", CAVE2.Input.GetSensorList(), CAVE2.Input.GetWandControllerList());
+            serverUpdateTimer = 0;
+        }
+        else
+        {
+            serverUpdateTimer += Time.deltaTime;
         }
     }
 
