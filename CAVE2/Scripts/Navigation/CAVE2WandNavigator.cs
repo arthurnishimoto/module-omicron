@@ -254,26 +254,46 @@ public class CAVE2WandNavigator : MonoBehaviour {
 
     void SetNavigationMode(int val)
     {
-        if(Time.timeSinceLevelLoad > 1) // Prevent Unity 2019.1.2 bug where UI triggers all of these these at start
+        if (Time.timeSinceLevelLoad > 1)
+        { // Prevent Unity 2019.1.2 bug where UI triggers all of these these at start
             navMode = (NavigationMode)val;
+
+            // Update Nav button UI state
+            GetComponentInChildren<NavModeUI>().UpdateNavButtons();
+        }
     }
 
     public void SetNavModeWalk(bool val)
     {
         if (Time.timeSinceLevelLoad > 1)
+        {
             navMode = NavigationMode.Walk;
+
+            // Update Nav button UI state
+            GetComponentInChildren<NavModeUI>().UpdateNavButtons();
+        }
     }
 
     public void SetNavModeDrive(bool val)
     {
         if (Time.timeSinceLevelLoad > 1)
+        {
             navMode = NavigationMode.Drive;
+
+            // Update Nav button UI state
+            GetComponentInChildren<NavModeUI>().UpdateNavButtons();
+        }
     }
 
     public void SetNavModeFreefly(bool val)
     {
-        if (Time.timeSinceLevelLoad > 1)
+        if (Time.timeSinceLevelLoad > 1 && navMode != NavigationMode.Freefly)
+        {
             navMode = NavigationMode.Freefly;
+
+            // Update Nav button UI state
+            GetComponentInChildren<NavModeUI>().UpdateNavButtons();
+        }
     }
 
     public void SetNavModeStrafe(bool val)

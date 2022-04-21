@@ -60,22 +60,22 @@ public class NavModeUI : MonoBehaviour {
         //UpdateButtons();
     }
 
-    void UpdateNavButtons()
+    public void UpdateNavButtons()
     {
-        walkButton.isOn = false;
-        driveButton.isOn = false;
-        freeflyButton.isOn = false;
+        walkButton.SetIsOnWithoutNotify(false);
+        driveButton.SetIsOnWithoutNotify(false);
+        freeflyButton.SetIsOnWithoutNotify(false);
 
         switch (navController.navMode)
         {
             case (CAVE2WandNavigator.NavigationMode.Walk):
-                walkButton.isOn = true;
+                walkButton.SetIsOnWithoutNotify(true);
                 break;
             case (CAVE2WandNavigator.NavigationMode.Drive):
-                driveButton.isOn = true;
+                driveButton.SetIsOnWithoutNotify(true);
                 break;
             case (CAVE2WandNavigator.NavigationMode.Freefly):
-                freeflyButton.isOn = true;
+                freeflyButton.SetIsOnWithoutNotify(true);
                 break;
         }
     }
