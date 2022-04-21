@@ -635,18 +635,18 @@ public class CAVE2ClusterManager : MonoBehaviour
 #else
     public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0)
     {
-        Debug.LogWarning("Not implemented on current platform");
+        UnityEngine.Debug.LogWarning("Not implemented on current platform");
     }
 
     public static void SetWindowTitle(int connID, int oldID = 0)
     {
-        Debug.LogWarning("Not implemented on current platform");
+        UnityEngine.Debug.LogWarning("Not implemented on current platform");
     }
 
     public static int GetWindowProcessId(int connID)
     {
         int id = -1;
-        Debug.LogWarning("Not implemented on current platform");
+        UnityEngine.Debug.LogWarning("Not implemented on current platform");
         return id;
     }
 #endif
