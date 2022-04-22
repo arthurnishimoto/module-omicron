@@ -36,7 +36,7 @@ public class CAVE2TransformSync : MonoBehaviour {
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
 
-    public float updateSpeed = 3;
+    public float updateInterval = 0.025f;
     float updateTimer;
 
     float delayTimer = 0;
@@ -99,7 +99,7 @@ public class CAVE2TransformSync : MonoBehaviour {
             if (updateTimer < 0)
             {
                 SyncTransform();
-                updateTimer = updateSpeed;
+                updateTimer = updateInterval;
             }
 
             updateTimer -= Time.deltaTime;
@@ -174,7 +174,7 @@ public class CAVE2TransformSync : MonoBehaviour {
             {
                 delayTimer = 0;
 
-                if (advUpdateTimer > updateSpeed)
+                if (advUpdateTimer > updateInterval)
                 {
                     Vector3 position = (useLocal ? transform.localPosition : transform.position);
                     Vector3 rotation = (useLocal ? transform.localEulerAngles : transform.eulerAngles);
