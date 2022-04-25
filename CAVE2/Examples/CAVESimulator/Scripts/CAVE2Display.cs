@@ -164,6 +164,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     public void SetARDisplayModeTransparent()
     {
         useARMaterial = ARMaterial.Transparent;
+        renderTextureToVRCamera = false;
         UpdateDisplayMode();
     }
 
@@ -176,6 +177,8 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
     void UpdateDisplayMode()
     {
+        cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
+
         if (renderTextureToVRCamera && virtualCamera)
             virtualCamera.targetTexture = cameraRT;
 
