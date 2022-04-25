@@ -158,4 +158,14 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
             vrCamera.GetComponent<Camera>().cullingMask = newMask;
         }
     }
+
+    public void SetARDisplayModeTransparent()
+    {
+        useARMaterial = ARMaterial.Transparent;
+    }
+
+    public void SetARDisplayModeHMD()
+    {
+        useARMaterial = ARMaterial.Build;
+    }
 }
