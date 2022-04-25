@@ -60,6 +60,8 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     [SerializeField]
     bool useVRDisplayManagerCullingLayer = true;
 
+    RenderTexture cameraRT;
+
     // Use this for initialization
     void Start() {
         displayInfo = GetComponent<DisplayInfo>();
@@ -76,7 +78,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
         virtualCamera = vrCamera.AddComponent<Camera>();
 
-        RenderTexture cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
+        cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
 
@@ -162,10 +164,39 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     public void SetARDisplayModeTransparent()
     {
         useARMaterial = ARMaterial.Transparent;
+        UpdateDisplayMode();
     }
 
     public void SetARDisplayModeHMD()
     {
         useARMaterial = ARMaterial.Build;
+        renderTextureToVRCamera = true;
+        UpdateDisplayMode();
+    }
+
+    void UpdateDisplayMode()
+    {
+        if (renderTextureToVRCamera && virtualCamera)
+            virtualCamera.targetTexture = cameraRT;
+
+        if (useARMaterial == ARMaterial.Transparent)
+        {
+            displayMat = new Material(Shader.Find("Transparent/Self-Illumin"));
+            displayMat.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        }
+        else if (useARMaterial == ARMaterial.Build)
+        {
+            displayMat = new Material(Shader.Find("Unlit/Texture"));
+            displayMat.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        else
+        {
+            displayMat = new Material(Shader.Find("Unlit/Texture"));
+        }
+        displayMat.name = gameObject.name + " (VR Camera Material)";
+        displayMat.mainTexture = cameraRT;
+
+        Transform displaySpace = transform.Find("Borders/PixelSpace");
+        displaySpace.GetComponent<MeshRenderer>().material = displayMat;
     }
 }
