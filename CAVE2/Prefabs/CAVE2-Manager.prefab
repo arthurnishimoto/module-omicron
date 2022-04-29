@@ -234,6 +234,7 @@ MonoBehaviour:
   headTracker: {fileID: 0}
   currentHeadTrackerText: {fileID: 5714224914288263021}
   currentHeadTrackerTransformText: {fileID: 2145950628712018797}
+  showDebugTextOnDisplayNodes: 0
   debugUIText: {fileID: 0}
   displayWidthUI: {fileID: 0}
   displayHeightUI: {fileID: 0}
@@ -701,7 +702,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1235559894020893472}
         m_MethodName: SetPrimaryHeadTracker
         m_Mode: 3
         m_Arguments:
@@ -905,7 +906,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1235559894020893472}
         m_MethodName: SetPrimaryHeadTracker
         m_Mode: 3
         m_Arguments:
@@ -1106,8 +1107,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 131.47, y: -53.98}
-  m_SizeDelta: {x: 134.76, y: 35.12}
+  m_AnchoredPosition: {x: 176.11, y: -53.98}
+  m_SizeDelta: {x: 224.04, y: 35.12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6045857159714216754
 CanvasRenderer:
@@ -1423,7 +1424,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1235559894020893472}
         m_MethodName: SetPrimaryHeadTracker
         m_Mode: 3
         m_Arguments:

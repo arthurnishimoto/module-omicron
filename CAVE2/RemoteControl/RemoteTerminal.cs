@@ -76,6 +76,9 @@ public class RemoteTerminal : MonoBehaviour {
     [SerializeField]
     bool showMessageDebug = false;
 
+    [SerializeField]
+    bool showTerminalUIOnDisplayNode = false;
+
     public void Start()
     {
         server = new NetworkServerSimple();
@@ -102,6 +105,8 @@ public class RemoteTerminal : MonoBehaviour {
 
         server.Configure(myConfig, maxConnections);
         client.Configure(myConfig, maxConnections);
+
+        terminalTextLog.gameObject.SetActive(showTerminalUIOnDisplayNode);
     }
 
     public void Update()

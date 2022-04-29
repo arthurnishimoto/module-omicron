@@ -36,6 +36,9 @@ public class CAVE2ClusterManager : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField]
+    bool showDebugTextOnDisplayNodes;
+
+    [SerializeField]
     Text debugUIText = null;
 
     [SerializeField]
@@ -62,6 +65,12 @@ public class CAVE2ClusterManager : MonoBehaviour
             omicronManager.connectToServer = false;
             rpcManager.EnableMsgServer(false);
             rpcManager.EnableMsgClient(true);
+
+
+            if (debugUIText)
+            {
+                debugUIText.gameObject.SetActive(showDebugTextOnDisplayNodes);
+            }
         }
 
         Process currentProcess = Process.GetCurrentProcess();
