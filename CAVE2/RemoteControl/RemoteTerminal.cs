@@ -106,7 +106,10 @@ public class RemoteTerminal : MonoBehaviour {
         server.Configure(myConfig, maxConnections);
         client.Configure(myConfig, maxConnections);
 
-        terminalTextLog.gameObject.SetActive(showTerminalUIOnDisplayNode);
+        if (CAVE2.OnCAVE2Display())
+        {
+            terminalTextLog.gameObject.SetActive(showTerminalUIOnDisplayNode);
+        }
     }
 
     public void Update()

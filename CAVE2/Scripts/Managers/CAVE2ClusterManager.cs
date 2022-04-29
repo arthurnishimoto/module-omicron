@@ -67,7 +67,7 @@ public class CAVE2ClusterManager : MonoBehaviour
             rpcManager.EnableMsgClient(true);
 
 
-            if (debugUIText)
+            if (CAVE2.OnCAVE2Display() && debugUIText)
             {
                 debugUIText.gameObject.SetActive(showDebugTextOnDisplayNodes);
             }
