@@ -1,11 +1,11 @@
 /**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -42,6 +42,7 @@ public class WandPointer : MonoBehaviour
     public Color laserColor = Color.red;
 
     public ParticleSystem laserParticlePrefab;
+    public float particleSize = 0.5f;
     ParticleSystem laserParticle;
 
     public bool drawLaser = true;
@@ -75,8 +76,12 @@ public class WandPointer : MonoBehaviour
         laser.receiveShadows = false;
 
         // Laser impact glow
-        laserParticle = Instantiate(laserParticlePrefab) as ParticleSystem;
-        //laserParticle.GetComponent<ParticleSystemRenderer>().material.color = laserColor;
+        laserParticle = Instantiate(laserParticlePrefab);
+        ParticleSystem.MainModule particleMain = laserParticle.main;
+        particleMain.startSize = particleSize;
+
+        // Set particle color, but ensure color has at least a small r, g, b component to get a white glow in the middle
+        particleMain.startColor = new Color(Mathf.Max(laserColor.r, 0.2f) / 2.0f, Mathf.Max(laserColor.g, 0.2f) / 2.0f, Mathf.Max(laserColor.b, 0.2f) / 2.0f);
     }
 
 	// Update is called once per frame
