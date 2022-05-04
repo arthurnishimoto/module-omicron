@@ -52,6 +52,7 @@ public class WandPointer : MonoBehaviour
 	public CAVE2.Button laserButton = CAVE2.Button.Button3;
 
     public bool laserAlwaysOn = false;
+    public bool laserButtonPressed;
 
     // Use this for initialization
     void Start()
@@ -89,10 +90,32 @@ public class WandPointer : MonoBehaviour
     {
         //GetComponent<SphereCollider>().enabled = false; // Disable sphere collider for raycast
 
-		laserActivated = CAVE2.Input.GetButton(wandID,laserButton);
+		laserButtonPressed = CAVE2.Input.GetButton(wandID,laserButton);
+
+        bool drawLaserOverride = drawLaser;
 
         if (laserAlwaysOn)
+        {
             laserActivated = true;
+
+            // If wand laser is always on, pressing button will increase width
+            // and show wand laser to remote clients
+            if (laserButtonPressed)
+            {
+                laser.startWidth = 0.02f * 4;
+                laser.endWidth = 0.02f * 4;
+
+                drawLaserOverride = true;
+            }
+            else
+            {
+                laser.startWidth = 0.02f;
+                laser.endWidth = 0.02f;
+            }
+        }
+        else
+            laserActivated = laserButtonPressed;
+
         laser.enabled = laserActivated;
 
         // Shoot a ray from the wand
@@ -126,7 +149,7 @@ public class WandPointer : MonoBehaviour
 
         // Do this on all nodes
         laser.enabled = laserActivated;
-        if (laserActivated && drawLaser)
+        if (laserActivated && drawLaserOverride)
         {
             if (wandHit && laserParticle)
             {
@@ -135,7 +158,7 @@ public class WandPointer : MonoBehaviour
             }
             laser.SetPosition(1, new Vector3(0, 0, laserDistance));
         }
-        else if (!drawLaser)
+        else if (!drawLaserOverride)
         {
             laser.SetPosition(1, new Vector3(0, 0, 0));
         }
