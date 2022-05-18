@@ -463,4 +463,9 @@ public class ScreenConfigCalc : MonoBehaviour {
             }
         }
     }
+
+    public void RegenerateDisplayWall()
+    {
+        regenerateDisplayWall = true;
+    }
 }

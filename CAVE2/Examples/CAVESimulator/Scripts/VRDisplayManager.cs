@@ -13,6 +13,9 @@ public class VRDisplayManager : MonoBehaviour {
     public LayerMask VRDisplayMask;
     LayerMask lastVRDisplayMask;
 
+    [SerializeField]
+    bool regenerateDisplays;
+
     private void Update()
     {
         if(hideScreenBorders && screenBorderState != 0)
@@ -31,5 +34,17 @@ public class VRDisplayManager : MonoBehaviour {
             BroadcastMessage("SetVRDisplayMask", VRDisplayMask);
             lastVRDisplayMask = VRDisplayMask;
         }
+
+        if(regenerateDisplays)
+        {
+            GetComponentInChildren<ScreenConfigCalc>().RegenerateDisplayWall();
+            regenerateDisplays = false;
+        }
+    }
+
+    public void UpdateDisplayAngularOffset(float offset)
+    {
+        displayAngularOffset = offset;
+        regenerateDisplays = true;
     }
 }

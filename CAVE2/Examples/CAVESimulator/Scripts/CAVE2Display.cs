@@ -106,6 +106,17 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         {
             displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
         }
+
+        if(GetComponentInParent<VRDisplayManager>().hideScreenBorders)
+        {
+            HideDisplayBorders();
+        }
+        else
+        {
+            ShowDisplayBorders();
+        }
+
+        SetVRDisplayMask(GetComponentInParent<VRDisplayManager>().VRDisplayMask);
     }
 
     public void RemoveDisplayTexture()
