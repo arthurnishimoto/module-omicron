@@ -51,24 +51,24 @@ public class OMenu : MonoBehaviour {
     float maxScale = 1;
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         maxScale = transform.localScale.x;
         menuManager = GetComponentInParent<OMenuManager>();
         pointerData = new PointerEventData(EventSystem.current);
 
-        if(menuItems.Length > 0)
+        if (menuItems.Length > 0)
             menuItems[currentItem].OnSelect(pointerData);
 
-        if(!showMenu)
+        if (!showMenu)
         {
             transform.localScale = Vector3.zero;
             menuProgress = 0;
             activeMenu = false;
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
         if (showMenu)
         {
             newScale = maxScale;
@@ -78,9 +78,9 @@ public class OMenu : MonoBehaviour {
             newScale = 0;
         }
 
-        if(GetComponent<UndockMenu>())
+        if (GetComponent<UndockMenu>())
         {
-            if(GetComponent<UndockMenu>().undocked)
+            if (GetComponent<UndockMenu>().undocked)
             {
                 newScale = maxScale;
                 showMenu = false;
@@ -99,7 +99,7 @@ public class OMenu : MonoBehaviour {
                 }
                 return;
             }
-            else if(!showMenu)
+            else if (!showMenu)
             {
                 newScale = 0;
             }
@@ -109,7 +109,7 @@ public class OMenu : MonoBehaviour {
         if (newScale > 0)
         {
             menuProgress = currentScale / newScale;
-            if(showMenu)
+            if (showMenu)
                 activeMenu = true;
         }
 
@@ -123,11 +123,11 @@ public class OMenu : MonoBehaviour {
     {
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonDown))
         {
-            if (currentItem < menuItems.Length - 1 && menuItems[currentItem + 1].IsActive() )
+            if (currentItem < menuItems.Length - 1 && menuItems[currentItem + 1].IsActive())
             {
                 CAVE2.SendMessage(gameObject.name, "MenuNextItemDown");
             }
-            else if(currentItem >= menuItems.Length - 1)
+            else if (currentItem >= menuItems.Length - 1)
             {
                 CAVE2.SendMessage(gameObject.name, "MenuSetItem", 0);
             }
@@ -144,13 +144,13 @@ public class OMenu : MonoBehaviour {
             }
         }
 
-        if(CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.selectButton))
+        if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.selectButton))
         {
             CAVE2.SendMessage(gameObject.name, "MenuSelectItem");
         }
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, menuManager.menuBackButton))
         {
-            CAVE2.SendMessage(gameObject.name, "ToggleMenu");
+            ToggleMenu();
         }
 
         if (CAVE2.Input.GetButtonDown(menuManager.menuWandID, CAVE2.Button.ButtonLeft))
@@ -191,9 +191,10 @@ public class OMenu : MonoBehaviour {
         }
 
         showMenu = !showMenu;
-        if( showMenu )
+        CAVE2.SendMessage(gameObject.name, "ShowMenu", showMenu);
+        if (showMenu)
         {
-            if(menuManager.mainMenu != this )
+            if (menuManager.mainMenu != this)
                 previousMenu = menuManager.currentMenu;
 
             menuManager.currentMenu = this;
@@ -202,7 +203,7 @@ public class OMenu : MonoBehaviour {
 
             if (previousMenu)
             {
-                previousMenu.showMenu = false;
+                CAVE2.SendMessage(previousMenu.name, "ShowMenu", false);
                 transform.position = previousMenu.transform.position;
             }
 
@@ -211,15 +212,21 @@ public class OMenu : MonoBehaviour {
         }
         else
         {
-            if(previousMenu)
+            if (previousMenu)
             {
-                previousMenu.showMenu = true;
+                CAVE2.SendMessage(previousMenu.name, "ShowMenu", true);
                 menuManager.currentMenu = previousMenu;
             }
             activeMenu = false;
             menuManager.openMenus--;
             menuManager.PlayCloseMenuSound();
         }
+        
+    }
+
+    void ShowMenu(bool value)
+    {
+        showMenu = value;
     }
 
     public void MenuNextItemDown()
