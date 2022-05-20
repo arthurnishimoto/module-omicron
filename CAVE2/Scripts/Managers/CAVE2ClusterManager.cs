@@ -27,6 +27,14 @@ public class CAVE2ClusterManager : MonoBehaviour
     [SerializeField]
     Transform headTracker;
 
+    int headTrackerID = -1;
+
+    [SerializeField]
+    bool keepHeadTrackerIDUpdated = true;
+
+    float updateInterval = 2;
+    float updateTimer;
+
     [Header("UI")]
     [SerializeField]
     Text currentHeadTrackerText;
@@ -191,10 +199,24 @@ public class CAVE2ClusterManager : MonoBehaviour
                 }
             }
         }
+
+        if (CAVE2.IsMaster() && keepHeadTrackerIDUpdated)
+        {
+            if (updateTimer >= updateInterval && headTrackerID != -1)
+            {
+                SetPrimaryHeadTracker(headTrackerID);
+                updateTimer = 0;
+            }
+            else
+            {
+                updateTimer += Time.deltaTime;
+            }
+        }
     }
 
     public void SetPrimaryHeadTracker(int trackerID)
     {
+        headTrackerID = trackerID;
         CAVE2.SendMessage(gameObject.name, "SetPrimaryHeadTrackerRPC", trackerID);
     }
 
@@ -547,6 +569,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         camera.SetScreenUL(new Vector3(-2.3f, 2.61f, 2.36f));
                         break;
                 }
+                stereoCamera.enabled = false;
             }
         }
     }
