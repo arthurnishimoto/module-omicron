@@ -90,7 +90,7 @@ public class OMenuManager : MonoBehaviour {
                         angleOffset.y += CAVE2.GetCameraController().transform.localEulerAngles.y;
                 }
                 CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
-                CAVE2.SendMessage(mainMenu.name, "ToggleMenu");
+                mainMenu.ToggleMenu();
            }
         }
 
