@@ -7,6 +7,9 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     ArrayList displayObjects;
     [SerializeField] bool regenerateDisplayWall;
+    float regenerationRestoreRotationDelay = 1;
+    float regenerationRestoreRotationTimer;
+    Vector3 originalOrientation;
 
     [Header("Display Parameters")]
     [SerializeField] GameObject display = null;
@@ -406,8 +409,15 @@ public class ScreenConfigCalc : MonoBehaviour {
 	void Update () {
 		if(regenerateDisplayWall)
         {
+            originalOrientation = gameObject.transform.parent.eulerAngles;
+
             foreach( GameObject g in displayObjects )
             {
+                if(g.GetComponent<CAVE2Display>())
+                {
+                    // Remove virtual camera before destroying display
+                    g.GetComponent<CAVE2Display>().Cleanup();
+                }
                 Destroy(g);
             }
             Destroy(screenMask);
@@ -416,9 +426,22 @@ public class ScreenConfigCalc : MonoBehaviour {
             CAVE2ScreenMaskUV.Clear();
             CAVE2ScreenMaskTriangles.Clear();
 
+            gameObject.transform.parent.eulerAngles = Vector3.zero;
+
             GenerateCAVE2();
             UpdateScreenMask();
             regenerateDisplayWall = false;
+
+            
+            regenerationRestoreRotationTimer = regenerationRestoreRotationDelay;
+        }
+        else if(regenerationRestoreRotationTimer > 0)
+        {
+            regenerationRestoreRotationTimer -= Time.deltaTime;
+            if(regenerationRestoreRotationTimer <= 0)
+            {
+                gameObject.transform.parent.eulerAngles = originalOrientation;
+            }
         }
 
         if (last_floorRenderMode != floorRenderMode)
