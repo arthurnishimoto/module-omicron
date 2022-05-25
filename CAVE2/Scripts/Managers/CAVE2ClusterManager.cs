@@ -107,21 +107,28 @@ public class CAVE2ClusterManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(headTracker)
+        if (headTracker)
         {
             CAVE2MocapUpdater head = headTracker.GetComponent<CAVE2MocapUpdater>();
 
             if (currentHeadTrackerText)
             {
-                currentHeadTrackerText.text = head.sourceID.ToString();
+                if (head != null)
+                {
+                    currentHeadTrackerText.text = head.sourceID.ToString();
+                }
+                else
+                {
+                    currentHeadTrackerText.text = "N/A";
+                }
             }
             if (currentHeadTrackerTransformText)
             {
-                currentHeadTrackerTransformText.text = head.transform.localPosition.ToString("F3") + "\n" + head.transform.localEulerAngles.ToString("F3");
+                currentHeadTrackerTransformText.text = headTracker.localPosition.ToString("F3") + "\n" + headTracker.localEulerAngles.ToString("F3");
             }
         }
 
-        if(debugUIText)
+        if (debugUIText)
         {
             debugUIText.text = CAVE2Manager.GetMachineName() + "\n";
 
