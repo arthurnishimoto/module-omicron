@@ -773,6 +773,9 @@ static CAVE2Manager CAVE2Manager_Instance;
     [SerializeField]
     public bool useLowQualityOnMaster;
 
+    [SerializeField]
+    int lowQualitySettingIndex = 0;
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
@@ -811,7 +814,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             }
             else if(useLowQualityOnMaster)
             {
-                QualitySettings.SetQualityLevel(0);
+                QualitySettings.SetQualityLevel(lowQualitySettingIndex);
             }
 
             if(OnCAVE2Master())

@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -87,15 +87,24 @@ public class OMenu : MonoBehaviour {
 
                 if (activeMenu)
                 {
+                    CAVE2.SendMessage(gameObject.name, "HideMenu");
                     transform.Translate(Vector3.right);
                     if (previousMenu)
                     {
                         previousMenu.showMenu = true;
+                        CAVE2.SendMessage(previousMenu.name, "ShowMenu");
                         menuManager.currentMenu = previousMenu;
                     }
                     activeMenu = false;
                     menuManager.openMenus--;
                     menuManager.PlayCloseMenuSound();
+
+                    // Sanity check (can break if rapidly toggling menus)
+                    if (menuManager.openMenus < 0)
+                    {
+                        menuManager.openMenus = 0;
+                    }
+                    CAVE2.SendMessage(menuManager.gameObject.name, "UpdateActiveMenuCount", menuManager.openMenus);
                 }
                 return;
             }
@@ -191,9 +200,10 @@ public class OMenu : MonoBehaviour {
         }
 
         showMenu = !showMenu;
-        CAVE2.SendMessage(gameObject.name, "ShowMenu", showMenu);
         if (showMenu)
         {
+            CAVE2.SendMessage(gameObject.name, "ShowMenu");
+
             if (menuManager.mainMenu != this)
                 previousMenu = menuManager.currentMenu;
 
@@ -203,7 +213,7 @@ public class OMenu : MonoBehaviour {
 
             if (previousMenu)
             {
-                CAVE2.SendMessage(previousMenu.name, "ShowMenu", false);
+                CAVE2.SendMessage(previousMenu.name, "HideMenu");
                 transform.position = previousMenu.transform.position;
             }
 
@@ -212,21 +222,34 @@ public class OMenu : MonoBehaviour {
         }
         else
         {
+            CAVE2.SendMessage(gameObject.name, "HideMenu");
+
             if (previousMenu)
             {
-                CAVE2.SendMessage(previousMenu.name, "ShowMenu", true);
+                CAVE2.SendMessage(previousMenu.name, "ShowMenu");
                 menuManager.currentMenu = previousMenu;
             }
             activeMenu = false;
             menuManager.openMenus--;
             menuManager.PlayCloseMenuSound();
         }
-        
+
+        // Sanity check (can break if rapidly toggling menus)
+        if (menuManager.openMenus < 0)
+        {
+            menuManager.openMenus = 0;
+        }
+        CAVE2.SendMessage(menuManager.gameObject.name, "UpdateActiveMenuCount", menuManager.openMenus);
     }
 
-    void ShowMenu(bool value)
+    void ShowMenu(int increment)
     {
-        showMenu = value;
+        showMenu = true;
+    }
+
+    void HideMenu(int increment)
+    {
+        showMenu = false;
     }
 
     public void MenuNextItemDown()

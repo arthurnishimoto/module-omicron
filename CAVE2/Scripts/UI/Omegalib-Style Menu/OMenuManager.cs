@@ -82,19 +82,29 @@ public class OMenuManager : MonoBehaviour {
 
         if (CAVE2.Input.GetButtonDown(menuWandID, menuOpenButton))
         {
-           if(CAVE2.IsMaster())
-           {
-                angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
-                if (CAVE2.IsSimulatorMode())
+                if (CAVE2.IsMaster())
                 {
+                    angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
+                    if (CAVE2.IsSimulatorMode())
+                    {
                         angleOffset.y += CAVE2.GetCameraController().transform.localEulerAngles.y;
+                    }
+                    CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
+                    mainMenu.ToggleMenu();
                 }
-                CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
-                mainMenu.ToggleMenu();
-           }
         }
 
         CAVE2.Input.SetWandMenuLock(menuWandID, openMenus > 0);
+    }
+
+    public void UpdateActiveMenuCount(int count)
+    {
+        // Sanity check (can break if rapidly toggling menus)
+        if (count < 0)
+        {
+            count = 0;
+        }
+        openMenus = count;
     }
 
     public void PlayOpenMenuSound()
