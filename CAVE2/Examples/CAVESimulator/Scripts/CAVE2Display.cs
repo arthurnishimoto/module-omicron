@@ -119,6 +119,11 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         SetVRDisplayMask(GetComponentInParent<VRDisplayManager>().VRDisplayMask);
     }
 
+    public void Cleanup()
+    {
+        Destroy(virtualCamera);
+    }
+
     public void RemoveDisplayTexture()
     {
         Transform displaySpace = transform.Find("Borders/PixelSpace");

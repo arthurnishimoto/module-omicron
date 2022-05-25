@@ -265,7 +265,7 @@ MonoBehaviour:
   virtualCamera: {fileID: 0}
   headOffset: {x: 0, y: 0, z: 0}
   applyHeadOffset: 0
-  invertHeadX: 1
+  invertHeadX: 0
   showScreenCorners: 0
   debugGUI: {fileID: 0}
   displayResolution: {x: 1366, y: 768}
