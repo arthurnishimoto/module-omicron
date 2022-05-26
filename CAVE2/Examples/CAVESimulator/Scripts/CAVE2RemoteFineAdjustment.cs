@@ -141,6 +141,33 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
                 Debug.Log("Pos: " + pos.x.ToString("F3") + ", " + pos.y.ToString("F3") + ", " + pos.z.ToString("F3"));
                 Debug.Log("Rot: " + rot.x.ToString("F3") + ", " + rot.y.ToString("F3") + ", " + rot.z.ToString("F3"));
             }
+            else if (Input.GetKeyDown(KeyCode.U))
+            {
+                //RotateDisplay(Vector3.down * rotateIncrement);
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", 4, new Vector3(-3.237f, 1.435f, 0.348f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",5, new Vector3(-3.084f, 1.415f, 1.366f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",6, new Vector3(-2.592f, 1.355f, 2.210f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",7, new Vector3(-1.792f, 1.336f, 2.986f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",8, new Vector3(-1.059f, 1.336f, 3.305f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",9, new Vector3(0.064f, 1.336f, 3.440f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",10, new Vector3(1.033f, 1.336f, 3.261f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",11, new Vector3(1.920f, 1.357f, 2.808f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",12, new Vector3(2.602f, 1.387f, 2.070f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",13, new Vector3(3.041f, 1.416f, 1.130f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition",14, new Vector3(3.182f, 1.454f, 0.186f));
+
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",4, new Vector3(0.000f, 270.515f, 358.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",5, new Vector3(359.861f, 288.529f, 358.005f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",6, new Vector3(0.000f, 308.538f, 358.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",7, new Vector3(0.000f, 324.550f, 0.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",8, new Vector3(0.000f, 342.561f, 0.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",9, new Vector3(0.000f, 0.573f, 0.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",10, new Vector3(0.000f, 18.584f, 0.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",11, new Vector3(0.000f, 34.596f, 2.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",12, new Vector3(0.000f, 58.608f, 2.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",13, new Vector3(0.000f, 72.619f, 2.000f));
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation",14, new Vector3(0.000f, 90.631f, 2.000f));
+            }
         }
     }
 
@@ -216,13 +243,17 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
         CAVE2.SendMessage(gameObject.name, "RotateDisplay", value);
     }
 
-    void ServerSetLocalDisplayPosition(int index, Vector3 value)
+    void ServerSetLocalDisplayPosition(object[] param)
     {
+        int index = (int)param[0];
+        Vector3 value = (Vector3)param[1];
         CAVE2.SendMessage(gameObject.name, "SetLocalDisplayPosition", index, value);
     }
 
-    void ServerSetLocalDisplayRotation(int index, Vector3 value)
+    void ServerSetLocalDisplayRotation(object[] param)
     {
+        int index = (int)param[0];
+        Vector3 value = (Vector3)param[1];
         CAVE2.SendMessage(gameObject.name, "SetLocalDisplayRotation", index, value);
     }
 }
