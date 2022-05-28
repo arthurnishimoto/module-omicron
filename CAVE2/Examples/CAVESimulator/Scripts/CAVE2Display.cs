@@ -78,6 +78,9 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         vrCamera.transform.localEulerAngles = new Vector3(0, displayInfo.h + GetComponentInParent<VRDisplayManager>().displayAngularOffset, 0);
         virtualCamera = vrCamera.AddComponent<Camera>();
 
+        virtualCamera.clearFlags = GetComponentInParent<VRDisplayManager>().vrCameraClearFlag;
+        virtualCamera.backgroundColor = GetComponentInParent<VRDisplayManager>().vrCameraBGColor;
+
         cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
             virtualCamera.targetTexture = cameraRT;
@@ -121,7 +124,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
     public void Cleanup()
     {
-        Destroy(virtualCamera);
+        Destroy(virtualCamera.gameObject);
     }
 
     public void RemoveDisplayTexture()

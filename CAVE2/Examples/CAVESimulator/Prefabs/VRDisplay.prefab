@@ -269,6 +269,8 @@ MonoBehaviour:
   showScreenCorners: 0
   debugGUI: {fileID: 0}
   displayResolution: {x: 1366, y: 768}
+  vrCameraClearFlag: 2
+  vrCameraBGColor: {r: 0, g: 0, b: 0, a: 0}
   renderTextureToVRCamera: 1
   useARMaterial: 0
   alwaysHideBorders: 0

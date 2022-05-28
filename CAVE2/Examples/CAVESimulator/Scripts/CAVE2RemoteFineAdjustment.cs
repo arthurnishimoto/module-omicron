@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class DisplayTransform
 {
+    public Vector3 rootPos;
+    public Vector3 rootRot;
     public Vector3[] displayPos;
     public Vector3[] displayRot;
 }
@@ -16,12 +19,14 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     CAVE2Display[] cave2Displays;
     Vector3[] origDisplayPos;
     Vector3[] origDisplayRot;
+    Vector3 origRootPos;
+    Vector3 origRootRot;
 
     [SerializeField]
     int currentDisplayIndex = 0;
 
     [SerializeField]
-    CAVE2Display currentDisplay;
+    Transform currentDisplay;
 
     [SerializeField]
     float translateIncrement = 0.01f;
@@ -36,6 +41,9 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     bool outputDisplayTransformToFile;
 
     string jsonPath = "Assets/Resources/cave2SimDisplayTransform";
+
+    [SerializeField]
+    Text uiText;
 
     // Start is called before the first frame update
     void Start()
@@ -60,7 +68,10 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
         {
             initialized = true;
 
-            if(applySavedOffsets)
+            origRootPos = cave2Displays[0].transform.parent.localPosition;
+            origRootRot = cave2Displays[0].transform.parent.localEulerAngles;
+
+            if (applySavedOffsets)
             {
                 ApplySavedOffsets();
             }
@@ -76,18 +87,20 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
             return;
         }
 
-        if(Input.GetKeyDown(KeyCode.DownArrow) && currentDisplayIndex > 0)
+        if (currentDisplayIndex != -1 && cave2Displays[currentDisplayIndex] != null) // Index -1 is for the display parent
         {
-            currentDisplayIndex--;
-            CAVE2.SendMessage(gameObject.name, "ServerSetDisplayIndex", currentDisplayIndex);
+            currentDisplay = cave2Displays[currentDisplayIndex].transform;
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow) && currentDisplayIndex < cave2Displays.Length - 1)
+        else if(cave2Displays[0] != null)
         {
-            currentDisplayIndex++;
-            CAVE2.SendMessage(gameObject.name, "ServerSetDisplayIndex", currentDisplayIndex);
+            currentDisplay = cave2Displays[0].transform.parent;
         }
 
-        currentDisplay = cave2Displays[currentDisplayIndex];
+        if(uiText && currentDisplay)
+        {
+            uiText.text = "CurrentDisplayIndex: " + currentDisplayIndex;
+            uiText.text += "\n" + currentDisplay.gameObject.name;
+        }
 
         if (currentDisplay == null)
         {
@@ -95,69 +108,7 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                //TranslateDisplay(Vector3.left * translateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.left * translateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                //TranslateDisplay(Vector3.right * translateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.right * translateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.W))
-            {
-                //TranslateDisplay(Vector3.up * translateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.up * translateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                //TranslateDisplay(Vector3.down * translateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.down * translateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                //TranslateDisplay(Vector3.forward * translateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.forward * translateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.F))
-            {
-                //TranslateDisplay(Vector3.back * translateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.back * translateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                //RotateDisplay(Vector3.up * rotateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.up * rotateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                //RotateDisplay(Vector3.down * rotateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.down * rotateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.Z))
-            {
-                //RotateDisplay(Vector3.up * rotateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.forward * rotateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.C))
-            {
-                //RotateDisplay(Vector3.down * rotateIncrement);
-                CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.back * rotateIncrement);
-            }
-            else if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Vector3 pos = currentDisplay.transform.localPosition;
-                Vector3 rot = currentDisplay.transform.localEulerAngles;
-
-                Debug.Log(currentDisplay.gameObject.name);
-                Debug.Log("Pos: " + pos.x.ToString("F3") + ", " + pos.y.ToString("F3") + ", " + pos.z.ToString("F3"));
-                Debug.Log("Rot: " + rot.x.ToString("F3") + ", " + rot.y.ToString("F3") + ", " + rot.z.ToString("F3"));
-            }
-            else if (Input.GetKeyDown(KeyCode.U))
-            {
-                ApplySavedOffsets();
-            }
+            OnInput();
         }
 
         if(outputDisplayTransformToFile)
@@ -176,6 +127,9 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
             DisplayTransform displayInfo = new DisplayTransform();
             displayInfo.displayPos = curDisplayPos;
             displayInfo.displayRot = curDisplayRot;
+
+            displayInfo.rootPos = cave2Displays[0].transform.parent.localPosition;
+            displayInfo.rootRot = cave2Displays[0].transform.parent.localEulerAngles;
 
             string json = JsonUtility.ToJson(displayInfo);
 
@@ -196,6 +150,106 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
         }
     }
 
+    void OnInput()
+    {
+        if (Input.GetKeyDown(KeyCode.DownArrow) && currentDisplayIndex >= 0)
+        {
+            currentDisplayIndex--;
+            CAVE2.SendMessage(gameObject.name, "ServerSetDisplayIndex", currentDisplayIndex);
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow) && currentDisplayIndex < cave2Displays.Length - 1)
+        {
+            currentDisplayIndex++;
+            CAVE2.SendMessage(gameObject.name, "ServerSetDisplayIndex", currentDisplayIndex);
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            //TranslateDisplay(Vector3.left * translateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.left * translateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            //TranslateDisplay(Vector3.right * translateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.right * translateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.W))
+        {
+            //TranslateDisplay(Vector3.up * translateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.up * translateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            //TranslateDisplay(Vector3.down * translateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.down * translateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            //TranslateDisplay(Vector3.forward * translateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.forward * translateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.F))
+        {
+            //TranslateDisplay(Vector3.back * translateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerTranslateDisplay", Vector3.back * translateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            //RotateDisplay(Vector3.up * rotateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.down * rotateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            //RotateDisplay(Vector3.down * rotateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.up * rotateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.J))
+        {
+            //RotateDisplay(Vector3.up * rotateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.forward * rotateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.L))
+        {
+            //RotateDisplay(Vector3.down * rotateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.back * rotateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.I))
+        {
+            //RotateDisplay(Vector3.up * rotateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.left * rotateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.K))
+        {
+            //RotateDisplay(Vector3.down * rotateIncrement);
+            CAVE2.SendMessage(gameObject.name, "ServerRotateDisplay", Vector3.right * rotateIncrement);
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Vector3 pos = currentDisplay.transform.localPosition;
+            Vector3 rot = currentDisplay.transform.localEulerAngles;
+
+            Debug.Log(currentDisplay.gameObject.name);
+            Debug.Log("Pos: " + pos.x.ToString("F3") + ", " + pos.y.ToString("F3") + ", " + pos.z.ToString("F3"));
+            Debug.Log("Rot: " + rot.x.ToString("F3") + ", " + rot.y.ToString("F3") + ", " + rot.z.ToString("F3"));
+        }
+        else if (Input.GetKeyDown(KeyCode.U))
+        {
+            ApplySavedOffsets();
+        }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            if (currentDisplayIndex == -1)
+            {
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", currentDisplayIndex, origRootPos);
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation", currentDisplayIndex, origRootRot);
+            }
+            else
+            {
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", currentDisplayIndex, origDisplayPos[currentDisplayIndex]);
+                CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation", currentDisplayIndex, origDisplayRot[currentDisplayIndex]);
+            }
+        }
+    }
     void ApplySavedOffsets()
     {
         Debug.Log("Importing CAVE2 display transforms from '" + jsonPath + ".json'");
@@ -217,6 +271,9 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
         {
             CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation", i, rot);
         }
+
+        CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", -1, displayInfo.rootPos);
+        CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation", -1, displayInfo.rootRot);
         /*
         CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", 4, new Vector3(-3.141f, 1.508f, -0.083f));
         CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", 5, new Vector3(-3.084f, 1.415f, 1.366f));
@@ -263,14 +320,30 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     {
         int index = (int)param[0];
         Vector3 value = (Vector3)param[1];
-        cave2Displays[index].transform.localPosition = value;
+
+        if (index == -1)
+        {
+            cave2Displays[0].transform.parent.localPosition = value;
+        }
+        else
+        {
+            cave2Displays[index].transform.localPosition = value;
+        }
     }
 
     void SetLocalDisplayRotation(object[] param)
     {
         int index = (int)param[0];
         Vector3 value = (Vector3)param[1];
-        cave2Displays[index].transform.localEulerAngles = value;
+
+        if (index == -1)
+        {
+            cave2Displays[0].transform.parent.localEulerAngles = value;
+        }
+        else
+        {
+            cave2Displays[index].transform.localEulerAngles = value;
+        }
     }
 
     void ServerSetDisplayIndex(int index)
