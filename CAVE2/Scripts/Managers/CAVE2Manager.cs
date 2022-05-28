@@ -776,6 +776,9 @@ static CAVE2Manager CAVE2Manager_Instance;
     [SerializeField]
     int lowQualitySettingIndex = 0;
 
+    [SerializeField]
+    int highQualitySettingIndex = -1;
+
     public void Init()
     {
         CAVE2Manager_Instance = this;
@@ -811,6 +814,11 @@ static CAVE2Manager CAVE2Manager_Instance;
             {
                 OmicronManager omg = GetComponent<OmicronManager>();
                 omg.connectToServer = false;
+
+                if(highQualitySettingIndex != -1)
+                {
+                    QualitySettings.SetQualityLevel(highQualitySettingIndex);
+                }
             }
             else if(useLowQualityOnMaster)
             {

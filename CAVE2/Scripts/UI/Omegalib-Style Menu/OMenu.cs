@@ -98,12 +98,6 @@ public class OMenu : MonoBehaviour {
                     activeMenu = false;
                     menuManager.openMenus--;
                     menuManager.PlayCloseMenuSound();
-
-                    // Sanity check (can break if rapidly toggling menus)
-                    if (menuManager.openMenus < 0)
-                    {
-                        menuManager.openMenus = 0;
-                    }
                     CAVE2.SendMessage(menuManager.gameObject.name, "UpdateActiveMenuCount", menuManager.openMenus);
                 }
                 return;
@@ -232,12 +226,6 @@ public class OMenu : MonoBehaviour {
             activeMenu = false;
             menuManager.openMenus--;
             menuManager.PlayCloseMenuSound();
-        }
-
-        // Sanity check (can break if rapidly toggling menus)
-        if (menuManager.openMenus < 0)
-        {
-            menuManager.openMenus = 0;
         }
         CAVE2.SendMessage(menuManager.gameObject.name, "UpdateActiveMenuCount", menuManager.openMenus);
     }
