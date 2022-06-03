@@ -22,6 +22,7 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     Vector3 origRootPos;
     Vector3 origRootRot;
 
+    [Header("Physical Arrangement")]
     [SerializeField]
     int currentDisplayIndex = 0;
 
@@ -34,6 +35,16 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     [SerializeField]
     float rotateIncrement = 1.00f;
 
+    [Header("Projection Rotation")]
+    [SerializeField]
+    float displayAngularOffset = 179.5f;
+
+    [SerializeField]
+    bool applyAngularOffset;
+
+    VRDisplayManager vrDisplayManager;
+
+    [Header("Load/Save Config")]
     [SerializeField]
     bool applySavedOffsets;
 
@@ -42,6 +53,7 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
 
     string jsonPath = "Assets/Resources/cave2SimDisplayTransform";
 
+    [Header("Debug")]
     [SerializeField]
     Text uiText;
 
@@ -53,7 +65,9 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
 
     private void Initialize()
     {
-        cave2Displays = GameObject.Find("CAVE2 Displays").GetComponentsInChildren<CAVE2Display>();
+        GameObject cave2DisplaysRoot = GameObject.Find("CAVE2 Displays");
+        cave2Displays = cave2DisplaysRoot.GetComponentsInChildren<CAVE2Display>();
+        vrDisplayManager = cave2DisplaysRoot.GetComponentInParent<VRDisplayManager>();
 
         int i = 0;
         origDisplayPos = new Vector3[cave2Displays.Length];
@@ -232,8 +246,9 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
             Debug.Log("Pos: " + pos.x.ToString("F3") + ", " + pos.y.ToString("F3") + ", " + pos.z.ToString("F3"));
             Debug.Log("Rot: " + rot.x.ToString("F3") + ", " + rot.y.ToString("F3") + ", " + rot.z.ToString("F3"));
         }
-        else if (Input.GetKeyDown(KeyCode.U))
+        else if (Input.GetKeyDown(KeyCode.U) || applySavedOffsets)
         {
+            applySavedOffsets = false;
             ApplySavedOffsets();
         }
         else if (Input.GetKeyDown(KeyCode.T))
@@ -248,6 +263,12 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
                 CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayPosition", currentDisplayIndex, origDisplayPos[currentDisplayIndex]);
                 CAVE2.SendMessage(gameObject.name, "ServerSetLocalDisplayRotation", currentDisplayIndex, origDisplayRot[currentDisplayIndex]);
             }
+        }
+
+        if(applyAngularOffset)
+        {
+            CAVE2.SendMessage(vrDisplayManager.gameObject.name, "UpdateDisplayAngularOffset", displayAngularOffset);
+            applyAngularOffset = false;
         }
     }
     void ApplySavedOffsets()

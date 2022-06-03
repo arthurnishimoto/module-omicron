@@ -40,6 +40,9 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
 
     Joint wandJoint;
 
+    public Vector3 positionOffset;
+    public Vector3 RotationOffset;
+
     void Start()
     {
         if (virtualWand && wandID == 1 && !CAVE2.UsingHMDVR())
@@ -62,7 +65,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
 
         if (virtualWand && virtualWand.GetComponent<Rigidbody>())
         {
-            transform.localPosition = CAVE2Manager.GetWandPosition(wandID);
+            transform.localPosition = CAVE2Manager.GetWandPosition(wandID) + positionOffset;
             transform.localRotation = CAVE2Manager.GetWandRotation(wandID);
             float timeSinceLastUpdate = CAVE2Manager.GetWandTimeSinceUpdate(wandID);
 
@@ -83,7 +86,7 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
     {
         if (virtualWand == null || virtualWand.GetComponent<Rigidbody>() == null)
         {
-            transform.localPosition = CAVE2.Input.GetWandPosition(wandID);
+            transform.localPosition = CAVE2.Input.GetWandPosition(wandID) + positionOffset;
             transform.localRotation = CAVE2.Input.GetWandRotation(wandID);
         }
     }
