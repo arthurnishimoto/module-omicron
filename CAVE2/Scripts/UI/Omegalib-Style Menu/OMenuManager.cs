@@ -138,5 +138,10 @@ public class OMenuManager : MonoBehaviour {
             transform.localEulerAngles = angleOffset;
             transform.localPosition = Vector3.zero + Quaternion.Euler(angleOffset) * distOffset;
         }
+        else
+        {
+            transform.localEulerAngles = Vector3.zero;
+            transform.localPosition = Vector3.zero + Quaternion.Euler(Vector3.zero) * distOffset;
+        }
     }
 }
