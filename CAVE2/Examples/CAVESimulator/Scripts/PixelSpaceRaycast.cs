@@ -25,7 +25,7 @@ public class PixelSpaceRaycast : MonoBehaviour
     GameObject wandPointingHit;
 
     [SerializeField]
-    float displayHitVerticalOffset;
+    Vector2 displayHitOffset;
 
     [SerializeField]
     LineRenderer laserLine;
@@ -64,10 +64,14 @@ public class PixelSpaceRaycast : MonoBehaviour
         {
             display = hit.collider.GetComponentInParent<CAVE2Display>();
 
-            hitPoint = hit.collider.transform.worldToLocalMatrix * hit.point;
+            hitPoint = hit.collider.transform.InverseTransformPoint(hit.point);
 
-            hitPoint.x = Mathf.Abs(hitPoint.x - (int)hitPoint.x);
-            hitPoint.y += displayHitVerticalOffset;
+            // HitPoint is centered at 0, 0. Shift to edge
+            hitPoint.x += 0.5f;
+            hitPoint.y += 0.5f;
+
+            // Invert x
+            hitPoint.x = 1.0f - hitPoint.x;
 
             if (display)
             {
