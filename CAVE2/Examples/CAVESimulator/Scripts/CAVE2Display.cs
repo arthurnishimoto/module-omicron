@@ -221,4 +221,13 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         Transform displaySpace = transform.Find("Borders/PixelSpace");
         displaySpace.GetComponent<MeshRenderer>().material = displayMat;
     }
+
+    public Ray DisplayRaycast(Vector3 screenPos)
+    {
+        screenPos.x *= virtualCamera.pixelWidth;
+        screenPos.y *= virtualCamera.pixelHeight;
+        screenPos.z = 0;
+
+        return virtualCamera.ScreenPointToRay(screenPos);
+    }
 }

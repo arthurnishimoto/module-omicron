@@ -90,4 +90,9 @@ public class CAVE2WandMocapUpdater : MonoBehaviour
             transform.localRotation = CAVE2.Input.GetWandRotation(wandID);
         }
     }
+
+    public Vector3 GetMocapPosition()
+    {
+        return CAVE2.Input.GetWandPosition(wandID);
+    }
 }

@@ -145,6 +145,33 @@ public class CAVE2WandInteractor : MonoBehaviour {
         }
     }
 
+    public static void ProcessButtons(int wandID, GameObject interactedObject, CAVE2.WandEvent playerInfo)
+    {
+        foreach (CAVE2.Button currentButton in CAVE2.Button.GetValues(typeof(CAVE2.Button)))
+        {
+            playerInfo.button = currentButton;
+
+            // OnWandButtonDown
+            if (CAVE2Manager.GetButtonDown(wandID, currentButton))
+            {
+                Debug.Log("OnWandButtonDown " + interactedObject.name + " " + currentButton.ToString());
+                interactedObject.SendMessage("OnWandButtonDown", playerInfo, SendMessageOptions.DontRequireReceiver);
+            }
+
+            // OnWandButton
+            else if (CAVE2Manager.GetButton(wandID, currentButton))
+            {
+                interactedObject.SendMessage("OnWandButton", playerInfo, SendMessageOptions.DontRequireReceiver);
+            }
+
+            // OnWandButtonUp
+            if (CAVE2Manager.GetButtonUp(wandID, currentButton))
+            {
+                interactedObject.SendMessage("OnWandButtonUp", playerInfo, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+    }
+
     public bool GrabbedObject(GameObject g)
     {
         if (grabbedObject == null)
@@ -159,5 +186,20 @@ public class CAVE2WandInteractor : MonoBehaviour {
     {
         if(grabbedObject == g)
             grabbedObject = null;
+    }
+
+    public CAVE2PlayerIdentity GetPlayerID()
+    {
+        return playerID;
+    }
+
+    public int GetWandID()
+    {
+        return wandID;
+    }
+
+    public int GetLayerMask()
+    {
+        return wandLayerMask;
     }
 }

@@ -80,4 +80,9 @@ public class CAVE2MocapUpdater : MonoBehaviour {
     {
         sourceID = id;
     }
+
+    public Vector3 GetMocapPosition()
+    {
+        return CAVE2.GetMocapPosition(sourceID);
+    }
 }
