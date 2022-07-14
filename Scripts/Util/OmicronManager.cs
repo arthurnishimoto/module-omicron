@@ -270,8 +270,8 @@ public class OmicronManager : MonoBehaviour
     [SerializeField] bool enableAudio = true;
 
     [Header("Coordinate Conversions")]
-    [SerializeField] bool continuum3DXAxis;
-    [SerializeField] bool continuumMainInvertX;
+    public bool continuum3DXAxis;
+    public bool continuumMainInvertX;
 
     enum ClientFlags
     {

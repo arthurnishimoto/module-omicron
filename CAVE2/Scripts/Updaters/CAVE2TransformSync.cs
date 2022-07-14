@@ -29,9 +29,26 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+
+/// <summary>
+/// Class <c>CAVE2TransformSync</c> synchronizes a GameObjects's position and/or rotation values across the
+/// cluster. Assumes that the GameObject has a unique name that can be referenced across the cluster.
+/// </summary>
 public class CAVE2TransformSync : MonoBehaviour {
 
-    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive, ClientAdaptive, ClientUpdate};
+    /* Manual           - No synchronization is enabled or assumes an external script will call UpdateSync()
+     *                      in a client script
+     * Update           - Sync clients using head node transform during Update (draw) loop
+     * Fixed            - Sync clients using head node transform during FixedUpdate (physics) loop
+     * Late             - Sync clients using head node transform during LateUpdate (post-Update) loop
+     * Adaptive         - Syncs only if client transform differs from Head node transform by a threshold and
+     *                      time delay.
+     * ClientUpdate     - Syncs using a specific client (identified with 'syncingDisplayNode' variable)
+     *                      All other clients AND the head node will sync to that client's transform (instead of
+     *                      clients syncing to the head node in other modes)
+     *                      'useAdvancedClusterSync' must be enabled and properly configured in CAVE2RPCManager
+     */
+    public enum UpdateMode {Manual, Update, Fixed, Late, Adaptive, ClientUpdate};
 
     [SerializeField]
     UpdateMode updateMode = UpdateMode.Fixed;
@@ -74,8 +91,17 @@ public class CAVE2TransformSync : MonoBehaviour {
     float driftValue;
 
     [Header("Advanced Cluster Sync")]
+    /* To use advanced cluster sync (which clients report their Transform information
+     * back to the server to be compared with the head node transform before determining
+     * the sync action) on the CAVE2-Manager prefab, the CAVE2RPCManager script must have
+     * 'Use Msg Server' enabled and under 'Message Client' ServerIP to the head node must be set.
+     * 
+     * Exactly what Sync action is taken is determined using the UpdateMode variable.
+     */
     [SerializeField]
     bool useAdvancedClusterSync;
+
+    int syncingDisplayNode = 1;
 
     [SerializeField]
     UnityEngine.UI.Text advSyncDebugText;
@@ -133,7 +159,6 @@ public class CAVE2TransformSync : MonoBehaviour {
             }
             else
             {
-                int syncingDisplayNode = 1;
                 if (updateMode == UpdateMode.ClientUpdate && clusterPositions.ContainsKey(syncingDisplayNode))
                 {
                     Vector3 clientPos = clusterPositions[syncingDisplayNode];
@@ -200,6 +225,7 @@ public class CAVE2TransformSync : MonoBehaviour {
         text += "Client:\t (" + transform.position.x.ToString("F2") + ", " + transform.position.y.ToString("F2") + ", " + transform.position.z.ToString("F2") + ")\n";
         text += "\t\t\t (" + transform.rotation.eulerAngles.x.ToString("F2") + ", " + transform.rotation.eulerAngles.y.ToString("F2") + ", " + transform.rotation.eulerAngles.z.ToString("F2") + ")\n";
 
+        text += "Sync Mode: " + updateMode + "\n";
         text += "Drift:\t\t (" + posDiff.x.ToString("F2") + ", " + posDiff.y.ToString("F2") + ", " + posDiff.z.ToString("F2") + ")\n";
         text += "\t\t\t (" + rotDiff.x.ToString("F2") + ", " + rotDiff.y.ToString("F2") + ", " + rotDiff.z.ToString("F2") + ")\n";
         text += "Drift Value: " + driftValue + " > " + adaptiveThreshold + " = " + (driftValue > adaptiveThreshold) + "\n";
@@ -210,7 +236,7 @@ public class CAVE2TransformSync : MonoBehaviour {
 
     public void FixedUpdate()
     {
-        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive || updateMode == UpdateMode.ClientAdaptive)
+        if (updateMode == UpdateMode.Fixed || updateMode == UpdateMode.Adaptive)
         {
             timeSinceLastChange += Time.fixedDeltaTime;
             UpdateSync();
@@ -263,7 +289,7 @@ public class CAVE2TransformSync : MonoBehaviour {
                 delayTimer = 0;
             }
 
-            if (updateMode != UpdateMode.Adaptive && updateMode != UpdateMode.ClientAdaptive)
+            if (updateMode != UpdateMode.Adaptive)
             {
                 if (useLocal)
                 {

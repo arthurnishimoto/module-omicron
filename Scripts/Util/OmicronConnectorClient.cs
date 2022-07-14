@@ -515,6 +515,7 @@ namespace omicronConnector
                 client.Close();
 
                 Debug.Log("OmicronConnectorClient: Shutting down.");
+                connectionState = ConnectionState.NotConnected;
             }
 	    }
         
