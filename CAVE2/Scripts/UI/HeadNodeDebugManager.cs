@@ -7,12 +7,16 @@ public class HeadNodeDebugManager : MonoBehaviour
 {
     Canvas mainCanvas;
 
-    [Header("Tracking System")]
+    [Header("Menu Panels")]
     [SerializeField]
-    Button trackingSystemButton;
+    GameObject applicationPanel;
 
     [SerializeField]
     GameObject trackingSystemPanel;
+
+    [Header("Tracking System")]
+    //[SerializeField]
+    //Button trackingSystemButton;
 
     [SerializeField]
     Toggle connectToServer;
@@ -40,6 +44,28 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     OmicronManager omicronManager;
 
+    // FPS
+    [SerializeField]
+    Text fpsText;
+
+    public float FPS_updateInterval = 0.5F;
+
+    private float accum = 0; // FPS accumulated over the interval
+    private int frames = 0; // Frames drawn over the interval
+    private float timeleft; // Left time for current interval
+    float curFPS;
+    Vector2 minMaxFPS = new Vector2(10000, 0);
+    Vector2 minMaxFPSTime = new Vector2();
+    Vector2 avgFPS = new Vector2();
+    float avgFPSStartTime = 0;
+
+    [SerializeField]
+    float avgFPSTimeLimit = 15;
+
+    [SerializeField]
+    bool resetAvgFPSTimer = false;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,6 +87,8 @@ public class HeadNodeDebugManager : MonoBehaviour
     {
         if (CAVE2.IsMaster())
         {
+            CalculateFPS();
+
             if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
             {
                 mainCanvas.enabled = !mainCanvas.enabled;
@@ -68,6 +96,13 @@ public class HeadNodeDebugManager : MonoBehaviour
 
             if(mainCanvas.enabled)
             {
+                fpsText.text = "FPS Current:\t\t\t" + System.String.Format("{0:F2}", curFPS) + "\t\t";
+                fpsText.text += "Time:\t" + System.String.Format("{0:F2}", Time.time) + "\n";
+                fpsText.text += "FPS Min (Time): ";
+                fpsText.text += "\t\t" + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.x, minMaxFPSTime.x);
+                fpsText.text += "\nFPS Max (Time): ";
+                fpsText.text += "\t" + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.y, minMaxFPSTime.y);
+
                 connectToServer.SetIsOnWithoutNotify(omicronManager.IsConnectedToServer());
 
                 switch(omicronManager.GetConnectionState())
@@ -90,10 +125,62 @@ public class HeadNodeDebugManager : MonoBehaviour
                         break;
                 }
 
-
                 primaryHeadTrackerPosRot.text = CAVE2.GetHeadPosition(1).ToString() + "\n";
                 primaryHeadTrackerPosRot.text += CAVE2.GetHeadRotation(1).eulerAngles.ToString();
             }
+        }
+    }
+
+    void CalculateFPS()
+    {
+        timeleft -= Time.deltaTime;
+        accum += Time.timeScale / Time.deltaTime;
+        ++frames;
+
+        // Interval ended - update GUI text and start new interval
+        if (timeleft <= 0.0)
+        {
+            // display two fractional digits (f2 format)
+            curFPS = accum / frames;
+            // formattedFPS = System.String.Format("{0:F2} FPS",fps);
+            if (curFPS < minMaxFPS.x)
+            {
+                minMaxFPS.x = curFPS;
+                minMaxFPSTime.x = Time.time;
+            }
+            if (Time.time > 1 && curFPS > minMaxFPS.y)
+            {
+                minMaxFPS.y = curFPS;
+                minMaxFPSTime.y = Time.time;
+            }
+
+            if (avgFPSTimeLimit > 0 && Time.time - avgFPSStartTime <= avgFPSTimeLimit)
+            {
+                avgFPS.x += curFPS;
+                avgFPS.y++;
+            }
+
+            if (resetAvgFPSTimer)
+            {
+                avgFPSStartTime = Time.time;
+            }
+
+            //	DebugConsole.Log(format,level);
+            timeleft = FPS_updateInterval;
+            accum = 0.0F;
+            frames = 0;
+        }
+    }
+
+    public void ToggleApplicationPanel()
+    {
+        if (applicationPanel && applicationPanel.activeSelf)
+        {
+            applicationPanel.SetActive(false);
+        }
+        else if (applicationPanel)
+        {
+            applicationPanel.SetActive(true);
         }
     }
 

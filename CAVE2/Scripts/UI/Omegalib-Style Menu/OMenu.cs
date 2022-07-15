@@ -128,7 +128,8 @@ public class OMenu : MonoBehaviour {
         {
             if (currentItem < menuItems.Length - 1 && menuItems[currentItem + 1].IsActive())
             {
-                CAVE2.SendMessage(gameObject.name, "MenuNextItemDown");
+                MenuNextItemDown();
+                CAVE2.SendMessage(gameObject.name, "MenuSetItem", currentItem);
             }
             else if (currentItem >= menuItems.Length - 1)
             {
@@ -139,7 +140,8 @@ public class OMenu : MonoBehaviour {
         {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
-                CAVE2.SendMessage(gameObject.name, "MenuNextItemUp");
+                MenuNextItemUp();
+                CAVE2.SendMessage(gameObject.name, "MenuSetItem", currentItem);
             }
             else if (currentItem <= 0)
             {
@@ -230,12 +232,12 @@ public class OMenu : MonoBehaviour {
         CAVE2.SendMessage(menuManager.gameObject.name, "UpdateActiveMenuCount", menuManager.openMenus);
     }
 
-    void ShowMenu(int increment)
+    void ShowMenu()
     {
         showMenu = true;
     }
 
-    void HideMenu(int increment)
+    void HideMenu()
     {
         showMenu = false;
     }

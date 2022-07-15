@@ -63,6 +63,9 @@ public class OMenuManager : MonoBehaviour {
 
     AudioSource audioSource;
 
+    [SerializeField]
+    UnityEngine.UI.Text debugText;
+
     // Use this for initialization
     void Start () {
         currentMenu = mainMenu;
@@ -79,9 +82,9 @@ public class OMenuManager : MonoBehaviour {
 	void Update () {
 
         if (currentMenu == mainMenu && currentMenu.activeMenu == false)
-
-        if (CAVE2.Input.GetButtonDown(menuWandID, menuOpenButton))
         {
+            if (CAVE2.Input.GetButtonDown(menuWandID, menuOpenButton))
+            {
                 if (CAVE2.IsMaster())
                 {
                     angleOffset = new Vector3(0, CAVE2.Input.GetWandRotation(menuWandID).eulerAngles.y, 0);
@@ -92,9 +95,28 @@ public class OMenuManager : MonoBehaviour {
                     CAVE2.SendMessage(gameObject.name, "SetWandAngle", angleOffset);
                     mainMenu.ToggleMenu();
                 }
+            }
         }
 
         CAVE2.Input.SetWandMenuLock(menuWandID, openMenus > 0);
+
+        // Rare case that happens in low framerate conditions, but should never happen!
+        if( currentMenu != mainMenu && currentMenu.activeMenu == false)
+        {
+            // Force reset of menu system
+            CAVE2.SendMessage(currentMenu.name, "HideMenu");
+
+            openMenus = 0;
+            currentMenu = mainMenu;
+        }
+
+        if(debugText)
+        {
+            debugText.text = "Current Menu: " + currentMenu.gameObject.name;
+            debugText.text += "\n  Active Menu: " + currentMenu.activeMenu;
+            debugText.text += "\nOpen Menus: " + openMenus;
+            debugText.text += "\nWandMenuLock: " + CAVE2.Input.IsWandMenuLocked(menuWandID) + " wandID: " + menuWandID;
+        }
     }
 
     public void UpdateActiveMenuCount(int count)
