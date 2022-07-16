@@ -80,6 +80,15 @@ public class HeadNodeDebugManager : MonoBehaviour
 
         continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
         continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
+
+        if(applicationPanel)
+        {
+            applicationPanel.SetActive(false);
+        }
+        if(trackingSystemPanel)
+        {
+            trackingSystemPanel.SetActive(false);
+        }
     }
 
     // Update is called once per frame

@@ -159,8 +159,11 @@ public class CAVE2TransformSync : MonoBehaviour {
             }
             else
             {
+                delayTimer = 0;
+
                 if (updateMode == UpdateMode.ClientUpdate && clusterPositions.ContainsKey(syncingDisplayNode))
                 {
+                    // Head node uses Pos/Rot from a client node to set itself....
                     Vector3 clientPos = clusterPositions[syncingDisplayNode];
                     Vector3 clientRot = clusterRotations[syncingDisplayNode];
 
@@ -186,6 +189,9 @@ public class CAVE2TransformSync : MonoBehaviour {
                             transform.eulerAngles = clientRot;
                         }
                     }
+
+                    // Head node updates transforms across cluster (after getting updated with sync display node)
+                    SyncTransform();
                 }
             }
         }
@@ -201,11 +207,12 @@ public class CAVE2TransformSync : MonoBehaviour {
 
                 if (advUpdateTimer > updateInterval)
                 {
+                    int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
+
                     Vector3 position = (useLocal ? transform.localPosition : transform.position);
                     Vector3 rotation = (useLocal ? transform.localEulerAngles : transform.eulerAngles);
 
-                    int connID = CAVE2.GetCAVE2Manager().GetComponent<CAVE2RPCManager>().GetConnID();
-                    CAVE2.SendMessage(gameObject.name, "ClientPosRos", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, connID, CAVE2RPCManager.MsgType.StateUpdate);
+                    CAVE2.SendMessage(gameObject.name, "ClientPosRos", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, connID, CAVE2RPCManager.MsgType.Unreliable);
 
                     advUpdateTimer = 0;
                 }
@@ -259,23 +266,23 @@ public class CAVE2TransformSync : MonoBehaviour {
 
         if (syncPosition && syncRotation)
         {
-            CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
+            CAVE2.SendMessage(gameObject.name, "SyncPosRot", position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.Unreliable);
         }
         else if (syncPosition)
         {
-            CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, CAVE2RPCManager.MsgType.StateUpdate);
+            CAVE2.SendMessage(gameObject.name, "SyncPosition", position.x, position.y, position.z, CAVE2RPCManager.MsgType.Unreliable);
         }
         else if (syncRotation)
         {
-            CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.StateUpdate);
+            CAVE2.SendMessage(gameObject.name, "SyncRotation", rotation.x, rotation.y, rotation.z, rotation.w, CAVE2RPCManager.MsgType.Unreliable);
         }
         else if (syncScale)
         {
-            CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, CAVE2RPCManager.MsgType.StateUpdate);
+            CAVE2.SendMessage(gameObject.name, "SyncScale", transform.localScale.x, transform.localScale.y, transform.localScale.z, CAVE2RPCManager.MsgType.Unreliable);
         }
     }
 
-    void UpdateSync()
+    public void UpdateSync()
     {
         if(!CAVE2.IsMaster() && gotFirstUpdateFromMaster)
         {
@@ -481,5 +488,10 @@ public class CAVE2TransformSync : MonoBehaviour {
     public void DelaySyncRPC(float time = 3)
     {
         delayTimer = time;
+    }
+
+    public bool IsDelayingSync()
+    {
+        return delayTimer > 0;
     }
 }
