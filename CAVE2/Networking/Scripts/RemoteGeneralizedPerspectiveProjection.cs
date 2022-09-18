@@ -84,6 +84,9 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
 
     float sendTimer;
 
+    [SerializeField]
+    bool useExternalScriptToSend = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,51 +96,59 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GetComponent<HoloLens2CAVE2Calibration>().IsUpdateMode())
+        if (updateByEdge)
         {
-            if (updateByEdge)
-            {
-                screenUL = new Vector3(leftEdge, topEdge, depth);
-                screenLL = new Vector3(leftEdge, bottomEdge, depth);
-                screenLR = new Vector3(-leftEdge + rightOffset, bottomEdge, depth);
-            }
+            screenUL = new Vector3(leftEdge, topEdge, depth);
+            screenLL = new Vector3(leftEdge, bottomEdge, depth);
+            screenLR = new Vector3(-leftEdge + rightOffset, bottomEdge, depth);
+        }
 
-            widthHeightDepth.x = screenLL.x - screenLR.x;
-            widthHeightDepth.y = screenUL.y - screenLL.y;
-            widthHeightDepth.z = screenUL.z;
+        widthHeightDepth.x = screenLL.x - screenLR.x;
+        widthHeightDepth.y = screenUL.y - screenLL.y;
+        widthHeightDepth.z = screenUL.z;
 
-            if (sendUpdate || continuousUpdate)
+        if (sendUpdate || continuousUpdate)
+        {
+            if (sendTimer <= 0)
             {
-                if (sendTimer <= 0)
+                //remoteTerminal.SendCommand("setGeneralizedPerspectiveProjection " + screenUL.x + " " + screenUL.y + " " + screenUL.z + " " + screenLL.x + " " + screenLL.y + " " + screenLL.z + " " + screenLR.x + " " + screenLR.y + " " + screenLR.z);
+                //remoteTerminal.SendCommand("setEyeSeparation " + eyeSeparation);
+                if (updateCameraOffset)
                 {
-                    //remoteTerminal.SendCommand("setGeneralizedPerspectiveProjection " + screenUL.x + " " + screenUL.y + " " + screenUL.z + " " + screenLL.x + " " + screenLL.y + " " + screenLL.z + " " + screenLR.x + " " + screenLR.y + " " + screenLR.z);
-                    //remoteTerminal.SendCommand("setEyeSeparation " + eyeSeparation);
-                    if (updateCameraOffset)
+                    if (useHeadPositionAsOffset && trackedHead)
                     {
-                        if (useHeadPositionAsOffset && trackedHead)
-                        {
-                            // Obsolete: Configured directly on Gen. Perspective script
-                            //remoteTerminal.SendCommand("setGPPCameraOffset " + -trackedHead.localPosition.x + " " + -trackedHead.localPosition.y + " " + -trackedHead.localPosition.z);
-                        }
-                        else
-                        {
-                            //remoteTerminal.SendCommand("setGPPCameraOffset " + cameraOffset.x + " " + cameraOffset.y + " " + cameraOffset.z);
-                            //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
-                            //updateCameraOffset = false;
-                        }
+                        // Obsolete: Configured directly on Gen. Perspective script
+                        //remoteTerminal.SendCommand("setGPPCameraOffset " + -trackedHead.localPosition.x + " " + -trackedHead.localPosition.y + " " + -trackedHead.localPosition.z);
                     }
+                    else
+                    {
+                        //remoteTerminal.SendCommand("setGPPCameraOffset " + cameraOffset.x + " " + cameraOffset.y + " " + cameraOffset.z);
+                        //CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
+                        //updateCameraOffset = false;
+                    }
+                }
+
+                if (useExternalScriptToSend)
+                {
+                    CAVE2.BroadcastMessage(gameObject.name, "SetScreenUL", screenUL);
+                    CAVE2.BroadcastMessage(gameObject.name, "SetScreenLL", screenLL);
+                    CAVE2.BroadcastMessage(gameObject.name, "SetScreenLR", screenLR);
+                    CAVE2.BroadcastMessage(gameObject.name, "SetEyeSeparation", eyeSeparation);
+                }
+                else
+                {
                     CAVE2.BroadcastMessage(targetGameObject, "SetScreenUL", screenUL);
                     CAVE2.BroadcastMessage(targetGameObject, "SetScreenLL", screenLL);
                     CAVE2.BroadcastMessage(targetGameObject, "SetScreenLR", screenLR);
                     CAVE2.BroadcastMessage(targetGameObject, "SetEyeSeparation", eyeSeparation);
+                }
 
-                    sendUpdate = false;
-                    sendTimer = sendDelay / 1000.0f;
-                }
-                else
-                {
-                    sendTimer -= Time.deltaTime;
-                }
+                sendUpdate = false;
+                sendTimer = sendDelay / 1000.0f;
+            }
+            else
+            {
+                sendTimer -= Time.deltaTime;
             }
         }
     }
