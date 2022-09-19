@@ -152,4 +152,26 @@ public class RemoteGeneralizedPerspectiveProjection : MonoBehaviour
             }
         }
     }
+
+    // These only update the local state of this script
+    void SetRemoteScreenUL(Vector3 screenUL)
+    {
+        this.screenUL = screenUL;
+    }
+
+    void SetRemoteScreenLL(Vector3 screenLL)
+    {
+        this.screenLL = screenLL;
+    }
+
+    void SetRemoteScreenLR(Vector3 screenLR)
+    {
+        this.screenLR = screenLR;
+    }
+
+    void SetRemoteEyeSeparation(float eyeSeparation)
+    {
+        this.eyeSeparation = eyeSeparation;
+    }
+
 }
