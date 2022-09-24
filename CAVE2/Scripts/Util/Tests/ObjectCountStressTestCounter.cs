@@ -204,8 +204,11 @@ public class ObjectCountStressTestCounter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GameObject[] g = GameObject.FindGameObjectsWithTag(tag);
-        currentObjectCount = g.Length;
+        if (tag.Length > 0)
+        {
+            GameObject[] g = GameObject.FindGameObjectsWithTag(tag);
+            currentObjectCount = g.Length;
+        }
 
         UpdateFPS();
 
@@ -232,7 +235,7 @@ public class ObjectCountStressTestCounter : MonoBehaviour
 
         if(textLog)
         {
-            if (enableAutoTest)
+            if (enableAutoTest && tag.Length > 0)
             {
                 if (!autoTestDone)
                 {
@@ -243,10 +246,15 @@ public class ObjectCountStressTestCounter : MonoBehaviour
                     textLog.text = "Object Count: " + lastObjectCount + " (Automated Test Done)\n";
                 }
             }
-            else
+            else if(tag.Length > 0)
             {
                 textLog.text = "Object Count: " + lastObjectCount + "\n";
             }
+            else
+            {
+                textLog.text = "FPS (Time)" + "\n";
+            }
+
             textLog.text += "Min: " + minFPS.x + " (" + minFPS.y + ")" + "\n";
             textLog.text += "Max: " + maxFPS.x + " (" + maxFPS.y + ")" + "\n";
             textLog.text += "Avg: " + avgFPS.x + " (" + avgFPS.y + ")" + "\n\n";

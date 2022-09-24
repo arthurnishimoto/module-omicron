@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
-    enum MenuMode { Hidden, Visible, Application, Tracking};
+    enum MenuMode { Hidden, Visible, Application, Tracking, Performance};
 
     [SerializeField]
     MenuMode initialMenuState = MenuMode.Hidden;
@@ -18,6 +18,9 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     [SerializeField]
     GameObject trackingSystemPanel;
+
+    [SerializeField]
+    GameObject performancePanel;
 
     [Header("Tracking System")]
     //[SerializeField]
@@ -53,28 +56,16 @@ public class HeadNodeDebugManager : MonoBehaviour
     [SerializeField]
     Text fpsText;
 
-    public float FPS_updateInterval = 0.5F;
-
-    private float accum = 0; // FPS accumulated over the interval
-    private int frames = 0; // Frames drawn over the interval
-    private float timeleft; // Left time for current interval
-    float curFPS;
-    Vector2 minMaxFPS = new Vector2(10000, 0);
-    Vector2 minMaxFPSTime = new Vector2();
-    Vector2 avgFPS = new Vector2();
-    float avgFPSStartTime = 0;
-
     [SerializeField]
-    float avgFPSTimeLimit = 15;
+    Text timeText;
 
-    [SerializeField]
-    bool resetAvgFPSTimer = false;
-
+    ObjectCountStressTestCounter fpsCounter;
 
     // Start is called before the first frame update
     void Start()
     {
         mainCanvas = GetComponent<Canvas>();
+        fpsCounter = GetComponent<ObjectCountStressTestCounter>();
 
         omicronManager = GetComponentInParent<OmicronManager>();
 
@@ -92,6 +83,10 @@ public class HeadNodeDebugManager : MonoBehaviour
         if (trackingSystemPanel)
         {
             trackingSystemPanel.SetActive(false);
+        }
+        if (performancePanel)
+        {
+            performancePanel.SetActive(false);
         }
 
         switch (initialMenuState)
@@ -114,6 +109,12 @@ public class HeadNodeDebugManager : MonoBehaviour
                     trackingSystemPanel.SetActive(true);
                 }
                 break;
+            case (MenuMode.Performance):
+                if (performancePanel)
+                {
+                    performancePanel.SetActive(true);
+                }
+                break;
         }
         
     }
@@ -123,8 +124,6 @@ public class HeadNodeDebugManager : MonoBehaviour
     {
         if (CAVE2.IsMaster())
         {
-            CalculateFPS();
-
             if ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) && Input.GetKeyDown(KeyCode.F11))
             {
                 mainCanvas.enabled = !mainCanvas.enabled;
@@ -132,12 +131,8 @@ public class HeadNodeDebugManager : MonoBehaviour
 
             if(mainCanvas.enabled)
             {
-                fpsText.text = "FPS Current:\t\t\t" + System.String.Format("{0:F2}", curFPS) + "\t\t";
-                fpsText.text += "Time:\t" + System.String.Format("{0:F2}", Time.time) + "\n";
-                fpsText.text += "FPS Min (Time): ";
-                fpsText.text += "\t\t" + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.x, minMaxFPSTime.x);
-                fpsText.text += "\nFPS Max (Time): ";
-                fpsText.text += "\t" + System.String.Format("{0:F2} ({1:F2})", minMaxFPS.y, minMaxFPSTime.y);
+                timeText.text = "Time:\t" + System.String.Format("{0:F2}", Time.time) + "\n";
+                fpsCounter.SetFPSText(fpsText);
 
                 connectToServer.SetIsOnWithoutNotify(omicronManager.IsConnectedToServer());
 
@@ -167,47 +162,6 @@ public class HeadNodeDebugManager : MonoBehaviour
         }
     }
 
-    void CalculateFPS()
-    {
-        timeleft -= Time.deltaTime;
-        accum += Time.timeScale / Time.deltaTime;
-        ++frames;
-
-        // Interval ended - update GUI text and start new interval
-        if (timeleft <= 0.0)
-        {
-            // display two fractional digits (f2 format)
-            curFPS = accum / frames;
-            // formattedFPS = System.String.Format("{0:F2} FPS",fps);
-            if (curFPS < minMaxFPS.x)
-            {
-                minMaxFPS.x = curFPS;
-                minMaxFPSTime.x = Time.time;
-            }
-            if (Time.time > 1 && curFPS > minMaxFPS.y)
-            {
-                minMaxFPS.y = curFPS;
-                minMaxFPSTime.y = Time.time;
-            }
-
-            if (avgFPSTimeLimit > 0 && Time.time - avgFPSStartTime <= avgFPSTimeLimit)
-            {
-                avgFPS.x += curFPS;
-                avgFPS.y++;
-            }
-
-            if (resetAvgFPSTimer)
-            {
-                avgFPSStartTime = Time.time;
-            }
-
-            //	DebugConsole.Log(format,level);
-            timeleft = FPS_updateInterval;
-            accum = 0.0F;
-            frames = 0;
-        }
-    }
-
     public void ToggleApplicationPanel()
     {
         if (applicationPanel && applicationPanel.activeSelf)
@@ -229,6 +183,18 @@ public class HeadNodeDebugManager : MonoBehaviour
         else
         {
             trackingSystemPanel.SetActive(true);
+        }
+    }
+
+    public void TogglePerformancePanel()
+    {
+        if (performancePanel.activeSelf)
+        {
+            performancePanel.SetActive(false);
+        }
+        else
+        {
+            performancePanel.SetActive(true);
         }
     }
 

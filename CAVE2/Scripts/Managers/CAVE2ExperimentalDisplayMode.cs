@@ -64,12 +64,22 @@ public class CAVE2ExperimentalDisplayMode : MonoBehaviour
                 case DisplayMode.Standard_getReal3D:
                     clusterManager.SetManageCAVE2GeneralizedPerspectiveProjection(false);
                     rpcManager.EnableMsgServer(false);
-                    cameraController.SetGenerateGetReal3DCamera(true);
+                    if (cameraController)
+                    {
+                        cameraController.SetGenerateGetReal3DCamera(true);
+                    }
                     break;
                 case DisplayMode.Experimental:
                     clusterManager.SetManageCAVE2GeneralizedPerspectiveProjection(true);
                     rpcManager.EnableMsgServer(true);
-                    cameraController.SetGenerateGetReal3DCamera(false);
+                    if (cameraController)
+                    {
+                        cameraController.SetGenerateGetReal3DCamera(false);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("CAVE2 Experimental Mode - CameraController is NOT assigned!");
+                    }
                     Debug.LogWarning("CAVE2 Experimental Mode Active - Make sure CAVE2RPCManager ServerIP is assigned!");
                     break;
             }
