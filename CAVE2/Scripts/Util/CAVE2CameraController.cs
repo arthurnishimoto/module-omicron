@@ -163,4 +163,8 @@ public class CAVE2CameraController : MonoBehaviour {
         }
     }
 
+    public void SetGenerateGetReal3DCamera(bool enabled)
+    {
+        generateGetReal3DCamera = enabled;
+    }
 }

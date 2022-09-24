@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
+    enum MenuMode { Hidden, Visible, Application, Tracking};
+
+    [SerializeField]
+    MenuMode initialMenuState = MenuMode.Hidden;
+
     Canvas mainCanvas;
 
     [Header("Menu Panels")]
@@ -70,7 +75,6 @@ public class HeadNodeDebugManager : MonoBehaviour
     void Start()
     {
         mainCanvas = GetComponent<Canvas>();
-        mainCanvas.enabled = false;
 
         omicronManager = GetComponentInParent<OmicronManager>();
 
@@ -81,14 +85,37 @@ public class HeadNodeDebugManager : MonoBehaviour
         continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
         continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
 
-        if(applicationPanel)
+        if (applicationPanel)
         {
             applicationPanel.SetActive(false);
         }
-        if(trackingSystemPanel)
+        if (trackingSystemPanel)
         {
             trackingSystemPanel.SetActive(false);
         }
+
+        switch (initialMenuState)
+        {
+            case (MenuMode.Hidden):
+                mainCanvas.enabled = false;
+                break;
+            case (MenuMode.Visible):
+                mainCanvas.enabled = true;
+                break;
+            case (MenuMode.Application):
+                if (applicationPanel)
+                {
+                    applicationPanel.SetActive(true);
+                }
+                break;
+            case (MenuMode.Tracking):
+                if (trackingSystemPanel)
+                {
+                    trackingSystemPanel.SetActive(true);
+                }
+                break;
+        }
+        
     }
 
     // Update is called once per frame
