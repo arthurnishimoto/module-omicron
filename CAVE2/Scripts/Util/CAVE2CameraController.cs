@@ -56,6 +56,11 @@ public class CAVE2CameraController : MonoBehaviour {
     [SerializeField]
     bool generateGetReal3DCamera = true;
 
+    bool defaultCameraClearFlagsSet = false;
+    bool defaultCameraCullingMaskSet = false;
+    CameraClearFlags defaultMainCameraClearFlags;
+    int defaultMainCameraCullingMask;
+
     // Use this for initialization
     void Start()
     {
@@ -66,6 +71,8 @@ public class CAVE2CameraController : MonoBehaviour {
             mainCamera = GetComponentInChildren<Camera>();
         }
 
+        defaultMainCameraClearFlags = mainCamera.clearFlags;
+        
 #if USING_GETREAL3D
         if (generateGetReal3DCamera && mainCamera.GetComponent<getRealCameraUpdater>())
         {
@@ -147,10 +154,41 @@ public class CAVE2CameraController : MonoBehaviour {
 
     public void SetCameraCullingMask(int mask)
     {
+        if(!defaultCameraCullingMaskSet)
+        {
+            defaultMainCameraCullingMask = mainCamera.cullingMask;
+            defaultCameraCullingMaskSet = true;
+        }
+
         Camera[] cameras = GetComponentsInChildren<Camera>();
         foreach( Camera c in cameras )
         {
             c.cullingMask = mask;
+        }
+    }
+
+    public void SetCameraClearFlags(CameraClearFlags flags)
+    {
+        if (!defaultCameraClearFlagsSet)
+        {
+            defaultMainCameraClearFlags = mainCamera.clearFlags;
+            defaultCameraClearFlagsSet = true;
+        }
+
+        Camera[] cameras = GetComponentsInChildren<Camera>();
+        foreach (Camera c in cameras)
+        {
+            c.clearFlags = flags;
+        }
+    }
+
+    public void SetCameraBackgroundColor(Color color)
+    {
+
+        Camera[] cameras = GetComponentsInChildren<Camera>();
+        foreach (Camera c in cameras)
+        {
+            c.backgroundColor = color;
         }
     }
 
@@ -166,5 +204,29 @@ public class CAVE2CameraController : MonoBehaviour {
     public void SetGenerateGetReal3DCamera(bool enabled)
     {
         generateGetReal3DCamera = enabled;
+    }
+
+    public void RestoreDefaultCameraCullingMask()
+    {
+        if (defaultCameraCullingMaskSet)
+        {
+            Camera[] cameras = GetComponentsInChildren<Camera>();
+            foreach (Camera c in cameras)
+            {
+                c.cullingMask = defaultMainCameraCullingMask;
+            }
+        }
+    }
+
+    public void RestoreDefaultCameraClearFlags()
+    {
+        if (defaultCameraClearFlagsSet)
+        {
+            Camera[] cameras = GetComponentsInChildren<Camera>();
+            foreach (Camera c in cameras)
+            {
+                c.clearFlags = defaultMainCameraClearFlags;
+            }
+        }
     }
 }

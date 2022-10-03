@@ -637,6 +637,11 @@ public class CAVE2ClusterManager : MonoBehaviour
         // SetPosition(newXPos, newYPos);
     }
 
+    public int GetWindowPositionID()
+    {
+        return myWindowPosID;
+    }
+
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR
     public struct Rect
     {
