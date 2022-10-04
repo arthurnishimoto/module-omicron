@@ -28,6 +28,8 @@
 using UnityEngine;
 using System.Collections;
 
+#if UNITY_2020_3_OR_NEWER
+#else
 #if USING_GETREAL3D
 public class CAVE2ClusterSpawnManager : getReal3D.MonoBehaviourWithRpc {
 #else
@@ -121,3 +123,4 @@ public class CAVE2ClusterSpawnManager : MonoBehaviour {
         }
     }
 }
+#endif

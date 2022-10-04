@@ -29,7 +29,78 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
+#if UNITY_2020_3_OR_NEWER
+public class CAVE2RPCManager : MonoBehaviour
+{
+    internal int cave2RPCCallCount;
+
+    internal void EnableMsgClient(bool v)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void EnableMsgServer(bool v)
+    {
+        //throw new NotImplementedException();
+    }
+
+    internal int GetConnID()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal bool IsReconnecting()
+    {
+        throw new NotImplementedException();
+    }
+
+    public enum MsgType { Reliable, Unreliable, StateUpdate };
+
+    public void Destroy(string targetObjectName)
+    {
+        
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)
+    {
+        
+    }
+}
+#else
 #pragma warning disable CS0618 // Type or member is obsolete
 
 #if USING_GETREAL3D
@@ -1719,3 +1790,4 @@ public class CAVE2RPCManager : MonoBehaviour {
 }
 
 #pragma warning restore CS0618 // Type or member is obsolete
+#endif
