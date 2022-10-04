@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
-    enum MenuMode { Hidden, Visible, Application, Tracking, Performance};
+    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display};
 
     [SerializeField]
     MenuMode initialMenuState = MenuMode.Hidden;
@@ -21,6 +21,9 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     [SerializeField]
     GameObject performancePanel;
+
+    [SerializeField]
+    GameObject displayPanel;
 
     [Header("Tracking System")]
     //[SerializeField]
@@ -88,6 +91,10 @@ public class HeadNodeDebugManager : MonoBehaviour
         {
             performancePanel.SetActive(false);
         }
+        if (displayPanel)
+        {
+            displayPanel.SetActive(false);
+        }
 
         switch (initialMenuState)
         {
@@ -113,6 +120,12 @@ public class HeadNodeDebugManager : MonoBehaviour
                 if (performancePanel)
                 {
                     performancePanel.SetActive(true);
+                }
+                break;
+            case (MenuMode.Display):
+                if (displayPanel)
+                {
+                    displayPanel.SetActive(true);
                 }
                 break;
         }
@@ -197,6 +210,19 @@ public class HeadNodeDebugManager : MonoBehaviour
             performancePanel.SetActive(true);
         }
     }
+
+    public void ToggleDisplayPanel()
+    {
+        if (displayPanel.activeSelf)
+        {
+            displayPanel.SetActive(false);
+        }
+        else
+        {
+            displayPanel.SetActive(true);
+        }
+    }
+
 
     public void SetServerIP(string serverIP)
     {
