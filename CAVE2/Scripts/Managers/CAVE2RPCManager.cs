@@ -30,20 +30,249 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Unity.Networking.Transport;
+using Unity.Collections;
+using UnityEngine.XR;
+using System.IO;
 
 #if UNITY_2020_3_OR_NEWER
 public class CAVE2RPCManager : MonoBehaviour
 {
     internal int cave2RPCCallCount;
 
-    internal void EnableMsgClient(bool v)
+    [Header("Message Server")]
+    [SerializeField]
+    bool useMsgServer;
+
+    [SerializeField]
+    int serverListenPort = 9105;
+
+    private NetworkDriver m_ServerDriver;
+    private NativeList<NetworkConnection> m_Connections;
+
+    [Header("Message Client")]
+    [SerializeField]
+    bool useMsgClient;
+
+    [SerializeField]
+    string serverIP = null;
+
+    private NetworkDriver m_ClientDriver;
+    private NetworkConnection m_ClientConnection;
+    bool connectedToServer;
+
+    [Header("Debug")]
+    [SerializeField]
+    bool selfTestRoutine;
+
+    public void EnableMsgServer(bool value)
     {
-        throw new NotImplementedException();
+        if (selfTestRoutine)
+            return;
+
+        useMsgServer = value;
+        Debug.Log("MsgServer " + (value ? "enabled" : "disabled"));
     }
 
-    internal void EnableMsgServer(bool v)
+    public void EnableMsgClient(bool value)
     {
-        //throw new NotImplementedException();
+        if (selfTestRoutine)
+            return;
+
+        useMsgClient = value;
+        Debug.Log("MsgClient " + (value ? "enabled" : "disabled"));
+    }
+
+    private void Start()
+    {
+        if (selfTestRoutine)
+        {
+            RunSelfTest();
+        }
+
+        SetupNetworking();
+
+        if (useMsgServer)
+        {
+            StartNetServer();
+        }
+        if (useMsgClient)
+        {
+            StartNetClient();
+        }
+
+
+    }
+
+    private void SetupNetworking()
+    {
+
+    }
+
+    void RunSelfTest()
+    {
+        serverIP = "127.0.0.1";
+        serverListenPort = 9004;
+
+        useMsgServer = true;
+        useMsgClient = true;
+    }
+
+    private void StartNetServer()
+    {
+        m_ServerDriver = NetworkDriver.Create();
+        var endpoint = NetworkEndPoint.AnyIpv4;
+        endpoint.Port = (ushort)serverListenPort;
+        if (m_ServerDriver.Bind(endpoint) != 0)
+            Debug.Log("Failed to bind to port " + serverListenPort);
+        else
+            m_ServerDriver.Listen();
+
+        m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+
+        Debug.Log("Starting message server on port " + serverListenPort);
+    }
+
+    private void StartNetClient()
+    {
+        m_ClientDriver = NetworkDriver.Create();
+        m_ClientConnection = default(NetworkConnection);
+
+        NetworkEndPoint.TryParse(serverIP, (ushort)serverListenPort, out var endpoint);
+        m_ClientConnection = m_ClientDriver.Connect(endpoint);
+
+        Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
+    }
+
+    public void OnDestroy()
+    {
+        if (m_ServerDriver.IsCreated)
+        {
+            m_ServerDriver.Dispose();
+            m_Connections.Dispose();
+        }
+    }
+
+    private void Update()
+    {
+        if (useMsgServer)
+        {
+            UpdateServer();
+        }
+        if (useMsgClient)
+        {
+            UpdateClient();
+        }
+    }
+
+    private void UpdateServer()
+    {
+        m_ServerDriver.ScheduleUpdate().Complete();
+
+        // Clean up connections
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            if (!m_Connections[i].IsCreated)
+            {
+                m_Connections.RemoveAtSwapBack(i);
+                --i;
+            }
+        }
+
+        // Accept new connections
+        NetworkConnection c;
+        while ((c = m_ServerDriver.Accept()) != default(NetworkConnection))
+        {
+            m_Connections.Add(c);
+            Debug.Log("Msg Server: Client " + c.InternalId + " connected.");
+        }
+
+        DataStreamReader stream;
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            if (!m_Connections[i].IsCreated)
+                continue;
+
+            NetworkEvent.Type cmd;
+            while ((cmd = m_ServerDriver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
+            {
+                if (cmd == NetworkEvent.Type.Data)
+                {
+                }
+                else if (cmd == NetworkEvent.Type.Disconnect)
+                {
+                    Debug.Log("Msg Server: Client " + c.InternalId + " disconnected.");
+                    m_Connections[i] = default(NetworkConnection);
+                }
+            }
+        }
+    }
+
+    private void UpdateClient()
+    {
+        m_ClientDriver.ScheduleUpdate().Complete();
+
+        if (!m_ClientConnection.IsCreated)
+        {
+            if (!connectedToServer)
+                Debug.Log("Msg Client: Failed to create connection.");
+            return;
+        }
+        DataStreamReader stream;
+        NetworkEvent.Type cmd;
+        while ((cmd = m_ClientConnection.PopEvent(m_ClientDriver, out stream)) != NetworkEvent.Type.Empty)
+        {
+            if (cmd == NetworkEvent.Type.Connect)
+            {
+                Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
+                connectedToServer = true;
+            }
+            else if (cmd == NetworkEvent.Type.Data)
+            {
+                uint msgType = stream.ReadUInt();
+                FixedString32Bytes targetGameObject = stream.ReadFixedString32();
+                FixedString32Bytes targetFunction = stream.ReadFixedString32();
+                uint paramCount = stream.ReadUInt();
+
+                switch (msgType)
+                {
+                    case (201):
+                        SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream));
+                        break;
+                    case (202):
+                        SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream));
+                        break;
+                    case (203):
+                        SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                        break;
+                    case (204):
+                        SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                        break;
+                    case (205):
+                        SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                        break;
+                    case (207):
+                        SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                        break;
+                    case (216):
+                        SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
+                            , ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
+                            );
+                        break;
+                    default:
+                        Debug.Log("Unhandled msgType: " + msgType);
+                        break;
+                }
+
+
+
+            }
+            else if (cmd == NetworkEvent.Type.Disconnect)
+            {
+                Debug.Log("Msg Client: Disconnected from server.");
+                m_ClientConnection = default(NetworkConnection);
+            }
+        }
     }
 
     internal int GetConnID()
@@ -58,46 +287,464 @@ public class CAVE2RPCManager : MonoBehaviour
 
     public enum MsgType { Reliable, Unreliable, StateUpdate };
 
+    /*
+    void ServerSendToClient(int clientId, short messageID, MessageBase msg, MsgType msgType = MsgType.Reliable)
+    {
+        int channelId = reliableChannelId;
+        switch (msgType)
+        {
+            case (MsgType.Reliable): channelId = reliableChannelId; break;
+            case (MsgType.Unreliable): channelId = unreliableChannelId; break;
+            case (MsgType.StateUpdate): channelId = stateUpdateChannelId; break;
+        }
+
+        if (clientIDs.Contains(clientId))
+        {
+            NetworkWriter networkWriter = new NetworkWriter();
+            networkWriter.StartMessage(messageID);
+            networkWriter.Write(msg);
+
+            networkWriter.FinishMessage();
+
+            byte[] writerData = networkWriter.AsArray();
+
+            byte error;
+            NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+            nPacketsSent++;
+        }
+        else
+        {
+            Debug.LogWarning("Unknown client ID: " + clientId);
+        }
+    }
+    */
+
+    enum ObjectTypeID { Object, EnumInt32, Vector3, Vector2, Single, Boolean, String, Quaternion };
+
+    private ObjectTypeID ObjectToTypeID(object obj)
+    {
+        if (obj is System.Enum || obj is System.Int32)
+        {
+            return ObjectTypeID.EnumInt32;
+        }
+        else if (obj is Vector3)
+        {
+            return ObjectTypeID.Vector3;
+        }
+        else if (obj is Vector2)
+        {
+            return ObjectTypeID.Vector2;
+        }
+        else if (obj is System.Single)
+        {
+            return ObjectTypeID.Single;
+        }
+        else if (obj is System.Boolean)
+        {
+            return ObjectTypeID.Boolean;
+        }
+        else if (obj is System.String)
+        {
+            return ObjectTypeID.String;
+        }
+        else if (obj is Quaternion)
+        {
+            return ObjectTypeID.Quaternion;
+        }
+
+        return ObjectTypeID.Object;
+    }
+
+    private string TypeToString(object obj)
+    {
+        if (obj is System.Enum || obj is System.Int32)
+        {
+            return "Int32";
+        }
+        else if (obj is Vector3)
+        {
+            return "Vector3";
+        }
+        else if (obj is Vector2)
+        {
+            return "Vector2";
+        }
+        else if (obj is System.Single)
+        {
+            return "Single";
+        }
+        else if (obj is System.Boolean)
+        {
+            return "Boolean";
+        }
+        else if (obj is System.String)
+        {
+            return "String";
+        }
+        else if (obj is Quaternion)
+        {
+            return "Quaternion";
+        }
+
+        return "OBJECT";
+    }
+    private void ParamToByte(NetworkDriver writer, object param, string typeOverride = null)
+    {
+        /*
+        if (typeOverride == null)
+        {
+            writer.Write(TypeToString(param));
+        }
+
+        if (param is System.Enum || param is System.Int32)
+        {
+            writer.Write((int)param);
+        }
+        else if (param is Vector3)
+        {
+            writer.Write((Vector3)param);
+        }
+        else if (param is Vector2)
+        {
+            writer.Write((Vector2)param);
+        }
+        else if (param is System.Single)
+        {
+            writer.Write((System.Single)param);
+        }
+        else if (param is System.Boolean)
+        {
+            writer.Write((System.Boolean)param);
+        }
+        else if (param is System.String)
+        {
+            writer.Write((System.String)param);
+        }
+        else if (param is Quaternion)
+        {
+            writer.Write((Quaternion)param);
+        }
+        else
+        {
+            Debug.LogWarning("CAVE2RPCManager: Unknown param " + TypeToString(param));
+        }
+        */
+    }
+
     public void Destroy(string targetObjectName)
     {
-        
+
     }
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
     {
+        throw new NotImplementedException();
     }
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
     {
+        throw new NotImplementedException();
+    }
+
+    private DataStreamWriter WriteObject(object param, DataStreamWriter writer)
+    {
+        writer.WriteUInt((uint)ObjectToTypeID(param));
+
+        if (ObjectToTypeID(param) == ObjectTypeID.EnumInt32)
+        {
+            writer.WriteInt((int)param);
+        }
+        else if (ObjectToTypeID(param) == ObjectTypeID.Vector3)
+        {
+            Vector3 vector3 = (Vector3)param;
+            writer.WriteFloat(vector3.x);
+            writer.WriteFloat(vector3.y);
+            writer.WriteFloat(vector3.z);
+        }
+        else if (ObjectToTypeID(param) == ObjectTypeID.Vector2)
+        {
+            Vector2 vector2 = (Vector2)param;
+            writer.WriteFloat(vector2.x);
+            writer.WriteFloat(vector2.y);
+        }
+        else if (ObjectToTypeID(param) == ObjectTypeID.Single)
+        {
+            writer.WriteFloat((Single)param);
+        }
+        else if (ObjectToTypeID(param) == ObjectTypeID.Boolean)
+        {
+            writer.WriteInt((int)param);
+        }
+        else if (ObjectToTypeID(param) == ObjectTypeID.String)
+        {
+            writer.WriteFixedString32((string)param);
+        }
+        else if (ObjectToTypeID(param) == ObjectTypeID.Quaternion)
+        {
+            Quaternion quaternion = (Quaternion)param;
+            writer.WriteFloat(quaternion.x);
+            writer.WriteFloat(quaternion.y);
+            writer.WriteFloat(quaternion.z);
+            writer.WriteFloat(quaternion.w);
+        }
+        return writer;
+    }
+
+    private object ReadObject(DataStreamReader reader)
+    {
+        uint objectType = reader.ReadUInt();
+        ObjectTypeID objectTypeID = (ObjectTypeID)objectType;
+
+        switch (objectTypeID)
+        {
+            case (ObjectTypeID.EnumInt32):
+                return reader.ReadInt();
+            case (ObjectTypeID.Vector3):
+                Vector3 vector3;
+                vector3.x = reader.ReadFloat();
+                vector3.y = reader.ReadFloat();
+                vector3.z = reader.ReadFloat();
+                return vector3;
+            case (ObjectTypeID.Vector2):
+                Vector2 vector2;
+                vector2.x = reader.ReadFloat();
+                vector2.y = reader.ReadFloat();
+                return vector2;
+            case (ObjectTypeID.Single):
+                return reader.ReadFloat();
+            case (ObjectTypeID.Boolean):
+                return reader.ReadInt();
+            case (ObjectTypeID.String):
+                return reader.ReadFixedString32();
+            case (ObjectTypeID.Quaternion):
+                Quaternion quaternion;
+                quaternion.x = reader.ReadFloat();
+                quaternion.y = reader.ReadFloat();
+                quaternion.z = reader.ReadFloat();
+                quaternion.w = reader.ReadFloat();
+                return quaternion;
+            default:
+                return null;
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
     {
+        uint paramCount = 1;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(201); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+
+            m_ServerDriver.EndSend(writer);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
     {
+        uint paramCount = 2;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(202); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+            writer = WriteObject(param2, writer);
+
+            m_ServerDriver.EndSend(writer);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
     {
+        uint paramCount = 3;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(203); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+            writer = WriteObject(param2, writer);
+            writer = WriteObject(param3, writer);
+
+            m_ServerDriver.EndSend(writer);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
     {
+        uint paramCount = 4;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(204); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+            writer = WriteObject(param2, writer);
+            writer = WriteObject(param3, writer);
+            writer = WriteObject(param4, writer);
+
+            m_ServerDriver.EndSend(writer);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
     {
+        uint paramCount = 5;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(205); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+            writer = WriteObject(param2, writer);
+            writer = WriteObject(param3, writer);
+            writer = WriteObject(param4, writer);
+            writer = WriteObject(param5, writer);
+
+            m_ServerDriver.EndSend(writer);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
     {
+        uint paramCount = 7;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(207); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+            writer = WriteObject(param2, writer);
+            writer = WriteObject(param3, writer);
+            writer = WriteObject(param4, writer);
+            writer = WriteObject(param5, writer);
+            writer = WriteObject(param6, writer);
+            writer = WriteObject(param7, writer);
+
+            m_ServerDriver.EndSend(writer);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)
     {
-        
+        uint paramCount = 16;
+
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
+            writer.WriteUInt(216); // MessageType
+            writer.WriteFixedString32(targetObjectName);
+            writer.WriteFixedString32(methodName);
+            writer.WriteUInt(paramCount); // ParamCount
+
+            writer = WriteObject(param, writer);
+            writer = WriteObject(param2, writer);
+            writer = WriteObject(param3, writer);
+            writer = WriteObject(param4, writer);
+            writer = WriteObject(param5, writer);
+            writer = WriteObject(param6, writer);
+            writer = WriteObject(param7, writer);
+            writer = WriteObject(param8, writer);
+            writer = WriteObject(param9, writer);
+            writer = WriteObject(param10, writer);
+            writer = WriteObject(param11, writer);
+            writer = WriteObject(param12, writer);
+            writer = WriteObject(param13, writer);
+            writer = WriteObject(param14, writer);
+            writer = WriteObject(param15, writer);
+            writer = WriteObject(param16, writer);
+            m_ServerDriver.EndSend(writer);
+        }
+    }
+
+    public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if(targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, param);
+        }
+    }
+
+    public void SendCAVE2RPC2(string targetObjectName, string methodName, object param, object param2)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if (targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, new object[] { param, param2 });
+        }
+    }
+
+    public void SendCAVE2RPC3(string targetObjectName, string methodName, object param, object param2, object param3)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if (targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, new object[] { param, param2, param3 });
+        }
+    }
+
+    public void SendCAVE2RPC4(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if (targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, new object[] { param, param2, param3, param4 });
+        }
+    }
+
+    public void SendCAVE2RPC5(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if (targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5});
+        }
+    }
+
+    public void SendCAVE2RPC7(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if (targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 });
+        }
+    }
+
+    public void SendCAVE2RPC16(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16)
+    {
+        GameObject targetGameObject = GameObject.Find(targetObjectName);
+        if (targetGameObject != null)
+        {
+            targetGameObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 });
+        }
     }
 }
 #else
