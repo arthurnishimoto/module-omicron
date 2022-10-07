@@ -5,7 +5,7 @@ using UnityEngine;
 public class HeadNodeDisplayModePanel : MonoBehaviour
 {
     [SerializeField]
-    int buttonID;
+    int buttonID = 0;
 
     // Start is called before the first frame update
     void Start()

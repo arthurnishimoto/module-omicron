@@ -66,8 +66,8 @@ public class CAVE2InputManager : OmicronEventClient
     public KeyCode simulatorFlyUp = KeyCode.R;
     public KeyCode simulatorFlyDown = KeyCode.F;
 
-    [SerializeField]
-    bool disableGetReal3DControllerInput = false;
+    // [SerializeField]
+    // bool disableGetReal3DControllerInput = false;
 
     [Header("Simulator Mocap Mapping")]
     public KeyCode simulatorHeadRotateL = KeyCode.Q;
