@@ -62,7 +62,7 @@ public class CAVE2ClusterSpawnManager : MonoBehaviour {
 
 
                     NetworkedVRPlayerManager netPlayer = g.GetComponent<NetworkedVRPlayerManager>();
-                    getReal3D.RpcManager.call("UpdateNetworkPlayerRPC", netID, netPlayer.playerPosition, netPlayer.playerRotation, netPlayer.headPosition, netPlayer.headRotation);
+                    CallRpc("UpdateNetworkPlayerRPC", netID, netPlayer.playerPosition, netPlayer.playerRotation, netPlayer.headPosition, netPlayer.headRotation);
 
                 }
 #endif
@@ -83,7 +83,7 @@ public class CAVE2ClusterSpawnManager : MonoBehaviour {
         if (!spawnedPlayerList.ContainsKey(netID))
         {
 #if USING_GETREAL3D
-            getReal3D.RpcManager.call("SpawnNetworkPlayerRPC", netID, player.playerName, player.playerType);
+            CallRpc("SpawnNetworkPlayerRPC", netID, player.playerName, player.playerType);
 #endif
             Debug.Log("Added " + netID + " to list");
             spawnedPlayerList.Add(netID, source);
