@@ -7,6 +7,9 @@ public class HeadNodeDisplayModePanel : MonoBehaviour
     [SerializeField]
     int buttonID = 0;
 
+    [SerializeField]
+    ColorSelectorUI colorSelector = null;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +27,10 @@ public class HeadNodeDisplayModePanel : MonoBehaviour
                 break;
             case (CAVE2RemoteDisplayManager.DisplayMode.Overlay_Black):
                 cameraController.GetComponent<CAVE2RemoteDisplayManager>().SetDisplayBlack(buttonID);
+                break;
+            case (CAVE2RemoteDisplayManager.DisplayMode.Overlay_Custom):
+                Color customColor = colorSelector.GetOutputColor();
+                cameraController.GetComponent<CAVE2RemoteDisplayManager>().SetDisplayCustom(buttonID, customColor);
                 break;
         }
         

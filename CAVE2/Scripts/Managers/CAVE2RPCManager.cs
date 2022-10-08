@@ -923,6 +923,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             return "Quaternion";
         }
+        else if (obj is Color)
+        {
+            return "Color";
+        }
 
         return "OBJECT";
     }
@@ -961,6 +965,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         else if (param is Quaternion)
         {
             writer.Write((Quaternion)param);
+        }
+        else if (param is Color)
+        {
+            writer.Write((Color)param);
         }
         else
         {
@@ -1017,6 +1025,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         else if (type == "Quaternion")
         {
             return networkReader.ReadQuaternion();
+        }
+        else if (type == "Color")
+        {
+            return networkReader.ReadColor();
         }
         else
         {
