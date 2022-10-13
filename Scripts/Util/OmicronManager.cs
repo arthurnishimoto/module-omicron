@@ -601,6 +601,15 @@ public class OmicronManager : MonoBehaviour
 
                     e.posz = cave2X;
                     e.posx = -cave2Z;
+
+                    Vector3 euler = new Quaternion(e.orx, e.ory, e.orz, e.orw).eulerAngles;
+                    euler.y += 90;
+
+                    Quaternion newQ = Quaternion.Euler(euler);
+                    e.orx = -newQ.x;
+                    e.ory = newQ.y;
+                    e.orz = -newQ.z;
+                    e.orw = newQ.w;
                 }
 
                 // If Continuum tracking system is calibrated as main wall display out as +Z and 3D wall out as +X
