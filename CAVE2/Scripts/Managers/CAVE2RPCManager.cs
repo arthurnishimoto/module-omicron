@@ -50,10 +50,10 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField] int connID;
 
     HashSet<int> clientIDs = new HashSet<int>();
-
+#if USING_GETREAL3D
     [SerializeField]
     bool useGetReal3DRPC = true;
-
+#endif
     [Header("Message Server")]
     [SerializeField]
     bool useMsgServer;
@@ -164,13 +164,13 @@ public class CAVE2RPCManager : MonoBehaviour {
     public void EnableMsgServer(bool value)
     {
         useMsgServer = value;
-        Debug.Log("MsgServer " + (value ? "enabled" : "disabled"));
+        // Debug.Log("MsgServer " + (value ? "enabled" : "disabled"));
     }
 
     public void EnableMsgClient(bool value)
     {
         useMsgClient = value;
-        Debug.Log("MsgClient " + (value ? "enabled" : "disabled"));
+        // Debug.Log("MsgClient " + (value ? "enabled" : "disabled"));
     }
 
     private void Start()
@@ -923,6 +923,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             return "Quaternion";
         }
+        else if (obj is Color)
+        {
+            return "Color";
+        }
 
         return "OBJECT";
     }
@@ -961,6 +965,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         else if (param is Quaternion)
         {
             writer.Write((Quaternion)param);
+        }
+        else if (param is Color)
+        {
+            writer.Write((Color)param);
         }
         else
         {
@@ -1017,6 +1025,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         else if (type == "Quaternion")
         {
             return networkReader.ReadQuaternion();
+        }
+        else if (type == "Color")
+        {
+            return networkReader.ReadColor();
         }
         else
         {

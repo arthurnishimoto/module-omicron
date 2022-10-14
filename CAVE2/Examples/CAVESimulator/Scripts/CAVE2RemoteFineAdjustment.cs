@@ -27,7 +27,7 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     int currentDisplayIndex = 0;
 
     [SerializeField]
-    Transform currentDisplay;
+    Transform currentDisplay = null;
 
     [SerializeField]
     float translateIncrement = 0.01f;
@@ -40,22 +40,22 @@ public class CAVE2RemoteFineAdjustment : MonoBehaviour
     float displayAngularOffset = 179.5f;
 
     [SerializeField]
-    bool applyAngularOffset;
+    bool applyAngularOffset = false;
 
     VRDisplayManager vrDisplayManager;
 
     [Header("Load/Save Config")]
     [SerializeField]
-    bool applySavedOffsets;
+    bool applySavedOffsets = false;
 
     [SerializeField]
-    bool outputDisplayTransformToFile;
+    bool outputDisplayTransformToFile = false;
 
     string jsonPath = "Assets/Resources/cave2SimDisplayTransform";
 
     [Header("Debug")]
     [SerializeField]
-    Text uiText;
+    Text uiText = null;
 
     // Start is called before the first frame update
     void Start()

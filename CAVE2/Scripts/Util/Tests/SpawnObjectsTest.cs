@@ -5,13 +5,13 @@ using UnityEngine;
 public class SpawnObjectsTest : MonoBehaviour
 {
     [SerializeField]
-    GameObject prefabObject;
+    GameObject prefabObject = null;
 
     [SerializeField]
     float spawnDelay = 0.05f;
 
     [SerializeField]
-    int remainingSpawnCount;
+    int remainingSpawnCount = 0;
 
     // Start is called before the first frame update
     void Start()

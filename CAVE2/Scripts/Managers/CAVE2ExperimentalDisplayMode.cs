@@ -46,13 +46,13 @@ public class CAVE2ExperimentalDisplayMode : MonoBehaviour
 
     [Header("Modified Scripts")]
     [SerializeField]
-    CAVE2ClusterManager clusterManager;
+    CAVE2ClusterManager clusterManager = null;
 
     [SerializeField]
-    CAVE2RPCManager rpcManager;
+    CAVE2RPCManager rpcManager = null;
 
     [SerializeField]
-    CAVE2CameraController cameraController;
+    CAVE2CameraController cameraController = null;
 
     // Update is called once per frame
     void Update()

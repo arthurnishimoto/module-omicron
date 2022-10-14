@@ -30,7 +30,12 @@ public class CAVE2RemoteDisplayManager : MonoBehaviour
         int nodeID;
         int displayID;
 
-        if (buttonID < 4) // Backwall
+        if (buttonID == -1) // All
+        {
+            nodeID = -1;
+            displayID = -1;
+        }
+        else if (buttonID < 4) // Backwall
         {
             nodeID = buttonID / 4;
             displayID = buttonID % 4;
@@ -62,6 +67,15 @@ public class CAVE2RemoteDisplayManager : MonoBehaviour
         CAVE2.SendMessage(gameObject.name, "SetDisplayMode", nodeID, displayID, DisplayMode.Overlay_Black);
     }
 
+    public void SetDisplayCustom(int buttonID, Color color)
+    {
+        int[] nodeDisplayIDs = ButtonToNodeDisplayIDs(buttonID);
+        int nodeID = nodeDisplayIDs[0];
+        int displayID = nodeDisplayIDs[1];
+
+        CAVE2.SendMessage(gameObject.name, "SetDisplayMode", nodeID, displayID, DisplayMode.Overlay_Custom, color);
+    }
+
     void SetDisplayMode(object[] param)
     {
         int nodeID = (int)param[0];
@@ -70,7 +84,13 @@ public class CAVE2RemoteDisplayManager : MonoBehaviour
 
         CAVE2ClusterManager cluster = CAVE2.GetCAVE2Manager().GetComponent<CAVE2ClusterManager>();
 
-        if(CheckNodeID(nodeID) && cluster.GetWindowPositionID() == displayID)
+        if(mode == DisplayMode.Overlay_Custom)
+        {
+            Debug.Log("Color " + (Color)param[3]);
+        }
+
+        bool allNodes = (nodeID == -1 && displayID == -1);
+        if(allNodes || (CheckNodeID(nodeID) && cluster.GetWindowPositionID() == displayID))
         {
             CAVE2CameraController cameraController = CAVE2.GetCameraController();
             switch(mode)
@@ -82,6 +102,12 @@ public class CAVE2RemoteDisplayManager : MonoBehaviour
                 case (DisplayMode.Overlay_Black):
                     cameraController.SetCameraClearFlags(CameraClearFlags.SolidColor);
                     cameraController.SetCameraBackgroundColor(Color.black);
+                    cameraController.SetCameraCullingMask(0);
+                    break;
+                case (DisplayMode.Overlay_Custom):
+                    Color color = (Color)param[3];
+                    cameraController.SetCameraClearFlags(CameraClearFlags.SolidColor);
+                    cameraController.SetCameraBackgroundColor(color);
                     cameraController.SetCameraCullingMask(0);
                     break;
             }

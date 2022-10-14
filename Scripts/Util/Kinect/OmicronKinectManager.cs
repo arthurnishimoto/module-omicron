@@ -102,7 +102,7 @@ public class OmicronKinectManager : OmicronEventClient {
 			debugText += "\nMin confidence: "+minimumSpeechConfidence.ToString("F2");
 			//Debug.Log("Received Speech: '" + speechString + "' at " +speechConfidence+ " confidence" );
 #if USING_GETREAL3D
-			getReal3D.RpcManager.call("SetHUDSpeechDebugText",debugText);
+			CallRpc("SetHUDSpeechDebugText",debugText);
 #endif
 			if( speechConfidence >= minimumSpeechConfidence )
 			{

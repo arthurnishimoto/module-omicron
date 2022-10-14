@@ -22,13 +22,13 @@ public class PixelSpaceRaycast : MonoBehaviour
     bool wandPointing;
 
     [SerializeField]
-    GameObject wandPointingHit;
+    GameObject wandPointingHit = null;
 
     [SerializeField]
     Vector2 displayHitOffset;
 
     [SerializeField]
-    LineRenderer laserLine;
+    LineRenderer laserLine = null;
 
     Vector3 wandOffset;
 

@@ -99,18 +99,18 @@ public class CAVE2TransformSync : MonoBehaviour {
      * Exactly what Sync action is taken is determined using the UpdateMode variable.
      */
     [SerializeField]
-    bool useAdvancedClusterSync;
+    bool useAdvancedClusterSync = false;
 
     int syncingDisplayNode = 1;
 
     [SerializeField]
-    UnityEngine.UI.Text advSyncDebugText;
+    UnityEngine.UI.Text advSyncDebugText = null;
 
     Dictionary<int, Vector3> clusterPositions = new Dictionary<int, Vector3>();
     Dictionary<int, Vector3> clusterRotations = new Dictionary<int, Vector3>();
 
     float advUpdateTimer;
-    float advUpdateTime = 0.1f;
+
 
     public void Update()
     {

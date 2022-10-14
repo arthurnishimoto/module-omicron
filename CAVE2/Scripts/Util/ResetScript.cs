@@ -5,10 +5,10 @@ using UnityEngine;
 public class ResetScript : MonoBehaviour
 {
     [SerializeField]
-    MonoBehaviour targetScript;
+    MonoBehaviour targetScript = null;
 
     [SerializeField]
-    bool enableReset;
+    bool enableReset = false;
 
     [SerializeField]
     float resetStartDelay = 2;
@@ -17,7 +17,7 @@ public class ResetScript : MonoBehaviour
     float resetWaitDuration = 2;
 
     [SerializeField]
-    float resetTimer;
+    float resetTimer = 0;
 
     // Update is called once per frame
     void Update()

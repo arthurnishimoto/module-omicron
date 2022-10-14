@@ -36,13 +36,13 @@ using System.Collections;
 public class HMDDisplay : CAVE2Display
 {
     [SerializeField]
-    bool applyHeadOffsetToScreenPosition;
+    bool applyHeadOffsetToScreenPosition = false;
 
     [SerializeField]
-    Transform head2;
+    Transform head2 = null;
 
     [SerializeField]
-    bool otherTrackedPerspective;
+    bool otherTrackedPerspective = false;
 
     [SerializeField]
     Vector3 screenOffset = Vector3.zero;
@@ -55,10 +55,10 @@ public class HMDDisplay : CAVE2Display
 
     [Header("Debug Analysis")]
     [SerializeField]
-    Vector3 headLocation;
+    Vector3 headLocation = Vector3.zero;
 
     [SerializeField]
-    Vector3 head2Location;
+    Vector3 head2Location = Vector3.zero;
 
     // Update is called once per frame
     void Update () {

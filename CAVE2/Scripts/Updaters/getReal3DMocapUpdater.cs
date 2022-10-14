@@ -6,11 +6,11 @@ public class getReal3DMocapUpdater : MonoBehaviour {
     public string sensorName;
 
     // Offset to tracking data (ex. object pivot vs tracking marker center)
-    [SerializeField] Vector3 posOffset;
-    [SerializeField] Vector3 rotOffset;
+    [SerializeField] Vector3 posOffset = Vector3.zero;
+    [SerializeField] Vector3 rotOffset = Vector3.zero;
 
     [SerializeField]
-    bool useLateUpdate;
+    bool useLateUpdate = false;
 
     // Use this for initialization
     void Start () {
