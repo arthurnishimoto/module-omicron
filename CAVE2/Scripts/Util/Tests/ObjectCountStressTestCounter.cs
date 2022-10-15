@@ -183,7 +183,19 @@ public class ObjectCountStressTestCounter : MonoBehaviour
             ClearCurrentStats();
             testStage++;
         }
-        else if (testStage == 18 && testingTimer < 0) // End - Save to file
+        else if (testStage == 18 && testingTimer < 0) // 10000 Object Test
+        {
+            SaveCurrentStats();
+            testStage++;
+            testingTimer = 25;
+            tester.SetSpawnCount(2000);
+        }
+        else if (testStage == 19 && testingTimer < 10)
+        {
+            ClearCurrentStats();
+            testStage++;
+        }
+        else if (testStage == 20 && testingTimer < 0) // End - Save to file
         {
             SaveCurrentStats();
             testStage++;
