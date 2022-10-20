@@ -157,7 +157,7 @@ public class CAVE2ClusterManager : MonoBehaviour
 
         if (debugUIText)
         {
-            debugUIText.text = CAVE2Manager.GetMachineName() + "\n";
+            debugUIText.text = CAVE2Manager.GetMachineName() + " as " + (CAVE2.IsMaster() ? "Head Node" : "Display Node") + "\n";
 
             Process currentProcess = Process.GetCurrentProcess();
             debugUIText.text += "My Process: '" + currentProcess.ProcessName + "' ID: '" + currentProcess.Id + "' Window title: '" + currentProcess.MainWindowTitle + "'\n";

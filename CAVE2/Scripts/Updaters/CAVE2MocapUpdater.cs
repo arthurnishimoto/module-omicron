@@ -55,6 +55,7 @@ public class CAVE2MocapUpdater : MonoBehaviour {
 
     [SerializeField]
     UnityEngine.UI.Text debugText;
+
     // Use this for initialization
     void Start () {
 	    if(usePredefined != PredefinedMocapSensors.None)
