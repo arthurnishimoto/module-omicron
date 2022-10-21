@@ -315,7 +315,7 @@ public class CAVE2ClusterManager : MonoBehaviour
             RemoteTerminal terminal = GameObject.Find("Terminal").GetComponent<RemoteTerminal>();
 
             terminal.PrintUI("Setting Camera Perspective for " + CAVE2Manager.GetMachineName() + " WindowID: " + myWindowPosID);
-            if (CAVE2Manager.GetMachineName() == "ORION") //Backwall
+            if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME) //Backwall
             {
                 // Backwall has a different stereo configuration
                 stereoCamera.SetStereoResolution(new Vector2(5440, 768));
@@ -351,7 +351,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-01")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME + "-01")
             {
                 switch (myWindowPosID)
                 {
@@ -393,7 +393,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-02")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME + "-02")
             {
                 switch (myWindowPosID)
                 {
@@ -435,7 +435,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-03")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME + "-03")
             {
                 switch (myWindowPosID)
                 {
@@ -477,7 +477,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-04")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME + "-04")
             {
                 switch (myWindowPosID)
                 {
@@ -519,7 +519,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-05")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME + "-05")
             {
                 switch (myWindowPosID)
                 {
@@ -561,7 +561,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-06")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME + "-06")
             {
                 switch (myWindowPosID)
                 {
@@ -603,7 +603,7 @@ public class CAVE2ClusterManager : MonoBehaviour
                         break;
                 }
             }
-            else if (CAVE2Manager.GetMachineName() == "ORION-WIN")
+            else if (CAVE2Manager.GetMachineName() == CAVE2.HEAD_NODE_NAME)
             {
                 switch (myWindowPosID)
                 {

@@ -31,6 +31,9 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
+    public static string HEAD_NODE_NAME = "CAVE2MASTER";
+    public static string DISPLAY_NODE_NAME = "ORION";
+
     static float CAVE2_RADIUS = 3.240f;
     static float CAVE2_FLOOR_TO_BOTTOM_DISPLAY = 0.293f;
     static float CAVE2_DISPLAY_W_BORDER_HEIGHT = 0.581f;
@@ -710,8 +713,6 @@ static CAVE2Manager CAVE2Manager_Instance;
     CAVE2InputManager inputManager;
 
     static string machineName;
-    static string masterNodeName = "ORION-WIN";
-    static string displayNodeName = "ORION";
 
     public int head1MocapID = 0;
     public int wand1MocapID = 1;
@@ -1095,7 +1096,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 #if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 #else
-        if (machineName.Contains(displayNodeName) && !machineName.Equals(masterNodeName))
+        if (machineName.Contains(CAVE2.DISPLAY_NODE_NAME) && !machineName.Equals(CAVE2.HEAD_NODE_NAME))
             return false;
         else // Assumes master or development machine
             return true;
@@ -1117,7 +1118,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains(displayNodeName) && !IsMaster())
+        if (machineName.Contains(CAVE2.DISPLAY_NODE_NAME) && !IsMaster())
         {
             return true;
         }
@@ -1133,7 +1134,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains(masterNodeName) )
+        if (machineName.Contains(CAVE2.HEAD_NODE_NAME) )
         {
             return true;
         }
