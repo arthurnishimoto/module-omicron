@@ -6,12 +6,13 @@ public class getReal3DHeadUpdater : MonoBehaviour
 #if USING_GETREAL3D
     // Offset to tracking data (ex. object pivot vs tracking marker center)
     [SerializeField]
-    Vector3 posOffset;
-    [SerializeField]
-    Vector3 rotOffset;
+    Vector3 posOffset = Vector3.zero;
 
     [SerializeField]
-    bool useLateUpdate;
+    Vector3 rotOffset = Vector3.zero;
+
+    [SerializeField]
+    bool useLateUpdate = false;
 
     // Use this for initialization
     void Start()

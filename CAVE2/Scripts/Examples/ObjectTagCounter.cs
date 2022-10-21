@@ -6,10 +6,10 @@ using UnityEngine.UI;
 public class ObjectTagCounter : MonoBehaviour
 {
     [SerializeField]
-    new string tag;
+    new string tag = "";
 
     [SerializeField]
-    Text[] uiTextObjects;
+    Text[] uiTextObjects = null;
 
     // Start is called before the first frame update
     void Start()

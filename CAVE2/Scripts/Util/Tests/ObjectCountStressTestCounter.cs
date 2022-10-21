@@ -34,7 +34,7 @@ struct ObjectStressTestInfo
 public class ObjectCountStressTestCounter : MonoBehaviour
 {
     [SerializeField]
-    new string tag;
+    new string tag = "";
 
     int currentObjectCount;
     int lastObjectCount;
@@ -52,7 +52,7 @@ public class ObjectCountStressTestCounter : MonoBehaviour
     int fpsCount;
 
     [SerializeField]
-    Text textLog;
+    Text textLog = null;
 
     float time;
 
@@ -60,7 +60,7 @@ public class ObjectCountStressTestCounter : MonoBehaviour
 
     [Header("Automation")]
     [SerializeField]
-    bool enableAutoTest;
+    bool enableAutoTest = false;
 
     bool autoTestDone;
 
@@ -68,10 +68,10 @@ public class ObjectCountStressTestCounter : MonoBehaviour
     int testStage = 0;
 
     [SerializeField]
-    SpawnObjectsTest tester;
+    SpawnObjectsTest tester = null;
 
     [SerializeField]
-    Text mainConsoleDebugText;
+    Text mainConsoleDebugText = null;
 
     float testingTimer;
 
@@ -183,7 +183,19 @@ public class ObjectCountStressTestCounter : MonoBehaviour
             ClearCurrentStats();
             testStage++;
         }
-        else if (testStage == 18 && testingTimer < 0) // End - Save to file
+        else if (testStage == 18 && testingTimer < 0) // 10000 Object Test
+        {
+            SaveCurrentStats();
+            testStage++;
+            testingTimer = 25;
+            tester.SetSpawnCount(2000);
+        }
+        else if (testStage == 19 && testingTimer < 10)
+        {
+            ClearCurrentStats();
+            testStage++;
+        }
+        else if (testStage == 20 && testingTimer < 0) // End - Save to file
         {
             SaveCurrentStats();
             testStage++;

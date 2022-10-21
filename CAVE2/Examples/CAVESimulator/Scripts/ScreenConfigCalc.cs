@@ -387,7 +387,7 @@ public class ScreenConfigCalc : MonoBehaviour {
                     UnityEditor.AssetDatabase.SaveAssets();
                     UnityEditor.AssetDatabase.Refresh();
 
-                    UnityEditor.PrefabUtility.CreatePrefab("Assets/Resources/CAVE2/CAVE2ScreenMask.prefab", screenMask);
+                    UnityEditor.PrefabUtility.SaveAsPrefabAsset(screenMask, "Assets/Resources/CAVE2/CAVE2ScreenMask.prefab");
                 }
 #endif
             }

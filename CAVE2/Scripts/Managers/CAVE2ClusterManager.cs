@@ -42,17 +42,17 @@ public class CAVE2ClusterManager : MonoBehaviour
     CAVE2RPCManager rpcManager = null;
 
     [SerializeField]
-    bool enableScreenManagement;
+    bool enableScreenManagement = false;
 
     bool windowAssignmentDone;
 
     int myWindowPosID;
 
     [SerializeField]
-    bool useCAVE2GeneralizedPerspectiveProjection;
+    bool useCAVE2GeneralizedPerspectiveProjection = false;
 
     [SerializeField]
-    Transform headTracker;
+    Transform headTracker = null;
 
     int headTrackerID = -1;
 
@@ -64,29 +64,29 @@ public class CAVE2ClusterManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField]
-    Text currentHeadTrackerText;
+    Text currentHeadTrackerText = null;
 
     [SerializeField]
-    Text currentHeadTrackerTransformText;
+    Text currentHeadTrackerTransformText = null;
 
     [Header("Debug")]
     [SerializeField]
-    bool showDebugTextOnDisplayNodes;
+    bool showDebugTextOnDisplayNodes = false;
 
     [SerializeField]
     Text debugUIText = null;
 
     [SerializeField]
-    InputField displayWidthUI;
+    InputField displayWidthUI = null;
 
     [SerializeField]
-    InputField displayHeightUI;
+    InputField displayHeightUI = null;
 
     [SerializeField]
-    InputField displayPosXUI;
+    InputField displayPosXUI = null;
 
     [SerializeField]
-    InputField displayPosYUI;
+    InputField displayPosYUI = null;
 
     Display mainDisplay;
 
@@ -157,7 +157,7 @@ public class CAVE2ClusterManager : MonoBehaviour
 
         if (debugUIText)
         {
-            debugUIText.text = CAVE2Manager.GetMachineName() + "\n";
+            debugUIText.text = CAVE2Manager.GetMachineName() + " as " + (CAVE2.IsMaster() ? "Head Node" : "Display Node") + "\n";
 
             Process currentProcess = Process.GetCurrentProcess();
             debugUIText.text += "My Process: '" + currentProcess.ProcessName + "' ID: '" + currentProcess.Id + "' Window title: '" + currentProcess.MainWindowTitle + "'\n";

@@ -5,64 +5,80 @@ using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
-    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display};
+    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display, Debug};
 
     [SerializeField]
     MenuMode initialMenuState = MenuMode.Hidden;
+
+    [SerializeField]
+    bool showDebugOnHeadNode = false;
+
+    [SerializeField]
+    Text debugText;
+
+    [SerializeField]
+    bool showDisplayNodeDebugOnStartup = false;
 
     Canvas mainCanvas;
 
     [Header("Menu Panels")]
     [SerializeField]
-    GameObject applicationPanel;
+    GameObject mainMenuPanel = null;
 
     [SerializeField]
-    GameObject trackingSystemPanel;
+    GameObject applicationPanel = null;
 
     [SerializeField]
-    GameObject performancePanel;
+    GameObject trackingSystemPanel = null;
 
     [SerializeField]
-    GameObject displayPanel;
+    GameObject performancePanel = null;
+
+    [SerializeField]
+    GameObject displayPanel = null;
+
+    [SerializeField]
+    GameObject debugPanel = null;
 
     [Header("Tracking System")]
     //[SerializeField]
     //Button trackingSystemButton;
 
     [SerializeField]
-    Toggle connectToServer;
+    Toggle connectToServer = null;
 
     [SerializeField]
-    InputField serverIP;
+    InputField serverIP = null;
 
     [SerializeField]
-    Text connectionStatus;
+    Text connectionStatus = null;
 
     [SerializeField]
-    InputField msgPort;
+    InputField msgPort = null;
 
     [SerializeField]
-    InputField dataPort;
+    InputField dataPort = null;
 
     [SerializeField]
-    Text primaryHeadTrackerPosRot;
+    Text primaryHeadTrackerPosRot = null;
 
     [SerializeField]
-    Toggle continuum3DMode;
+    Toggle continuum3DMode = null;
 
     [SerializeField]
-    Toggle continuumMainMode;
+    Toggle continuumMainMode = null;
 
-    OmicronManager omicronManager;
+    OmicronManager omicronManager = null;
 
     // FPS
     [SerializeField]
-    Text fpsText;
+    Text fpsText = null;
 
     [SerializeField]
-    Text timeText;
+    Text timeText = null;
 
     ObjectCountStressTestCounter fpsCounter;
+    bool displayNodeTextEnabled;
 
     // Start is called before the first frame update
     void Start()
@@ -94,6 +110,10 @@ public class HeadNodeDebugManager : MonoBehaviour
         if (displayPanel)
         {
             displayPanel.SetActive(false);
+        }
+        if (debugPanel)
+        {
+            debugPanel.SetActive(false);
         }
 
         switch (initialMenuState)
@@ -128,8 +148,22 @@ public class HeadNodeDebugManager : MonoBehaviour
                     displayPanel.SetActive(true);
                 }
                 break;
+            case (MenuMode.Debug):
+                if (debugPanel)
+                {
+                    debugPanel.SetActive(true);
+                }
+                break;
         }
-        
+
+        if (CAVE2.IsMaster())
+        {
+            debugText.enabled = showDebugOnHeadNode;
+            if (showDisplayNodeDebugOnStartup)
+            {
+                ToggleDisplayNodeDebugTextFromHeadNode();
+            }
+        }
     }
 
     // Update is called once per frame
@@ -223,6 +257,18 @@ public class HeadNodeDebugManager : MonoBehaviour
         }
     }
 
+    public void ToggleDebugPanel()
+    {
+        if (debugPanel.activeSelf)
+        {
+            debugPanel.SetActive(false);
+        }
+        else
+        {
+            debugPanel.SetActive(true);
+        }
+    }
+
 
     public void SetServerIP(string serverIP)
     {
@@ -259,5 +305,32 @@ public class HeadNodeDebugManager : MonoBehaviour
     public void ToggleContinuumMainMode(bool toggle)
     {
         omicronManager.continuumMainInvertX = toggle;
+    }
+
+    public void ShowDisplayNodeDebugText(bool value)
+    {
+        if (CAVE2.OnCAVE2Display())
+        {
+            if (value)
+            {
+                mainCanvas.enabled = true;
+                mainMenuPanel.SetActive(false);
+            }
+            else
+            {
+                mainCanvas.enabled = false;
+                mainMenuPanel.SetActive(false);
+            }
+        }
+        else
+        {
+            debugText.enabled = value;
+        }
+    }
+
+    public void ToggleDisplayNodeDebugTextFromHeadNode()
+    {
+        displayNodeTextEnabled = !displayNodeTextEnabled;
+        CAVE2.SendMessage(gameObject.name, "ShowDisplayNodeDebugText", displayNodeTextEnabled);
     }
 }

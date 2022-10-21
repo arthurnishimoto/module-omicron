@@ -64,7 +64,7 @@ public class OMenuManager : MonoBehaviour {
     AudioSource audioSource;
 
     [SerializeField]
-    UnityEngine.UI.Text debugText;
+    UnityEngine.UI.Text debugText = null;
 
     // Use this for initialization
     void Start () {

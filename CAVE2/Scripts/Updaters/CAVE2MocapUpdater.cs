@@ -43,6 +43,19 @@ public class CAVE2MocapUpdater : MonoBehaviour {
     [SerializeField]
     bool useLateUpdate = false;
 
+    [Header("Debug")]
+    [SerializeField]
+    bool trackUpdateLatency;
+
+    [SerializeField]
+    float updateLatency;
+
+    float updateTimer;
+    float updateEvents;
+
+    [SerializeField]
+    UnityEngine.UI.Text debugText;
+
     // Use this for initialization
     void Start () {
 	    if(usePredefined != PredefinedMocapSensors.None)
@@ -58,6 +71,25 @@ public class CAVE2MocapUpdater : MonoBehaviour {
             transform.localPosition = CAVE2.GetMocapPosition(sourceID) + posOffset;
             transform.localRotation = CAVE2.GetMocapRotation(sourceID);
             transform.Rotate(rotOffset);
+
+            if(trackUpdateLatency)
+            {
+                updateEvents++;
+                updateTimer += Time.deltaTime;
+
+                if(updateTimer > 5 && updateEvents > 0)
+                {
+                    updateLatency = updateTimer / updateEvents;
+                    updateTimer = 0;
+                    updateEvents = 0;
+
+                    if(debugText)
+                    {
+                        debugText.text = updateLatency.ToString();
+                    }
+                }
+
+            }
         }
     }
 
