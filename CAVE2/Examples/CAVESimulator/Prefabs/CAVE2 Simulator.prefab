@@ -140,11 +140,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   headTrackedUser: {fileID: 4198047386713456}
+  headTrackedUserLeftEye: {fileID: 1977512262373659596}
+  headTrackedUserRightEye: {fileID: 1336858971768078734}
   virtualHead: {fileID: 4959953398282788}
   displayAngularOffset: 179.5
-  virtualCameraCullingMask:
+  hideScreenBorders: 0
+  VRDisplayMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
+  vrCameraClearFlag: 1
+  vrCameraBGColor: {r: 0.1921569, g: 0.3019608, b: 0.4745098, a: 1}
+  regenerateDisplays: 0
 --- !u!1 &1079611420036434
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,12 +213,13 @@ MonoBehaviour:
   trackingOrigin: {fileID: 0}
   angleOffset: 0.01
   simulateDisplays: 0
+  generateScreenMask: 0
+  stereoView: 0
   floorMaterial: {fileID: 2100000, guid: bc6ee1c2a9632344eb8cec23144d958c, type: 2}
   floorRenderMode: 0
   nodeArrangement: 0
   nodeName: lyra
   outputConfig: 2
-  generateScreenMaskAsset: 0
 --- !u!1 &1249030342865852
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,12 +344,13 @@ MonoBehaviour:
   trackingOrigin: {fileID: 0}
   angleOffset: 0
   simulateDisplays: 0
+  generateScreenMask: 0
+  stereoView: 0
   floorMaterial: {fileID: 2100000, guid: bc6ee1c2a9632344eb8cec23144d958c, type: 2}
   floorRenderMode: 0
   nodeArrangement: 0
   nodeName: orion
   outputConfig: 2
-  generateScreenMaskAsset: 0
 --- !u!1 &1656618059279132
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,6 +462,7 @@ MonoBehaviour:
   screenLR: {x: 1.0215, y: 1.324, z: -0.085972}
   head: {fileID: 4198047386713456}
   virtualCamera: {fileID: 0}
+  headOffset: {x: 0, y: 0, z: 0}
   applyHeadOffset: 0
   invertHeadX: 0
   showScreenCorners: 0
@@ -605,6 +614,8 @@ Transform:
   m_Children:
   - {fileID: 4060883569491192}
   - {fileID: 4243851530079712}
+  - {fileID: 1977512262373659596}
+  - {fileID: 1336858971768078734}
   m_Father: {fileID: 4717200873372974}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -637,5 +648,65 @@ Transform:
   m_Children:
   - {fileID: 4852351941418588}
   m_Father: {fileID: 4936365985905482}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6744381045093563474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1977512262373659596}
+  m_Layer: 13
+  m_Name: EyeL
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1977512262373659596
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6744381045093563474}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0325, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4198047386713456}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8571846106951680205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1336858971768078734}
+  m_Layer: 13
+  m_Name: EyeR
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1336858971768078734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8571846106951680205}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0325, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4198047386713456}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

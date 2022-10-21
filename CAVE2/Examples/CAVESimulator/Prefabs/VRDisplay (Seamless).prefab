@@ -272,7 +272,8 @@ MonoBehaviour:
   renderTextureToVRCamera: 1
   useARMaterial: 0
   alwaysHideBorders: 0
-  useVRDisplayManagerCullingLayer: 1
+  useVRDisplayManagerCullingLayer: 0
+  useParentCullingLayer: 1
 --- !u!1 &1000011244772240
 GameObject:
   m_ObjectHideFlags: 0

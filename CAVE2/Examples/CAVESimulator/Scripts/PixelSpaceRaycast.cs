@@ -94,8 +94,8 @@ public class PixelSpaceRaycast : MonoBehaviour
                 }
                 else
                 {
-                    laserLine.startWidth = 0.02f * 2;
-                    laserLine.endWidth = 0.02f * 2;
+                    laserLine.startWidth = 0.02f * 4;
+                    laserLine.endWidth = 0.02f * 4;
                 }
 
                 laserLine.SetPosition(0, displayRay.origin + wandOffset + displayRay.direction * 4);

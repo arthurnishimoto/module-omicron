@@ -51,6 +51,10 @@ public class ScreenConfigCalc : MonoBehaviour {
 
     public ScreenMaskGeneration generateScreenMask;
 
+    public enum StereoscopicView { Mono, Left, Right };
+    [SerializeField]
+    StereoscopicView stereoView = StereoscopicView.Mono;
+
     [SerializeField]
     Material floorMaterial = null;
 
@@ -490,5 +494,10 @@ public class ScreenConfigCalc : MonoBehaviour {
     public void RegenerateDisplayWall()
     {
         regenerateDisplayWall = true;
+    }
+
+    public StereoscopicView GetStereoscopicView()
+    {
+        return stereoView;
     }
 }

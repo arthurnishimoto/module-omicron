@@ -25,7 +25,7 @@ public class DisplayInfo : MonoBehaviour {
 
         if (GetComponentInParent<VRDisplayManager>())
         {
-            trackingOrigin = GetComponentInParent<VRDisplayManager>().headTrackedUser.parent;
+            trackingOrigin = GetComponentInParent<VRDisplayManager>().GetHeadTrackedUser().parent;
             trackingOriginPos = trackingOrigin.position;
         }
     }
@@ -42,7 +42,7 @@ public class DisplayInfo : MonoBehaviour {
         // Convert from world space to local tracker space
         if (GetComponentInParent<VRDisplayManager>())
         {
-            trackingOrigin = GetComponentInParent<VRDisplayManager>().headTrackedUser.parent;
+            trackingOrigin = GetComponentInParent<VRDisplayManager>().GetHeadTrackedUser().parent;
             trackingOriginPos = trackingOrigin.position;
 
             Px_UpperLeft = Px_UpperLeft - trackingOriginPos;

@@ -53,7 +53,7 @@ public class CustomHMDPerspective : GeneralizedPerspectiveProjection {
         screenLL = displayInfo.Px_LowerLeft;
         screenLR = displayInfo.Px_LowerRight;
 
-        head = GetComponentInParent<VRDisplayManager>().headTrackedUser;
+        head = GetComponentInParent<VRDisplayManager>().GetHeadTrackedUser();
 
         vrCamera = new GameObject(gameObject.name + " (VR Camera)");
         vrCamera.transform.parent = GetComponentInParent<VRDisplayManager>().virtualHead;

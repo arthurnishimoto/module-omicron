@@ -3,7 +3,15 @@ using System.Collections;
 
 public class VRDisplayManager : MonoBehaviour {
 
-    public Transform headTrackedUser;
+    [SerializeField]
+    Transform headTrackedUser;
+
+    [SerializeField]
+    Transform headTrackedUserLeftEye;
+
+    [SerializeField]
+    Transform headTrackedUserRightEye;
+
     public Transform virtualHead;
     public float displayAngularOffset = 1;
 
@@ -49,5 +57,20 @@ public class VRDisplayManager : MonoBehaviour {
     {
         displayAngularOffset = offset;
         regenerateDisplays = true;
+    }
+
+    public Transform GetHeadTrackedUser()
+    {
+        return headTrackedUser;
+    }
+
+    public Transform GetHeadTrackedLeftEye()
+    {
+        return headTrackedUserLeftEye;
+    }
+
+    public Transform GetHeadTrackedRightEye()
+    {
+        return headTrackedUserRightEye;
     }
 }

@@ -30,6 +30,7 @@
 
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering;
 
 public class CAVE2Display : GeneralizedPerspectiveProjection {
 
@@ -60,6 +61,9 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     [SerializeField]
     bool useVRDisplayManagerCullingLayer = true;
 
+    [SerializeField]
+    bool useParentCullingLayer;
+
     RenderTexture cameraRT;
 
     // Use this for initialization
@@ -70,7 +74,9 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         screenLL = displayInfo.Px_LowerLeft;
         screenLR = displayInfo.Px_LowerRight;
 
-        head = GetComponentInParent<VRDisplayManager>().headTrackedUser;
+        head = GetComponentInParent<VRDisplayManager>().GetHeadTrackedUser();
+
+        
 
         vrCamera = new GameObject(gameObject.name + " (VR Camera)");
         vrCamera.transform.parent = GetComponentInParent<VRDisplayManager>().virtualHead;
@@ -80,6 +86,17 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
 
         virtualCamera.clearFlags = GetComponentInParent<VRDisplayManager>().vrCameraClearFlag;
         virtualCamera.backgroundColor = GetComponentInParent<VRDisplayManager>().vrCameraBGColor;
+
+        if (GetComponentInParent<ScreenConfigCalc>().GetStereoscopicView() == ScreenConfigCalc.StereoscopicView.Left)
+        {
+            SetEyeOffset(GetComponentInParent<VRDisplayManager>().GetHeadTrackedLeftEye().localPosition);
+            virtualCamera.backgroundColor = Color.red;
+        }
+        else if (GetComponentInParent<ScreenConfigCalc>().GetStereoscopicView() == ScreenConfigCalc.StereoscopicView.Right)
+        {
+            SetEyeOffset(GetComponentInParent<VRDisplayManager>().GetHeadTrackedRightEye().localPosition);
+            virtualCamera.backgroundColor = Color.blue;
+        }
 
         cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
         if (renderTextureToVRCamera)
@@ -109,8 +126,12 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         {
             displaySpace.gameObject.layer = GetComponentInParent<VRDisplayManager>().gameObject.layer;
         }
+        if (useParentCullingLayer)
+        {
+            displaySpace.gameObject.layer = transform.parent.gameObject.layer;
+        }
 
-        if(GetComponentInParent<VRDisplayManager>().hideScreenBorders)
+        if (GetComponentInParent<VRDisplayManager>().hideScreenBorders)
         {
             HideDisplayBorders();
         }
