@@ -62,6 +62,9 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     bool useVRDisplayManagerCullingLayer = true;
 
     [SerializeField]
+    bool stereoEyeTest = false;
+
+    [SerializeField]
     bool useParentCullingLayer;
 
     RenderTexture cameraRT;
@@ -90,12 +93,18 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         if (GetComponentInParent<ScreenConfigCalc>().GetStereoscopicView() == ScreenConfigCalc.StereoscopicView.Left)
         {
             SetEyeOffset(GetComponentInParent<VRDisplayManager>().GetHeadTrackedLeftEye().localPosition);
-            virtualCamera.backgroundColor = Color.red;
+            if (stereoEyeTest)
+            {
+                virtualCamera.backgroundColor = Color.red;
+            }
         }
         else if (GetComponentInParent<ScreenConfigCalc>().GetStereoscopicView() == ScreenConfigCalc.StereoscopicView.Right)
         {
             SetEyeOffset(GetComponentInParent<VRDisplayManager>().GetHeadTrackedRightEye().localPosition);
-            virtualCamera.backgroundColor = Color.blue;
+            if (stereoEyeTest)
+            {
+                virtualCamera.backgroundColor = Color.blue;
+            }
         }
 
         cameraRT = new RenderTexture((int)displayResolution.x, (int)displayResolution.y, 16);
