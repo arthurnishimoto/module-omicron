@@ -1096,6 +1096,7 @@ static CAVE2Manager CAVE2Manager_Instance;
 #if USING_GETREAL3D
 		return getReal3D.Cluster.isMaster;
 #else
+        machineName = GetMachineName();
         if (machineName.Contains(CAVE2.DISPLAY_NODE_NAME) && !machineName.Equals(CAVE2.HEAD_NODE_NAME))
             return false;
         else // Assumes master or development machine
