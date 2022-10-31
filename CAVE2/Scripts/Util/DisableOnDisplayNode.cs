@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class DisableOnDisplayNode : MonoBehaviour
 {
+    [SerializeField]
+    bool showInEditor;
+
     // Start is called before the first frame update
     void Start()
     {
         if(!CAVE2.IsMaster())
         {
             gameObject.SetActive(false);
-        }    
+        }
+#if UNITY_EDITOR
+        if(showInEditor)
+        {
+            gameObject.SetActive(true);
+        }
+#endif
     }
 }

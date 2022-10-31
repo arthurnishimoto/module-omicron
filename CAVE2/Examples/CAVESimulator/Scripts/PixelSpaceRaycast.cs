@@ -98,8 +98,16 @@ public class PixelSpaceRaycast : MonoBehaviour
                     laserLine.endWidth = 0.02f * 4;
                 }
 
-                laserLine.SetPosition(0, displayRay.origin + wandOffset + displayRay.direction * 4);
-                laserLine.SetPosition(1, displayRay.origin + wandOffset + displayRay.direction * 100);
+                // Draw line in CAVE2 sim mode - OLD
+                //laserLine.SetPosition(0, displayRay.origin + wandOffset + displayRay.direction * 4);
+                //laserLine.SetPosition(1, displayRay.origin + wandOffset + displayRay.direction * 100);
+
+                // Dont draw line in CAVE2 sim mode
+                laserLine.SetPosition(0, Vector3.zero);
+                laserLine.SetPosition(1, Vector3.zero);
+
+                // Use laser particle instead
+                ParticleSystem laserParticle = wand.GetComponent<CustomWandPointer>().laserParticle;
 
                 if (wandPointing) // The wand is pointed at a collider
                 {
@@ -111,6 +119,9 @@ public class PixelSpaceRaycast : MonoBehaviour
                     displayRayHit.collider.gameObject.SendMessage("OnWandPointing", playerInfo, SendMessageOptions.DontRequireReceiver);
 
                     CAVE2WandInteractor.ProcessButtons(wand.GetWandID(), displayRayHit.collider.gameObject, playerInfo);
+
+                    laserParticle.transform.position = hit.point;
+                    laserParticle.Emit(1);
                 }
                 else
                 {
