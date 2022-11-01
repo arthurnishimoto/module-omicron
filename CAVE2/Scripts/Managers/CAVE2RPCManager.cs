@@ -213,7 +213,16 @@ public class CAVE2RPCManager : MonoBehaviour {
         if(serverUpdateTimer > serverUpdateDataDelay)
         {
             // Periodically update clients with latest sensor list
-            CAVE2.SendMessage(gameObject.name, "UpdateOmicronSensorList", CAVE2.Input.GetSensorList(), CAVE2.Input.GetWandControllerList());
+            // Replacing this string[] since getReal3D RPC dosen't support parameter of type string[]?
+            //CAVE2.SendMessage(gameObject.name, "UpdateOmicronSensorList", CAVE2.Input.GetSensorList(), CAVE2.Input.GetWandControllerList());
+            foreach (string sensor in CAVE2.Input.GetSensorList())
+            {
+                CAVE2.SendMessage(gameObject.name, "UpdateOmicronSensor", sensor);
+            }
+            foreach (string wand in CAVE2.Input.GetWandControllerList())
+            {
+                CAVE2.SendMessage(gameObject.name, "UpdateOmicronController", wand);
+            }
             serverUpdateTimer = 0;
         }
         else

@@ -371,6 +371,43 @@ public class CAVE2InputManager : OmicronEventClient
         return sensorList;
     }
 
+    public void UpdateOmicronSensor(string s)
+    {
+        string[] nameStr = s.Split(' ');
+        int id = -1;
+        if (int.TryParse(nameStr[1], out id))
+        {
+            if (!mocapSensors.ContainsKey(id))
+            {
+                GameObject g = new GameObject("OmicronMocapSensor " + id);
+                g.transform.parent = transform;
+                OmicronMocapSensor newSensor = g.AddComponent<OmicronMocapSensor>();
+                newSensor.sourceID = id;
+
+                mocapSensors.Add(id, newSensor);
+            }
+        }
+    }
+
+    public void UpdateOmicronController(string s)
+    {
+        string[] nameStr = s.Split(' ');
+        int id = -1;
+        if (int.TryParse(nameStr[1], out id))
+        {
+            if (!wandControllers.ContainsKey(id))
+            {
+                GameObject g = new GameObject("OmicronController " + id);
+                g.transform.parent = transform;
+                OmicronController newSensor = g.AddComponent<OmicronController>();
+                newSensor.sourceID = id;
+
+                wandControllers.Add(id, newSensor);
+            }
+        }
+    }
+
+    /*
     public void UpdateOmicronSensorList(object[] param)
     {
         string[] sensors = (string[])param[0];
@@ -411,6 +448,7 @@ public class CAVE2InputManager : OmicronEventClient
             }
         }
     }
+    */
 
     public string[] GetWandControllerList()
     {
