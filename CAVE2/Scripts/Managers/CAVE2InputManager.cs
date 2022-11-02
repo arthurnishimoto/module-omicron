@@ -41,6 +41,8 @@ public class CAVE2InputManager : OmicronEventClient
     // float axisSensitivity = 1f;
 
     [Header("Simulator Input Mapping")]
+    public int wandIDMappedToSimulator = 1;
+
     // CAVE2 Simulator to Wand button bindings
     public string wandSimulatorAnalogUD = "Vertical";
     public string wandSimulatorAnalogLR = "Horizontal";
@@ -369,6 +371,43 @@ public class CAVE2InputManager : OmicronEventClient
         return sensorList;
     }
 
+    public void UpdateOmicronSensor(string s)
+    {
+        string[] nameStr = s.Split(' ');
+        int id = -1;
+        if (int.TryParse(nameStr[1], out id))
+        {
+            if (!mocapSensors.ContainsKey(id))
+            {
+                GameObject g = new GameObject("OmicronMocapSensor " + id);
+                g.transform.parent = transform;
+                OmicronMocapSensor newSensor = g.AddComponent<OmicronMocapSensor>();
+                newSensor.sourceID = id;
+
+                mocapSensors.Add(id, newSensor);
+            }
+        }
+    }
+
+    public void UpdateOmicronController(string s)
+    {
+        string[] nameStr = s.Split(' ');
+        int id = -1;
+        if (int.TryParse(nameStr[1], out id))
+        {
+            if (!wandControllers.ContainsKey(id))
+            {
+                GameObject g = new GameObject("OmicronController " + id);
+                g.transform.parent = transform;
+                OmicronController newSensor = g.AddComponent<OmicronController>();
+                newSensor.sourceID = id;
+
+                wandControllers.Add(id, newSensor);
+            }
+        }
+    }
+
+    /*
     public void UpdateOmicronSensorList(object[] param)
     {
         string[] sensors = (string[])param[0];
@@ -409,6 +448,7 @@ public class CAVE2InputManager : OmicronEventClient
             }
         }
     }
+    */
 
     public string[] GetWandControllerList()
     {
@@ -587,7 +627,14 @@ public class CAVE2InputManager : OmicronEventClient
 
             mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
 
-            wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+            if (wandIDMappedToSimulator == 1)
+            {
+                wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+            }
+            else
+            {
+                wand2MocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+            }
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
         {
@@ -777,11 +824,22 @@ public class CAVE2InputManager : OmicronEventClient
         
         if ( (!CAVE2.UsingOmicronServer() && !CAVE2.IsSimulatorMode()) || CAVE2.GetCAVE2Manager().keyboardEventEmulation || UnityEngine.XR.XRSettings.enabled || (CAVE2.UsingOmicronServer() && !omicronManager.WandEventsEnabled()))
         {
-            wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
-            wandController.rawFlags = wand1_flags;
+            if (wandIDMappedToSimulator == 1)
+            {
+                wandController.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
+                wandController.rawFlags = wand1_flags;
 
-            wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
-            wandController2.rawFlags = wand2_flags;
+                wandController2.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
+                wandController2.rawFlags = wand2_flags;
+            }
+            else
+            {
+                wandController2.UpdateAnalog(wand1_analog1, wand1_analog2, wand1_analog3, Vector2.zero);
+                wandController2.rawFlags = wand1_flags;
+
+                wandController.UpdateAnalog(wand2_analog1, wand2_analog2, wand2_analog3, Vector2.zero);
+                wandController.rawFlags = wand2_flags;
+            }
         }
 
         /*

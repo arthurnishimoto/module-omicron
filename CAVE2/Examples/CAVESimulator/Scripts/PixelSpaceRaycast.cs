@@ -32,6 +32,8 @@ public class PixelSpaceRaycast : MonoBehaviour
 
     Vector3 wandOffset;
 
+    ParticleSystem laserParticle;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -106,11 +108,14 @@ public class PixelSpaceRaycast : MonoBehaviour
                 laserLine.SetPosition(0, Vector3.zero);
                 laserLine.SetPosition(1, Vector3.zero);
 
-                // Use laser particle instead
-                ParticleSystem laserParticle = wand.GetComponent<CustomWandPointer>().laserParticle;
-                laserParticle.transform.position = hit.point;
-                laserParticle.Emit(1);
 
+                // Use laser particle instead
+                if (laserParticle != null)
+                {
+                    laserParticle.transform.position = hit.point;
+                    laserParticle.Emit(1);
+                }
+                
                 if (wandPointing) // The wand is pointed at a collider
                 {
                     CAVE2.WandEvent playerInfo = new CAVE2.WandEvent(wand.GetPlayerID(), wand.GetWandID(), CAVE2.Button.None, CAVE2.InteractionType.Pointing);
@@ -121,8 +126,6 @@ public class PixelSpaceRaycast : MonoBehaviour
                     displayRayHit.collider.gameObject.SendMessage("OnWandPointing", playerInfo, SendMessageOptions.DontRequireReceiver);
 
                     CAVE2WandInteractor.ProcessButtons(wand.GetWandID(), displayRayHit.collider.gameObject, playerInfo);
-
-                    
                 }
                 else
                 {
@@ -142,5 +145,10 @@ public class PixelSpaceRaycast : MonoBehaviour
     public void SetWandOffset(Vector3 offset)
     {
         wandOffset = offset;
+    }
+
+    public void SetLaserParticle(ParticleSystem particleSystem)
+    {
+        laserParticle = particleSystem;
     }
 }
