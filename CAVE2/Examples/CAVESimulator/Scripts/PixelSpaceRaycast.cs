@@ -108,6 +108,8 @@ public class PixelSpaceRaycast : MonoBehaviour
 
                 // Use laser particle instead
                 ParticleSystem laserParticle = wand.GetComponent<CustomWandPointer>().laserParticle;
+                laserParticle.transform.position = hit.point;
+                laserParticle.Emit(1);
 
                 if (wandPointing) // The wand is pointed at a collider
                 {
@@ -120,8 +122,7 @@ public class PixelSpaceRaycast : MonoBehaviour
 
                     CAVE2WandInteractor.ProcessButtons(wand.GetWandID(), displayRayHit.collider.gameObject, playerInfo);
 
-                    laserParticle.transform.position = hit.point;
-                    laserParticle.Emit(1);
+                    
                 }
                 else
                 {
