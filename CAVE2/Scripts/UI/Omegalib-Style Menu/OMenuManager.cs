@@ -30,6 +30,9 @@ using System.Collections;
 
 public class OMenuManager : MonoBehaviour {
 
+    [SerializeField]
+    bool openMenuOnStart;
+
     public int menuWandID = 1;
 
     public OMenu mainMenu;
@@ -75,7 +78,16 @@ public class OMenuManager : MonoBehaviour {
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.volume = 0.25f;
         }
-        
+     
+        if(openMenuOnStart)
+        {
+            if (CAVE2.IsMaster())
+            {
+                // Open menu on start, front and center
+                CAVE2.SendMessage(gameObject.name, "SetWandAngle", Vector3.zero);
+                mainMenu.ToggleMenu();
+            }
+        }
     }
 	
 	// Update is called once per frame
