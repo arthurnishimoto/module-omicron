@@ -128,7 +128,25 @@ public class OMenu : MonoBehaviour {
         {
             if (currentItem < menuItems.Length - 1 && menuItems[currentItem + 1].IsActive())
             {
-                MenuNextItemDown();
+                if (menuItems[currentItem + 1].IsInteractable())
+                {
+                    MenuNextItemDown();
+                }
+                else
+                {
+                    
+                    while(!menuItems[currentItem + 1].IsInteractable())
+                    {
+                        MenuNextItemDown();
+                        if (currentItem > menuItems.Length)
+                        {
+                            currentItem = 0;
+                            break;
+                        }
+                        MenuNextItemDown();
+                        currentItem++;
+                    }
+                }
                 CAVE2.SendMessage(gameObject.name, "MenuSetItem", currentItem);
             }
             else if (currentItem >= menuItems.Length - 1)
@@ -140,7 +158,25 @@ public class OMenu : MonoBehaviour {
         {
             if (currentItem > 0 && menuItems[currentItem - 1].IsActive())
             {
-                MenuNextItemUp();
+                if (menuItems[currentItem - 1].IsInteractable())
+                {
+                    MenuNextItemUp();
+                }
+                else
+                {
+
+                    while (!menuItems[currentItem - 1].IsInteractable())
+                    {
+                        MenuNextItemUp();
+                        if (currentItem < 0)
+                        {
+                            currentItem = menuItems.Length - 1;
+                            break;
+                        }
+                        MenuNextItemUp();
+                        currentItem--;
+                    }
+                }
                 CAVE2.SendMessage(gameObject.name, "MenuSetItem", currentItem);
             }
             else if (currentItem <= 0)
@@ -193,6 +229,11 @@ public class OMenu : MonoBehaviour {
         if (GetComponent<UndockMenu>() && GetComponent<UndockMenu>().undocked)
         {
             GetComponent<UndockMenu>().undocked = false;
+        }
+
+        if(menuManager == null)
+        {
+            menuManager = GetComponentInParent<OMenuManager>();
         }
 
         showMenu = !showMenu;
