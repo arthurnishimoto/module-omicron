@@ -273,6 +273,7 @@ MonoBehaviour:
   useARMaterial: 0
   alwaysHideBorders: 0
   useVRDisplayManagerCullingLayer: 0
+  stereoEyeTest: 0
   useParentCullingLayer: 1
 --- !u!1 &1000011244772240
 GameObject:

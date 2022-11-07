@@ -157,6 +157,11 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
         Destroy(virtualCamera.gameObject);
     }
 
+    public void SetCAVE2DisplayEnabled(bool value)
+    {
+        enabled = value;
+    }
+
     public void RemoveDisplayTexture()
     {
         Transform displaySpace = transform.Find("Borders/PixelSpace");
