@@ -116,6 +116,11 @@ public class HeadNodeDebugManager : MonoBehaviour
             debugPanel.SetActive(false);
         }
 
+        if (CAVE2.OnCAVE2Display())
+        {
+            initialMenuState = MenuMode.Hidden;
+        }
+
         switch (initialMenuState)
         {
             case (MenuMode.Hidden):
