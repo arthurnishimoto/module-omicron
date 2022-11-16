@@ -62,12 +62,18 @@ public class CAVE2ClusterManager : MonoBehaviour
     float updateInterval = 2;
     float updateTimer;
 
+    Dictionary<int, CAVE2ClientInfo> cave2Clients = new Dictionary<int, CAVE2ClientInfo>();
+    Dictionary<string, int> cave2ClientNames = new Dictionary<string, int>();
+
     [Header("UI")]
     [SerializeField]
     Text currentHeadTrackerText = null;
 
     [SerializeField]
     Text currentHeadTrackerTransformText = null;
+
+    [SerializeField]
+    Button[] clientStatusButtons;
 
     [Header("Debug")]
     [SerializeField]
@@ -738,4 +744,114 @@ public class CAVE2ClusterManager : MonoBehaviour
         return id;
     }
 #endif
+
+    public void AddClient(int connID, string hostname, string deviceType)
+    {
+        UnityEngine.Debug.Log("Client connected: " + connID + " " + hostname);
+        if(cave2Clients.ContainsKey(connID))
+        {
+            CAVE2ClientInfo clientInfo = cave2Clients[connID];
+            clientInfo.connectTime = Time.time;
+            clientInfo.connected = true;
+            clientInfo.assignedButton.GetComponent<Image>().color = Color.yellow;
+            clientInfo.assignedButton.GetComponentInChildren<Text>().text = hostname + " " + connID;
+        }
+        else
+        {
+            CAVE2ClientInfo clientInfo = new CAVE2ClientInfo();
+            clientInfo.connectTime = Time.time;
+            clientInfo.connected = true;
+            
+            clientInfo.hostName = hostname;
+
+            int clientID = 0;
+            int nodeID = -1;
+            if (hostname == "ORION-01")
+            {
+                nodeID = 0;
+            }
+            else if (hostname == "ORION-02")
+            {
+                nodeID = 1;
+            }
+            else if (hostname == "ORION-03")
+            {
+                nodeID = 2;
+            }
+            else if (hostname == "ORION-04")
+            {
+                nodeID = 3;
+            }
+            else if (hostname == "ORION-05")
+            {
+                nodeID = 4;
+            }
+            else if (hostname == "ORION-06")
+            {
+                nodeID = 5;
+            }
+
+            if (cave2ClientNames.ContainsKey(hostname))
+            {
+                clientID = cave2ClientNames[hostname] + 1;
+                cave2ClientNames[hostname] = clientID;
+            }
+            else
+            {
+                cave2ClientNames.Add(hostname, 0);
+            }
+
+            if (deviceType == "Android")
+            {
+                hostname = "ANDROID";
+                nodeID = 0;
+                clientID = 19;
+            }
+
+            if (deviceType == "WindowsEditor")
+            {
+                hostname = "LAPTOP";
+                nodeID = 0;
+                clientID = 20;
+            }
+
+            cave2Clients.Add(connID, clientInfo);
+
+            int buttonID = (nodeID * 3) + clientID;
+            if(buttonID >= 0 && buttonID < clientStatusButtons.Length)
+            {
+                clientInfo.assignedButton = clientStatusButtons[buttonID];
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("Client button index " + buttonID + " is not assigned!");
+            }
+            
+            clientInfo.assignedButton.GetComponent<Image>().color = Color.green;
+            clientInfo.assignedButton.GetComponentInChildren<Text>().text = hostname + " " + connID;
+        }
+    }
+
+    public void RemoveClient(int connID)
+    {
+        UnityEngine.Debug.Log("Client Disconneced: " + connID);
+
+        if (cave2Clients.ContainsKey(connID))
+        {
+            CAVE2ClientInfo clientInfo = cave2Clients[connID];
+            clientInfo.disconnectTime = Time.time;
+            clientInfo.connected = false;
+            clientInfo.assignedButton.GetComponent<Image>().color = Color.red;
+        }
+    }
+}
+
+public class CAVE2ClientInfo
+{
+    public int connID;
+    public string hostName;
+    public float connectTime;
+    public float disconnectTime;
+    public bool connected;
+    public Button assignedButton;
 }

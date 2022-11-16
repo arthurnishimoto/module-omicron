@@ -490,12 +490,14 @@ public class CAVE2RPCManager : MonoBehaviour {
     {
         LogUI("Msg Server: Client " + clientConnectionId + " disconnected.");
         clientIDs.Remove(clientConnectionId);
+        GetComponent<CAVE2ClusterManager>().RemoveClient(clientConnectionId);
     }
 
     void OnServerReceiveClientInfo(ClientInfoMsg msg)
     {
         LogUI("Msg Server: Client info " + msg.connID + ": " + msg.hostName + " (" + msg.deviceType + ")");
         LogUI("     Process ID: " + msg.processID);
+        GetComponent<CAVE2ClusterManager>().AddClient(msg.connID, msg.hostName, msg.deviceType);
     }
 
     void ClientOnConnect()
