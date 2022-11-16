@@ -31,7 +31,7 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
-    public static string HEAD_NODE_NAME = "CAVE2MASTER";
+    public static string HEAD_NODE_NAME = "ORION-WIN";
     public static string DISPLAY_NODE_NAME = "ORION";
 
     static float CAVE2_RADIUS = 3.240f;
