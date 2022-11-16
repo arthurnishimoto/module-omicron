@@ -27,6 +27,9 @@ public class VRDisplayManager : MonoBehaviour {
     [SerializeField]
     bool regenerateDisplays;
 
+    [SerializeField]
+    public bool alignmentDebugDisplays;
+
     private void Update()
     {
         if(hideScreenBorders && screenBorderState != 0)

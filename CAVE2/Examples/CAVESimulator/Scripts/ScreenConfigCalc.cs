@@ -180,6 +180,7 @@ public class ScreenConfigCalc : MonoBehaviour {
 
                 g.SendMessage("SetCAVE2DisplayEnabled", simulateDisplays, SendMessageOptions.DontRequireReceiver);
                 g.SendMessage("SetRowID", j, SendMessageOptions.DontRequireReceiver);
+                g.SendMessage("SetColumnID", (i - centerColumnOffset), SendMessageOptions.DontRequireReceiver);
 
                 g.name = "Display " + nodeNameLabel + currentNode + " " + j;
 
