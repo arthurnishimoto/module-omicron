@@ -31,7 +31,8 @@ using UnityEngine;
 
 public class CAVE2 : MonoBehaviour
 {
-    public static string HEAD_NODE_NAME = "ORION-WIN";
+    public static string HEAD_NODE_NAME = "CAVE2MASTER";
+    public static string HEAD_NODE_NAME_ALT = "ORION-WIN";
     public static string DISPLAY_NODE_NAME = "ORION";
 
     static float CAVE2_RADIUS = 3.240f;
@@ -1135,7 +1136,7 @@ static CAVE2Manager CAVE2Manager_Instance;
             return true;
 
         machineName = GetMachineName();
-        if (machineName.Contains(CAVE2.HEAD_NODE_NAME) )
+        if (machineName.Contains(CAVE2.HEAD_NODE_NAME) || machineName.Contains(CAVE2.HEAD_NODE_NAME_ALT))
         {
             return true;
         }
