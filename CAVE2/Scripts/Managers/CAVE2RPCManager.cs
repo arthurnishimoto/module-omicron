@@ -112,8 +112,8 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     bool clientConnectedToServer = false;
 
-    // [SerializeField]
-    // bool autoReconnect = true;
+    [SerializeField]
+    bool autoReconnect = true;
 
     // [SerializeField]
     // float autoReconnectDelay = 5;
@@ -456,6 +456,10 @@ public class CAVE2RPCManager : MonoBehaviour {
                     {
                         ServerOnClientDisconnect(recConnectionId);
                     }
+                    else
+                    {
+                        ClientOnDisconnect();
+                    }
                     break;
                 case NetworkEventType.BroadcastEvent:
                     Debug.Log("BroadcastEvent");
@@ -506,6 +510,17 @@ public class CAVE2RPCManager : MonoBehaviour {
         
         clientConnectedToServer = true;
         reconnectAttemptCount = 0;
+    }
+
+    void ClientOnDisconnect()
+    {
+        LogUI("Msg Client: Disconnected");
+        clientConnectedToServer = false;
+
+        if (autoReconnect)
+        {
+            StartNetClient();
+        }
     }
 
     void ClientOnDisconnect(NetworkMessage msg)
