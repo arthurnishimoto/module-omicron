@@ -81,7 +81,13 @@ public class VRDisplayManager : MonoBehaviour {
     {
         CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPC");
     }
+
     void ToggleVRDisplayCalibrationRPC()
+    {
+        CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPCToClients");
+    }
+
+    void ToggleVRDisplayCalibrationRPCToClients()
     {
         alignmentDebugDisplays = !alignmentDebugDisplays;
         regenerateDisplays = true;
