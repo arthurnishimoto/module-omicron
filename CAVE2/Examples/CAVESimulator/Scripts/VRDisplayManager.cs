@@ -76,4 +76,14 @@ public class VRDisplayManager : MonoBehaviour {
     {
         return headTrackedUserRightEye;
     }
+
+    public void ToggleVRDisplayCalibration()
+    {
+        CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPC");
+    }
+    void ToggleVRDisplayCalibrationRPC()
+    {
+        alignmentDebugDisplays = !alignmentDebugDisplays;
+        regenerateDisplays = true;
+    }
 }
