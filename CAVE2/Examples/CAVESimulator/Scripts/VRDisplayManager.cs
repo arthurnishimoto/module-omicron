@@ -84,12 +84,18 @@ public class VRDisplayManager : MonoBehaviour {
 
     void ToggleVRDisplayCalibrationRPC()
     {
-        CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPCToClients");
+        if (GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == true)
+        {
+            CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPCToClients");
+        }
     }
 
     void ToggleVRDisplayCalibrationRPCToClients()
     {
-        alignmentDebugDisplays = !alignmentDebugDisplays;
-        regenerateDisplays = true;
+        if (GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == false)
+        {
+            alignmentDebugDisplays = !alignmentDebugDisplays;
+            regenerateDisplays = true;
+        }
     }
 }
