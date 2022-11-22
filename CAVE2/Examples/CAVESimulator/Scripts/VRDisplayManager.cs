@@ -30,6 +30,11 @@ public class VRDisplayManager : MonoBehaviour {
     [SerializeField]
     public bool alignmentDebugDisplays;
 
+    [Header("UI")]
+    [SerializeField]
+    UnityEngine.UI.Button alignmentDebugButton;
+
+
     private void Update()
     {
         if(hideScreenBorders && screenBorderState != 0)
@@ -53,6 +58,11 @@ public class VRDisplayManager : MonoBehaviour {
         {
             GetComponentInChildren<ScreenConfigCalc>().RegenerateDisplayWall();
             regenerateDisplays = false;
+        }
+
+        if (alignmentDebugButton)
+        {
+            alignmentDebugButton.image.color = alignmentDebugDisplays ? Color.green : Color.white;
         }
     }
 
