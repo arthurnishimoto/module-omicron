@@ -56,7 +56,11 @@ public class VRDisplayManager : MonoBehaviour {
 
         if(regenerateDisplays)
         {
-            GetComponentInChildren<ScreenConfigCalc>().RegenerateDisplayWall();
+            ScreenConfigCalc[] screenCalcs = GetComponentsInChildren<ScreenConfigCalc>();
+            foreach(ScreenConfigCalc screenConfig in screenCalcs)
+            {
+                screenConfig.RegenerateDisplayWall();
+            }
             regenerateDisplays = false;
         }
 
@@ -104,6 +108,7 @@ public class VRDisplayManager : MonoBehaviour {
     {
         if (GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == false)
         {
+            GetComponent<DelayedTransformParent>().Reset();
             alignmentDebugDisplays = !alignmentDebugDisplays;
             regenerateDisplays = true;
         }
