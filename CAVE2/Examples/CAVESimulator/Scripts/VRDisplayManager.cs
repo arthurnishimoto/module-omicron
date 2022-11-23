@@ -30,6 +30,9 @@ public class VRDisplayManager : MonoBehaviour {
     [SerializeField]
     public bool alignmentDebugDisplays;
 
+    [SerializeField]
+    bool disableAlignmentDebugDisplay;
+
     [Header("UI")]
     [SerializeField]
     UnityEngine.UI.Button alignmentDebugButton;
@@ -106,7 +109,7 @@ public class VRDisplayManager : MonoBehaviour {
 
     void ToggleVRDisplayCalibrationRPCToClients()
     {
-        if (GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == false)
+        if (!disableAlignmentDebugDisplay && GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == false)
         {
             GetComponent<DelayedTransformParent>().Reset();
             alignmentDebugDisplays = !alignmentDebugDisplays;
