@@ -753,31 +753,37 @@ public class CAVE2ClusterManager : MonoBehaviour
         string displayName = hostname;
         int clientID = 0;
         int nodeID = -1;
-        bool cave2Node = true;
+        bool cave2Node = false;
 
         if (hostname == "ORION-01")
         {
             nodeID = 0;
+            cave2Node = true;
         }
         else if (hostname == "ORION-02")
         {
             nodeID = 1;
+            cave2Node = true;
         }
         else if (hostname == "ORION-03")
         {
             nodeID = 2;
+            cave2Node = true;
         }
         else if (hostname == "ORION-04")
         {
             nodeID = 3;
+            cave2Node = true;
         }
         else if (hostname == "ORION-05")
         {
             nodeID = 4;
+            cave2Node = true;
         }
         else if (hostname == "ORION-06")
         {
             nodeID = 5;
+            cave2Node = true;
         }
 
         if (deviceType == "Android")
@@ -785,7 +791,6 @@ public class CAVE2ClusterManager : MonoBehaviour
             displayName = "ANDROID";
             nodeID = 0;
             clientID = 19;
-            cave2Node = false;
         }
 
         if (deviceType == "WindowsEditor")
@@ -793,14 +798,20 @@ public class CAVE2ClusterManager : MonoBehaviour
             displayName = "LAPTOP";
             nodeID = 0;
             clientID = 20;
-            cave2Node = false;
         }
 
         if (deviceType == "WSAPlayerARM")
         {
-            displayName = "HOLOLENS";
+            displayName = "HOLOLENS 2";
             nodeID = 0;
             clientID = 18;
+        }
+
+        if (deviceType == "MetroPlayerX86")
+        {
+            displayName = "HOLOLENS 1";
+            nodeID = 0;
+            clientID = 19; // Replaces Android slot
             cave2Node = false;
         }
 
