@@ -802,14 +802,14 @@ public class CAVE2ClusterManager : MonoBehaviour
 
         if (deviceType == "WSAPlayerARM")
         {
-            displayName = "HOLOLENS 2";
+            displayName = "HOLOLENS-2";
             nodeID = 0;
             clientID = 18;
         }
 
         if (deviceType == "MetroPlayerX86")
         {
-            displayName = "HOLOLENS 1";
+            displayName = "HOLOLENS-1";
             nodeID = 0;
             clientID = 19; // Replaces Android slot
             cave2Node = false;
