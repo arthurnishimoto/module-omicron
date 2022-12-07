@@ -94,7 +94,7 @@ public class GeneralizedPerspectiveProjection : MonoBehaviour {
 
     // Update is called once per frame
     void LateUpdate () {
-        if (useProjection)
+        if (useProjection && virtualCamera.enabled)
         {
             Vector3 headLocalPos = head.localPosition;
             if(invertHeadX)
