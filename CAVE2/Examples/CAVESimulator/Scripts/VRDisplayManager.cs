@@ -93,27 +93,4 @@ public class VRDisplayManager : MonoBehaviour {
     {
         return headTrackedUserRightEye;
     }
-
-    public void ToggleVRDisplayCalibration()
-    {
-        CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPC");
-    }
-
-    void ToggleVRDisplayCalibrationRPC()
-    {
-        if (GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == true)
-        {
-            CAVE2.SendMessage(gameObject.name, "ToggleVRDisplayCalibrationRPCToClients");
-        }
-    }
-
-    void ToggleVRDisplayCalibrationRPCToClients()
-    {
-        if (!disableAlignmentDebugDisplay && GameObject.Find("PlatformManager").GetComponent<HoloLensSceneSettings>().UsingCAVE2() == false)
-        {
-            GetComponent<DelayedTransformParent>().Reset();
-            alignmentDebugDisplays = !alignmentDebugDisplays;
-            regenerateDisplays = true;
-        }
-    }
 }

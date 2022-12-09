@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-public class RemoteTerminal : LogFileGenerator
+public class RemoteTerminal : MonoBehaviour
 {
 
     [SerializeField]
@@ -111,27 +111,6 @@ public class RemoteTerminal : LogFileGenerator
         {
             terminalTextLog.gameObject.SetActive(showTerminalUIOnDisplayNode);
         }
-
-        logName = "TerminalLog";
-        SetFileName();
-    }
-
-    public override void StartLog(string logFilePath)
-    {
-        if (!loggingStarted)
-        {
-            SetFileName();
-            writer = new System.IO.StreamWriter(logFilePath + "/" + fileName, true);
-            loggingStarted = true;
-
-            Debug.Log("Logger " + logName + " started");
-            // WriteLine(GetDateTimeString() + " " + "LogStarted AppTime " + Time.time);
-        }
-    }
-
-    public void UpdateLog(string logText)
-    {
-        WriteLine(GetDateTimeString() + " " + Time.frameCount + " " + logText);
     }
 
     public void Update()
@@ -172,7 +151,6 @@ public class RemoteTerminal : LogFileGenerator
 
     public void PrintUI(object log)
     {
-        UpdateLog(log.ToString());
         terminalTextLog.text = "";
         terminalHistory.Add(log.ToString());
         if(terminalHistory.Count > 25)
