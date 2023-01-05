@@ -31,6 +31,9 @@ public class VRDisplayManager : MonoBehaviour {
     public bool alignmentDebugDisplays;
 
     [SerializeField]
+    public bool allowInactiveDisplayTimeout = false;
+
+    [SerializeField]
     bool disableAlignmentDebugDisplay;
 
     [Header("UI")]
