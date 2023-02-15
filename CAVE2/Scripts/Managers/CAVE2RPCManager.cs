@@ -146,6 +146,15 @@ public class CAVE2RPCManager : MonoBehaviour {
     float packetInTimer;
 
     [SerializeField]
+    int packetIntervalSec = 5;
+
+    [SerializeField]
+    int nPacketsSentLastInterval;
+
+    [SerializeField]
+    int nPacketsReceivedLastInterval;
+
+    [SerializeField]
     float clientReceiveRate;
 
     public void LogUI(string msg)
@@ -196,14 +205,16 @@ public class CAVE2RPCManager : MonoBehaviour {
             packetOutTimer += Time.deltaTime;
             packetInTimer += Time.deltaTime;
 
-            if (packetOutTimer > 5 && nPacketsSent > 0)
+            if (packetOutTimer >= packetIntervalSec && nPacketsSent > 0)
             {
+                nPacketsSentLastInterval = nPacketsSent;
                 clientSendRate = packetOutTimer / nPacketsSent;
                 packetOutTimer = 0;
                 nPacketsSent = 0;
             }
-            if (packetInTimer > 5 && nPacketsReceived > 0)
+            if (packetInTimer >= packetIntervalSec && nPacketsReceived > 0)
             {
+                nPacketsReceivedLastInterval = nPacketsReceived;
                 clientReceiveRate = packetInTimer / nPacketsReceived;
                 packetInTimer = 0;
                 nPacketsReceived = 0;
