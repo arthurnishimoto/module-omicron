@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using static UnityEngine.Application;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 public class RemoteTerminal : LogFileGenerator
@@ -75,6 +76,9 @@ public class RemoteTerminal : LogFileGenerator
 
     [Header("Debug")]
     [SerializeField]
+    bool showUnityConsoleMessages = false;
+
+    [SerializeField]
     bool showMessageDebug = false;
 
     [SerializeField]
@@ -114,6 +118,11 @@ public class RemoteTerminal : LogFileGenerator
 
         logName = "TerminalLog";
         SetFileName();
+
+        if(showUnityConsoleMessages)
+        {
+            Application.logMessageReceived += LogCallback;
+        }
     }
 
     public override void StartLog(string logFilePath)
@@ -191,6 +200,30 @@ public class RemoteTerminal : LogFileGenerator
                 secondaryTerminalText.text = terminalTextLog.text;
         }
         Debug.Log(log.ToString());
+    }
+
+    void LogCallback(string logString, string stackTrace, LogType type)
+    {
+        System.DateTime dateTime = System.DateTime.Now;
+        string timeString = "[" + dateTime.Hour.ToString("D2") + ":" + dateTime.Minute.ToString("D2") + ":" + dateTime.Second.ToString("D2") + "]";
+        string typeFlag = " ";
+        if (type == LogType.Log)
+        {
+            typeFlag = " ";
+        }
+        else if (type == LogType.Error)
+        {
+            typeFlag = "[E!] ";
+        }
+        else if (type == LogType.Warning)
+        {
+            typeFlag = "[W!] ";
+        }
+        else
+        {
+            typeFlag = "[!!] ";
+        }
+        PrintUI(timeString + " " + typeFlag + logString);
     }
 
     public void SetRemotePerspectiveUpdateAllowed(bool val)

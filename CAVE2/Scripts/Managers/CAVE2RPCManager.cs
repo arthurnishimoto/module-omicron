@@ -255,7 +255,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         NetworkTransport.Init(gConfig);
 
         ConnectionConfig config = new ConnectionConfig();
-        config.MaxSentMessageQueueSize = 256;
+
+        // Parameters to tweak to fix 'no free events in the pool' messages
+        //config.IsAcksLong = true;
+        //config.MaxSentMessageQueueSize = 256;
+        //config.FragmentSize = 1024;
+
         reliableChannelId = config.AddChannel(QosType.Reliable);
         unreliableChannelId = config.AddChannel(QosType.Unreliable);
         stateUpdateChannelId = config.AddChannel(QosType.StateUpdate);
