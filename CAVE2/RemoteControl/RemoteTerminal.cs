@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using static UnityEngine.Application;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 public class RemoteTerminal : LogFileGenerator
@@ -84,6 +83,19 @@ public class RemoteTerminal : LogFileGenerator
     [SerializeField]
     bool showTerminalUIOnDisplayNode = false;
 
+    // CollaborativeARVR specific analytics
+    int noFreeEventCount;
+
+    int lastCount;
+    bool lastCountLocked;
+    int groupCount;
+
+    float timeOfLastNoFreeEventMessage;
+
+    [Header("Analytics")]
+    [SerializeField]
+    Text noFreeEventAnalyticsText;
+
     public void Start()
     {
         server = new NetworkServerSimple();
@@ -159,6 +171,23 @@ public class RemoteTerminal : LogFileGenerator
 
         server.Update();
         UpdateTerminal();
+
+        if(noFreeEventAnalyticsText != null)
+        {
+            float timeSinceLastMsg = Time.time - timeOfLastNoFreeEventMessage;
+
+            if(timeSinceLastMsg > 2 && !lastCountLocked)
+            {
+                groupCount = noFreeEventCount - lastCount;
+                lastCount = noFreeEventCount;
+                lastCountLocked = true;
+            }
+
+            noFreeEventAnalyticsText.text = "'no free events'\nMessage Warnings:";
+            noFreeEventAnalyticsText.text += "\nTotal Count: " + noFreeEventCount;
+            noFreeEventAnalyticsText.text += "\nLast Group Count: " + groupCount;
+            noFreeEventAnalyticsText.text += "\nTime since last: " + (Time.time - timeOfLastNoFreeEventMessage).ToString("F2");
+        }
     }
     public void StartServer()
     {
@@ -222,6 +251,13 @@ public class RemoteTerminal : LogFileGenerator
         else
         {
             typeFlag = "[!!] ";
+        }
+
+        if(logString.Contains("no free events for message in the pool"))
+        {
+            noFreeEventCount++;
+            timeOfLastNoFreeEventMessage = Time.time;
+            lastCountLocked = false;
         }
         PrintUI(timeString + " " + typeFlag + logString);
     }
