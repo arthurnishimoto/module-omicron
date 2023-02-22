@@ -54,6 +54,9 @@ public class OmicronMocapSensor : OmicronEventClient
     [SerializeField]
     CAVE2RPCManager.MsgType sendDataMode = CAVE2RPCManager.MsgType.Unreliable;
 
+    [SerializeField]
+    bool streamToClientsEnabled = true;
+
     // Use this for initialization
     new void Start()
     {
@@ -91,7 +94,7 @@ public class OmicronMocapSensor : OmicronEventClient
 
     public void UpdateTransform(Vector3 pos, Quaternion rot)
     {
-        if (CAVE2.GetCAVE2Manager().sendTrackingData)
+        if (CAVE2.GetCAVE2Manager().sendTrackingData && streamToClientsEnabled)
         {
             CAVE2.SendMessage(gameObject.name, "SendTransformInfo", pos, rot, sendDataMode);
         }
@@ -135,5 +138,15 @@ public class OmicronMocapSensor : OmicronEventClient
     public float GetUpdateLatency()
     {
         return updateLatency;
+    }
+
+    public bool IsStreamToClientsEnabled()
+    {
+        return streamToClientsEnabled;
+    }
+
+    public void SetStreamToClients(bool enabled)
+    {
+        streamToClientsEnabled = enabled;
     }
 }
