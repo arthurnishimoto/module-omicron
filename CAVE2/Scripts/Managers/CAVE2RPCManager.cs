@@ -272,6 +272,12 @@ public class CAVE2RPCManager : MonoBehaviour {
         //config.MaxSentMessageQueueSize = 256;
         //config.FragmentSize = 1024;
 
+        // Default = 5 (percent), Recommended for wireless networks = 40 - 50 (percent)
+        config.NetworkDropThreshold = 40;
+        config.OverflowDropThreshold = 40;
+
+        config.DisconnectTimeout = 4000; // in ms (Default: 2000)
+
         reliableChannelId = config.AddChannel(QosType.Reliable);
         unreliableChannelId = config.AddChannel(QosType.Unreliable);
         stateUpdateChannelId = config.AddChannel(QosType.StateUpdate);
