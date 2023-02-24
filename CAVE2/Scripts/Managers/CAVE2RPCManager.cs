@@ -196,6 +196,17 @@ public class CAVE2RPCManager : MonoBehaviour {
         }
     }
 
+    public void SetDebugNetSpeed(bool enabled, int interval)
+    {
+        debugNetSpeed = enabled;
+        packetIntervalSec = interval;
+    }
+
+    public Vector4 GetDebugNetSpeed()
+    {
+        return new Vector4(clientSendRate, nPacketsSentLastInterval, clientReceiveRate, nPacketsReceivedLastInterval);
+    }
+
     private void Update()
     {
         UpdateNetwork();

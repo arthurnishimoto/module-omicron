@@ -183,7 +183,7 @@ public class RemoteTerminal : LogFileGenerator
                 lastCountLocked = true;
             }
 
-            noFreeEventAnalyticsText.text = "'no free events'\nMessage Warnings:";
+            noFreeEventAnalyticsText.text = "'no free events' Message Warnings:";
             noFreeEventAnalyticsText.text += "\nTotal Count: " + noFreeEventCount;
             noFreeEventAnalyticsText.text += "\nLast Group Count: " + groupCount;
             noFreeEventAnalyticsText.text += "\nTime since last: " + (Time.time - timeOfLastNoFreeEventMessage).ToString("F2");
