@@ -269,7 +269,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
         // Parameters to tweak to fix 'no free events in the pool' messages
         //config.IsAcksLong = true;
-        //config.MaxSentMessageQueueSize = 256;
+        config.MaxSentMessageQueueSize = 256;
         //config.FragmentSize = 1024;
 
         // Default = 5 (percent), Recommended for wireless networks = 40 - 50 (percent)
@@ -295,6 +295,14 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     private void StartNetClient()
     {
+        // CollaborativeARVR performance hack
+        if(CAVE2Manager.GetMachineName() == "ORION-01" ||
+            CAVE2Manager.GetMachineName() == "ORION-06"
+            )
+        {
+            return;
+        }
+
         LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
 
         byte error;
