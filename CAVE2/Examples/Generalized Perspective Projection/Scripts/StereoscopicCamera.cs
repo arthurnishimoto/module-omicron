@@ -180,6 +180,12 @@ public class StereoscopicCamera : MonoBehaviour {
                 update = false;
             }
         }
+
+        if (GetComponent<GeneralizedPerspectiveProjection>().enabled == false)
+        {
+            // Re-enable script for one update loop to prevent jittering
+            GetComponent<GeneralizedPerspectiveProjection>().enabled = true;
+        }
     }
 
     void SetupStereoCameras()
@@ -200,6 +206,9 @@ public class StereoscopicCamera : MonoBehaviour {
             // Disable head offset since eyes since we're calculating that above to include eye separation
             leftEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
             rightEye.GetComponent<GeneralizedPerspectiveProjection>().DisablePosition();
+
+            // Disable script for one update loop to prevent jittering
+            GetComponent<GeneralizedPerspectiveProjection>().enabled = false;
         }
 
         // Set the eye separation
