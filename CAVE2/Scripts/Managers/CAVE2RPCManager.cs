@@ -77,6 +77,8 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     int serverListenPort = 9105;
 
+    int serverListenPort2 = 26000;
+
     [SerializeField]
     int reliableChannelId;
 
@@ -299,7 +301,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void StartNetServer()
     {
         hostId = NetworkTransport.AddHost(topology, serverListenPort);
-        mocapStream_hostId = NetworkTransport.AddHost(topology, 26000);
+        mocapStream_hostId = NetworkTransport.AddHost(topology, serverListenPort2);
 
         LogUI("Starting message server on port " + serverListenPort);
     }
@@ -326,8 +328,15 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
         }
 
+        LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort2);
+
         mocapStream_hostId = NetworkTransport.AddHost(topology);
-        mocapStream_connID = NetworkTransport.Connect(mocapStream_hostId, serverIP, 26000, 0, out error);
+        mocapStream_connID = NetworkTransport.Connect(mocapStream_hostId, serverIP, serverListenPort2, 0, out error);
+
+        if (error != 0)
+        {
+            LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
+        }
 
         /*
         // Setup delegates
@@ -359,6 +368,10 @@ public class CAVE2RPCManager : MonoBehaviour {
 
             bool isClient = (connectionId == recConnectionId || mocapStream_connID == recConnectionId);
 
+            if(debugRPC)
+            {
+                Debug.Log("Received from: " + recHostId);
+            }
             switch (recData)
             {
                 case NetworkEventType.Nothing: break;
@@ -366,7 +379,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                     Debug.Log("ConnectEvent");
                     if (isClient)
                     {
-                        ClientOnConnect();
+                        ClientOnConnect(recHostId);
                     }
                     else
                     {
@@ -561,10 +574,17 @@ public class CAVE2RPCManager : MonoBehaviour {
         GetComponent<CAVE2ClusterManager>().AddClient(msg.connID, msg.hostName, msg.deviceType);
     }
 
-    void ClientOnConnect()
+    void ClientOnConnect(int recHostId)
     {
-        LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
-        
+        if (recHostId == 0)
+        {
+            LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort + " Host id: " + recHostId);
+        }
+        else if(recHostId == 1)
+        {
+            LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort2 + " Host id: " + recHostId);
+        }
+
         clientConnectedToServer = true;
         reconnectAttemptCount = 0;
     }
