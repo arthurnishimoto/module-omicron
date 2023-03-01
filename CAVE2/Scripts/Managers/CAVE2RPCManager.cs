@@ -49,6 +49,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     int connectionId;
     [SerializeField] int connID;
 
+    [SerializeField] int mocapStream_hostId;
+    [SerializeField] int mocapStream_connID;
+
     HashSet<int> clientIDs = new HashSet<int>();
 #if USING_GETREAL3D
     [SerializeField]
@@ -140,7 +143,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     float clientSendRate;
 
     int nPacketsSent;
+    int nPacketsSent_socket2;
     float packetOutTimer;
+    float packetOutTimer_socket2;
 
     int nPacketsReceived;
     float packetInTimer;
@@ -153,6 +158,9 @@ public class CAVE2RPCManager : MonoBehaviour {
 
     [SerializeField]
     int nPacketsReceivedLastInterval;
+
+    [SerializeField]
+    int nPacketsSentLastInterval_socket2;
 
     [SerializeField]
     float clientReceiveRate;
@@ -222,6 +230,8 @@ public class CAVE2RPCManager : MonoBehaviour {
                 clientSendRate = packetOutTimer / nPacketsSent;
                 packetOutTimer = 0;
                 nPacketsSent = 0;
+
+                nPacketsSentLastInterval_socket2 = nPacketsSent_socket2;
             }
             if (packetInTimer >= packetIntervalSec && nPacketsReceived > 0)
             {
@@ -289,6 +299,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void StartNetServer()
     {
         hostId = NetworkTransport.AddHost(topology, serverListenPort);
+        mocapStream_hostId = NetworkTransport.AddHost(topology, 26000);
 
         LogUI("Starting message server on port " + serverListenPort);
     }
@@ -314,6 +325,10 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
         }
+
+        mocapStream_hostId = NetworkTransport.AddHost(topology);
+        mocapStream_connID = NetworkTransport.Connect(mocapStream_hostId, serverIP, 26000, 0, out error);
+
         /*
         // Setup delegates
         clientOnReceiveOmicronSensorList += ClientOnReceiveOmicronSensorList;
@@ -342,7 +357,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             byte error;
             recData = NetworkTransport.Receive(out recHostId, out recConnectionId, out channelId, recBuffer, bufferSize, out dataSize, out error);
 
-            bool isClient = connectionId == recConnectionId;
+            bool isClient = (connectionId == recConnectionId || mocapStream_connID == recConnectionId);
 
             switch (recData)
             {
@@ -676,7 +691,15 @@ public class CAVE2RPCManager : MonoBehaviour {
             byte[] writerData = networkWriter.AsArray();
 
             byte error;
-            NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+
+            if (channelId == unreliableChannelId)
+            {
+                NetworkTransport.Send(mocapStream_hostId, clientId, channelId, writerData, writerData.Length, out error);
+            }
+            else
+            {
+                NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+            }
             nPacketsSent++;
         }
         else
@@ -723,7 +746,16 @@ public class CAVE2RPCManager : MonoBehaviour {
             foreach (int clientId in clientIDs)
             {
                 byte error;
-                NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+
+                if (channelId == unreliableChannelId)
+                {
+                    NetworkTransport.Send(mocapStream_hostId, clientId, channelId, writerData, writerData.Length, out error);
+                }
+                else
+                {
+                    NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                }
+                // NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
                 nPacketsSent++;
             }
         }
