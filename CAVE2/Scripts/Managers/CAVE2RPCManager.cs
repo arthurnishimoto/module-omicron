@@ -727,12 +727,14 @@ public class CAVE2RPCManager : MonoBehaviour {
             if (useSecondaryStreamingSocket && channelId == unreliableChannelId)
             {
                 NetworkTransport.Send(mocapStream_hostId, clientId, channelId, writerData, writerData.Length, out error);
+                nPacketsSent_socket2++;
             }
             else
             {
                 NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                nPacketsSent++;
             }
-            nPacketsSent++;
+            
         }
         else
         {
@@ -782,13 +784,15 @@ public class CAVE2RPCManager : MonoBehaviour {
                 if (useSecondaryStreamingSocket && channelId == unreliableChannelId)
                 {
                     NetworkTransport.Send(mocapStream_hostId, clientId, channelId, writerData, writerData.Length, out error);
+                    nPacketsSent_socket2++;
                 }
                 else
                 {
                     NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
+                    nPacketsSent++;
                 }
                 // NetworkTransport.Send(hostId, clientId, channelId, writerData, writerData.Length, out error);
-                nPacketsSent++;
+                
             }
         }
         if(useMsgClient && clientConnectedToServer)
