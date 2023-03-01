@@ -91,6 +91,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     [SerializeField]
     int maxConnections = 100;
 
+    [SerializeField]
+    bool useSecondaryStreamingSocket;
+
     public enum MsgType { Reliable, Unreliable, StateUpdate };
 
     float serverUpdateDataDelay = 1.0f;
@@ -212,9 +215,9 @@ public class CAVE2RPCManager : MonoBehaviour {
         packetIntervalSec = interval;
     }
 
-    public Vector4 GetDebugNetSpeed()
+    public float[] GetDebugNetSpeed()
     {
-        return new Vector4(clientSendRate, nPacketsSentLastInterval, clientReceiveRate, nPacketsReceivedLastInterval);
+        return new float[] { clientSendRate, nPacketsSentLastInterval, clientReceiveRate, nPacketsReceivedLastInterval, nPacketsSentLastInterval_socket2 };
     }
 
     private void Update()
@@ -301,9 +304,15 @@ public class CAVE2RPCManager : MonoBehaviour {
     private void StartNetServer()
     {
         hostId = NetworkTransport.AddHost(topology, serverListenPort);
-        mocapStream_hostId = NetworkTransport.AddHost(topology, serverListenPort2);
-
         LogUI("Starting message server on port " + serverListenPort);
+
+        if (useSecondaryStreamingSocket)
+        {
+            mocapStream_hostId = NetworkTransport.AddHost(topology, serverListenPort2);
+            LogUI("Starting message server on port " + serverListenPort2);
+        }
+
+        
     }
 
     private void StartNetClient()
@@ -328,14 +337,17 @@ public class CAVE2RPCManager : MonoBehaviour {
             LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
         }
 
-        LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort2);
-
-        mocapStream_hostId = NetworkTransport.AddHost(topology);
-        mocapStream_connID = NetworkTransport.Connect(mocapStream_hostId, serverIP, serverListenPort2, 0, out error);
-
-        if (error != 0)
+        if (useSecondaryStreamingSocket)
         {
-            LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
+            LogUI("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort2);
+
+            mocapStream_hostId = NetworkTransport.AddHost(topology);
+            mocapStream_connID = NetworkTransport.Connect(mocapStream_hostId, serverIP, serverListenPort2, 0, out error);
+
+            if (error != 0)
+            {
+                LogUI("Msg Client: Connection Error: " + ((NetworkError)error).ToString());
+            }
         }
 
         /*
@@ -580,7 +592,7 @@ public class CAVE2RPCManager : MonoBehaviour {
         {
             LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort + " Host id: " + recHostId);
         }
-        else if(recHostId == 1)
+        else if(recHostId == 1 && useSecondaryStreamingSocket)
         {
             LogUI("Msg Client: Connected to " + serverIP + ":" + serverListenPort2 + " Host id: " + recHostId);
         }
@@ -712,7 +724,7 @@ public class CAVE2RPCManager : MonoBehaviour {
 
             byte error;
 
-            if (channelId == unreliableChannelId)
+            if (useSecondaryStreamingSocket && channelId == unreliableChannelId)
             {
                 NetworkTransport.Send(mocapStream_hostId, clientId, channelId, writerData, writerData.Length, out error);
             }
@@ -767,7 +779,7 @@ public class CAVE2RPCManager : MonoBehaviour {
             {
                 byte error;
 
-                if (channelId == unreliableChannelId)
+                if (useSecondaryStreamingSocket && channelId == unreliableChannelId)
                 {
                     NetworkTransport.Send(mocapStream_hostId, clientId, channelId, writerData, writerData.Length, out error);
                 }
