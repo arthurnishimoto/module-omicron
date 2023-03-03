@@ -92,7 +92,7 @@ public class CAVE2RPCManager : MonoBehaviour {
     int maxConnections = 100;
 
     [SerializeField]
-    bool useSecondaryStreamingSocket;
+    public bool useSecondaryStreamingSocket;
 
     public enum MsgType { Reliable, Unreliable, StateUpdate };
 
@@ -237,6 +237,7 @@ public class CAVE2RPCManager : MonoBehaviour {
                 nPacketsSent = 0;
 
                 nPacketsSentLastInterval_socket2 = nPacketsSent_socket2;
+                nPacketsSent_socket2 = 0;
             }
             if (packetInTimer >= packetIntervalSec && nPacketsReceived > 0)
             {
