@@ -65,6 +65,9 @@ public class CAVE2ClusterManager : MonoBehaviour
     Dictionary<int, CAVE2ClientInfo> cave2Clients = new Dictionary<int, CAVE2ClientInfo>();
     Dictionary<string, int> cave2ClientNames = new Dictionary<string, int>();
 
+    [SerializeField]
+    StereoscopicCamera.StereoscopicMode stereoMode = StereoscopicCamera.StereoscopicMode.Interleaved;
+
     [Header("UI")]
     [SerializeField]
     Text currentHeadTrackerText = null;
@@ -101,9 +104,29 @@ public class CAVE2ClusterManager : MonoBehaviour
 
     bool firstUpdate = true;
 
+    [SerializeField]
+    bool sendPings = false;
+
+    [SerializeField]
+    float pingInterval = 1.0f;
+
+    float pingTimer;
+
+    // Number of pings to store in history
+    // to calulate average
+    [SerializeField]
+    int pingHistorySize = 5;
+
+    [SerializeField]
+    Toggle pingTestUIToggle;
+
+    Dictionary<string, float[]> pingHistory;
+
     // Start is called before the first frame update
     void Start()
     {
+        pingHistory = new Dictionary<string, float[]>();
+
         if (!CAVE2.IsMaster())
         {
             omicronManager.connectToServer = false;
@@ -255,6 +278,77 @@ public class CAVE2ClusterManager : MonoBehaviour
                 updateTimer += Time.deltaTime;
             }
         }
+
+        if(sendPings)
+        {
+            if(pingTimer >= pingInterval)
+            {
+                CAVE2.SendMessage(gameObject.name, "Ping", Time.time);
+                pingTimer = 0;
+            }
+            pingTimer += Time.deltaTime;
+        }
+    }
+
+    public void EnablePingTest(bool value)
+    {
+        pingTestUIToggle.SetIsOnWithoutNotify(value);
+        sendPings = value;
+    }
+
+    public void Ping(float sentTime)
+    {
+        if (!CAVE2.IsMaster())
+        {
+            CAVE2.SendMessage(gameObject.name, "Pong", sentTime, CAVE2Manager.GetMachineName());
+        }
+    }
+
+    public void Pong(object[] param)
+    {
+        float sentTime = (float)param[0];
+        string machineName = (string)param[1];
+        float pingTime = Time.time - sentTime;
+
+        
+
+        if(pingHistory.ContainsKey(machineName))
+        {
+            float[] pingHistValues = pingHistory[machineName];
+            int pingIndex = (int)pingHistValues[0];
+            if(pingIndex < pingHistorySize)
+            {
+                pingIndex++;
+                pingHistValues[0] = pingIndex;
+                pingHistValues[pingIndex] = pingTime;
+            }
+            else
+            {
+                pingIndex = 1;
+                pingHistValues[0] = pingIndex;
+            }
+            pingHistory[machineName] = pingHistValues;
+
+            float avgPing = 0;
+            // UnityEngine.Debug.Log(machineName);
+            for (int i = 1; i < pingHistValues.Length; i++)
+            {
+                avgPing += pingHistValues[i];
+                // UnityEngine.Debug.Log("[" + i + "] = " + pingHistValues[i]);
+            }
+            avgPing /= pingHistorySize;
+
+            UnityEngine.Debug.Log("Reply from " + machineName + " time " + pingTime + " avg " + avgPing);
+        }
+        else
+        {
+            float[] pingHistValues = new float[6];
+            pingHistValues[0] = 1;
+            pingHistValues[1] = pingTime;
+            pingHistory[machineName] = pingHistValues;
+
+            UnityEngine.Debug.Log("Reply from " + machineName + " time " + pingTime);
+        }   
     }
 
     public void SetPrimaryHeadTracker(int trackerID)
@@ -304,7 +398,7 @@ public class CAVE2ClusterManager : MonoBehaviour
             stereoCamera.enabled = true;
         }
         stereoCamera.EnableStereo(true);
-        stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Interleaved);
+        stereoCamera.SetStereoMode(stereoMode);
 
         // Stereo for main CAVE2 columns
         stereoCamera.SetStereoResolution(new Vector2(1366, 3072));
