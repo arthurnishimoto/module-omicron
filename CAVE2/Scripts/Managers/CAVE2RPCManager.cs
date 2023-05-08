@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2023		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2023, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -30,10 +30,13 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using Unity.Networking.Transport;
 using Unity.Collections;
 using UnityEngine.XR;
 using System.IO;
+
+// Requires 'Unity Transport' package to be installed
+// from Package Manager
+using Unity.Networking.Transport;
 
 #if UNITY_2020_3_OR_NEWER
 public class CAVE2RPCManager : MonoBehaviour
@@ -106,7 +109,7 @@ public class CAVE2RPCManager : MonoBehaviour
 
     private void SetupNetworking()
     {
-
+        m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
     }
 
     void RunSelfTest()
@@ -127,8 +130,6 @@ public class CAVE2RPCManager : MonoBehaviour
             Debug.Log("Failed to bind to port " + serverListenPort);
         else
             m_ServerDriver.Listen();
-
-        m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
         Debug.Log("Starting message server on port " + serverListenPort);
     }
