@@ -37,6 +37,7 @@ using System.IO;
 // Requires 'Unity Transport' package to be installed
 // from Package Manager
 using Unity.Networking.Transport;
+using System.Net;
 
 #if UNITY_2020_3_OR_NEWER
 public class CAVE2RPCManager : MonoBehaviour
@@ -64,9 +65,26 @@ public class CAVE2RPCManager : MonoBehaviour
     private NetworkConnection m_ClientConnection;
     bool connectedToServer;
 
+    [SerializeField]
+    bool autoReconnectClient;
+
+    [SerializeField]
+    float autoReconnectDelay = 1.0f;
+
+    [SerializeField]
+    float autoReconnectTimer;
+
+    [SerializeField]
+    int reconnectCount;
+
     [Header("Debug")]
     [SerializeField]
     bool selfTestRoutine;
+
+    bool serverRunning;
+
+    [SerializeField]
+    bool clientRunning;
 
     public void EnableMsgServer(bool value)
     {
@@ -127,11 +145,15 @@ public class CAVE2RPCManager : MonoBehaviour
         var endpoint = NetworkEndPoint.AnyIpv4;
         endpoint.Port = (ushort)serverListenPort;
         if (m_ServerDriver.Bind(endpoint) != 0)
+        {
             Debug.Log("Failed to bind to port " + serverListenPort);
+        }
         else
+        {
             m_ServerDriver.Listen();
-
-        Debug.Log("Starting message server on port " + serverListenPort);
+            Debug.Log("Starting message server on port " + serverListenPort);
+            serverRunning = true;
+        }
     }
 
     private void StartNetClient()
@@ -139,10 +161,29 @@ public class CAVE2RPCManager : MonoBehaviour
         m_ClientDriver = NetworkDriver.Create();
         m_ClientConnection = default(NetworkConnection);
 
+        ConnectNetClient();
+    }
+
+    private void ConnectNetClient()
+    {
         NetworkEndPoint.TryParse(serverIP, (ushort)serverListenPort, out var endpoint);
         m_ClientConnection = m_ClientDriver.Connect(endpoint);
 
-        Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
+        if (m_ClientConnection.IsCreated)
+        {
+            string reconnectStr = " Reconnect count: " + reconnectCount;
+            if (reconnectCount > 0)
+            {
+                Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort + reconnectStr);
+            }
+            else
+            {
+                Debug.Log("Msg Client: Connecting to server " + serverIP + ":" + serverListenPort);
+            }
+            clientRunning = true;
+
+            reconnectCount++;
+        }
     }
 
     public void OnDestroy()
@@ -150,8 +191,8 @@ public class CAVE2RPCManager : MonoBehaviour
         if (m_ServerDriver.IsCreated)
         {
             m_ServerDriver.Dispose();
-            m_Connections.Dispose();
         }
+        m_Connections.Dispose();
     }
 
     private void Update()
@@ -168,110 +209,131 @@ public class CAVE2RPCManager : MonoBehaviour
 
     private void UpdateServer()
     {
-        m_ServerDriver.ScheduleUpdate().Complete();
-
-        // Clean up connections
-        for (int i = 0; i < m_Connections.Length; i++)
+        if (m_ServerDriver.IsCreated)
         {
-            if (!m_Connections[i].IsCreated)
+            m_ServerDriver.ScheduleUpdate().Complete();
+
+            // Clean up connections
+            for (int i = 0; i < m_Connections.Length; i++)
             {
-                m_Connections.RemoveAtSwapBack(i);
-                --i;
-            }
-        }
-
-        // Accept new connections
-        NetworkConnection c;
-        while ((c = m_ServerDriver.Accept()) != default(NetworkConnection))
-        {
-            m_Connections.Add(c);
-            Debug.Log("Msg Server: Client " + c.InternalId + " connected.");
-        }
-
-        DataStreamReader stream;
-        for (int i = 0; i < m_Connections.Length; i++)
-        {
-            if (!m_Connections[i].IsCreated)
-                continue;
-
-            NetworkEvent.Type cmd;
-            while ((cmd = m_ServerDriver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
-            {
-                if (cmd == NetworkEvent.Type.Data)
+                if (!m_Connections[i].IsCreated)
                 {
-                }
-                else if (cmd == NetworkEvent.Type.Disconnect)
-                {
-                    Debug.Log("Msg Server: Client " + c.InternalId + " disconnected.");
-                    m_Connections[i] = default(NetworkConnection);
+                    m_Connections.RemoveAtSwapBack(i);
+                    --i;
                 }
             }
+
+            // Accept new connections
+            NetworkConnection c;
+            while ((c = m_ServerDriver.Accept()) != default(NetworkConnection))
+            {
+                m_Connections.Add(c);
+                Debug.Log("Msg Server: Client " + c.InternalId + " connected.");
+            }
+
+            DataStreamReader stream;
+            for (int i = 0; i < m_Connections.Length; i++)
+            {
+                if (!m_Connections[i].IsCreated)
+                    continue;
+
+                NetworkEvent.Type cmd;
+                while ((cmd = m_ServerDriver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
+                {
+                    if (cmd == NetworkEvent.Type.Data)
+                    {
+                    }
+                    else if (cmd == NetworkEvent.Type.Disconnect)
+                    {
+                        Debug.Log("Msg Server: Client " + c.InternalId + " disconnected.");
+                        m_Connections[i] = default(NetworkConnection);
+                    }
+                }
+            }
+        }
+        else
+        {
+            serverRunning = false;
         }
     }
 
     private void UpdateClient()
     {
-        m_ClientDriver.ScheduleUpdate().Complete();
+        if (m_ClientDriver.IsCreated)
+        {
+            m_ClientDriver.ScheduleUpdate().Complete();
 
-        if (!m_ClientConnection.IsCreated)
-        {
-            if (!connectedToServer)
-                Debug.Log("Msg Client: Failed to create connection.");
-            return;
-        }
-        DataStreamReader stream;
-        NetworkEvent.Type cmd;
-        while ((cmd = m_ClientConnection.PopEvent(m_ClientDriver, out stream)) != NetworkEvent.Type.Empty)
-        {
-            if (cmd == NetworkEvent.Type.Connect)
+            if (!m_ClientConnection.IsCreated)
             {
-                Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
-                connectedToServer = true;
+                if (!connectedToServer)
+                    Debug.Log("Msg Client: Failed to create connection.");
+                clientRunning = false;
+                return;
             }
-            else if (cmd == NetworkEvent.Type.Data)
+            DataStreamReader stream;
+            NetworkEvent.Type cmd;
+            while ((cmd = m_ClientConnection.PopEvent(m_ClientDriver, out stream)) != NetworkEvent.Type.Empty)
             {
-                uint msgType = stream.ReadUInt();
-                FixedString32Bytes targetGameObject = stream.ReadFixedString32();
-                FixedString32Bytes targetFunction = stream.ReadFixedString32();
-                uint paramCount = stream.ReadUInt();
-
-                switch (msgType)
+                if (cmd == NetworkEvent.Type.Connect)
                 {
-                    case (201):
-                        SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream));
-                        break;
-                    case (202):
-                        SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream));
-                        break;
-                    case (203):
-                        SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream));
-                        break;
-                    case (204):
-                        SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
-                        break;
-                    case (205):
-                        SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
-                        break;
-                    case (207):
-                        SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
-                        break;
-                    case (216):
-                        SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
-                            , ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
-                            );
-                        break;
-                    default:
-                        Debug.Log("Unhandled msgType: " + msgType);
-                        break;
+                    Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
+                    connectedToServer = true;
                 }
+                else if (cmd == NetworkEvent.Type.Data)
+                {
+                    uint msgType = stream.ReadUInt();
+                    FixedString32Bytes targetGameObject = stream.ReadFixedString32();
+                    FixedString32Bytes targetFunction = stream.ReadFixedString32();
+                    uint paramCount = stream.ReadUInt();
 
-
-
+                    switch (msgType)
+                    {
+                        case (201):
+                            SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream));
+                            break;
+                        case (202):
+                            SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream));
+                            break;
+                        case (203):
+                            SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            break;
+                        case (204):
+                            SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            break;
+                        case (205):
+                            SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            break;
+                        case (207):
+                            SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            break;
+                        case (216):
+                            SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
+                                , ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
+                                );
+                            break;
+                        default:
+                            Debug.Log("Unhandled msgType: " + msgType);
+                            break;
+                    }
+                }
+                else if (cmd == NetworkEvent.Type.Disconnect)
+                {
+                    Debug.Log("Msg Client: Disconnected from server.");
+                    m_ClientConnection = default(NetworkConnection);
+                    clientRunning = false;
+                    autoReconnectTimer = 0;
+                }
             }
-            else if (cmd == NetworkEvent.Type.Disconnect)
+        }
+
+        if(clientRunning == false && autoReconnectClient)
+        {
+            autoReconnectTimer += Time.deltaTime;
+
+            if(autoReconnectTimer > autoReconnectDelay)
             {
-                Debug.Log("Msg Client: Disconnected from server.");
-                m_ClientConnection = default(NetworkConnection);
+                ConnectNetClient();
+                autoReconnectTimer = 0;
             }
         }
     }
@@ -535,15 +597,18 @@ public class CAVE2RPCManager : MonoBehaviour
 
         for (int i = 0; i < m_Connections.Length; i++)
         {
-            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(201); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out DataStreamWriter writer);
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(201); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
+                writer = WriteObject(param, writer);
 
-            m_ServerDriver.EndSend(writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
@@ -554,15 +619,18 @@ public class CAVE2RPCManager : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(202); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(202); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
-            writer = WriteObject(param2, writer);
+                writer = WriteObject(param, writer);
+                writer = WriteObject(param2, writer);
 
-            m_ServerDriver.EndSend(writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
@@ -573,16 +641,19 @@ public class CAVE2RPCManager : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(203); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(203); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
-            writer = WriteObject(param2, writer);
-            writer = WriteObject(param3, writer);
+                writer = WriteObject(param, writer);
+                writer = WriteObject(param2, writer);
+                writer = WriteObject(param3, writer);
 
-            m_ServerDriver.EndSend(writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
@@ -593,17 +664,20 @@ public class CAVE2RPCManager : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(204); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(204); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
-            writer = WriteObject(param2, writer);
-            writer = WriteObject(param3, writer);
-            writer = WriteObject(param4, writer);
+                writer = WriteObject(param, writer);
+                writer = WriteObject(param2, writer);
+                writer = WriteObject(param3, writer);
+                writer = WriteObject(param4, writer);
 
-            m_ServerDriver.EndSend(writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
@@ -614,18 +688,21 @@ public class CAVE2RPCManager : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(205); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(205); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
-            writer = WriteObject(param2, writer);
-            writer = WriteObject(param3, writer);
-            writer = WriteObject(param4, writer);
-            writer = WriteObject(param5, writer);
+                writer = WriteObject(param, writer);
+                writer = WriteObject(param2, writer);
+                writer = WriteObject(param3, writer);
+                writer = WriteObject(param4, writer);
+                writer = WriteObject(param5, writer);
 
-            m_ServerDriver.EndSend(writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
@@ -636,20 +713,23 @@ public class CAVE2RPCManager : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(207); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(207); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
-            writer = WriteObject(param2, writer);
-            writer = WriteObject(param3, writer);
-            writer = WriteObject(param4, writer);
-            writer = WriteObject(param5, writer);
-            writer = WriteObject(param6, writer);
-            writer = WriteObject(param7, writer);
+                writer = WriteObject(param, writer);
+                writer = WriteObject(param2, writer);
+                writer = WriteObject(param3, writer);
+                writer = WriteObject(param4, writer);
+                writer = WriteObject(param5, writer);
+                writer = WriteObject(param6, writer);
+                writer = WriteObject(param7, writer);
 
-            m_ServerDriver.EndSend(writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
@@ -660,28 +740,31 @@ public class CAVE2RPCManager : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out var writer);
-            writer.WriteUInt(216); // MessageType
-            writer.WriteFixedString32(targetObjectName);
-            writer.WriteFixedString32(methodName);
-            writer.WriteUInt(paramCount); // ParamCount
+            if (writer.IsCreated)
+            {
+                writer.WriteUInt(216); // MessageType
+                writer.WriteFixedString32(targetObjectName);
+                writer.WriteFixedString32(methodName);
+                writer.WriteUInt(paramCount); // ParamCount
 
-            writer = WriteObject(param, writer);
-            writer = WriteObject(param2, writer);
-            writer = WriteObject(param3, writer);
-            writer = WriteObject(param4, writer);
-            writer = WriteObject(param5, writer);
-            writer = WriteObject(param6, writer);
-            writer = WriteObject(param7, writer);
-            writer = WriteObject(param8, writer);
-            writer = WriteObject(param9, writer);
-            writer = WriteObject(param10, writer);
-            writer = WriteObject(param11, writer);
-            writer = WriteObject(param12, writer);
-            writer = WriteObject(param13, writer);
-            writer = WriteObject(param14, writer);
-            writer = WriteObject(param15, writer);
-            writer = WriteObject(param16, writer);
-            m_ServerDriver.EndSend(writer);
+                writer = WriteObject(param, writer);
+                writer = WriteObject(param2, writer);
+                writer = WriteObject(param3, writer);
+                writer = WriteObject(param4, writer);
+                writer = WriteObject(param5, writer);
+                writer = WriteObject(param6, writer);
+                writer = WriteObject(param7, writer);
+                writer = WriteObject(param8, writer);
+                writer = WriteObject(param9, writer);
+                writer = WriteObject(param10, writer);
+                writer = WriteObject(param11, writer);
+                writer = WriteObject(param12, writer);
+                writer = WriteObject(param13, writer);
+                writer = WriteObject(param14, writer);
+                writer = WriteObject(param15, writer);
+                writer = WriteObject(param16, writer);
+                m_ServerDriver.EndSend(writer);
+            }
         }
     }
 
