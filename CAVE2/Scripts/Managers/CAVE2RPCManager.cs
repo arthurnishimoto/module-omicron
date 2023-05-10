@@ -75,7 +75,7 @@ public class CAVE2RPCManager : MonoBehaviour
     float autoReconnectTimer;
 
     [SerializeField]
-    int reconnectCount;
+    int reconnectCount = -1;
 
     [Header("Debug")]
     [SerializeField]
@@ -106,6 +106,8 @@ public class CAVE2RPCManager : MonoBehaviour
 
     private void Start()
     {
+        reconnectCount = -1;
+
         if (selfTestRoutine)
         {
             RunSelfTest();
@@ -259,6 +261,17 @@ public class CAVE2RPCManager : MonoBehaviour
 
     private void UpdateClient()
     {
+        if (clientRunning == false && autoReconnectClient)
+        {
+            autoReconnectTimer += Time.deltaTime;
+
+            if (autoReconnectTimer > autoReconnectDelay)
+            {
+                ConnectNetClient();
+                autoReconnectTimer = 0;
+            }
+        }
+
         if (m_ClientDriver.IsCreated)
         {
             m_ClientDriver.ScheduleUpdate().Complete();
@@ -323,17 +336,6 @@ public class CAVE2RPCManager : MonoBehaviour
                     clientRunning = false;
                     autoReconnectTimer = 0;
                 }
-            }
-        }
-
-        if(clientRunning == false && autoReconnectClient)
-        {
-            autoReconnectTimer += Time.deltaTime;
-
-            if(autoReconnectTimer > autoReconnectDelay)
-            {
-                ConnectNetClient();
-                autoReconnectTimer = 0;
             }
         }
     }
