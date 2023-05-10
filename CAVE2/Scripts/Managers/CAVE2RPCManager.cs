@@ -63,6 +63,8 @@ public class CAVE2RPCManager : MonoBehaviour
 
     private NetworkDriver m_ClientDriver;
     private NetworkConnection m_ClientConnection;
+
+    [SerializeField]
     bool connectedToServer;
 
     [SerializeField]
@@ -82,8 +84,6 @@ public class CAVE2RPCManager : MonoBehaviour
     bool selfTestRoutine;
 
     bool serverRunning;
-
-    [SerializeField]
     bool clientRunning;
 
     public void EnableMsgServer(bool value)
@@ -302,26 +302,26 @@ public class CAVE2RPCManager : MonoBehaviour
                     switch (msgType)
                     {
                         case (201):
-                            SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream));
+                            SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream));
                             break;
                         case (202):
-                            SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream));
+                            SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream));
                             break;
                         case (203):
-                            SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
                             break;
                         case (204):
-                            SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
                             break;
                         case (205):
-                            SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
                             break;
                         case (207):
-                            SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream));
+                            SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
                             break;
                         case (216):
-                            SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
-                                , ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream), ReadObject(stream)
+                            SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream)
+                                , ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream)
                                 );
                             break;
                         default:
@@ -534,7 +534,7 @@ public class CAVE2RPCManager : MonoBehaviour
         }
         else if (ObjectToTypeID(param) == ObjectTypeID.Single)
         {
-            writer.WriteFloat((Single)param);
+            writer.WriteFloat((float)param);
         }
         else if (ObjectToTypeID(param) == ObjectTypeID.Boolean)
         {
@@ -555,7 +555,7 @@ public class CAVE2RPCManager : MonoBehaviour
         return writer;
     }
 
-    private object ReadObject(DataStreamReader reader)
+    private object ReadObject(ref DataStreamReader reader)
     {
         uint objectType = reader.ReadUInt();
         ObjectTypeID objectTypeID = (ObjectTypeID)objectType;
