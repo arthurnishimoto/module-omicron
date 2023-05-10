@@ -289,7 +289,7 @@ public class CAVE2RPCManager : MonoBehaviour
             {
                 if (cmd == NetworkEvent.Type.Connect)
                 {
-                    Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
+                    Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort + " as clientID " + m_ClientConnection.InternalId);
                     connectedToServer = true;
                 }
                 else if (cmd == NetworkEvent.Type.Data)
@@ -342,12 +342,12 @@ public class CAVE2RPCManager : MonoBehaviour
 
     internal int GetConnID()
     {
-        throw new NotImplementedException();
+        return m_ClientConnection.InternalId;
     }
 
     internal bool IsReconnecting()
     {
-        throw new NotImplementedException();
+        return autoReconnectTimer != 0;
     }
 
     public enum MsgType { Reliable, Unreliable, StateUpdate };
