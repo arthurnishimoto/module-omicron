@@ -44,6 +44,9 @@ public class CAVE2RPCManager : MonoBehaviour
 {
     internal int cave2RPCCallCount;
 
+    // CAVE2 Internal RPC Message IDs
+    const uint RPC_SetConnID = 1000;
+
     [Header("Message Server")]
     [SerializeField]
     bool useMsgServer;
@@ -57,6 +60,9 @@ public class CAVE2RPCManager : MonoBehaviour
     [Header("Message Client")]
     [SerializeField]
     bool useMsgClient;
+
+    [SerializeField]
+    int connID = -1;
 
     [SerializeField]
     string serverIP = null;
@@ -289,44 +295,58 @@ public class CAVE2RPCManager : MonoBehaviour
             {
                 if (cmd == NetworkEvent.Type.Connect)
                 {
-                    Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort + " as clientID " + m_ClientConnection.InternalId);
+                    Debug.Log("Msg Client: Connected to " + serverIP + ":" + serverListenPort);
                     connectedToServer = true;
                 }
                 else if (cmd == NetworkEvent.Type.Data)
                 {
                     uint msgType = stream.ReadUInt();
-                    FixedString32Bytes targetGameObject = stream.ReadFixedString32();
-                    FixedString32Bytes targetFunction = stream.ReadFixedString32();
-                    uint paramCount = stream.ReadUInt();
 
-                    switch (msgType)
+                    if (msgType < 1000) // Generic CAVE2 RPC Calls (Send/BroadcastMessage)
                     {
-                        case (201):
-                            SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream));
-                            break;
-                        case (202):
-                            SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream));
-                            break;
-                        case (203):
-                            SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
-                            break;
-                        case (204):
-                            SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
-                            break;
-                        case (205):
-                            SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
-                            break;
-                        case (207):
-                            SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
-                            break;
-                        case (216):
-                            SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream)
-                                , ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream)
-                                );
-                            break;
-                        default:
-                            Debug.Log("Unhandled msgType: " + msgType);
-                            break;
+                        FixedString32Bytes targetGameObject = stream.ReadFixedString32();
+                        FixedString32Bytes targetFunction = stream.ReadFixedString32();
+                        uint paramCount = stream.ReadUInt();
+
+                        switch (msgType)
+                        {
+                            case (201):
+                                SendCAVE2RPC(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream));
+                                break;
+                            case (202):
+                                SendCAVE2RPC2(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream));
+                                break;
+                            case (203):
+                                SendCAVE2RPC3(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
+                                break;
+                            case (204):
+                                SendCAVE2RPC4(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
+                                break;
+                            case (205):
+                                SendCAVE2RPC5(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
+                                break;
+                            case (207):
+                                SendCAVE2RPC7(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream));
+                                break;
+                            case (216):
+                                SendCAVE2RPC16(targetGameObject.ToString(), targetFunction.ToString(), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream)
+                                    , ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream), ReadObject(ref stream)
+                                    );
+                                break;
+                            default:
+                                Debug.Log("Unhandled msgType: " + msgType);
+                                break;
+                        }
+                    }
+                    else // CAVE2 Internal Calls
+                    {
+                        switch (msgType)
+                        {
+                            case (RPC_SetConnID):
+                                connID = (int)stream.ReadUInt();
+                                Debug.Log("Msg Client: Assigned connID " + connID + " from server.");
+                                break;
+                        }
                     }
                 }
                 else if (cmd == NetworkEvent.Type.Disconnect)
@@ -342,7 +362,7 @@ public class CAVE2RPCManager : MonoBehaviour
 
     internal int GetConnID()
     {
-        return m_ClientConnection.InternalId;
+        return connID;
     }
 
     internal bool IsReconnecting()
@@ -592,24 +612,38 @@ public class CAVE2RPCManager : MonoBehaviour
                 return null;
         }
     }
+    internal void SetClientID(NetworkConnection connection)
+    {
+        m_ServerDriver.BeginSend(NetworkPipeline.Null, connection, out DataStreamWriter writer);
+        if (writer.IsCreated)
+        {
+            writer.WriteUInt(RPC_SetConnID); // MessageType
+            writer.WriteInt(connection.InternalId);
+            m_ServerDriver.EndSend(writer);
+        }
+    }
 
-    public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
+    public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable, int connID = -1)
     {
         uint paramCount = 1;
 
         for (int i = 0; i < m_Connections.Length; i++)
         {
-            m_ServerDriver.BeginSend(NetworkPipeline.Null, m_Connections[i], out DataStreamWriter writer);
-            if (writer.IsCreated)
+            NetworkConnection client = m_Connections[i];
+            if (connID == -1 || client.InternalId == connID)
             {
-                writer.WriteUInt(201); // MessageType
-                writer.WriteFixedString32(targetObjectName);
-                writer.WriteFixedString32(methodName);
-                writer.WriteUInt(paramCount); // ParamCount
+                m_ServerDriver.BeginSend(NetworkPipeline.Null, client, out DataStreamWriter writer);
+                if (writer.IsCreated)
+                {
+                    writer.WriteUInt(201); // MessageType
+                    writer.WriteFixedString32(targetObjectName);
+                    writer.WriteFixedString32(methodName);
+                    writer.WriteUInt(paramCount); // ParamCount
 
-                writer = WriteObject(param, writer);
+                    writer = WriteObject(param, writer);
 
-                m_ServerDriver.EndSend(writer);
+                    m_ServerDriver.EndSend(writer);
+                }
             }
         }
     }
