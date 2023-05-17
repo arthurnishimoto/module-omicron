@@ -34,12 +34,12 @@ using Unity.Collections;
 using UnityEngine.XR;
 using System.IO;
 
+#if UNITY_2020_3_OR_NEWER && USING_CAVE2
 // Requires 'Unity Transport' package to be installed
 // from Package Manager
 using Unity.Networking.Transport;
 using System.Net;
 
-#if UNITY_2020_3_OR_NEWER
 public class CAVE2RPCManager : MonoBehaviour
 {
     internal int cave2RPCCallCount;
@@ -237,6 +237,7 @@ public class CAVE2RPCManager : MonoBehaviour
             {
                 m_Connections.Add(c);
                 Debug.Log("Msg Server: Client " + c.InternalId + " connected.");
+                SetClientID(c);
             }
 
             DataStreamReader stream;
@@ -867,7 +868,7 @@ public class CAVE2RPCManager : MonoBehaviour
         }
     }
 }
-#else
+#elif USING_CAVE2
 #pragma warning disable CS0618 // Type or member is obsolete
 
 #if USING_GETREAL3D
@@ -2557,4 +2558,100 @@ public class CAVE2RPCManager : MonoBehaviour {
 }
 
 #pragma warning restore CS0618 // Type or member is obsolete
+#else
+public class CAVE2RPCManager : MonoBehaviour
+{
+    public enum MsgType { Reliable, Unreliable, StateUpdate };
+
+    public int cave2RPCCallCount;
+
+    public void EnableMsgServer(bool value)
+    {
+    }
+
+    public void EnableMsgClient(bool value)
+    {
+    }
+
+    internal int GetConnID()
+    {
+        return -1;
+    }
+
+    internal bool IsReconnecting()
+    {
+        return false;
+    }
+
+    public void Destroy(string targetObjectName)
+    {
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable, int connID = -1)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
+    {
+    }
+
+    public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)
+    {
+    }
+
+    public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
+    {
+    }
+
+    public void SendCAVE2RPC2(string targetObjectName, string methodName, object param, object param2)
+    {
+    }
+
+    public void SendCAVE2RPC3(string targetObjectName, string methodName, object param, object param2, object param3)
+    {
+    }
+
+    public void SendCAVE2RPC4(string targetObjectName, string methodName, object param, object param2, object param3, object param4)
+    {
+    }
+
+    public void SendCAVE2RPC5(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5)
+    { 
+    }
+
+    public void SendCAVE2RPC7(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7)
+    {
+    }
+
+    public void SendCAVE2RPC16(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16)
+    {
+    }
+}
 #endif
+
