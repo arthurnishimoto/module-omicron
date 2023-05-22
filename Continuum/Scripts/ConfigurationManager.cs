@@ -13,6 +13,7 @@ class ConfigList
 public class DefaultConfig
 {
     public DisplayConfig displayConfig;
+    public StereoscopicConfig stereoscopicConfig;
 }
 
 [Serializable]
@@ -24,6 +25,16 @@ public class DisplayConfig
     public int windowMode;
     public int screenXPos = -1;
     public int screenYPos = -1;
+}
+
+[Serializable]
+public class StereoscopicConfig
+{
+    public string stereoMode = "Interleaved";
+    public int stereoResolutionX = 1366;
+    public int stereoResolutionY = 768;
+    public bool autoStereoResolution = true;
+    public bool invertStereo = false;
 }
 
 public class ConfigurationManager : MonoBehaviour
@@ -66,13 +77,14 @@ public class ConfigurationManager : MonoBehaviour
             loadedConfig = JsonUtility.FromJson<DefaultConfig>(reader.ReadToEnd());
 
             Debug.Log("Loaded configuration file '" + defaultConfigPath + "/" + defaultConfigFile + "':");
-            Debug.Log(JsonUtility.ToJson(loadedConfig, true));
+            //Debug.Log(JsonUtility.ToJson(loadedConfig, true));
             BroadcastMessage("ConfigurationLoaded", loadedConfig);
         }
         else
         {
             DefaultConfig defaultConfig = new DefaultConfig();
             defaultConfig.displayConfig = new DisplayConfig();
+            defaultConfig.stereoscopicConfig = new StereoscopicConfig();
 
             StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
             writer.Write(JsonUtility.ToJson(defaultConfig, true));
