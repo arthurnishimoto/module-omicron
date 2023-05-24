@@ -105,6 +105,15 @@ public class StereoscopicCamera : MonoBehaviour {
         // GeneralizedPerspectiveProjection, in this case wait and try again next Update.
         if (leftEye && rightEye)
         {
+            if(leftTexture)
+            {
+                Destroy(leftTexture);
+            }
+            if (rightTexture)
+            {
+                Destroy(rightTexture);
+            }
+
             // Setup stereo materials and render textures
             leftTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);
             rightTexture = new RenderTexture((int)outputResolution.x, (int)outputResolution.y, 24);

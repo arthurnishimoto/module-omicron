@@ -22,7 +22,7 @@ public class DisplayConfig
     public int screenWidth = 1024;
     public int screenHeight = 768;
     public bool fullscreen = true;
-    public int windowMode;
+    public string windowMode = "Windowed";
     public int screenXPos = -1;
     public int screenYPos = -1;
 }
@@ -30,7 +30,7 @@ public class DisplayConfig
 [Serializable]
 public class StereoscopicConfig
 {
-    public string stereoMode = "Interleaved";
+    public string stereoMode = "None";
     public int stereoResolutionX = 1366;
     public int stereoResolutionY = 768;
     public bool autoStereoResolution = true;
@@ -50,16 +50,14 @@ public class ConfigurationManager : MonoBehaviour
     {
         if (File.Exists(configSelectionPath))
         {
-
+            StreamReader configSelectReader = new StreamReader(configSelectionPath);
+            defaultConfigFile = configSelectReader.ReadLine();
+            configSelectReader.Close();
         }
         else
         {
-            ConfigList defaultConfigList = new ConfigList();
-
-            defaultConfigList.configurations = new string[] { "default.cfg", "cave2.cfg", "continuum3d.cfg" };
-
             StreamWriter configSelectwriter = new StreamWriter(configSelectionPath);
-            configSelectwriter.Write(JsonUtility.ToJson(defaultConfigList, true));
+            configSelectwriter.WriteLine(defaultConfigFile);
             configSelectwriter.Close();
         }
 
@@ -89,6 +87,8 @@ public class ConfigurationManager : MonoBehaviour
             StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
             writer.Write(JsonUtility.ToJson(defaultConfig, true));
             writer.Close();
+
+            loadedConfig = defaultConfig;
         }
     }
 
