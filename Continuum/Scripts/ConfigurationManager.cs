@@ -12,8 +12,10 @@ class ConfigList
 [Serializable]
 public class DefaultConfig
 {
+    public bool showDebugMenu = false;
     public DisplayConfig displayConfig;
     public StereoscopicConfig stereoscopicConfig;
+    public TrackerConfig trackerConfig;
 }
 
 [Serializable]
@@ -25,6 +27,10 @@ public class DisplayConfig
     public string windowMode = "Windowed";
     public int screenXPos = -1;
     public int screenYPos = -1;
+    public bool useGeneralizedPerspectiveProjection = false;
+    public Vector3 screenUL;
+    public Vector3 screenLL;
+    public Vector3 screenLR;
 }
 
 [Serializable]
@@ -35,6 +41,19 @@ public class StereoscopicConfig
     public int stereoResolutionY = 768;
     public bool autoStereoResolution = true;
     public bool invertStereo = false;
+}
+
+[Serializable]
+public class TrackerConfig
+{
+    public string trackerType = "omicron";
+    public bool connectToServer = false;
+    public string serverIP = "localhost";
+    public int serverMsgPort = 28000;
+    public int dataPort = 7013;
+    public bool continuum3DCoordinateConversion = false;
+    public bool continuumMainCoordinateConversion = false;
+    public bool trackingSimulatorMode = false;
 }
 
 public class ConfigurationManager : MonoBehaviour
@@ -83,6 +102,7 @@ public class ConfigurationManager : MonoBehaviour
             DefaultConfig defaultConfig = new DefaultConfig();
             defaultConfig.displayConfig = new DisplayConfig();
             defaultConfig.stereoscopicConfig = new StereoscopicConfig();
+            defaultConfig.trackerConfig = new TrackerConfig();
 
             StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
             writer.Write(JsonUtility.ToJson(defaultConfig, true));
@@ -96,9 +116,9 @@ public class ConfigurationManager : MonoBehaviour
     {
         if (File.Exists(defaultConfigPath + "/" + defaultConfigFile))
         {
-            StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
-            writer.Write(JsonUtility.ToJson(loadedConfig, true));
-            writer.Close();
+            //StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
+            //writer.Write(JsonUtility.ToJson(loadedConfig, true));
+            //writer.Close();
         }
     }
 }

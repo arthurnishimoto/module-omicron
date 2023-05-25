@@ -103,6 +103,7 @@ public class StandaloneDisplayManager : MonoBehaviour
             SetDisplayResolution(displayConfig.screenWidth, displayConfig.screenHeight, newX, newY, windowModeDropdown.value);
 
 
+            // Stereoscopic
             StereoscopicConfig stereoConfig = ConfigurationManager.loadedConfig.stereoscopicConfig;
             if (stereoCamera == null)
             {
@@ -146,6 +147,20 @@ public class StandaloneDisplayManager : MonoBehaviour
                     stereoMode.value = 0;
                 }
                 lastStereoMode = stereoMode.value;
+            }
+
+
+            // Gemeralized Perspective Projection
+            if(displayConfig.useGeneralizedPerspectiveProjection)
+            {
+                GeneralizedPerspectiveProjection[] gpps = Camera.main.GetComponentsInChildren<GeneralizedPerspectiveProjection>();
+                foreach(GeneralizedPerspectiveProjection proj in gpps)
+                {
+                    proj.enabled = true;
+                    proj.SetScreenUL(displayConfig.screenUL);
+                    proj.SetScreenLL(displayConfig.screenLL);
+                    proj.SetScreenLR(displayConfig.screenLR);
+                }
             }
 
             displayConfigLoaded = 1;
