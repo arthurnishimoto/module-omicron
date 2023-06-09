@@ -672,6 +672,7 @@ public class CAVE2ClusterManager : MonoBehaviour
 
     public static void SetPosition(int x, int y, int resX = 0, int resY = 0, bool borderless = true)
     {
+#if !UNITY_EDITOR
         const int SWP_SHOWWINDOW = 0x0040;
         const int GWL_STYLE = -16;
         IntPtr windowPtr = GetActiveWindow();
@@ -679,6 +680,7 @@ public class CAVE2ClusterManager : MonoBehaviour
         // https://answers.unity.com/questions/946630/borderless-windows-in-standalone-builds.html
         // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlonga
         // https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
+
         if (borderless)
         {
             // Sets window to borderless
@@ -693,10 +695,12 @@ public class CAVE2ClusterManager : MonoBehaviour
         //https://answers.unity.com/questions/13523/is-there-a-way-to-set-the-position-of-a-standalone.html?_ga=2.54933416.2072224053.1643235688-1899960085.1550115936
         // Sets the window position and shows window (last flag required after setting style above)
         SetWindowPos(windowPtr, 0, x, y, resX, resY, SWP_SHOWWINDOW);
+#endif
     }
 
     public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0, bool borderless = true)
     {
+#if !UNITY_EDITOR
         const int SWP_SHOWWINDOW = 0x0040;
         const int GWL_STYLE = -16;
         IntPtr windowPtr = FindWindow(null, Application.productName + " " + connID);
@@ -704,6 +708,7 @@ public class CAVE2ClusterManager : MonoBehaviour
         // https://answers.unity.com/questions/946630/borderless-windows-in-standalone-builds.html
         // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlonga
         // https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
+
         if (borderless)
         {
             // Sets window to borderless
@@ -718,6 +723,7 @@ public class CAVE2ClusterManager : MonoBehaviour
         //https://answers.unity.com/questions/13523/is-there-a-way-to-set-the-position-of-a-standalone.html?_ga=2.54933416.2072224053.1643235688-1899960085.1550115936
         // Sets the window position and shows window (last flag required after setting style above)
         SetWindowPos(windowPtr, 0, x, y, resX, resY, SWP_SHOWWINDOW);
+#endif
     }
 
     public static void SetWindowTitle(int connID, int oldID = 0)

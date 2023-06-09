@@ -85,8 +85,10 @@ public class StandaloneDisplayManager : MonoBehaviour
             int newX = displayConfig.screenXPos;
             int newY = displayConfig.screenYPos;
 
+            // Don't mess with window in editor
+#if !UNITY_EDITOR
             Screen.MoveMainWindowTo(Screen.mainWindowDisplayInfo, new Vector2Int(newX, newY));
-
+#endif
             // windowModeDropdown.value = displayConfig.windowMode;
             if (displayConfig.windowMode.ToLower() == "windowed")
             {
@@ -101,7 +103,6 @@ public class StandaloneDisplayManager : MonoBehaviour
                 windowModeDropdown.value = 2;
             }
             SetDisplayResolution(displayConfig.screenWidth, displayConfig.screenHeight, newX, newY, windowModeDropdown.value);
-
 
             // Stereoscopic
             StereoscopicConfig stereoConfig = ConfigurationManager.loadedConfig.stereoscopicConfig;
