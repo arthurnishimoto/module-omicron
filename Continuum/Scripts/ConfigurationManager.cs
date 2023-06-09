@@ -60,40 +60,63 @@ public class ConfigurationManager : MonoBehaviour
 {
     public static DefaultConfig loadedConfig;
 
-    string configSelectionPath = Application.dataPath + "/config.cfg";
-    string defaultConfigPath = Application.dataPath + "/Configs";
+    // Application.dataPath
+    // Unity editor: [project folder]/Assets
+    // Standalone: [exe data folder]
+    string configSelectionPath = "/config.cfg";
+    string configPath = "/Configs";
+
+    [SerializeField]
+    [Tooltip("Relative path to Assets folder")]
+    string defaultEditorBasePath = "/module-omicron";
     string defaultConfigFile = "default.cfg";
 
     // Start is called before the first frame update
     void Start()
     {
+        // Default editor path: [project folder]/Assets/module-omicron
+        defaultEditorBasePath = Application.dataPath + "/" + defaultEditorBasePath;
+
+        // Default standalone paths:
+        // [exe_Data folder]/config.cfg
+        // [exe_Data folder]/Configs
+        // Default editor paths:
+        // [project folder]/Assets/module-omicron/config.cfg
+        // [project folder]/Assets/module-omicron/Configs
+#if UNITY_EDITOR
+        configSelectionPath = defaultEditorBasePath + "/" + configSelectionPath;
+        configPath = defaultEditorBasePath + "/" + configPath;
+#endif
+        // Check for config selection file
         if (File.Exists(configSelectionPath))
         {
+            // If exists, read
             StreamReader configSelectReader = new StreamReader(configSelectionPath);
             defaultConfigFile = configSelectReader.ReadLine();
             configSelectReader.Close();
         }
         else
         {
+            // If not, generate file
             StreamWriter configSelectwriter = new StreamWriter(configSelectionPath);
             configSelectwriter.WriteLine(defaultConfigFile);
             configSelectwriter.Close();
+            Debug.Log("Default config selector not found. Generating '" + configSelectionPath + "'");
         }
-
-        
 
         // Creates default config directory if it doesn't exist
-        if (!Directory.Exists(defaultConfigPath))
+        if (!Directory.Exists(configPath))
         {
-            Directory.CreateDirectory(defaultConfigPath);
+            Directory.CreateDirectory(configPath);
+            Debug.Log("Default config directory not found. Generating '" + configPath + "'");
         }
 
-        if (File.Exists(defaultConfigPath + "/" + defaultConfigFile))
+        if (File.Exists(configPath + "/" + defaultConfigFile))
         {
-            StreamReader reader = new StreamReader(defaultConfigPath + "/" + defaultConfigFile);
+            StreamReader reader = new StreamReader(configPath + "/" + defaultConfigFile);
             loadedConfig = JsonUtility.FromJson<DefaultConfig>(reader.ReadToEnd());
 
-            Debug.Log("Loaded configuration file '" + defaultConfigPath + "/" + defaultConfigFile + "':");
+            Debug.Log("Loaded configuration file '" + configPath + "/" + defaultConfigFile + "':");
             //Debug.Log(JsonUtility.ToJson(loadedConfig, true));
             BroadcastMessage("ConfigurationLoaded", loadedConfig);
         }
@@ -104,17 +127,18 @@ public class ConfigurationManager : MonoBehaviour
             defaultConfig.stereoscopicConfig = new StereoscopicConfig();
             defaultConfig.trackerConfig = new TrackerConfig();
 
-            StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
+            StreamWriter writer = new StreamWriter(configPath + "/" + defaultConfigFile);
             writer.Write(JsonUtility.ToJson(defaultConfig, true));
             writer.Close();
 
             loadedConfig = defaultConfig;
+            Debug.Log("Default config not found. Generating '" + configPath + "/" + defaultConfigFile + "'");
         }
     }
 
     private void OnApplicationQuit()
     {
-        if (File.Exists(defaultConfigPath + "/" + defaultConfigFile))
+        if (File.Exists(configPath + "/" + defaultConfigFile))
         {
             //StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
             //writer.Write(JsonUtility.ToJson(loadedConfig, true));
