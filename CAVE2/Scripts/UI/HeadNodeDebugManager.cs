@@ -33,16 +33,16 @@ public class HeadNodeDebugManager : MonoBehaviour
     Toggle connectToServer;
 
     [SerializeField]
-    InputField serverIP;
+    InputField serverIPField;
 
     [SerializeField]
     Text connectionStatus;
 
     [SerializeField]
-    InputField msgPort;
+    InputField msgPortField;
 
     [SerializeField]
-    InputField dataPort;
+    InputField dataPortField;
 
     [SerializeField]
     Text primaryHeadTrackerPosRot;
@@ -72,9 +72,9 @@ public class HeadNodeDebugManager : MonoBehaviour
 
         omicronManager = GetComponentInParent<OmicronManager>();
 
-        serverIP.text = omicronManager.serverIP;
-        msgPort.text = omicronManager.serverMsgPort.ToString();
-        dataPort.text = omicronManager.dataPort.ToString();
+        serverIPField.text = omicronManager.serverIP;
+        msgPortField.text = omicronManager.serverMsgPort.ToString();
+        dataPortField.text = omicronManager.dataPort.ToString();
 
         continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
         continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
@@ -264,5 +264,15 @@ public class HeadNodeDebugManager : MonoBehaviour
     public void ToggleContinuumMainMode(bool toggle)
     {
         omicronManager.continuumMainInvertX = toggle;
+    }
+
+    public void UpdateTrackingUI()
+    {
+        serverIPField.text = omicronManager.serverIP;
+        msgPortField.text = omicronManager.serverMsgPort.ToString();
+        dataPortField.text = omicronManager.dataPort.ToString();
+
+        continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
+        continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
     }
 }

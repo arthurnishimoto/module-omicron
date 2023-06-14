@@ -314,6 +314,10 @@ public class OmicronManager : MonoBehaviour
     [SerializeField]
     int filterByID = -1;
 
+    [Header("UI")]
+    [SerializeField]
+    HeadNodeDebugManager mainConsoleUI;
+
     public static OmicronManager GetOmicronManager()
     {
         if (omicronManagerInstance != null)
@@ -528,6 +532,11 @@ public class OmicronManager : MonoBehaviour
                         StartCoroutine("ConnectToServer");
                     }
                     
+                    if(mainConsoleUI)
+                    {
+                        mainConsoleUI.UpdateTrackingUI();
+                    }
+
                     CAVE2Manager c2Manager = GetComponent<CAVE2Manager>();
                     if(c2Manager != null)
                     {
