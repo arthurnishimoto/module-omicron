@@ -2567,10 +2567,12 @@ public class CAVE2RPCManager : MonoBehaviour
 
     public void EnableMsgServer(bool value)
     {
+		throw new NotImplementedException();
     }
 
     public void EnableMsgClient(bool value)
     {
+		throw new NotImplementedException();
     }
 
     internal int GetConnID()
@@ -2585,44 +2587,100 @@ public class CAVE2RPCManager : MonoBehaviour
 
     public void Destroy(string targetObjectName)
     {
+        GameObject target = GameObject.Find(targetObjectName);
+        if (target != null)
+        {
+            Destroy(target);
+        }
+    }
+
+    // Helper function to search for a gameobject by name.
+    // Original implementation: Simple/expensive GameObject.Find() every time
+    // TODO Optimization: GameObject.Find() first time, lookup table for repeated calls
+    GameObject GetGameObject(string targetObjectName)
+    {
+        return GameObject.Find(targetObjectName);
     }
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable)
     {
-        throw new NotImplementedException();
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.BroadcastMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void BroadcastMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
     {
-        throw new NotImplementedException();
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.BroadcastMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, MsgType msgType = MsgType.Reliable, int connID = -1)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, param, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, MsgType msgType = MsgType.Reliable)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, MsgType msgType = MsgType.Reliable)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, MsgType msgType = MsgType.Reliable)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, MsgType msgType = MsgType.Reliable)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, MsgType msgType = MsgType.Reliable)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendMessage(string targetObjectName, string methodName, object param, object param2, object param3, object param4, object param5, object param6, object param7, object param8, object param9, object param10, object param11, object param12, object param13, object param14, object param15, object param16, CAVE2RPCManager.MsgType msgType = CAVE2RPCManager.MsgType.Reliable)
     {
+        GameObject targetObject = GetGameObject(targetObjectName);
+        if (targetObject != null)
+        {
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16 }, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void SendCAVE2RPC(string targetObjectName, string methodName, object param)
