@@ -86,6 +86,15 @@ public class StandaloneDisplayManager : MonoBehaviour
 
             // Don't mess with window in editor
 #if !UNITY_EDITOR
+             // If -1, use current position instead (config null value)
+            if(newX == -1)
+            {
+                newX = Screen.mainWindowPosition.x;
+            }
+            if(newY == -1)
+            {
+                newY = Screen.mainWindowPosition.y;
+            }
             Screen.MoveMainWindowTo(Screen.mainWindowDisplayInfo, new Vector2Int(newX, newY));
 #endif
             // windowModeDropdown.value = displayConfig.windowMode;
