@@ -86,6 +86,9 @@ public class ConfigurationManager : MonoBehaviour
 #if UNITY_EDITOR
         configSelectionPath = defaultEditorBasePath + "/" + configSelectionPath;
         configPath = defaultEditorBasePath + "/" + configPath;
+#else
+        configSelectionPath = Application.dataPath + "/" + configSelectionPath;
+        configPath = Application.dataPath + "/" + configPath;
 #endif
         // Check for config selection file
         if (File.Exists(configSelectionPath))
