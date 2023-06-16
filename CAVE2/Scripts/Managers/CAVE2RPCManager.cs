@@ -2567,12 +2567,12 @@ public class CAVE2RPCManager : MonoBehaviour
 
     public void EnableMsgServer(bool value)
     {
-		throw new NotImplementedException();
+
     }
 
     public void EnableMsgClient(bool value)
     {
-		throw new NotImplementedException();
+
     }
 
     internal int GetConnID()
