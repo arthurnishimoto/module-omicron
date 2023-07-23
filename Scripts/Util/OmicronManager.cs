@@ -253,8 +253,7 @@ public class OmicronManager : MonoBehaviour
     [SerializeField]
     SimpleCanvasTouch testTouchCanvas = null;
 
-    string configPath;
-    bool hasConfig = false;
+    int configLoaded = -1;
 
     [Header("Requested Service Types")]
     [SerializeField] bool enablePointer = true;
@@ -315,6 +314,10 @@ public class OmicronManager : MonoBehaviour
     [SerializeField]
     int filterByID = -1;
 
+    [Header("UI")]
+    [SerializeField]
+    HeadNodeDebugManager mainConsoleUI;
+
     public static OmicronManager GetOmicronManager()
     {
         if (omicronManagerInstance != null)
@@ -350,39 +353,6 @@ public class OmicronManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        configPath = Application.dataPath + "/omicron.cfg";
-        string[] cmdArgs = Environment.GetCommandLineArgs();
-
-        for (int i = 0; i < cmdArgs.Length; i++)
-        {
-            if (cmdArgs[i].Equals("-oconfig") && i + 1 < cmdArgs.Length)
-            {
-                configPath = Environment.CurrentDirectory + "/" + cmdArgs[i + 1];
-                hasConfig = true;
-            }
-        }
-
-        // Read from config (if it exists, else create on quit)
-        try
-        {
-            StreamReader reader = new StreamReader(configPath);
-            config = JsonUtility.FromJson<OmicronConfig>(reader.ReadToEnd());
-
-            connectToServer = config.connectToServer;
-            serverIP = config.serverIP;
-            serverMsgPort = config.serverMsgPort;
-            dataPort = config.dataPort;
-            continuum3DXAxis = config.continuum3DXAxis;
-            continuumMainInvertX = config.continuumMainInvertX;
-            GetComponent<CAVE2Manager>().SetKeyboardMouseWand(config.keyboardMouseWandEmulation);
-
-            hasConfig = true;
-        }
-        catch
-        {
-
-        }
-
         if (connectToServer)
         {
             StartCoroutine("ConnectToServer");
@@ -391,11 +361,6 @@ public class OmicronManager : MonoBehaviour
         omicronClients = new ArrayList();
         //DontDestroyOnLoad(gameObject);
     }// start
-
-    public bool HasConfig()
-    {
-        return hasConfig;
-    }
 
 	public bool ConnectToServer()
 	{
@@ -548,6 +513,52 @@ public class OmicronManager : MonoBehaviour
 
             statusCanvasText.text += "Status: " + statusText + "\n";
         }
+
+        if(configLoaded == 0)
+        {
+            if (ConfigurationManager.loadedConfig != null)
+            {
+                TrackerConfig trackerConfig = ConfigurationManager.loadedConfig.trackerConfig;
+                if(trackerConfig.trackerType.ToLower() == "omicron")
+                {
+                    serverIP = trackerConfig.serverIP;
+                    serverMsgPort = trackerConfig.serverMsgPort;
+                    dataPort = trackerConfig.dataPort;
+                    continuum3DXAxis = trackerConfig.continuum3DCoordinateConversion;
+                    continuumMainInvertX = trackerConfig.continuumMainCoordinateConversion;
+
+                    if(trackerConfig.connectToServer)
+                    {
+                        StartCoroutine("ConnectToServer");
+                    }
+                    
+                    if(mainConsoleUI)
+                    {
+                        mainConsoleUI.UpdateTrackingUI();
+                    }
+
+                    CAVE2Manager c2Manager = GetComponent<CAVE2Manager>();
+                    if(c2Manager != null)
+                    {
+                        if (trackerConfig.trackingSimulatorMode)
+                        {
+                            c2Manager.simulatorMode = true;
+                            c2Manager.mocapEmulation = true;
+                            c2Manager.wandMousePointerEmulation = true;
+                            c2Manager.keyboardEventEmulation = true;
+                        }
+                        else
+                        {
+                            c2Manager.simulatorMode = false;
+                            c2Manager.mocapEmulation = false;
+                            c2Manager.wandMousePointerEmulation = false;
+                            c2Manager.keyboardEventEmulation = false;
+                        }
+                    }
+                }
+                configLoaded = 1;
+            }
+        }
     }
 
     void UpdateDebugTextRPC(int connectStatus)
@@ -692,9 +703,6 @@ public class OmicronManager : MonoBehaviour
         yield return null;
     }
 
-
-
-
     public bool WandEventsEnabled()
     {
         return enableWand;
@@ -702,23 +710,6 @@ public class OmicronManager : MonoBehaviour
 
 	void OnApplicationQuit()
     {
-        if (config != null)
-        {
-            config.connectToServer = connectToServer;
-            config.serverIP = serverIP;
-            config.serverMsgPort = serverMsgPort;
-            config.dataPort = dataPort;
-            config.keyboardMouseWandEmulation = GetComponent<CAVE2Manager>().GetKeyboardMouseWand();
-            config.continuum3DXAxis = continuum3DXAxis;
-            config.continuumMainInvertX = continuumMainInvertX;
-
-            string sfgJson = JsonUtility.ToJson(config, true);
-
-            StreamWriter writer = new StreamWriter(configPath);
-            writer.WriteLine(sfgJson);
-            writer.Close();
-        }
-
         if (connectToServer)
         {
             DisconnectServer();
@@ -731,8 +722,13 @@ public class OmicronManager : MonoBehaviour
 		}
 	}
 
-	// GUI
-	GUIStyle idleStatus = new GUIStyle();
+    void ConfigurationLoaded(DefaultConfig config)
+    {
+        configLoaded = 0;
+    }
+
+    // GUI (Legacy)
+    GUIStyle idleStatus = new GUIStyle();
 	GUIStyle activeStatus = new GUIStyle();
 	GUIStyle errorStatus = new GUIStyle();
 	GUIStyle currentStatus;

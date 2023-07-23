@@ -2,7 +2,32 @@
 using System.Collections;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System;
 
+#if UNITY_2020_3_OR_NEWER
+public class RemoteTerminal : MonoBehaviour
+{
+    internal void PrintUI(string v)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void SendCommand(string v)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void ShowInputField(bool enableCommandLine)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void StartClient(bool v)
+    {
+        throw new NotImplementedException();
+    }
+}
+#else
 #pragma warning disable CS0618 // Type or member is obsolete
 public class RemoteTerminal : MonoBehaviour
 {
@@ -744,3 +769,4 @@ public class RemoteTerminal : MonoBehaviour
 }
 
 #pragma warning restore CS0618 // Type or member is obsolete
+#endif

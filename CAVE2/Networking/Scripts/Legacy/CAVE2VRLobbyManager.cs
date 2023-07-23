@@ -29,6 +29,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
+#if UNITY_2020_3_OR_NEWER
+#else
 #pragma warning disable CS0618 // Type or member is obsolete
 public class CAVE2VRLobbyManager : NetworkLobbyManager {
 
@@ -144,3 +146,4 @@ public class CAVE2VRLobbyManager : NetworkLobbyManager {
 }
 
 #pragma warning restore CS0618 // Type or member is obsolete
+#endif

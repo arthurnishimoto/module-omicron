@@ -5,80 +5,64 @@ using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
-    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display, Debug};
+    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display};
 
     [SerializeField]
     MenuMode initialMenuState = MenuMode.Hidden;
-
-    [SerializeField]
-    bool showDebugOnHeadNode = false;
-
-    [SerializeField]
-    Text debugText;
-
-    [SerializeField]
-    bool showDisplayNodeDebugOnStartup = false;
 
     Canvas mainCanvas;
 
     [Header("Menu Panels")]
     [SerializeField]
-    GameObject mainMenuPanel = null;
+    GameObject applicationPanel;
 
     [SerializeField]
-    GameObject applicationPanel = null;
+    GameObject trackingSystemPanel;
 
     [SerializeField]
-    GameObject trackingSystemPanel = null;
+    GameObject performancePanel;
 
     [SerializeField]
-    GameObject performancePanel = null;
-
-    [SerializeField]
-    GameObject displayPanel = null;
-
-    [SerializeField]
-    GameObject debugPanel = null;
+    GameObject displayPanel;
 
     [Header("Tracking System")]
     //[SerializeField]
     //Button trackingSystemButton;
 
     [SerializeField]
-    Toggle connectToServer = null;
+    Toggle connectToServer;
 
     [SerializeField]
-    InputField serverIP = null;
+    InputField serverIPField;
 
     [SerializeField]
-    Text connectionStatus = null;
+    Text connectionStatus;
 
     [SerializeField]
-    InputField msgPort = null;
+    InputField msgPortField;
 
     [SerializeField]
-    InputField dataPort = null;
+    InputField dataPortField;
 
     [SerializeField]
-    Text primaryHeadTrackerPosRot = null;
+    Text primaryHeadTrackerPosRot;
 
     [SerializeField]
-    Toggle continuum3DMode = null;
+    Toggle continuum3DMode;
 
     [SerializeField]
-    Toggle continuumMainMode = null;
+    Toggle continuumMainMode;
 
-    OmicronManager omicronManager = null;
+    OmicronManager omicronManager;
 
     // FPS
     [SerializeField]
-    Text fpsText = null;
+    Text fpsText;
 
     [SerializeField]
-    Text timeText = null;
+    Text timeText;
 
     ObjectCountStressTestCounter fpsCounter;
-    bool displayNodeTextEnabled;
 
     // Start is called before the first frame update
     void Start()
@@ -88,9 +72,9 @@ public class HeadNodeDebugManager : MonoBehaviour
 
         omicronManager = GetComponentInParent<OmicronManager>();
 
-        serverIP.text = omicronManager.serverIP;
-        msgPort.text = omicronManager.serverMsgPort.ToString();
-        dataPort.text = omicronManager.dataPort.ToString();
+        serverIPField.text = omicronManager.serverIP;
+        msgPortField.text = omicronManager.serverMsgPort.ToString();
+        dataPortField.text = omicronManager.dataPort.ToString();
 
         continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
         continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
@@ -110,15 +94,6 @@ public class HeadNodeDebugManager : MonoBehaviour
         if (displayPanel)
         {
             displayPanel.SetActive(false);
-        }
-        if (debugPanel)
-        {
-            debugPanel.SetActive(false);
-        }
-
-        if (CAVE2.OnCAVE2Display())
-        {
-            initialMenuState = MenuMode.Hidden;
         }
 
         switch (initialMenuState)
@@ -153,22 +128,8 @@ public class HeadNodeDebugManager : MonoBehaviour
                     displayPanel.SetActive(true);
                 }
                 break;
-            case (MenuMode.Debug):
-                if (debugPanel)
-                {
-                    debugPanel.SetActive(true);
-                }
-                break;
         }
-
-        if (CAVE2.IsMaster())
-        {
-            debugText.enabled = showDebugOnHeadNode;
-            if (showDisplayNodeDebugOnStartup)
-            {
-                ToggleDisplayNodeDebugTextFromHeadNode();
-            }
-        }
+        
     }
 
     // Update is called once per frame
@@ -212,6 +173,11 @@ public class HeadNodeDebugManager : MonoBehaviour
                 primaryHeadTrackerPosRot.text += CAVE2.GetHeadRotation(1).eulerAngles.ToString();
             }
         }
+    }
+
+    void ConfigurationLoaded(DefaultConfig config)
+    {
+        mainCanvas.enabled = ConfigurationManager.loadedConfig.showDebugMenu;
     }
 
     public void ToggleApplicationPanel()
@@ -262,18 +228,6 @@ public class HeadNodeDebugManager : MonoBehaviour
         }
     }
 
-    public void ToggleDebugPanel()
-    {
-        if (debugPanel.activeSelf)
-        {
-            debugPanel.SetActive(false);
-        }
-        else
-        {
-            debugPanel.SetActive(true);
-        }
-    }
-
 
     public void SetServerIP(string serverIP)
     {
@@ -312,30 +266,13 @@ public class HeadNodeDebugManager : MonoBehaviour
         omicronManager.continuumMainInvertX = toggle;
     }
 
-    public void ShowDisplayNodeDebugText(bool value)
+    public void UpdateTrackingUI()
     {
-        if (CAVE2.OnCAVE2Display())
-        {
-            if (value)
-            {
-                mainCanvas.enabled = true;
-                mainMenuPanel.SetActive(false);
-            }
-            else
-            {
-                mainCanvas.enabled = false;
-                mainMenuPanel.SetActive(false);
-            }
-        }
-        else
-        {
-            debugText.enabled = value;
-        }
-    }
+        serverIPField.text = omicronManager.serverIP;
+        msgPortField.text = omicronManager.serverMsgPort.ToString();
+        dataPortField.text = omicronManager.dataPort.ToString();
 
-    public void ToggleDisplayNodeDebugTextFromHeadNode()
-    {
-        displayNodeTextEnabled = !displayNodeTextEnabled;
-        CAVE2.SendMessage(gameObject.name, "ShowDisplayNodeDebugText", displayNodeTextEnabled);
+        continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
+        continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
     }
 }

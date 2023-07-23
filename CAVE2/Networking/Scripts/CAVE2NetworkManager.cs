@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
+#if UNITY_2020_3_OR_NEWER
+#else
 #pragma warning disable CS0618 // Type or member is obsolete
 public class CAVE2NetworkManager : MonoBehaviour
 {
@@ -424,3 +426,4 @@ public class CAVE2Msg : MessageBase
 }
 
 #pragma warning restore CS0618 // Type or member is obsolete
+#endif

@@ -138,6 +138,8 @@ public class CAVE2ClusterManager : MonoBehaviour
         {
             SetCAVE2CameraPerspective();
         }
+
+        
     }
 
     // Update is called once per frame
@@ -666,6 +668,8 @@ public class CAVE2ClusterManager : MonoBehaviour
     public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
     [DllImport("user32.dll", EntryPoint = "GetActiveWindow")]
     public static extern IntPtr GetActiveWindow();
+    [DllImport("user32.dll", EntryPoint = "GetForegroundWindow")]
+    public static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll", EntryPoint = "SetWindowText")]
     public static extern bool SetWindowText(System.IntPtr hwnd, System.String lpString);
     [DllImport("user32.dll", EntryPoint = "GetWindowThreadProcessId")]
@@ -675,8 +679,37 @@ public class CAVE2ClusterManager : MonoBehaviour
     [DllImport("user32.dll")]
     public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
 
-    public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0)
+    public static void SetPosition(int x, int y, int resX = 0, int resY = 0, bool borderless = true)
     {
+#if !UNITY_EDITOR
+        const int SWP_SHOWWINDOW = 0x0040;
+        const int GWL_STYLE = -16;
+        IntPtr windowPtr = GetActiveWindow();
+
+        // https://answers.unity.com/questions/946630/borderless-windows-in-standalone-builds.html
+        // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlonga
+        // https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
+
+        if (borderless)
+        {
+            // Sets window to borderless
+            SetWindowLongA(windowPtr, GWL_STYLE, 0x80000000L);
+        }
+        else
+        {
+            // Sets window with Title Bar
+            SetWindowLongA(windowPtr, GWL_STYLE, 0x00020000L);
+        }
+
+        //https://answers.unity.com/questions/13523/is-there-a-way-to-set-the-position-of-a-standalone.html?_ga=2.54933416.2072224053.1643235688-1899960085.1550115936
+        // Sets the window position and shows window (last flag required after setting style above)
+        SetWindowPos(windowPtr, 0, x, y, resX, resY, SWP_SHOWWINDOW);
+#endif
+    }
+
+    public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0, bool borderless = true)
+    {
+#if !UNITY_EDITOR
         const int SWP_SHOWWINDOW = 0x0040;
         const int GWL_STYLE = -16;
         IntPtr windowPtr = FindWindow(null, Application.productName + " " + connID);
@@ -684,12 +717,22 @@ public class CAVE2ClusterManager : MonoBehaviour
         // https://answers.unity.com/questions/946630/borderless-windows-in-standalone-builds.html
         // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlonga
         // https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
-        // Sets window to borderless
-        SetWindowLongA(windowPtr, GWL_STYLE, 0x00800000L);
+
+        if (borderless)
+        {
+            // Sets window to borderless
+            SetWindowLongA(windowPtr, GWL_STYLE, 0x00800000L);
+        }
+        else
+        {
+            // Sets window with Title Bar
+            SetWindowLongA(windowPtr, GWL_STYLE, 0x00C00000L);
+        }
 
         //https://answers.unity.com/questions/13523/is-there-a-way-to-set-the-position-of-a-standalone.html?_ga=2.54933416.2072224053.1643235688-1899960085.1550115936
         // Sets the window position and shows window (last flag required after setting style above)
         SetWindowPos(windowPtr, 0, x, y, resX, resY, SWP_SHOWWINDOW);
+#endif
     }
 
     public static void SetWindowTitle(int connID, int oldID = 0)
@@ -709,6 +752,17 @@ public class CAVE2ClusterManager : MonoBehaviour
 
         //Set the title text using the window handle.
         SetWindowText(windowPtr, Application.productName + " " + connID);
+    }
+
+    /**
+     * Sets the Window Title to 'Product Name [ProcessID]'
+     */
+    public static void SetWindowTitle()
+    {
+        IntPtr windowPtr = GetActiveWindow();
+
+        //Set the title text using the window handle.
+        SetWindowText(windowPtr, Application.productName + " " + Process.GetCurrentProcess().Id);
     }
 
     public static int GetWindowProcessId(int connID)
