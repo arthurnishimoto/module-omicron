@@ -947,6 +947,9 @@ public class CAVE2RPCManager : MonoBehaviour {
     string serverIP = null;
 
     [SerializeField]
+    bool autoUseHeadNodeAsServerIP = true;
+
+    [SerializeField]
     bool debugMsg = false;
 
     bool clientConnectedToServer = false;
@@ -1023,6 +1026,15 @@ public class CAVE2RPCManager : MonoBehaviour {
         if (useMsgClient)
         {
             StartNetClient();
+        }
+    }
+
+    void ConfigurationLoaded(DefaultConfig config)
+    {
+        ClusterConfig cConfig = ConfigurationManager.loadedConfig.clusterConfig;
+        if (cConfig.headNodeIPAddesss.Length > 0 && autoUseHeadNodeAsServerIP)
+        {
+            serverIP = cConfig.headNodeIPAddesss;
         }
     }
 

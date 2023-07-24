@@ -926,6 +926,21 @@ static CAVE2Manager CAVE2Manager_Instance;
         }
     }
 
+    void ConfigurationLoaded(DefaultConfig config)
+    {
+        ClusterConfig cConfig = ConfigurationManager.loadedConfig.clusterConfig;
+        if (cConfig.headNodeName.Length > 0)
+        {
+            CAVE2.HEAD_NODE_NAME = cConfig.headNodeName;
+            Debug.Log("Config: Using '" + CAVE2.HEAD_NODE_NAME + "' as head node machine name");
+        }
+        if (cConfig.displayNodeName.Length > 0)
+        {
+            CAVE2.HEAD_NODE_NAME = cConfig.displayNodeName;
+            Debug.Log("Config: Using '" + CAVE2.HEAD_NODE_NAME + "' as display node machine name");
+        }
+    }
+
     void Update()
     {
         if(CAVE2Manager_Instance == null)

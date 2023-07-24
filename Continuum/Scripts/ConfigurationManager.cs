@@ -61,6 +61,7 @@ public class TrackerConfig
 public class ClusterConfig
 {
     public string headNodeName = "CAVE2MASTER";
+    public string headNodeIPAddesss = "localhost";
     public string displayNodeName = "ORION";
 }
 

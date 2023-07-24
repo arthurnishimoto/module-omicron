@@ -47,7 +47,7 @@ public class OmicronEditorMode : MonoBehaviour
     {
         CleanupCustomPerspectiveCamera();
 
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "");
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "USING_CAVE2");
 
         Debug.Log("Configured for CAVE2 simulator");
 
