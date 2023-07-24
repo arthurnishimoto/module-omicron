@@ -177,7 +177,11 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     void ConfigurationLoaded(DefaultConfig config)
     {
-        mainCanvas.enabled = ConfigurationManager.loadedConfig.showDebugMenu;
+
+        if(ConfigurationManager.loadedConfig.showDebugMenu)
+        {
+            initialMenuState = MenuMode.Visible;
+        }
     }
 
     public void ToggleApplicationPanel()
