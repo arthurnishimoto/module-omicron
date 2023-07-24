@@ -78,7 +78,7 @@ public class OmicronEditorMode : MonoBehaviour
     {
         CleanupCustomPerspectiveCamera();
 
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "USING_GETREAL3D");
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, "USING_CAVE2; USING_GETREAL3D");
         PlayerSettings.virtualRealitySupported = false;
 
         Debug.Log("Configured for CAVE2 deployment");
@@ -175,7 +175,7 @@ public class OmicronEditorMode : MonoBehaviour
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
     }
-
+    /*
     [MenuItem(CONTINUUM_3D)]
     static void ConfigContinuum3D()
     {
@@ -247,6 +247,7 @@ public class OmicronEditorMode : MonoBehaviour
 
         Debug.Log("Configured for Continuum Main Wall");
     }
+    */
 
     static void CleanupCustomPerspectiveCamera()
     {

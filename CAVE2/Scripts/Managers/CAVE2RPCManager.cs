@@ -2632,6 +2632,11 @@ public class CAVE2RPCManager : MonoBehaviour
         }
     }
 
+    public void SendTerminalMsg(string msgString, bool useReliable, int forwardingID = -1)
+    {
+
+    }
+
     // Helper function to search for a gameobject by name.
     // Original implementation: Simple/expensive GameObject.Find() every time
     // TODO Optimization: GameObject.Find() first time, lookup table for repeated calls
