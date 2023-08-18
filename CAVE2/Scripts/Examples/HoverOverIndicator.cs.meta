@@ -1,10 +1,12 @@
 fileFormatVersion: 2
 guid: eb09dbe096eab1a4599994b8507402bc
-timeCreated: 1515729306
-licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - defaultMesh: {instanceID: 0}
+  - simpleMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  - hoverOverMaterial: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

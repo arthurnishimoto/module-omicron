@@ -6,6 +6,7 @@ MonoImporter:
   defaultReferences:
   - grabber: {instanceID: 0}
   - defaultMesh: {instanceID: 0}
+  - simpleMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   - pointingOverMaterial: {fileID: 2100000, guid: 2a6e178022e90be498acb517c9f1a51c,
       type: 2}
   - touchingOverMaterial: {fileID: 2100000, guid: 2a6e178022e90be498acb517c9f1a51c,

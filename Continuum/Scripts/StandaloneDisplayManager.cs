@@ -88,7 +88,7 @@ public class StandaloneDisplayManager : MonoBehaviour
             int newY = displayConfig.screenYPos;
 
             // Don't mess with window in editor
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_2022_OR_NEWER
              // If -1, use current position instead (config null value)
             if(newX == -1)
             {

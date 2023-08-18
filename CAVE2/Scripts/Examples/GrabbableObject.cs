@@ -81,6 +81,12 @@ public class GrabbableObject : CAVE2Interactable {
     Mesh defaultMesh;
 
     [SerializeField]
+    bool useSimplifiedMesh;
+
+    [SerializeField]
+    Mesh simpleMesh;
+
+    [SerializeField]
     Material pointingOverMaterial;
 
     Color originalPointingMatColor;
@@ -106,9 +112,14 @@ public class GrabbableObject : CAVE2Interactable {
         {
             defaultMesh = GetComponent<MeshFilter>().mesh;
         }
+        if (useSimplifiedMesh)
+        {
+            defaultMesh = simpleMesh;
+        }
+
         pointingOverHighlight.AddComponent<MeshFilter>().mesh = defaultMesh;
         MeshCollider wandCollider = gameObject.AddComponent<MeshCollider>();
-        // wandCollider.inflateMesh = defaultMesh; // Obsolete
+        wandCollider.sharedMesh = defaultMesh;
         wandCollider.convex = true;
         wandCollider.isTrigger = true;
         

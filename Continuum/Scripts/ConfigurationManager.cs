@@ -95,6 +95,10 @@ public class ConfigurationManager : MonoBehaviour
 #if UNITY_EDITOR
         configSelectionPath = defaultEditorBasePath + "/" + configSelectionPath;
         configPath = defaultEditorBasePath + "/" + configPath;
+#elif USING_CAVE2
+        // Probably should have a CAVE2 build specfic config here at some point.
+        // Until then:
+        return;
 #else
         configSelectionPath = Application.dataPath + "/" + configSelectionPath;
         configPath = Application.dataPath + "/" + configPath;

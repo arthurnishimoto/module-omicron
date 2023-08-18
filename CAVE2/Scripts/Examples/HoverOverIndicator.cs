@@ -40,7 +40,13 @@ public class HoverOverIndicator : CAVE2Interactable
     Vector3 highlightScaler = new Vector3(1.05f, 1.05f, 1.05f);
 
     [SerializeField]
+    bool useSimplifiedMesh;
+
+    [SerializeField]
     Mesh defaultMesh;
+
+    [SerializeField]
+    Mesh simpleMesh;
 
     [SerializeField]
     Material hoverOverMaterial;
@@ -72,6 +78,11 @@ public class HoverOverIndicator : CAVE2Interactable
         {
             defaultMesh = GetComponent<MeshFilter>().mesh;
         }
+        if (useSimplifiedMesh)
+        {
+            defaultMesh = simpleMesh;
+        }
+
         hoverOverHighlight.AddComponent<MeshFilter>().mesh = defaultMesh;
         renderer = hoverOverHighlight.AddComponent<MeshRenderer>();
 
