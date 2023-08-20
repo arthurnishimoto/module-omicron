@@ -16,9 +16,6 @@ public class StandaloneDisplayManager : MonoBehaviour
     InputField newHeightInput;
 
     [SerializeField]
-    Toggle fullScreenToggle;
-
-    [SerializeField]
     Text currentWindowPosition;
 
     [SerializeField]
@@ -58,7 +55,6 @@ public class StandaloneDisplayManager : MonoBehaviour
     {
         newWidthInput.text = Screen.width.ToString();
         newHeightInput.text = Screen.height.ToString();
-        fullScreenToggle.SetIsOnWithoutNotify(Screen.fullScreen);
     }
 
     // Update is called once per frame
@@ -182,11 +178,24 @@ public class StandaloneDisplayManager : MonoBehaviour
         if(stereoCamera == null)
         {
             stereoMode.interactable = false;
+            stereoAutoRes.interactable = false;
+            stereoInvertToggle.interactable = false;
             stereoCamera = Camera.main.GetComponent<StereoscopicCamera>();
         }
         else
         {
-            stereoMode.interactable = true;
+            if (stereoCamera.enabled)
+            {
+                stereoMode.interactable = true;
+                stereoAutoRes.interactable = true;
+                stereoInvertToggle.interactable = true;
+            }
+            else
+            {
+                stereoMode.interactable = false;
+                stereoAutoRes.interactable = false;
+                stereoInvertToggle.interactable = false;
+            }
 
             if (lastStereoMode != stereoMode.value)
             {
@@ -302,6 +311,13 @@ public class StandaloneDisplayManager : MonoBehaviour
 
         ConfigurationManager.loadedConfig.displayConfig.screenXPos = newX;
         ConfigurationManager.loadedConfig.displayConfig.screenYPos = newY;
+#else
+        int newX = 0;
+        int newY = 0;
+
+        int.TryParse(newXPosInput.text, out newX);
+        int.TryParse(newYPosInput.text, out newY);
+        CAVE2ClusterManager.SetPosition(newX, newY, Screen.width, Screen.height, windowModeDropdown.value == 2);
 #endif
     }
 
