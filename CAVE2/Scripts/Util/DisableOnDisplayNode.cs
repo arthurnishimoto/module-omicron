@@ -5,7 +5,7 @@ using UnityEngine;
 public class DisableOnDisplayNode : MonoBehaviour
 {
     [SerializeField]
-    bool showInEditor;
+    bool showInEditor = true;
 
     // Start is called before the first frame update
     void Start()

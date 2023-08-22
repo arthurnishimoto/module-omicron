@@ -40,22 +40,22 @@ public class HoverOverIndicator : CAVE2Interactable
     Vector3 highlightScaler = new Vector3(1.05f, 1.05f, 1.05f);
 
     [SerializeField]
-    bool useSimplifiedMesh;
+    bool useSimplifiedMesh = false;
 
     [SerializeField]
-    Mesh defaultMesh;
+    Mesh defaultMesh = null;
 
     [SerializeField]
-    Mesh simpleMesh;
+    Mesh simpleMesh = null;
 
     [SerializeField]
-    Material hoverOverMaterial;
+    Material hoverOverMaterial = null;
 
     GameObject hoverOverHighlight;
     new MeshRenderer renderer;
 
     [SerializeField]
-    bool strobing;
+    bool strobing = false;
 
     [SerializeField]
     float strobeSpeed;

@@ -45,16 +45,16 @@ public class CAVE2MocapUpdater : MonoBehaviour {
 
     [Header("Debug")]
     [SerializeField]
-    bool trackUpdateLatency;
+    bool trackUpdateLatency = false;
 
     [SerializeField]
-    float updateLatency;
+    float updateLatency = 0;
 
     float updateTimer;
     float updateEvents;
 
     [SerializeField]
-    UnityEngine.UI.Text debugText;
+    UnityEngine.UI.Text debugText = null;
 
     // Use this for initialization
     void Start () {

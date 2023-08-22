@@ -4,13 +4,13 @@ using System.Collections;
 public class VRDisplayManager : MonoBehaviour {
 
     [SerializeField]
-    Transform headTrackedUser;
+    Transform headTrackedUser = null;
 
     [SerializeField]
-    Transform headTrackedUserLeftEye;
+    Transform headTrackedUserLeftEye = null;
 
     [SerializeField]
-    Transform headTrackedUserRightEye;
+    Transform headTrackedUserRightEye = null;
 
     public Transform virtualHead;
     public float displayAngularOffset = 1;
@@ -35,7 +35,7 @@ public class VRDisplayManager : MonoBehaviour {
 
     [Header("UI")]
     [SerializeField]
-    UnityEngine.UI.Button alignmentDebugButton;
+    UnityEngine.UI.Button alignmentDebugButton = null;
 
 
     private void Update()

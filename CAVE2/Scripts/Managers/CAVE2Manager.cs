@@ -788,8 +788,8 @@ static CAVE2Manager CAVE2Manager_Instance;
     [SerializeField]
     string configFilePath = "module-omicron/Config";
 
-    [SerializeField]
-    bool generateConfigFile = false;
+    //[SerializeField]
+    //bool generateConfigFile = false;
 
     // Config File
     string configPath;

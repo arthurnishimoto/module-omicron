@@ -316,7 +316,7 @@ public class OmicronManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField]
-    HeadNodeDebugManager mainConsoleUI;
+    HeadNodeDebugManager mainConsoleUI = null;
 
     public static OmicronManager GetOmicronManager()
     {

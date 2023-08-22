@@ -65,7 +65,7 @@ public class CAVE2Display : GeneralizedPerspectiveProjection {
     bool stereoEyeTest = false;
 
     [SerializeField]
-    bool useParentCullingLayer;
+    bool useParentCullingLayer = false;
 
     RenderTexture cameraRT;
 

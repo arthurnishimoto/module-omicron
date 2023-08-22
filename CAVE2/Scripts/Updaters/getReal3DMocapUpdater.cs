@@ -14,8 +14,11 @@ public class getReal3DMocapUpdater : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-	
-	}
+        if (useLateUpdate)
+        {
+            // Just here to supress 'assigned but never used warning' when not using getReal3D
+        }
+    }
 #if USING_GETREAL3D
     // Update is called once per frame
     void Update () {

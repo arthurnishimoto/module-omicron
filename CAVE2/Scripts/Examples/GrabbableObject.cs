@@ -78,16 +78,16 @@ public class GrabbableObject : CAVE2Interactable {
     float highlightScaler = 1.05f;
 
     [SerializeField]
-    Mesh defaultMesh;
+    Mesh defaultMesh = null;
 
     [SerializeField]
-    bool useSimplifiedMesh;
+    bool useSimplifiedMesh = false;
 
     [SerializeField]
-    Mesh simpleMesh;
+    Mesh simpleMesh = null;
 
     [SerializeField]
-    Material pointingOverMaterial;
+    Material pointingOverMaterial = null;
 
     Color originalPointingMatColor;
 
@@ -95,7 +95,7 @@ public class GrabbableObject : CAVE2Interactable {
     bool showTouchingOver = true;
 
     [SerializeField]
-    Material touchingOverMaterial;
+    Material touchingOverMaterial = null;
 
     Color originalTouchingMatColor;
 

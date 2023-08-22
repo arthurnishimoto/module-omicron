@@ -31,7 +31,7 @@ using System.Collections;
 public class OMenuManager : MonoBehaviour {
 
     [SerializeField]
-    bool openMenuOnStart;
+    bool openMenuOnStart = false;
 
     public int menuWandID = 1;
 

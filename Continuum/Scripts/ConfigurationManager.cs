@@ -6,7 +6,7 @@ using UnityEngine;
 
 class ConfigList
 {
-    public string[] configurations;
+    public string[] configurations = null;
 }
 
 [Serializable]

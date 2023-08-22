@@ -7,47 +7,47 @@ public class StandaloneDisplayManager : MonoBehaviour
 {
     [Header("Display UI")]
     [SerializeField]
-    Text currentResolution;
+    Text currentResolution = null;
 
     [SerializeField]
-    InputField newWidthInput;
+    InputField newWidthInput = null;
 
     [SerializeField]
-    InputField newHeightInput;
+    InputField newHeightInput = null;
 
     [SerializeField]
-    Text currentWindowPosition;
+    Text currentWindowPosition = null;
 
     [SerializeField]
-    InputField newXPosInput;
+    InputField newXPosInput = null;
 
     [SerializeField]
-    InputField newYPosInput;
+    InputField newYPosInput = null;
 
     [SerializeField]
-    Dropdown windowModeDropdown;
+    Dropdown windowModeDropdown = null;
 
     int displayConfigLoaded = -1;
 
     [Header("Stereoscopic UI")]
     [SerializeField]
-    Dropdown stereoMode;
+    Dropdown stereoMode = null;
 
-    StereoscopicCamera stereoCamera;
-
-    [SerializeField]
-    InputField stereoXRes;
+    StereoscopicCamera stereoCamera = null;
 
     [SerializeField]
-    InputField stereoYRes;
+    InputField stereoXRes = null;
 
     [SerializeField]
-    Toggle stereoAutoRes;
+    InputField stereoYRes = null;
 
     [SerializeField]
-    Toggle stereoInvertToggle;
+    Toggle stereoAutoRes = null;
 
-    Vector2Int lastStereoRes;
+    [SerializeField]
+    Toggle stereoInvertToggle = null;
+
+    Vector2Int lastStereoRes = Vector2Int.zero;
     int lastStereoMode = 0;
 
     // Start is called before the first frame update

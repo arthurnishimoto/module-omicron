@@ -73,10 +73,10 @@ public class CAVE2ClusterManager : MonoBehaviour
     Text currentHeadTrackerTransformText = null;
 
     [SerializeField]
-    Button[] clientStatusButtons;
+    Button[] clientStatusButtons = null;
 
     [SerializeField]
-    Text clientStatusText;
+    Text clientStatusText = null;
 
     [Header("Debug")]
     [SerializeField]

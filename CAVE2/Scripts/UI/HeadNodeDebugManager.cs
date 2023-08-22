@@ -14,53 +14,53 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     [Header("Menu Panels")]
     [SerializeField]
-    GameObject applicationPanel;
+    GameObject applicationPanel = null;
 
     [SerializeField]
-    GameObject trackingSystemPanel;
+    GameObject trackingSystemPanel = null;
 
     [SerializeField]
-    GameObject performancePanel;
+    GameObject performancePanel = null;
 
     [SerializeField]
-    GameObject displayPanel;
+    GameObject displayPanel = null;
 
     [Header("Tracking System")]
     //[SerializeField]
     //Button trackingSystemButton;
 
     [SerializeField]
-    Toggle connectToServer;
+    Toggle connectToServer = null;
 
     [SerializeField]
-    InputField serverIPField;
+    InputField serverIPField = null;
 
     [SerializeField]
-    Text connectionStatus;
+    Text connectionStatus = null;
 
     [SerializeField]
-    InputField msgPortField;
+    InputField msgPortField = null;
 
     [SerializeField]
-    InputField dataPortField;
+    InputField dataPortField = null;
 
     [SerializeField]
-    Text primaryHeadTrackerPosRot;
+    Text primaryHeadTrackerPosRot = null;
 
     [SerializeField]
-    Toggle continuum3DMode;
+    Toggle continuum3DMode = null;
 
     [SerializeField]
-    Toggle continuumMainMode;
+    Toggle continuumMainMode = null;
 
     OmicronManager omicronManager;
 
     // FPS
     [SerializeField]
-    Text fpsText;
+    Text fpsText = null;
 
     [SerializeField]
-    Text timeText;
+    Text timeText = null;
 
     ObjectCountStressTestCounter fpsCounter;
 
