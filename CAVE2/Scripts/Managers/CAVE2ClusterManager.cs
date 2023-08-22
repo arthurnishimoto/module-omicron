@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2023		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2023, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -784,7 +784,12 @@ public class CAVE2ClusterManager : MonoBehaviour
     }
 
 #else
-    public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0)
+    public static void SetPosition(int x, int y, int resX = 0, int resY = 0, bool borderless = true)
+    {
+        UnityEngine.Debug.LogWarning("Not implemented on current platform");
+    }
+
+    public static void SetPosition(int connID, int x, int y, int resX = 0, int resY = 0, bool borderless = true)
     {
         UnityEngine.Debug.LogWarning("Not implemented on current platform");
     }
@@ -794,11 +799,22 @@ public class CAVE2ClusterManager : MonoBehaviour
         UnityEngine.Debug.LogWarning("Not implemented on current platform");
     }
 
+    public static void SetWindowTitle()
+    {
+        UnityEngine.Debug.LogWarning("Not implemented on current platform");
+    }
+
     public static int GetWindowProcessId(int connID)
     {
-        int id = -1;
         UnityEngine.Debug.LogWarning("Not implemented on current platform");
-        return id;
+        return -1;
+    }
+
+    public static Rect GetWindowRect(string windowName)
+    {
+        UnityEngine.Debug.LogWarning("Not implemented on current platform");
+
+        return new Rect();
     }
 #endif
 
