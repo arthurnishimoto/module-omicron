@@ -784,32 +784,6 @@ static CAVE2Manager CAVE2Manager_Instance;
     [SerializeField]
     int highQualitySettingIndex = -1;
 
-    [Header("Configuration")]
-    [SerializeField]
-    string configFilePath = "module-omicron/Config";
-
-    //[SerializeField]
-    //bool generateConfigFile = false;
-
-    // Config File
-    string configPath;
-    bool hasConfig = false;
-
-    [Serializable]
-    public class CAVE2Config
-    {
-        public CAVE2ManagerConfig cave2manager;
-    }
-
-    [Serializable]
-    public class CAVE2ManagerConfig
-    {
-        public string headNodeMachineName;
-        public string displayNodeMachineName;
-    }
-
-    CAVE2Config config;
-
     public void Init()
     {
         CAVE2Manager_Instance = this;
@@ -826,67 +800,6 @@ static CAVE2Manager CAVE2Manager_Instance;
         Debug.Log(this.GetType().Name + ">\t initialized on " + machineName);
 
         UnityEngine.Random.InitState(1138);
-
-        CheckConfigFile();
-    }
-
-    void CheckConfigFile()
-    {
-        string configFileDefaultName = "cave2config.cfg";
-
-        // Load config file:
-        // Priority 1: User specfied as command line argument
-        string[] cmdArgs = Environment.GetCommandLineArgs();
-        for (int i = 0; i < cmdArgs.Length; i++)
-        {
-            if (cmdArgs[i].Equals("-cave2config") && i + 1 < cmdArgs.Length)
-            {
-                if (!hasConfig)
-                {
-                    LoadConfigFile(Environment.CurrentDirectory + "/" + cmdArgs[i + 1]);
-                }
-            }
-        }
-
-        // Priority 2: Check Default Path (Assets/module-omicron)
-        // or changed in Editor Inspector for this script
-        if (!hasConfig)
-        {
-            LoadConfigFile(Application.dataPath + "/" + configFilePath + "/" + configFileDefaultName);
-        }
-
-        // Priority 3: Check Asset Folder Default Path
-        if (!hasConfig)
-        {
-            LoadConfigFile(Application.dataPath + "/" + configFileDefaultName);
-        }
-    }
-
-    void LoadConfigFile(string configPath)
-    {
-        // Read from config (if it exists, else create on quit)
-        try
-        {
-            StreamReader reader = new StreamReader(configPath);
-            config = JsonUtility.FromJson<CAVE2Config>(reader.ReadToEnd());
-            CAVE2ManagerConfig c2mConfig = config.cave2manager;
-
-            if (c2mConfig.headNodeMachineName != null)
-            {
-                CAVE2.HEAD_NODE_NAME = c2mConfig.headNodeMachineName;
-            }
-            if (c2mConfig.displayNodeMachineName != null)
-            {
-                CAVE2.DISPLAY_NODE_NAME = c2mConfig.displayNodeMachineName;
-            }
-
-            Debug.Log("CAVE2Manager configration loaded from '" + configPath + "'.");
-            hasConfig = true;
-        }
-        catch
-        {
-
-        }
     }
 
     void Start()
@@ -927,6 +840,21 @@ static CAVE2Manager CAVE2Manager_Instance;
     }
 
     void ConfigurationLoaded(DefaultConfig config)
+    {
+        ClusterConfig cConfig = ConfigurationManager.loadedConfig.clusterConfig;
+        if (cConfig.headNodeName.Length > 0)
+        {
+            CAVE2.HEAD_NODE_NAME = cConfig.headNodeName;
+            Debug.Log("Config: Using '" + CAVE2.HEAD_NODE_NAME + "' as head node machine name");
+        }
+        if (cConfig.displayNodeName.Length > 0)
+        {
+            CAVE2.HEAD_NODE_NAME = cConfig.displayNodeName;
+            Debug.Log("Config: Using '" + CAVE2.HEAD_NODE_NAME + "' as display node machine name");
+        }
+    }
+
+    void CAVE2ConfigurationLoaded(DefaultConfig config)
     {
         ClusterConfig cConfig = ConfigurationManager.loadedConfig.clusterConfig;
         if (cConfig.headNodeName.Length > 0)

@@ -95,10 +95,6 @@ public class ConfigurationManager : MonoBehaviour
 #if UNITY_EDITOR
         configSelectionPath = defaultEditorBasePath + "/" + configSelectionPath;
         configPath = defaultEditorBasePath + "/" + configPath;
-#elif USING_CAVE2
-        // Probably should have a CAVE2 build specfic config here at some point.
-        // Until then:
-        return;
 #else
         configSelectionPath = Application.dataPath + "/" + configSelectionPath;
         configPath = Application.dataPath + "/" + configPath;
@@ -134,7 +130,13 @@ public class ConfigurationManager : MonoBehaviour
 
             Debug.Log("Loaded configuration file '" + configPath + "/" + defaultConfigFile + "':");
             //Debug.Log(JsonUtility.ToJson(loadedConfig, true));
+#if USING_CAVE2
+            // Specific CAVE2 config function to ONLY set machine name
+            // and not set anything else i.e. display (for now)
+            BroadcastMessage("CAVE2ConfigurationLoaded", loadedConfig);
+#else
             BroadcastMessage("ConfigurationLoaded", loadedConfig);
+#endif
         }
         else
         {
