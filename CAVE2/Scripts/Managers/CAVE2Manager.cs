@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2022		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2023		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2022, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2023, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -849,8 +849,8 @@ static CAVE2Manager CAVE2Manager_Instance;
         }
         if (cConfig.displayNodeName.Length > 0)
         {
-            CAVE2.HEAD_NODE_NAME = cConfig.displayNodeName;
-            Debug.Log("Config: Using '" + CAVE2.HEAD_NODE_NAME + "' as display node machine name");
+            CAVE2.DISPLAY_NODE_NAME = cConfig.displayNodeName;
+            Debug.Log("Config: Using '" + CAVE2.DISPLAY_NODE_NAME + "' as display node machine name");
         }
     }
 
@@ -864,8 +864,8 @@ static CAVE2Manager CAVE2Manager_Instance;
         }
         if (cConfig.displayNodeName.Length > 0)
         {
-            CAVE2.HEAD_NODE_NAME = cConfig.displayNodeName;
-            Debug.Log("Config: Using '" + CAVE2.HEAD_NODE_NAME + "' as display node machine name");
+            CAVE2.DISPLAY_NODE_NAME = cConfig.displayNodeName;
+            Debug.Log("Config: Using '" + CAVE2.DISPLAY_NODE_NAME + "' as display node machine name");
         }
     }
 
