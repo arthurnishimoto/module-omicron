@@ -746,6 +746,9 @@ static CAVE2Manager CAVE2Manager_Instance;
     public Vector3 simulatorWandPosition = new Vector3(0.16f, 1.43f, 0.4f);
     public Vector3 simulatorWandRotation = new Vector3(0.0f, 0.0f, 0.0f);
 
+    public Vector3 simulatorWandPositionOffset = new Vector3(0.0f, 0.0f, 0.0f);
+    public Vector3 simulatorWandRotationOffset = new Vector3(0.0f, 0.0f, 0.0f);
+
     public enum TrackerEmulated { CAVE, Head, Wand };
     public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
     // string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };

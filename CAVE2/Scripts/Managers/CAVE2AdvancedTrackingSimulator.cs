@@ -1,11 +1,11 @@
 ﻿/**************************************************************************************************
 * THE OMICRON PROJECT
  *-------------------------------------------------------------------------------------------------
- * Copyright 2010-2018		Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright 2010-2023		Electronic Visualization Laboratory, University of Illinois at Chicago
  * Authors:										
  *  Arthur Nishimoto		anishimoto42@gmail.com
  *-------------------------------------------------------------------------------------------------
- * Copyright (c) 2010-2018, Electronic Visualization Laboratory, University of Illinois at Chicago
+ * Copyright (c) 2010-2023, Electronic Visualization Laboratory, University of Illinois at Chicago
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without modification, are permitted 
  * provided that the following conditions are met:
@@ -34,24 +34,45 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
     public int wandID = 1;
 
+    [SerializeField]
+    bool cameraMovesWithHead = true;
     public bool wandUsesHeadPosition = false;
     public Vector3 wandDefaultPositionOffset = new Vector3(0.15f, 1.5f, 0.4f);
+    public Vector3 wandDefaultRotationOffset = new Vector3(0, 0, 0);
+
+    public Vector3 wandPositionOffset = new Vector3(0, 0, 0);
+    public Vector3 wandRotationOffset = new Vector3(0, 0, 0);
 
     public enum TrackingSimulatorMode { Head, Wand };
+    public enum TrackingSimulatorHoldMode { WandTranslate, WandRotate };
+
+    [SerializeField]
+    KeyCode toggleIJKLHM_mode = KeyCode.Tab;
 
     [SerializeField]
     TrackingSimulatorMode IJKLHM_mode = TrackingSimulatorMode.Head;
 
     [SerializeField]
-    float IJKLHM_MovementSpeed = 1;
+    float IJKLHM_HeadMovementSpeed = 1;
 
     [SerializeField]
-    float IJKLHM_RotationSpeed = 25;
+    float IJKLHM_HeadRotationSpeed = 25;
 
-    public KeyCode toggleMouseTracking = KeyCode.Tab;
+    [SerializeField]
+    float IJKLHM_WandMovementSpeed = 0.5f;
+
+    [SerializeField]
+    float IJKLHM_WandRotationSpeed = -200;
+
+    [SerializeField]
+    KeyCode wandSimulatorHoldButton = KeyCode.LeftShift;
+
+    [SerializeField]
+    TrackingSimulatorHoldMode wandSimulatorHoldButtonMode = TrackingSimulatorHoldMode.WandTranslate;
 
     // bool mouseWandOffsetTriggered;
     public Vector3 mouseTrackingOffset;
+    public Vector3 mouseRotationOffset;
     bool mouseInitSet;
     Vector3 mouseLastPosition;
 
@@ -59,31 +80,62 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 	void Start () {
 	
 	}
-	
+
     void Update()
     {
-        
+        if (Input.GetKeyDown(toggleIJKLHM_mode))
+        {
+            if(IJKLHM_mode == TrackingSimulatorMode.Head)
+            {
+                IJKLHM_mode = TrackingSimulatorMode.Wand;
+            }
+            else if (IJKLHM_mode == TrackingSimulatorMode.Wand)
+            {
+                IJKLHM_mode = TrackingSimulatorMode.Head;
+            }
+        }
     }
 
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (Input.GetKey(toggleMouseTracking))
+        if (Input.GetKey(wandSimulatorHoldButton))
         {
-            if (!mouseInitSet)
+            if (wandSimulatorHoldButtonMode == TrackingSimulatorHoldMode.WandTranslate)
             {
-                mouseLastPosition = Input.mousePosition;
-                mouseInitSet = true;
+                if (!mouseInitSet)
+                {
+                    mouseLastPosition = Input.mousePosition;
+                    mouseInitSet = true;
+                }
+                else
+                {
+                    mouseTrackingOffset = (Input.mousePosition - mouseLastPosition) * Time.fixedDeltaTime * 0.1f;
+                    mouseLastPosition = Input.mousePosition;
+
+                    Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
+                    CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
+                }
             }
-            else
+            else if (wandSimulatorHoldButtonMode == TrackingSimulatorHoldMode.WandRotate)
             {
-                mouseTrackingOffset = (Input.mousePosition - mouseLastPosition) * Time.fixedDeltaTime * 0.1f;
-                mouseLastPosition = Input.mousePosition;
+                if (!mouseInitSet)
+                {
+                    mouseLastPosition = Input.mousePosition;
+                    mouseInitSet = true;
+                }
+                else
+                {
+                    mouseTrackingOffset = (Input.mousePosition - mouseLastPosition) * Time.fixedDeltaTime * 0.1f;
+                    mouseLastPosition = Input.mousePosition;
 
-                Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
-                CAVE2.GetCAVE2Manager().simulatorWandPosition = wandPosition + mouseTrackingOffset;
-                // mouseWandOffsetTriggered = true;
+                    // Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandRotation;
+                    mouseRotationOffset.z += -mouseTrackingOffset.x * 100f;
+
+                    // Resets rotation on release
+                    Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
+                    CAVE2.GetCAVE2Manager().simulatorWandRotation = wandPosition + mouseRotationOffset;
+                }
             }
-
         }
         else
         {
@@ -105,13 +157,18 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
                     MouseWandPointerMode();
                 }
             }
-            
         }
-	}
+    }
 
     void MouseWandPointerMode()
     {
         GameObject wandObject = CAVE2.GetWandObject(wandID);
+
+        if(cameraMovesWithHead)
+        {
+            Camera.main.transform.localPosition = CAVE2.Input.GetHeadPosition(1);
+            Camera.main.transform.localRotation = CAVE2.Input.GetHeadRotation(1);
+        }
 
         if (wandObject)
         {
@@ -157,8 +214,8 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             }
             wandObject.transform.LookAt(ray.GetPoint(1000));
             // Update the wandState rotation (opposite of normal since this object is determining the rotation)
-            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandObject.transform.localPosition;
-            CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.localEulerAngles;
+            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandObject.transform.localPosition + wandPositionOffset;
+            CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.localEulerAngles + wandRotationOffset;
         }
     }
 
@@ -168,49 +225,59 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         Vector3 headRotation = CAVE2.GetCAVE2Manager().simulatorHeadRotation;
 
         Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
-        // Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
+        Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
 
         Vector3 translation = Vector3.zero;
         Vector3 rotation = Vector3.zero;
 
+        float currentMovementSpeedMod = 1;
+        if (IJKLHM_mode == TrackingSimulatorMode.Head)
+        {
+            currentMovementSpeedMod = IJKLHM_HeadMovementSpeed;
+        }
+        else if (IJKLHM_mode == TrackingSimulatorMode.Wand)
+        {
+            currentMovementSpeedMod = IJKLHM_WandMovementSpeed;
+        }
+
         if ( Input.GetKey(KeyCode.I))
         {
-            translation.z += IJKLHM_MovementSpeed * Time.fixedDeltaTime;
+            translation.z += currentMovementSpeedMod * Time.fixedDeltaTime;
         }
         if (Input.GetKey(KeyCode.K))
         {
-            translation.z -= IJKLHM_MovementSpeed * Time.fixedDeltaTime;
+            translation.z -= currentMovementSpeedMod * Time.fixedDeltaTime;
         }
         if (Input.GetKey(KeyCode.J))
         {
-            translation.x -= IJKLHM_MovementSpeed * Time.fixedDeltaTime;
+            translation.x -= currentMovementSpeedMod * Time.fixedDeltaTime;
         }
         if (Input.GetKey(KeyCode.L))
         {
-            translation.x += IJKLHM_MovementSpeed * Time.fixedDeltaTime;
+            translation.x += currentMovementSpeedMod * Time.fixedDeltaTime;
         }
 
         if (Input.GetKey(KeyCode.H))
         {
-            translation.y += IJKLHM_MovementSpeed * Time.fixedDeltaTime;
+            translation.y += currentMovementSpeedMod * Time.fixedDeltaTime;
         }
         if (Input.GetKey(KeyCode.N))
         {
             if(headPosition.y > 0.1f)
-                translation.y -= IJKLHM_MovementSpeed * Time.fixedDeltaTime;
-        }
-
-        if (Input.GetKey(KeyCode.U))
-        {
-            rotation.y -= IJKLHM_RotationSpeed * Time.fixedDeltaTime;
-        }
-        if (Input.GetKey(KeyCode.O))
-        {
-            rotation.y += IJKLHM_RotationSpeed * Time.fixedDeltaTime;
+                translation.y -= currentMovementSpeedMod * Time.fixedDeltaTime;
         }
 
         if (IJKLHM_mode == TrackingSimulatorMode.Head)
         {
+            if (Input.GetKey(KeyCode.U))
+            {
+                rotation.y -= IJKLHM_HeadRotationSpeed * Time.fixedDeltaTime;
+            }
+            if (Input.GetKey(KeyCode.O))
+            {
+                rotation.y += IJKLHM_HeadRotationSpeed * Time.fixedDeltaTime;
+            }
+
             headPosition.z += translation.z * Mathf.Cos(Mathf.Deg2Rad * headRotation.y);
             headPosition.x += translation.z * Mathf.Sin(Mathf.Deg2Rad * headRotation.y);
 
@@ -226,15 +293,27 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         }
         else if (IJKLHM_mode == TrackingSimulatorMode.Wand)
         {
-            wandPosition.z += translation.z * Mathf.Cos(Mathf.Deg2Rad * headRotation.y);
-            wandPosition.x += translation.z * Mathf.Sin(Mathf.Deg2Rad * headRotation.y);
+            if (Input.GetKey(KeyCode.U))
+            {
+                rotation.y -= IJKLHM_WandRotationSpeed * Time.fixedDeltaTime;
+            }
+            if (Input.GetKey(KeyCode.O))
+            {
+                rotation.y += IJKLHM_WandRotationSpeed * Time.fixedDeltaTime;
+            }
 
-            wandPosition.z += translation.x * Mathf.Cos(Mathf.Deg2Rad * (90 + headRotation.y));
-            wandPosition.x += translation.x * Mathf.Sin(Mathf.Deg2Rad * (90 + headRotation.y));
+            translation.z += translation.z * Mathf.Cos(Mathf.Deg2Rad * headRotation.y);
+            translation.x += translation.z * Mathf.Sin(Mathf.Deg2Rad * headRotation.y);
 
-            wandPosition.y += translation.y;
+            translation.z += translation.x * Mathf.Cos(Mathf.Deg2Rad * (90 + headRotation.y));
+            translation.x += translation.x * Mathf.Sin(Mathf.Deg2Rad * (90 + headRotation.y));
 
-            wandDefaultPositionOffset = wandPosition;
+            translation.y += translation.y;
+
+            wandPositionOffset += translation;
+
+            // Set U, O keys to roll wand
+            wandRotationOffset += new Vector3(0, 0, rotation.y);
         }
 
     }

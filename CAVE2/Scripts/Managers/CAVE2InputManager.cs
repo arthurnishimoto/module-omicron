@@ -629,11 +629,11 @@ public class CAVE2InputManager : OmicronEventClient
 
             if (wandIDMappedToSimulator == 1)
             {
-                wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+                wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition + CAVE2.GetCAVE2Manager().simulatorWandPositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
             }
             else
             {
-                wand2MocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+                wand2MocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition + CAVE2.GetCAVE2Manager().simulatorWandPositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
             }
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
@@ -641,9 +641,9 @@ public class CAVE2InputManager : OmicronEventClient
             CAVE2.GetCAVE2Manager().simulatorHeadPosition = GetHeadPosition(1);
             CAVE2.GetCAVE2Manager().simulatorWandPosition = GetWandPosition(1);
 
-            mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
+            mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
 
-            wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation));
+            wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition + CAVE2.GetCAVE2Manager().simulatorWandPositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
         }
 
         // Wand Buttons
