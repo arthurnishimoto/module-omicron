@@ -124,6 +124,8 @@ public class StandaloneDisplayManager : MonoBehaviour
                 stereoInvertToggle.SetIsOnWithoutNotify(stereoConfig.invertStereo);
                 stereoAutoRes.SetIsOnWithoutNotify(stereoConfig.autoStereoResolution);
 
+                stereoCamera.UseGeneralizedPerspectiveProjection(displayConfig.useGeneralizedPerspectiveProjection);
+
                 if (stereoConfig.stereoMode.ToLower() == "interleaved")
                 {
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Interleaved);
@@ -192,7 +194,7 @@ public class StandaloneDisplayManager : MonoBehaviour
             }
             else
             {
-                stereoMode.interactable = false;
+                stereoMode.interactable = true;
                 stereoAutoRes.interactable = false;
                 stereoInvertToggle.interactable = false;
             }
@@ -331,22 +333,27 @@ public class StandaloneDisplayManager : MonoBehaviour
                 case (1):
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Interleaved);
                     UpdateStereoConfigMode("Interleaved");
+                    stereoCamera.enabled = true;
                     break;
                 case (2):
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.SideBySide);
                     UpdateStereoConfigMode("SideBySide");
+                    stereoCamera.enabled = true;
                     break;
                 case (3):
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Checkerboard);
                     UpdateStereoConfigMode("Checkerboard");
+                    stereoCamera.enabled = true;
                     break;
                 case (4):
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Left);
                     UpdateStereoConfigMode("Left");
+                    stereoCamera.enabled = true;
                     break;
                 case (5):
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Right);
                     UpdateStereoConfigMode("Right");
+                    stereoCamera.enabled = true;
                     break;
                 default:
                     stereoCamera.SetStereoMode(StereoscopicCamera.StereoscopicMode.Left);

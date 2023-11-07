@@ -71,6 +71,9 @@ public class StereoscopicCamera : MonoBehaviour {
 
     bool camerasGenerated;
 
+    [SerializeField]
+    bool useGeneralizedPerspectiveProjection = false;
+
     // Use this for initialization
     void Start () {
         if (!update)
@@ -190,7 +193,7 @@ public class StereoscopicCamera : MonoBehaviour {
             }
         }
 
-        if (GetComponent<GeneralizedPerspectiveProjection>().enabled == false)
+        if (useGeneralizedPerspectiveProjection && GetComponent<GeneralizedPerspectiveProjection>().enabled == false)
         {
             // Re-enable script for one update loop to prevent jittering
             GetComponent<GeneralizedPerspectiveProjection>().enabled = true;
@@ -399,5 +402,10 @@ public class StereoscopicCamera : MonoBehaviour {
     public bool IsCamerasGenerated()
     {
         return camerasGenerated;
+    }
+
+    public void UseGeneralizedPerspectiveProjection(bool value)
+    {
+        useGeneralizedPerspectiveProjection = value;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
-    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display};
+    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display, CAVE2Display };
 
     [SerializeField]
     MenuMode initialMenuState = MenuMode.Hidden;
@@ -24,6 +24,12 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     [SerializeField]
     GameObject displayPanel = null;
+
+    [SerializeField]
+    GameObject cave2DisplayPanel = null;
+
+    [SerializeField]
+    bool useCAVE2DisplayPanel = true;
 
     [Header("Tracking System")]
     //[SerializeField]
@@ -95,6 +101,10 @@ public class HeadNodeDebugManager : MonoBehaviour
         {
             displayPanel.SetActive(false);
         }
+        if (cave2DisplayPanel)
+        {
+            cave2DisplayPanel.SetActive(false);
+        }
 
         switch (initialMenuState)
         {
@@ -126,6 +136,12 @@ public class HeadNodeDebugManager : MonoBehaviour
                 if (displayPanel)
                 {
                     displayPanel.SetActive(true);
+                }
+                break;
+            case (MenuMode.CAVE2Display):
+                if (cave2DisplayPanel)
+                {
+                    cave2DisplayPanel.SetActive(true);
                 }
                 break;
         }
@@ -222,13 +238,27 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     public void ToggleDisplayPanel()
     {
-        if (displayPanel.activeSelf)
+        if (useCAVE2DisplayPanel)
         {
-            displayPanel.SetActive(false);
+            if (cave2DisplayPanel.activeSelf)
+            {
+                cave2DisplayPanel.SetActive(false);
+            }
+            else
+            {
+                cave2DisplayPanel.SetActive(true);
+            }
         }
         else
         {
-            displayPanel.SetActive(true);
+            if (displayPanel.activeSelf)
+            {
+                displayPanel.SetActive(false);
+            }
+            else
+            {
+                displayPanel.SetActive(true);
+            }
         }
     }
 
