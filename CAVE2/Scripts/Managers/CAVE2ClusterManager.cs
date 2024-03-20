@@ -323,9 +323,16 @@ public class CAVE2ClusterManager : MonoBehaviour
             camera.SetVirtualCamera(camera.GetComponent<Camera>());
             camera.SetApplyHeadOffset(false);
 
-            RemoteTerminal terminal = GameObject.Find("Terminal").GetComponent<RemoteTerminal>();
+            if (GameObject.Find("Terminal") != null)
+            {
+                RemoteTerminal terminal = GameObject.Find("Terminal").GetComponent<RemoteTerminal>();
 
-            terminal.PrintUI("Setting Camera Perspective for " + CAVE2Manager.GetMachineName() + " WindowID: " + myWindowPosID);
+                if (terminal != null)
+                {
+                    terminal.PrintUI("Setting Camera Perspective for " + CAVE2Manager.GetMachineName() + " WindowID: " + myWindowPosID);
+                }
+            }
+
             if (CAVE2Manager.GetMachineName() == CAVE2.DISPLAY_NODE_NAME) //Backwall
             {
                 // Backwall has a different stereo configuration

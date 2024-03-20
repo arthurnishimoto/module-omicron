@@ -2613,7 +2613,114 @@ public class CAVE2RPCManager : MonoBehaviour
 {
     public enum MsgType { Reliable, Unreliable, StateUpdate };
 
+    // Cluster Sync
     public int cave2RPCCallCount;
+
+    // Remote Networking
+    HostTopology topology;
+    [SerializeField] int hostId;
+    int connectionId;
+    [SerializeField] int connID;
+
+    HashSet<int> clientIDs = new HashSet<int>();
+#if USING_GETREAL3D
+    [SerializeField]
+    bool useGetReal3DRPC = true;
+#endif
+    [Header("Message Server")]
+    [SerializeField]
+    bool useMsgServer;
+
+    const short Msg_RemoteTerminal = 1104;
+    const short Msg_ClientInfo = 1101;
+    // static short Msg_CAVE2RPC2 = 202;
+    // static short Msg_CAVE2RPC16 = 216;
+    // static short Msg_OmicronSensorList = 1100;
+
+    NetworkServerSimple msgServer;
+    NetworkMessageDelegate serverOnClientConnect;
+    NetworkMessageDelegate serverOnClientDisconnect;
+    NetworkMessageDelegate serverOnData;
+
+    Hashtable serverMessageDelegates = new Hashtable();
+
+    [SerializeField]
+    int serverListenPort = 9105;
+
+    [SerializeField]
+    int reliableChannelId;
+
+    [SerializeField]
+    int unreliableChannelId;
+
+    [SerializeField]
+    int stateUpdateChannelId;
+
+    [SerializeField]
+    int maxConnections = 100;
+
+    float serverUpdateDataDelay = 1.0f;
+    float serverUpdateTimer;
+
+    [Header("Message Client")]
+    [SerializeField]
+    bool useMsgClient;
+
+    NetworkClient msgClient;
+    NetworkMessageDelegate clientOnConnect;
+    NetworkMessageDelegate clientOnDisconnect;
+    NetworkMessageDelegate clientOnData;
+    NetworkMessageDelegate clientOnReceiveOmicronSensorList;
+    NetworkMessageDelegate clientOnSendMsg2;
+    NetworkMessageDelegate clientOnSendMsg16;
+    Hashtable clientMessageDelegates = new Hashtable();
+
+    [SerializeField]
+    string serverIP = "10.0.0.175";
+
+    [SerializeField]
+    bool autoUseHeadNodeAsServerIP = true;
+
+    [SerializeField]
+    bool debugMsg = false;
+
+    bool clientConnectedToServer = false;
+
+    [SerializeField]
+    bool autoReconnect = true;
+
+    // [SerializeField]
+    // float autoReconnectDelay = 5;
+
+    float autoReconnectTimer;
+    int reconnectAttemptCount;
+
+    [SerializeField]
+    RemoteTerminal remoteTerminal = null;
+
+    string defaultTargetObjectName;
+
+    [Header("Debug")]
+    [SerializeField]
+    bool debugRPC = false;
+
+    [SerializeField]
+    bool hideLogWarning = true;
+
+    [SerializeField]
+    bool debugNetSpeed = false;
+
+    [SerializeField]
+    float clientSendRate;
+
+    int nPacketsSent;
+    float packetOutTimer;
+
+    int nPacketsReceived;
+    float packetInTimer;
+
+    [SerializeField]
+    float clientReceiveRate;
 
     public void EnableMsgServer(bool value)
     {
