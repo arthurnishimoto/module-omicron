@@ -31,11 +31,17 @@ using System.Collections;
 public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
     public int headID = 1;
-
     public int wandID = 1;
 
     [SerializeField]
     bool cameraMovesWithHead = true;
+
+    [SerializeField]
+    Camera player1Camera;
+
+    [SerializeField]
+    Camera player2Camera;
+
     public bool wandUsesHeadPosition = false;
     public Vector3 wandDefaultPositionOffset = new Vector3(0.15f, 1.5f, 0.4f);
     public Vector3 wandDefaultRotationOffset = new Vector3(0, 0, 0);
@@ -43,7 +49,11 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
     public Vector3 wandPositionOffset = new Vector3(0, 0, 0);
     public Vector3 wandRotationOffset = new Vector3(0, 0, 0);
 
-    public enum TrackingSimulatorMode { Head, Wand };
+    public Vector3 wand2PositionOffset = new Vector3(0, 0, 0);
+    public Vector3 wand2RotationOffset = new Vector3(0, 0, 0);
+
+
+    public enum TrackingSimulatorMode { None, Head, Wand };
     public enum TrackingSimulatorHoldMode { WandTranslate, WandRotate };
 
     [SerializeField]
@@ -166,8 +176,18 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
         if(cameraMovesWithHead)
         {
-            Camera.main.transform.localPosition = CAVE2.Input.GetHeadPosition(1);
-            Camera.main.transform.localRotation = CAVE2.Input.GetHeadRotation(1);
+            if (player1Camera == null)
+            {
+                player1Camera = Camera.main;
+            }
+            player1Camera.transform.localPosition = CAVE2.Input.GetHeadPosition(1);
+            player1Camera.transform.localRotation = CAVE2.Input.GetHeadRotation(1);
+
+            if (player2Camera != null)
+            {
+                player2Camera.transform.localPosition = CAVE2.Input.GetHeadPosition(2);
+                player2Camera.transform.localRotation = CAVE2.Input.GetHeadRotation(2);
+            }
         }
 
         if (wandObject)
@@ -202,7 +222,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
             Vector2 position = new Vector3(Input.mousePosition.x, Input.mousePosition.y);
 
             // Ray extending from main camera into screen from touch point
-            Ray ray = CAVE2.GetCameraController().GetMainCamera().ScreenPointToRay(position);
+            Ray ray = CAVE2.GetPlayerController(headID).GetComponentInChildren<Camera>().ScreenPointToRay(position);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 100))
             {
@@ -213,9 +233,18 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
                 //transform.LookAt( ray.GetPoint(1000) );
             }
             wandObject.transform.LookAt(ray.GetPoint(1000));
+
             // Update the wandState rotation (opposite of normal since this object is determining the rotation)
-            CAVE2.GetCAVE2Manager().simulatorWandPosition = wandObject.transform.localPosition + wandPositionOffset;
-            CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.localEulerAngles + wandRotationOffset;
+            if (wandID == 1)
+            {
+                CAVE2.GetCAVE2Manager().simulatorWandPosition = wandObject.transform.localPosition + wandPositionOffset;
+                CAVE2.GetCAVE2Manager().simulatorWandRotation = wandObject.transform.localEulerAngles + wandRotationOffset;
+            }
+            else if (wandID == 2)
+            {
+                CAVE2.GetCAVE2Manager().simulatorWand2Position = wandObject.transform.localPosition + wand2PositionOffset;
+                CAVE2.GetCAVE2Manager().simulatorWand2Rotation = wandObject.transform.localEulerAngles + wand2RotationOffset;
+            }
         }
     }
 
@@ -226,6 +255,17 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
         Vector3 wandPosition = CAVE2.GetCAVE2Manager().simulatorWandPosition;
         Vector3 wandRotation = CAVE2.GetCAVE2Manager().simulatorWandRotation;
+
+        if (headID == 2)
+        {
+            headPosition = CAVE2.GetCAVE2Manager().simulatorHead2Position;
+            headRotation = CAVE2.GetCAVE2Manager().simulatorHead2Rotation;
+        }
+
+        if (wandID == 2) {
+            wandPosition = CAVE2.GetCAVE2Manager().simulatorWand2Position;
+            wandRotation = CAVE2.GetCAVE2Manager().simulatorWand2Rotation;
+        }
 
         Vector3 translation = Vector3.zero;
         Vector3 rotation = Vector3.zero;
@@ -239,6 +279,7 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
         {
             currentMovementSpeedMod = IJKLHM_WandMovementSpeed;
         }
+
 
         if ( Input.GetKey(KeyCode.I))
         {
@@ -288,8 +329,16 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
             headRotation.y += rotation.y;
 
-            CAVE2.GetCAVE2Manager().simulatorHeadPosition = headPosition;
-            CAVE2.GetCAVE2Manager().simulatorHeadRotation = headRotation;
+            if (headID == 1)
+            {
+                CAVE2.GetCAVE2Manager().simulatorHeadPosition = headPosition;
+                CAVE2.GetCAVE2Manager().simulatorHeadRotation = headRotation;
+            }
+            else if (headID == 2)
+            {
+                CAVE2.GetCAVE2Manager().simulatorHead2Position = headPosition;
+                CAVE2.GetCAVE2Manager().simulatorHead2Rotation = headRotation;
+            }
         }
         else if (IJKLHM_mode == TrackingSimulatorMode.Wand)
         {
@@ -310,10 +359,20 @@ public class CAVE2AdvancedTrackingSimulator : MonoBehaviour {
 
             translation.y += translation.y;
 
-            wandPositionOffset += translation;
+            if (wandID == 1)
+            {
+                wandPositionOffset += translation;
 
-            // Set U, O keys to roll wand
-            wandRotationOffset += new Vector3(0, 0, rotation.y);
+                // Set U, O keys to roll wand
+                wandRotationOffset += new Vector3(0, 0, rotation.y);
+            }
+            else if (wandID == 2)
+            {
+                wand2PositionOffset += translation;
+
+                // Set U, O keys to roll wand
+                wand2RotationOffset += new Vector3(0, 0, rotation.y);
+            }
         }
 
     }

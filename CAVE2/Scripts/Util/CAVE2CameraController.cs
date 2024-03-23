@@ -61,6 +61,9 @@ public class CAVE2CameraController : MonoBehaviour {
     CameraClearFlags defaultMainCameraClearFlags;
     int defaultMainCameraCullingMask;
 
+    [SerializeField]
+    int playerID;
+
     // Use this for initialization
     void Start()
     {
@@ -92,6 +95,7 @@ public class CAVE2CameraController : MonoBehaviour {
         }
 
         wandNav = GetComponentInParent<CAVE2WandNavigator>();
+        playerID = GetComponentInParent<CAVE2PlayerIdentity>().playerID;
     }
 
     // Update is called once per frame
@@ -130,20 +134,37 @@ public class CAVE2CameraController : MonoBehaviour {
                 mainCamera.GetComponent<getRealCameraUpdater>().enabled = false;
             }
 #endif
-
+            /*
             float simHeadRotateSpeed = 40;
             if(wandNav)
             {
                 simHeadRotateSpeed = wandNav.GetTurnSpeed();
             }
-            if( Input.GetKey(CAVE2.Input.simulatorHeadRotateL) )
+
+            if (playerID == 1)
             {
-                transform.Rotate(-Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+                if (Input.GetKey(CAVE2.Input.simulatorHeadRotateL))
+                {
+                    transform.Rotate(-Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+                }
+                else if (Input.GetKey(CAVE2.Input.simulatorHeadRotateR))
+                {
+                    transform.Rotate(Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+                }
             }
-            else if (Input.GetKey(CAVE2.Input.simulatorHeadRotateR))
+
+            if (playerID == 2)
             {
-                transform.Rotate(Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+                if (Input.GetKey(CAVE2.Input.simulatorHead2RotateL))
+                {
+                    transform.Rotate(-Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+                }
+                else if (Input.GetKey(CAVE2.Input.simulatorHead2RotateR))
+                {
+                    transform.Rotate(Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+                }
             }
+            */
         }
     }
 

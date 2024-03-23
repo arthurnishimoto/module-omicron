@@ -43,6 +43,8 @@ public class CAVE2InputManager : OmicronEventClient
     [Header("Simulator Input Mapping")]
     public int wandIDMappedToSimulator = 1;
 
+    public bool mapBothWandsToSimulator = false;
+
     // CAVE2 Simulator to Wand button bindings
     public string wandSimulatorAnalogUD = "Vertical";
     public string wandSimulatorAnalogLR = "Horizontal";
@@ -103,6 +105,23 @@ public class CAVE2InputManager : OmicronEventClient
 
     [SerializeField]
     VRModel vrModel = VRModel.None;
+
+    [Header("Simulator Player 2 Input Mapping")]
+    public string wand2SimulatorAnalogUD = "Vertical2";
+    public string wand2SimulatorAnalogLR = "Horizontal2";
+    public string wand2SimulatorButton3 = "Fire1"; // PS3 Navigation Cross
+    public string wand2SimulatorButton2 = "Fire2"; // PS3 Navigation Circle
+    public KeyCode wand2SimulatorDPadUp = KeyCode.UpArrow;
+    public KeyCode wand2SimulatorDPadDown = KeyCode.DownArrow;
+    public KeyCode wand2SimulatorDPadLeft = KeyCode.LeftArrow;
+    public KeyCode wand2SimulatorDPadRight = KeyCode.RightArrow;
+    public string wand2SimulatorButton5 = "space"; // PS3 Navigation L1
+    public string wand2SimulatorButton6 = "Fire3"; // PS3 Navigation L3
+    public string wand2SimulatorButton7 = "space"; // PS3 Navigation L2
+
+    [Header("Simulator PLayer 2 Mocap Mapping")]
+    public KeyCode simulatorHead2RotateL = KeyCode.U;
+    public KeyCode simulatorHead2RotateR = KeyCode.O;
 
     public static string GetXRDeviceName()
     {
@@ -499,6 +518,7 @@ public class CAVE2InputManager : OmicronEventClient
     void FixedUpdate()
     {
         int headMocapID = CAVE2.GetCAVE2Manager().head1MocapID;
+        int head2MocapID = CAVE2.GetCAVE2Manager().head2MocapID;
         int wandMocapID = CAVE2.GetCAVE2Manager().wand1MocapID;
         int wand2MocapID = CAVE2.GetCAVE2Manager().wand2MocapID;
         int wandID = CAVE2.GetCAVE2Manager().wand1ControllerID;
@@ -517,6 +537,21 @@ public class CAVE2InputManager : OmicronEventClient
         else
         {
             mainHeadSensor = (OmicronMocapSensor)mocapSensors[headMocapID];
+        }
+
+        // Get/Create Secondary Head
+        OmicronMocapSensor secondaryHeadSensor;
+        if (!mocapSensors.ContainsKey(head2MocapID))
+        {
+            GameObject g = new GameObject("OmicronMocapSensor " + head2MocapID);
+            g.transform.parent = transform;
+            secondaryHeadSensor = g.AddComponent<OmicronMocapSensor>();
+            secondaryHeadSensor.sourceID = head2MocapID;
+            mocapSensors[head2MocapID] = secondaryHeadSensor;
+        }
+        else
+        {
+            secondaryHeadSensor = (OmicronMocapSensor)mocapSensors[head2MocapID];
         }
 
         // Get/Create Primary Wand
@@ -626,14 +661,15 @@ public class CAVE2InputManager : OmicronEventClient
             }
 
             mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation));
+            secondaryHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHead2Position, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHead2Rotation));
 
             if (wandIDMappedToSimulator == 1)
             {
                 wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition + CAVE2.GetCAVE2Manager().simulatorWandPositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
             }
-            else
+            if(mapBothWandsToSimulator || wandIDMappedToSimulator == 2)
             {
-                wand2MocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition + CAVE2.GetCAVE2Manager().simulatorWandPositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
+                wand2MocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWand2Position + CAVE2.GetCAVE2Manager().simulatorWand2PositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWand2Rotation + CAVE2.GetCAVE2Manager().simulatorWand2RotationOffset));
             }
         }
         else if( CAVE2.GetCAVE2Manager().usingKinectTrackingSimulator )
@@ -642,7 +678,6 @@ public class CAVE2InputManager : OmicronEventClient
             CAVE2.GetCAVE2Manager().simulatorWandPosition = GetWandPosition(1);
 
             mainHeadSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorHeadPosition, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorHeadRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
-
             wandMocapSensor.UpdateTransform(CAVE2.GetCAVE2Manager().simulatorWandPosition + CAVE2.GetCAVE2Manager().simulatorWandPositionOffset, Quaternion.Euler(CAVE2.GetCAVE2Manager().simulatorWandRotation + CAVE2.GetCAVE2Manager().simulatorWandRotationOffset));
         }
 
@@ -700,6 +735,76 @@ public class CAVE2InputManager : OmicronEventClient
             // Wand Button SP2 (Start)
             //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton2)))
             //    flags += (int)EventBase.Flags.SpecialButton2;
+
+            float wand2_analogUD = Input.GetAxis(wand2SimulatorAnalogUD);
+            float wand2_analogLR = Input.GetAxis(wand2SimulatorAnalogLR);
+            //bool turn = CAVE2.GetCAVE2Manager().simulatorWandStrafeAsTurn;
+
+            wand2_analog1 = new Vector2(wand2_analogLR, wand2_analogUD);
+
+            if (Input.GetKey(wand2SimulatorDPadUp))
+                wand2_flags += (int)EventBase.Flags.ButtonUp;
+            if (Input.GetKey(wand2SimulatorDPadDown))
+                wand2_flags += (int)EventBase.Flags.ButtonDown;
+            if (Input.GetKey(wand2SimulatorDPadLeft))
+                wand2_flags += (int)EventBase.Flags.ButtonLeft;
+            if (Input.GetKey(wand2SimulatorDPadRight))
+                wand2_flags += (int)EventBase.Flags.ButtonRight;
+
+            // Wand Button 1 (Triangle/Y)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button1)))
+            //    flags += (int)EventBase.Flags.Button1;
+            // F -> Wand Button 2 (Circle/B)
+            if (wand2SimulatorButton2.Length > 0 && Input.GetButton(wand2SimulatorButton2))
+                wand2_flags += (int)EventBase.Flags.Button2;
+            // R -> Wand Button 3 (Cross/A)
+            if (wand2SimulatorButton3.Length > 0 && Input.GetButton(wand2SimulatorButton3))
+                wand2_flags += (int)EventBase.Flags.Button3;
+            // Wand Button 4 (Square/X)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button4)))
+            //    flags += (int)EventBase.Flags.Button4;
+            // Wand Button 8 (R1/RB)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton3)))
+            //    flags += (int)EventBase.Flags.SpecialButton3;
+            // Wand Button 5 (L1/LB)
+            if (wand2SimulatorButton5.Length > 0 && Input.GetKey(wand2SimulatorButton5))
+                wand2_flags += (int)EventBase.Flags.Button5;
+            // Wand Button 6 (L3)
+            if (wand2SimulatorButton6.Length > 0 && Input.GetButton(wand2SimulatorButton6))
+                wand2_flags += (int)EventBase.Flags.Button6;
+            // Wand Button 7 (L2)
+            if (wand2SimulatorButton7.Length > 0 && Input.GetKey(wand2SimulatorButton7))
+                wand2_flags += (int)EventBase.Flags.Button7;
+            // Wand Button 8 (R2)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button8)))
+            //    flags += (int)EventBase.Flags.Button8;
+            // Wand Button 9 (R3)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.Button9)))
+            //    flags += (int)EventBase.Flags.Button9;
+            // Wand Button SP1 (Back)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton1)))
+            //    flags += (int)EventBase.Flags.SpecialButton1;
+            // Wand Button SP2 (Start)
+            //if (getReal3D.Input.GetButton(CAVE2.CAVE2ToGetReal3DButton(CAVE2.Button.SpecialButton2)))
+            //    flags += (int)EventBase.Flags.SpecialButton2;
+
+            GameObject playerController = CAVE2.GetPlayerController(wandIDMappedToSimulator);
+            CAVE2CameraController cameraController = playerController.GetComponentInChildren<CAVE2CameraController>();
+            CAVE2WandNavigator wandNav = playerController.GetComponentInChildren<CAVE2WandNavigator>();
+            float simHeadRotateSpeed = 40;
+            if (wandNav)
+            {
+                simHeadRotateSpeed = wandNav.GetTurnSpeed();
+            }
+
+            if (Input.GetKey(CAVE2.Input.simulatorHeadRotateL))
+            {
+                cameraController.transform.Rotate(-Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+            }
+            else if (Input.GetKey(CAVE2.Input.simulatorHeadRotateR))
+            {
+                cameraController.transform.Rotate(Vector3.up * Time.deltaTime * simHeadRotateSpeed);
+            }
         }
 
         // getReal3D

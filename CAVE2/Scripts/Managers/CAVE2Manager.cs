@@ -749,6 +749,15 @@ static CAVE2Manager CAVE2Manager_Instance;
     public Vector3 simulatorWandPositionOffset = new Vector3(0.0f, 0.0f, 0.0f);
     public Vector3 simulatorWandRotationOffset = new Vector3(0.0f, 0.0f, 0.0f);
 
+    public Vector3 simulatorHead2Position = new Vector3(0.0f, 1.6f, 0.0f);
+    public Vector3 simulatorHead2Rotation = new Vector3(0.0f, 0.0f, 0.0f);
+
+    public Vector3 simulatorWand2Position = new Vector3(0.16f, 1.43f, 0.4f);
+    public Vector3 simulatorWand2Rotation = new Vector3(0.0f, 0.0f, 0.0f);
+
+    public Vector3 simulatorWand2PositionOffset = new Vector3(0.0f, 0.0f, 0.0f);
+    public Vector3 simulatorWand2RotationOffset = new Vector3(0.0f, 0.0f, 0.0f);
+
     public enum TrackerEmulated { CAVE, Head, Wand };
     public enum TrackerEmulationMode { Pointer, Translate, Rotate, TranslateForward, TranslateVertical, RotatePitchYaw, RotateRoll };
     // string[] trackerEmuStrings = { "CAVE", "Head", "Wand1" };
@@ -881,10 +890,15 @@ static CAVE2Manager CAVE2Manager_Instance;
 
         if( !UsingGetReal3D() && !UnityEngine.XR.XRSettings.enabled && (mocapEmulation || usingKinectTrackingSimulator) )
         {
-            if (mainCameraController)
+            if (GetCameraController(1))
             {
-                mainCameraController.GetMainCamera().transform.localPosition = simulatorHeadPosition;
-                mainCameraController.GetMainCamera().transform.localEulerAngles = simulatorHeadRotation;
+                GetCameraController(1).GetMainCamera().transform.localPosition = simulatorHeadPosition;
+                GetCameraController(1).GetMainCamera().transform.localEulerAngles = simulatorHeadRotation;
+            }
+            if (GetCameraController(2))
+            {
+                GetCameraController(2).GetMainCamera().transform.localPosition = simulatorHead2Position;
+                GetCameraController(2).GetMainCamera().transform.localEulerAngles = simulatorHead2Rotation;
             }
         }
 
