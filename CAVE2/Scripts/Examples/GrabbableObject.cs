@@ -108,7 +108,7 @@ public class GrabbableObject : CAVE2Interactable {
         pointingOverHighlight.transform.rotation = transform.rotation;
         pointingOverHighlight.transform.localScale = Vector3.one * highlightScaler;
 
-        if (defaultMesh == null)
+        if (defaultMesh == null && GetComponent<MeshFilter>() != null)
         {
             defaultMesh = GetComponent<MeshFilter>().mesh;
         }
@@ -269,6 +269,11 @@ public class GrabbableObject : CAVE2Interactable {
             }
         }
         grabbed = true;
+    }
+
+    public bool IsGrabbed()
+    {
+        return grabbed;
     }
 
     void OnWandGrabRelease()

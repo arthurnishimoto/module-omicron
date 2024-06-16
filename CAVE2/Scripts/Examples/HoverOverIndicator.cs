@@ -74,7 +74,7 @@ public class HoverOverIndicator : CAVE2Interactable
         hoverOverHighlight.transform.rotation = transform.rotation;
         hoverOverHighlight.transform.localScale = highlightScaler;
 
-        if (defaultMesh == null)
+        if (defaultMesh == null && GetComponent<MeshFilter>() != null)
         {
             defaultMesh = GetComponent<MeshFilter>().mesh;
         }
