@@ -2805,7 +2805,7 @@ public class CAVE2RPCManager : MonoBehaviour
         GameObject targetObject = GetGameObject(targetObjectName);
         if (targetObject != null)
         {
-            targetObject.SendMessage(methodName, new object[] { param, param2 }, SendMessageOptions.DontRequireReceiver);
+            targetObject.SendMessage(methodName, new object[] { param, param2, param3 }, SendMessageOptions.DontRequireReceiver);
         }
     }
 

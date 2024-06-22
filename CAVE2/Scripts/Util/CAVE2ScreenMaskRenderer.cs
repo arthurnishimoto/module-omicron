@@ -32,7 +32,12 @@ using System.Collections;
 public class CAVE2ScreenMaskRenderer : MonoBehaviour {
 
     public enum RenderMode { None, Background, Overlay }
-    public RenderMode renderMode = RenderMode.Background;
+
+    [SerializeField]
+    RenderMode renderMode = RenderMode.Background;
+
+    [SerializeField]
+    Color color = new Color(0.1882353f, 0.2980392f, 0.4705882f);
 
     [SerializeField]
     bool showInHMDVR = false;
@@ -75,5 +80,27 @@ public class CAVE2ScreenMaskRenderer : MonoBehaviour {
                 GetComponent<Renderer>().sharedMaterial.SetFloat("_Cull", 0);
                 break;
         }
-	}
+        GetComponent<Renderer>().sharedMaterial.color = color;
+
+    }
+
+    public void SetColor(Color inputColor)
+    {
+        color = inputColor;
+    }
+
+    public void SetMaskMode(int newMode)
+    {
+        renderMode = (RenderMode)newMode;
+    }
+
+    public void SetMaskMode(RenderMode newMode)
+    {
+        renderMode = newMode;
+    }
+
+    public RenderMode GetMaskMode()
+    {
+        return renderMode;
+    }
 }

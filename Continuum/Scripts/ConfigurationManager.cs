@@ -32,6 +32,7 @@ public class DisplayConfig
     public Vector3 screenUL;
     public Vector3 screenLL;
     public Vector3 screenLR;
+    public string cave2ScreenMaskMode = "Background";
 }
 
 [Serializable]
@@ -79,6 +80,9 @@ public class ConfigurationManager : MonoBehaviour
     [Tooltip("Relative path to Assets folder")]
     string defaultEditorBasePath = "/module-omicron";
     string defaultConfigFile = "default.cfg";
+
+    [SerializeField]
+    bool saveConfigChangesOnExit = false;
 
     // Start is called before the first frame update
     void Start()
@@ -157,11 +161,11 @@ public class ConfigurationManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (File.Exists(configPath + "/" + defaultConfigFile))
+        if (saveConfigChangesOnExit && File.Exists(configPath + "/" + defaultConfigFile))
         {
-            //StreamWriter writer = new StreamWriter(defaultConfigPath + "/" + defaultConfigFile);
-            //writer.Write(JsonUtility.ToJson(loadedConfig, true));
-            //writer.Close();
+            StreamWriter writer = new StreamWriter(configPath + "/" + defaultConfigFile);
+            writer.Write(JsonUtility.ToJson(loadedConfig, true));
+            writer.Close();
         }
     }
 }

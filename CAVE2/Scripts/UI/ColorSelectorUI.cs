@@ -17,6 +17,9 @@ public class ColorSelectorUI : MonoBehaviour
     [SerializeField]
     Image outputColorPreviewImage = null;
 
+    [SerializeField]
+    Text colorHexText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,5 +43,14 @@ public class ColorSelectorUI : MonoBehaviour
     public Color GetOutputColor()
     {
         return outputColor;
+    }
+
+    public void SetColor(Color color)
+    {
+        outputColor = color;
+        outputColorPreviewImage.color = color;
+
+        inputHexString = ColorUtility.ToHtmlStringRGB(color);
+        colorHexText.text = "#" + inputHexString;
     }
 }

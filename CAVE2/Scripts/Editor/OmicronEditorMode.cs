@@ -60,8 +60,8 @@ public class OmicronEditorMode : MonoBehaviour
         }
 
         c2sm = GameObject.Find("CAVE2ScreenMask");
-        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>() && c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode == CAVE2ScreenMaskRenderer.RenderMode.None)
-            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.Background;
+        if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>() && c2sm.GetComponent<CAVE2ScreenMaskRenderer>().GetMaskMode() == CAVE2ScreenMaskRenderer.RenderMode.None)
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().SetMaskMode(CAVE2ScreenMaskRenderer.RenderMode.Background);
 
         if(CAVE2.GetCAVE2Manager() != null)
         {
@@ -117,7 +117,7 @@ public class OmicronEditorMode : MonoBehaviour
 
         c2sm = GameObject.Find("CAVE2ScreenMask");
         if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
-            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().SetMaskMode(CAVE2ScreenMaskRenderer.RenderMode.None);
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Oculus VR HMDs" : "VR support disabled");
 
@@ -148,7 +148,7 @@ public class OmicronEditorMode : MonoBehaviour
 
         c2sm = GameObject.Find("CAVE2ScreenMask");
         if (c2sm && c2sm.GetComponent<CAVE2ScreenMaskRenderer>())
-            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().renderMode = CAVE2ScreenMaskRenderer.RenderMode.None;
+            c2sm.GetComponent<CAVE2ScreenMaskRenderer>().SetMaskMode(CAVE2ScreenMaskRenderer.RenderMode.None);
 
         Debug.Log(PlayerSettings.virtualRealitySupported ? "Configured for Vive VR HMDs" : "VR support disabled");
 

@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HeadNodeDebugManager : MonoBehaviour
 {
-    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display, CAVE2Display };
+    enum MenuMode { Hidden, Visible, Application, Tracking, Performance, Display, CAVE2Display, Debug };
 
     [SerializeField]
     MenuMode initialMenuState = MenuMode.Hidden;
@@ -27,6 +28,9 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     [SerializeField]
     GameObject cave2DisplayPanel = null;
+
+    [SerializeField]
+    GameObject debugPanel = null;
 
     [SerializeField]
     bool useCAVE2DisplayPanel = true;
@@ -70,6 +74,21 @@ public class HeadNodeDebugManager : MonoBehaviour
 
     ObjectCountStressTestCounter fpsCounter;
 
+    [Header("Debug")]
+    [SerializeField]
+    CAVE2ScreenMaskRenderer.RenderMode cave2ScreenMaskMode = CAVE2ScreenMaskRenderer.RenderMode.Background;
+
+    [SerializeField]
+    Color cave2ScreenMaskColor = new Color(0.1882353f, 0.2980392f, 0.4705882f);
+
+    [SerializeField]
+    Dropdown cave2ScreenMaskDropdown;
+
+    [SerializeField]
+    ColorSelectorUI cave2ScreenMaskColorUI;
+
+    bool loadedConfigSettings;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -84,6 +103,9 @@ public class HeadNodeDebugManager : MonoBehaviour
 
         continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
         continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
+
+        cave2ScreenMaskDropdown.SetValueWithoutNotify((int)cave2ScreenMaskMode);
+        cave2ScreenMaskColorUI.SetColor(cave2ScreenMaskColor);
 
         if (applicationPanel)
         {
@@ -104,6 +126,10 @@ public class HeadNodeDebugManager : MonoBehaviour
         if (cave2DisplayPanel)
         {
             cave2DisplayPanel.SetActive(false);
+        }
+        if (debugPanel)
+        {
+            debugPanel.SetActive(false);
         }
 
         switch (initialMenuState)
@@ -144,8 +170,13 @@ public class HeadNodeDebugManager : MonoBehaviour
                     cave2DisplayPanel.SetActive(true);
                 }
                 break;
+            case (MenuMode.Debug):
+                if (debugPanel)
+                {
+                    debugPanel.SetActive(true);
+                }
+                break;
         }
-        
     }
 
     // Update is called once per frame
@@ -189,15 +220,36 @@ public class HeadNodeDebugManager : MonoBehaviour
                 primaryHeadTrackerPosRot.text += CAVE2.GetHeadRotation(1).eulerAngles.ToString();
             }
         }
+
+        if(!loadedConfigSettings)
+        {
+            SetCAVE2ScreenMask((int)cave2ScreenMaskMode);
+            loadedConfigSettings = true;
+        }
     }
 
     void ConfigurationLoaded(DefaultConfig config)
     {
-
         if(ConfigurationManager.loadedConfig.showDebugMenu)
         {
             initialMenuState = MenuMode.Visible;
         }
+
+        string cave2ScreenMaskModeConfig = ConfigurationManager.loadedConfig.displayConfig.cave2ScreenMaskMode;
+#if UNITY_EDITOR
+        if(cave2ScreenMaskModeConfig.Contains("Hidden"))
+        {
+            cave2ScreenMaskMode = CAVE2ScreenMaskRenderer.RenderMode.None;
+        }
+        else if (cave2ScreenMaskModeConfig.Contains("Background"))
+        {
+            cave2ScreenMaskMode = CAVE2ScreenMaskRenderer.RenderMode.Background;
+        }
+        else if (cave2ScreenMaskModeConfig.Contains("Overlay"))
+        {
+            cave2ScreenMaskMode = CAVE2ScreenMaskRenderer.RenderMode.Overlay;
+        }
+#endif
     }
 
     public void ToggleApplicationPanel()
@@ -262,6 +314,17 @@ public class HeadNodeDebugManager : MonoBehaviour
         }
     }
 
+    public void ToggleDebugPanel()
+    {
+        if (debugPanel.activeSelf)
+        {
+            debugPanel.SetActive(false);
+        }
+        else
+        {
+            debugPanel.SetActive(true);
+        }
+    }
 
     public void SetServerIP(string serverIP)
     {
@@ -308,5 +371,47 @@ public class HeadNodeDebugManager : MonoBehaviour
 
         continuumMainMode.SetIsOnWithoutNotify(omicronManager.continuumMainInvertX);
         continuum3DMode.SetIsOnWithoutNotify(omicronManager.continuum3DXAxis);
+    }
+
+    // Debug
+    public void SetCAVE2ScreenMask(Int32 value)
+    {
+        cave2ScreenMaskMode = (CAVE2ScreenMaskRenderer.RenderMode)value;
+
+        GameObject cave2PlayerController = CAVE2.GetPlayerController(1);
+        if(cave2PlayerController != null)
+        {
+            CAVE2ScreenMaskRenderer screenMask = cave2PlayerController.GetComponentInChildren<CAVE2ScreenMaskRenderer>();
+            if(screenMask != null)
+            {
+                screenMask.SetMaskMode(value);
+
+                switch(value)
+                {
+                    case (0): ConfigurationManager.loadedConfig.displayConfig.cave2ScreenMaskMode = "Hidden"; break;
+                    case (1): ConfigurationManager.loadedConfig.displayConfig.cave2ScreenMaskMode = "Background"; break;
+                    case (2): ConfigurationManager.loadedConfig.displayConfig.cave2ScreenMaskMode = "Overlay"; break;
+                }
+            }
+        }
+    }
+
+    public void SetCAVE2ScreenMaskColor(string inputHexString)
+    {
+        Color tempColor = new Color(0.1882353f, 0.2980392f, 0.4705882f);
+        bool validHexString = ColorUtility.TryParseHtmlString(inputHexString, out tempColor);
+
+        if (validHexString)
+        {
+            GameObject cave2PlayerController = CAVE2.GetPlayerController(1);
+            if (cave2PlayerController != null)
+            {
+                CAVE2ScreenMaskRenderer screenMask = cave2PlayerController.GetComponentInChildren<CAVE2ScreenMaskRenderer>();
+                if (screenMask != null)
+                {
+                    screenMask.SetColor(tempColor);
+                }
+            }
+        }
     }
 }
